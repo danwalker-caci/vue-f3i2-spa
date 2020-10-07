@@ -2305,6 +2305,9 @@ export default {
     return {
       busyTitle: 'Getting Data. Please Wait.',
       isDirty: false,
+      isSaving: false,
+      timeoutId: null,
+      timerid: null,
       headerText: '',
       WordDocument: null,
       fileDigest: null,
@@ -2429,7 +2432,9 @@ export default {
           icon: 'user-shield'
         }
       ],
-      isNew: false
+      isNew: false,
+      uri: null,
+      etag: null
     }
   },
   mounted: function() {
@@ -2446,12 +2451,13 @@ export default {
     let formbody = document.getElementById('Tabs')
     let h = this.rect.height - 100
     formbody.style.height = h + 'px'
-    this.dashboardtabs = this.dashboardtab
+    /* this.dashboardtabs = this.dashboardtab
     this.fundingtabs = this.fundingtab
     this.traveltabs = this.traveltab
-    this.arotabs = this.arotab
+    this.arotabs = this.arotab */
     MSR.dispatch('getDigest')
     Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
+      vm.setupTimers()
       vm.getData()
     })
   },
@@ -2495,6 +2501,8 @@ export default {
         this.ODCPlanned = this.msr.ODCPlanned
         this.ODCCosts = this.msr.ODCCosts
         this.Distribution = this.msr.Distribution
+        this.uri = this.msr.uri
+        this.etag = this.msr.etag
         this.Accomplishments = this.formatData2('Accomplishments', this.msr.Accomplishments)
         this.Plans = this.formatData2('Plans', this.msr.Plans)
         this.Assumptions = this.formatData2('Assumptions', this.msr.Assumptions)
@@ -2502,88 +2510,67 @@ export default {
         this.Opportunities = this.formatData2('Opportunities', this.msr.Opportunities)
         this.Deliverables = this.formatData2('Deliverables', this.msr.Deliverables)
         this.isDirty = false
+        this.isSaving = false
         this.$bvToast.hide('form-toast')
         this.$store.dispatch('support/setLegendItems', this.legenditems)
       } else {
         this.waitForMSR()
       }
     },
-    saveReminder: function() {
-      this.$bvModal.msgBoxOk('Please Save Your Edits By Clicking the Complete Button. The Form Will Reload So You Can Continue.', {
-        title: 'Save and Continue.',
-        size: 'md',
-        buttonSize: 'sm',
-        okVariant: 'success',
-        footerClass: 'p-2',
-        hideHeaderClose: false,
-        centered: true
-      })
+    setupTimers: function() {
+      document.addEventListener('mousemove', vm.resetTimer, false)
+      document.addEventListener('mousedown', vm.resetTimer, false)
+      document.addEventListener('keypress', vm.resetTimer, false)
+      this.startTimer()
     },
-    getFormStatus: function() {
-      // Function to test if form should be closed if the user has not made changes in a specific time period.
-      // called by vue-cron
-      // Check if form is dirty and reset time if it is. This will keep form open. If not dirty the form should close and call the close method.
-      // Another timer is set to warn the user so that they can have a chance to continue
-      if (this.isDirty) {
-        this.$cron.restart('getFormStatus')
+    startTimer: function() {
+      if (console) {
+        console.log('START TIMER')
+      }
+      this.$cron.start('doInactive')
+    },
+    resetTimer: function() {
+      /* if (console) {
+        console.log('RESET TIMER')
+      } */
+      this.$cron.restart('doInactive')
+    },
+    doInactive: function() {
+      // if currently saving wait for save to finish
+      if (this.isSaving) {
+        vm.doInactive() // wait for saving flag to clear
       } else {
-        this.$cron.start('closeForm')
-        this.$bvModal
-          .msgBoxConfirm('Continue Editing MSR?', {
-            title: 'Please Confirm or MSR will Close in 2 minutes.',
-            size: 'sm',
-            buttonSize: 'sm',
-            okVariant: 'success',
-            okTitle: 'YES',
-            cancelTitle: 'NO',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true,
-            noCloseOnBackdrop: true
-          })
-          .then(value => {
-            if (value == true) {
-              this.$cron.restart('getFormStatus')
-              this.$cron.stop('closeForm')
-            } else {
-              this.onFormClose()
-            }
-          })
+        this.onFormClose()
       }
     },
-    closeForm: function() {
-      this.onFormClose()
-    },
     onFormClose: function() {
+      clearInterval(this.timerid)
       let payload = {}
       payload.field = 'Locked'
       payload.value = 'No'
-      payload.uri = this.msr.uri
-      payload.etag = this.msr.etag
+      payload.uri = this.uri
+      payload.etag = this.etag
       MSR.dispatch('updateMSRData', payload).then(function() {
         vm.$router.push({ path: '/msr/home' })
       })
     },
     async handleit(action, field, form) {
-      // can we pass attributes to show, hide, and save any content?
+      if (console) {
+        console.log('HANDLEIT CALLED: ' + field + ', ' + form)
+      }
       switch (action) {
         /* #region BASE */
 
         case 'edit': {
-          this.isDirty = true
+          clearInterval(this.timerid)
           this.isEditing = true
           this.ActiveSection = field
           this.clipBoard = this[field]
           this[form] = true
-          this.$nextTick(function() {
-            let anchor = field + 'Anchor'
-            try {
-              let element = document.getElementById(anchor)
-              element.scrollIntoView()
-            } catch (err) {
-              // TODO: Anything?
-            }
-          })
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosave', field, form)
+          }, 150000)
           break
         }
 
@@ -2603,6 +2590,7 @@ export default {
 
         case 'save': {
           // Check to see if there was an image copied and if so, upload that to SharePoint and modify the content to reflect the image change
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           if (this.hasImage) {
@@ -2635,8 +2623,41 @@ export default {
             vm.ActiveSection = null
             vm.clipBoard = ''
             vm.$bvToast.hide('form-toast')
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosave': {
+          // Check to see if there was an image copied and if so, upload that to SharePoint and modify the content to reflect the image change
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            let content = String(this.fileContent)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            content = content.replace(blob, imageurl)
+            this[this.ActiveSection] = content
+          }
+          let payload = {}
+          payload.field = field
+          payload.value = this[field]
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.$bvToast.hide('form-toast')
+            vm.getData()
           })
           break
         }
@@ -2646,8 +2667,7 @@ export default {
         /* #region ACCOMPLISHMENTS */
 
         case 'editaccomplishment': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           if (console) {
             console.log('EDIT ACCOMPLISHMENT FOR: ' + field + ', ' + form)
           }
@@ -2661,6 +2681,10 @@ export default {
               this.clipBoard = this.Accomplishments[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosaveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
+          }, 150000)
           break
         }
 
@@ -2707,6 +2731,7 @@ export default {
         }
 
         case 'saveaccomplishment': {
+          vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
           // update the existing HTML for the index and then save entire array
@@ -2725,8 +2750,29 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosaveaccomplishment': {
+          vm.isSaving = true
+          this.busyTitle = 'Saving To SharePoint'
+          this.$bvToast.show('form-toast')
+          // update the existing HTML for the index and then save entire array
+          this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
+          let payload = {}
+          payload.field = field
+          // value is entire array of json objects that need to be stringified to store
+          for (let i = 0; i < this.Accomplishments.length; i++) {
+            this.Accomplishments[i].HTML = encodeURIComponent(this.Accomplishments[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Accomplishments)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
           })
           break
         }
@@ -2736,8 +2782,7 @@ export default {
         /* #region PLANS */
 
         case 'editplan': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.PlansForm = true
@@ -2748,6 +2793,10 @@ export default {
               this.clipBoard = this.Plans[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosaveplan', 'Plans', 'PlansForm')
+          }, 150000)
           break
         }
 
@@ -2792,6 +2841,7 @@ export default {
         }
 
         case 'saveplan': {
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
@@ -2808,8 +2858,27 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosaveplan': {
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
+          let payload = {}
+          payload.field = field
+          for (let i = 0; i < this.Plans.length; i++) {
+            this.Plans[i].HTML = encodeURIComponent(this.Plans[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Plans)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
           })
           break
         }
@@ -2819,8 +2888,7 @@ export default {
         /* #region Assumptions */
 
         case 'editassumption': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.AssumptionsForm = true
@@ -2831,6 +2899,10 @@ export default {
               this.clipBoard = this.Assumptions[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosaveassumption', 'Assumptions', 'AssumptionsForm')
+          }, 150000)
           break
         }
 
@@ -2875,6 +2947,7 @@ export default {
         }
 
         case 'saveassumption': {
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
@@ -2891,8 +2964,27 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosaveassumption': {
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
+          let payload = {}
+          payload.field = field
+          for (let i = 0; i < this.Assumptions.length; i++) {
+            this.Assumptions[i].HTML = encodeURIComponent(this.Assumptions[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Assumptions)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
           })
           break
         }
@@ -2902,8 +2994,7 @@ export default {
         /* #region RISKS */
 
         case 'editrisk': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.RisksForm = true
@@ -2914,6 +3005,10 @@ export default {
               this.clipBoard = this.Risks[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosaverisk', 'Risks', 'RisksForm')
+          }, 150000)
           break
         }
 
@@ -2958,6 +3053,7 @@ export default {
         }
 
         case 'saverisk': {
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
@@ -2974,8 +3070,27 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosaverisk': {
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
+          let payload = {}
+          payload.field = field
+          for (let i = 0; i < this.Risks.length; i++) {
+            this.Risks[i].HTML = encodeURIComponent(this.Risks[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Risks)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
           })
           break
         }
@@ -2985,8 +3100,7 @@ export default {
         /* #region OPPORTUNITIES */
 
         case 'editopportunity': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.OpportunitiesForm = true
@@ -2997,6 +3111,10 @@ export default {
               this.clipBoard = this.Opportunities[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosaveopportunity', 'Opportunities', 'OpportunitiesForm')
+          }, 150000)
           break
         }
 
@@ -3041,6 +3159,7 @@ export default {
         }
 
         case 'saveopportunity': {
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
@@ -3057,19 +3176,36 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
           })
           break
         }
 
+        case 'autosaveopportunity': {
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
+          let payload = {}
+          payload.field = field
+          for (let i = 0; i < this.Opportunities.length; i++) {
+            this.Opportunities[i].HTML = encodeURIComponent(this.Opportunities[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Opportunities)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
+          })
+          break
+        }
         /* #endregion */
 
         /* #region DELIVERABLES */
 
         case 'editdeliverable': {
-          // using field and form for company and index
-          this.isDirty = true
+          clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.DeliverablesForm = true
@@ -3080,6 +3216,10 @@ export default {
               this.clipBoard = this.Deliverables[i].HTML
             }
           }
+          this.timerid = setInterval(function() {
+            // setup overlay and save
+            vm.handleit('autosavedeliverable', 'Deliverables', 'DeliverablesForm')
+          }, 150000)
           break
         }
 
@@ -3124,6 +3264,7 @@ export default {
         }
 
         case 'savedeliverable': {
+          vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
@@ -3140,8 +3281,27 @@ export default {
             vm.isEditing = false
             vm.hasImage = false
             vm.clipBoard = ''
-            // refresh by changing the route
-            vm.$router.push({ name: 'Refresh', params: { action: 'msrform', id: vm.id, msrdata: vm.msrdata, dashboardtab: vm.dashboardtabs, fundingtab: vm.fundingtabs, traveltab: vm.traveltabs, arotab: vm.arotabs } })
+            vm.getData()
+          })
+          break
+        }
+
+        case 'autosavedeliverable': {
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
+          let payload = {}
+          payload.field = field
+          for (let i = 0; i < this.Deliverables.length; i++) {
+            this.Deliverables[i].HTML = encodeURIComponent(this.Deliverables[i].HTML)
+          }
+          payload.value = JSON.stringify(this.Deliverables)
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            vm.hasImage = false
+            vm.getData()
           })
           break
         }
@@ -3948,18 +4108,9 @@ export default {
   },
   cron: [
     {
-      time: 900000,
-      method: 'getFormStatus'
-    },
-    {
-      time: 120000,
-      method: 'closeForm',
-      autoStart: false
-    },
-    {
       time: 600000,
-      method: 'saveReminder',
-      autoStart: true
+      method: 'doInactive',
+      autoStart: false
     }
   ],
   provide: {
