@@ -1948,13 +1948,13 @@
               </template>
               <b-row class="buttonrow">
                 <b-col cols="4" class="p-0 text-left">
-                  <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending">
+                  <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'WPMReview', '')">
                     WPM Review
                   </b-form-checkbox>
-                  <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending">
+                  <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'QAReview', '')">
                     QA Review
                   </b-form-checkbox>
-                  <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending">
+                  <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'PCAReview', '')">
                     PCA Review
                   </b-form-checkbox>
                 </b-col>
@@ -2463,7 +2463,11 @@ export default {
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
-    // this.onFormClose()
+    this.onFormClose()
+  },
+  beforeRouteLeave(to, from, next) {
+    vm.onFormClose()
+    next()
   },
   methods: {
     getFormDigest() {
@@ -2585,6 +2589,25 @@ export default {
         case 'clear': {
           this.hasImage = false
           this[this.ActiveSection] = ''
+          break
+        }
+
+        case 'review': {
+          // Check to see if there was an image copied and if so, upload that to SharePoint and modify the content to reflect the image change
+          vm.isSaving = true
+          vm.busyTitle = 'Saving To SharePoint'
+          vm.$bvToast.show('form-toast')
+          let payload = {}
+          payload.field = field
+          payload.value = this[field]
+          payload.uri = this.msr.uri
+          payload.etag = this.msr.etag
+          this[form] = false
+          MSR.dispatch('updateMSRData', payload).then(function() {
+            // close the toast notification and wait for the changes
+            vm.$bvToast.hide('form-toast')
+            vm.getData()
+          })
           break
         }
 
