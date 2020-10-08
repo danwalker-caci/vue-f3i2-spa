@@ -415,12 +415,13 @@ export default {
     this.$bvToast.show('busy-toast')
     Workplan.dispatch('getDigest')
     Workplan.dispatch('getManagers').then(function() {
-      vm.waitForPlans()
+      vm.$options.interval = setInterval(vm.waitForPlans, 1000)
     })
   },
   methods: {
     waitForPlans: function() {
       if (this.workplans && this.workplans.length > 0) {
+        clearInterval(this.$options.interval)
         this.data = this.workplans
         this.filtereddata = this.workplans
         document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
