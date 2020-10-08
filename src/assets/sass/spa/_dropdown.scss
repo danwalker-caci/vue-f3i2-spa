@@ -33,6 +33,8 @@
   border: $dropdown-border-width solid $dropdown-border-color;
   @include border-radius($dropdown-border-radius);
   @include box-shadow($dropdown-box-shadow);
+  max-height: 750px;
+  overflow-y: auto;
 }
 
 @each $breakpoint in map-keys($grid-breakpoints) {

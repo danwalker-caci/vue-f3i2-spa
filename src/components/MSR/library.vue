@@ -7,7 +7,7 @@
       <b-dropdown :text="year ? year : 'Year'" class="filterSelection" v-if="yearValues.length > 0" variant="secondary">
         <b-dropdown-item v-for="yearValue in yearValues" :key="yearValue.value" :value="yearValue.value" @click="year = yearValue.value">{{ yearValue.text }}</b-dropdown-item>
       </b-dropdown>
-      <b-dropdown :text="workplan ? workplan : 'Workplan'" class="filterSelection" v-if="workplans.length > 0" variant="secondary">
+      <b-dropdown id="workplans" :text="workplan ? workplan : 'Workplan'" class="filterSelection" v-if="workplans.length > 0" variant="secondary">
         <b-dropdown-item v-for="workplanValue in workplans" :key="workplanValue" :value="workplanValue.value" @click="workplan = workplanValue.value">{{ workplanValue.value }}</b-dropdown-item>
       </b-dropdown>
       <b-button variant="danger" class="filterSelection" @click="clearFilters()">Clear</b-button>
@@ -143,7 +143,7 @@ export default {
         if (console) {
           console.log(`Workplan: ${this.workplan}`)
         }
-        this.filterArray.push({ type: 'WorkplanNumber0', value: this.year })
+        this.filterArray.push({ type: 'WorkplanNumber0', value: this.workplan })
       }
       if (this.filterArray.length > 0) {
         try {
