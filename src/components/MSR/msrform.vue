@@ -2606,7 +2606,7 @@ export default {
           MSR.dispatch('updateMSRData', payload).then(function() {
             // close the toast notification and wait for the changes
             vm.$bvToast.hide('form-toast')
-            vm.getData()
+            vm.onFormClose()
           })
           break
         }
