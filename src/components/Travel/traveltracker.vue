@@ -1074,7 +1074,7 @@ export default {
                   if (vm.fields[i].DataType == 'Number') {
                     p = p.filter(search => search[vm.fields[i].FieldName] == vm.fields[i].FilterValue)
                   } else {
-                    p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                    p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isSame(vm.$moment(vm.fields[i].FilterValue), 'day'))
                   }
                 }
                 break

@@ -1948,13 +1948,13 @@
               </template>
               <b-row class="buttonrow">
                 <b-col cols="4" class="p-0 text-left">
-                  <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'WPMReview', '')">
+                  <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending" @change="WPMReviewClicked">
                     WPM Review
                   </b-form-checkbox>
-                  <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'QAReview', '')">
+                  <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending" @change="QAReviewClicked">
                     QA Review
                   </b-form-checkbox>
-                  <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending" @input="handleit('review', 'PCAReview', '')">
+                  <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending" @change="PCAReviewClicked">
                     PCA Review
                   </b-form-checkbox>
                 </b-col>
@@ -2461,14 +2461,14 @@ export default {
       vm.getData()
     })
   },
-  beforeDestroy() {
+  /* beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
     this.onFormClose()
-  },
-  beforeRouteLeave(to, from, next) {
+  }, */
+  /* beforeRouteLeave(to, from, next) {
     vm.onFormClose()
     next()
-  },
+  }, */
   methods: {
     getFormDigest() {
       return axios.request({
@@ -2558,6 +2558,51 @@ export default {
         vm.$router.push({ path: '/msr/home' })
       })
     },
+    WPMReviewClicked: function(checked) {
+      vm.isSaving = true
+      vm.busyTitle = 'Saving To SharePoint'
+      vm.$bvToast.show('form-toast')
+      let payload = {}
+      payload.field = 'WPMReview'
+      payload.locked = 'No'
+      payload.value = checked ? 'Complete' : 'Pending'
+      payload.uri = this.msr.uri
+      payload.etag = this.msr.etag
+      MSR.dispatch('updateMSRData', payload).then(function() {
+        vm.$bvToast.hide('form-toast')
+        vm.$router.push({ path: '/msr/home' })
+      })
+    },
+    QAReviewClicked: function(checked) {
+      vm.isSaving = true
+      vm.busyTitle = 'Saving To SharePoint'
+      vm.$bvToast.show('form-toast')
+      let payload = {}
+      payload.field = 'QAReview'
+      payload.locked = 'No'
+      payload.value = checked ? 'Complete' : 'Pending'
+      payload.uri = this.msr.uri
+      payload.etag = this.msr.etag
+      MSR.dispatch('updateMSRData', payload).then(function() {
+        vm.$bvToast.hide('form-toast')
+        vm.$router.push({ path: '/msr/home' })
+      })
+    },
+    PCAReviewClicked: function(checked) {
+      vm.isSaving = true
+      vm.busyTitle = 'Saving To SharePoint'
+      vm.$bvToast.show('form-toast')
+      let payload = {}
+      payload.field = 'PCAReview'
+      payload.locked = 'No'
+      payload.value = checked ? 'Complete' : 'Pending'
+      payload.uri = this.msr.uri
+      payload.etag = this.msr.etag
+      MSR.dispatch('updateMSRData', payload).then(function() {
+        vm.$bvToast.hide('form-toast')
+        vm.$router.push({ path: '/msr/home' })
+      })
+    },
     async handleit(action, field, form) {
       if (console) {
         console.log('HANDLEIT CALLED: ' + field + ', ' + form)
@@ -2599,6 +2644,7 @@ export default {
           vm.$bvToast.show('form-toast')
           let payload = {}
           payload.field = field
+          payload.locked = 'No'
           payload.value = this[field]
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
@@ -2606,7 +2652,7 @@ export default {
           MSR.dispatch('updateMSRData', payload).then(function() {
             // close the toast notification and wait for the changes
             vm.$bvToast.hide('form-toast')
-            vm.onFormClose()
+            vm.$router.push({ path: '/msr/home' })
           })
           break
         }

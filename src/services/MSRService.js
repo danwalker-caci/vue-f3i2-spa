@@ -136,6 +136,10 @@ export default {
       __metadata: { type: 'SP.Data.MSRsListItem' }
     }
     itemprops[payload.field] = payload.value
+    if (payload.locked != null && payload.locked == 'No') {
+      console.log('Unlock MSR')
+      itemprops['Locked'] = 'No'
+    }
     try {
       await axios.post(furl, itemprops, config)
       // go get the data for the saved item to return back to the user and use it to update the current MSR
