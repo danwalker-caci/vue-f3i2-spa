@@ -40,7 +40,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'F3I2'
+      default: process.env.VUE_APP_TITLE
     },
     backGround: {
       type: String,
