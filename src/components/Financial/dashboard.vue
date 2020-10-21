@@ -14,7 +14,7 @@ export default {
   data: function() {
     return {
       iframe: {
-        src: 'https://infoplus.caci.com/sites/f3i2/Pages/FinancialDashboard.aspx?isDlg=1',
+        src: '/sites/F3I2/Pages/FinancialDashboard.aspx?isDlg=1',
         loaded: false
       }
     }

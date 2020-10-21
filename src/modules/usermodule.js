@@ -160,7 +160,7 @@ const actions = {
           for (let i = 0; i < state.usergroups.length; i++) {
             // if (console) { console.log('GROUP: ' + state.usergroups[i].Title) }
             switch (state.usergroups[i].Title) {
-              case 'Developers':
+              case 'F3I2 Developers':
                 state.isDeveloper = true
                 break
 
@@ -176,19 +176,19 @@ const actions = {
                 state.isTravelApprover = true
                 break
 
-              case 'F3I-2 Owners':
+              case 'F3I2 Owners':
                 state.isOwner = true
                 break
 
-              case 'F3I-2 PCAs':
+              case 'F3I2 PCAs':
                 state.isPCA = true
                 break
 
-              case 'F3I-2 QA':
+              case 'F3I2 QA':
                 state.isQA = true
                 break
 
-              case 'F3I-2 Admins':
+              case 'F3I2 Admins':
                 state.isAdmin = true
                 break
 
@@ -196,7 +196,7 @@ const actions = {
                 state.isSubcontractor = true
                 break
 
-              case 'F3I-2 Members':
+              case 'F3I2 Members':
                 state.isMember = true
                 break
 

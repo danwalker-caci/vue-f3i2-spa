@@ -56,7 +56,7 @@ export default {
     },
     backgroundImage: {
       type: String,
-      default: '/sites/F3I2/DEV/SiteAssets/html/static/img/background-1.JPG'
+      default: '/sites/F3I2/SiteAssets/webparts/portal/static/img/background-1.JPG'
     },
     activeColor: {
       type: String,
@@ -68,7 +68,7 @@ export default {
     },
     logo: {
       type: String,
-      default: '/sites/F3I2/DEV/SiteAssets/html/static/img/vue-logo.png'
+      default: '/sites/F3I2/SiteAssets/webparts/portal/static/img/vue-logo.png'
     },
     sidebarLinks: {
       type: Array,

@@ -130,7 +130,7 @@ export default {
         let frame = document.getElementsByTagName('iframe')[0].contentWindow
         frame.document.getElementById('s4-ribbonrow').style.display = 'none'
         frame.document.getElementById('s4-workspace').style.padding = '15px'
-        frame.document.getElementById('WPQ2_ListTitleViewSelectorMenu_Container').style.display = 'none'
+        frame.document.getElementById('WPQ4_ListTitleViewSelectorMenu_Container').style.display = 'none'
       } catch (e) {
         // don't care here
       }
