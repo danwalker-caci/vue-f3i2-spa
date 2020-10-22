@@ -24,7 +24,7 @@
           <sidebar-item :link="{ name: 'Bugs', library: 'fas', icon: 'spider', path: '/bugs/home' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item :link="{ name: 'Monthly Status Reports', library: 'fas', icon: 'file-contract' }">
-          <sidebar-item :link="{ name: 'Edit Reports', library: 'fas', icon: 'file-signature', path: '/msr/home' }"></sidebar-item>
+          <sidebar-item v-if="!isAFRL" :link="{ name: 'Edit Reports', library: 'fas', icon: 'file-signature', path: '/msr/home' }"></sidebar-item>
           <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Report Library', library: 'fas', icon: 'folder', path: '/msr/library' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
@@ -52,6 +52,9 @@ export default {
   computed: {
     isAdmin() {
       return User.getters('isAdmin')
+    },
+    isAFRL() {
+      return User.getters('isAFRL')
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')

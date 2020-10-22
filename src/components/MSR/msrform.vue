@@ -134,7 +134,7 @@
                           </b-row>
                           <b-form v-if="TravelPlannedForm">
                             <b-row>
-                              <ejs-richtexteditor ref="rte_TravelPlanned" id="rte_TravelPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelPlanned" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                              <ejs-richtexteditor ref="rte_TravelPlanned" id="rte_TravelPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelPlanned" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                             </b-row>
                             <b-row id="TravelPlannedAnchor">
                               <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
@@ -257,7 +257,7 @@
                       <b-row id="AccomplishmentsAnchor">
                         <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
                         <b-button id="btn_CancelAccomplishments" ref="btn_CancelAccomplishments" class="formbutton" variant="info" @click="handleit('cancelaccomplishment', '', '')">Cancel</b-button>
-                        <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')" title="Save and Edit Later">Save</b-button>
+                        <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="checkAccomplishment()" title="Save and Edit Later">Save</b-button>
                         <b-button id="btn_PrivateAccomplishment" ref="btn_PrivateAccomplishment" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateaccomplishment', '', '')">Make Private</b-button>
                         <b-button id="btn_CompleteAccomplishment" ref="btn_CompleteAccomplishment" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeaccomplishment', '', '')">Complete</b-button>
                       </b-row>
@@ -1960,7 +1960,7 @@
                 </b-col>
               </b-row>
             </b-tab>
-            <b-tab :disabled="!isPM" class="mtab">
+            <b-tab :disabled="!isPM || !isDeveloper" class="mtab">
               <template slot="title">
                 <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
                 Publish
@@ -2191,6 +2191,10 @@
           </b-button-group>
         </b-col>
       </b-row>
+      <b-modal id="accomplishmentModal" @ok="restoreAccomplishment" @cancel="overwriteAccomplishment">
+        <p>Detected an empty value for Accomplishment {{ SelectedAccomplishmentCompany }}!</p>
+        <p>Would you like to restore the previous version of this Accomplishment before Saving?</p>
+      </b-modal>
     </div>
   </b-container>
 </template>
@@ -2308,6 +2312,7 @@ export default {
       isSaving: false,
       timeoutId: null,
       timerid: null,
+      timeout: 120000,
       headerText: '',
       WordDocument: null,
       fileDigest: null,
@@ -2364,6 +2369,7 @@ export default {
       DistributionForm: false /* ----------------------------- used for showing/hiding the form based on the current user permission   */,
       message: '',
       messagevariant: 'success',
+      MSRId: '',
       WorkplanNumber: '',
       WorkplanTitle: '',
       PCAReview: false,
@@ -2383,6 +2389,7 @@ export default {
       ODCsCostReport: '',
       Accomplishments: [],
       SelectedAccomplishment: '',
+      SelectedAccomplishmentCompany: '',
       Plans: [],
       SelectedPlan: '',
       Assumptions: [],
@@ -2490,6 +2497,7 @@ export default {
     },
     waitForMSR: function() {
       if (this.msrloaded) {
+        this.MSRId = this.msr.Id
         this.WorkplanTitle = this.msr.WorkplanTitle
         this.WorkplanNumber = this.msr.WorkplanNumber
         this.WPMReview = this.msr.WPMReview
@@ -2517,6 +2525,8 @@ export default {
         this.isSaving = false
         this.$bvToast.hide('form-toast')
         this.$store.dispatch('support/setLegendItems', this.legenditems)
+        // set the localStorage for the Accomplishments here
+        window.localStorage.setItem('accomplishment-' + this.MSRId, JSON.stringify(this.Accomplishments))
       } else {
         this.waitForMSR()
       }
@@ -2619,7 +2629,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosave', field, form)
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -2747,13 +2757,14 @@ export default {
             if (this.Accomplishments[i]['Index'] == index) {
               this.SelectedIndex = i
               this.SelectedAccomplishment = this.Accomplishments[i].HTML
+              this.SelectedAccomplishmentCompany = this.Accomplishments[i].Company
               this.clipBoard = this.Accomplishments[i].HTML
             }
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosaveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -2803,14 +2814,14 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
-          // update the existing HTML for the index and then save entire array
-          this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
+          await this.checkAccomplishment()
           let payload = {}
           payload.field = field
           // value is entire array of json objects that need to be stringified to store
           for (let i = 0; i < this.Accomplishments.length; i++) {
             this.Accomplishments[i].HTML = encodeURIComponent(this.Accomplishments[i].HTML)
           }
+          window.localStorage.removeItem('accomplishment-' + this.MSRId)
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
@@ -2829,13 +2840,15 @@ export default {
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
           // update the existing HTML for the index and then save entire array
-          this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
+          await this.checkAccomplishment()
           let payload = {}
           payload.field = field
+
           // value is entire array of json objects that need to be stringified to store
           for (let i = 0; i < this.Accomplishments.length; i++) {
             this.Accomplishments[i].HTML = encodeURIComponent(this.Accomplishments[i].HTML)
           }
+          window.localStorage.removeItem('accomplishment-' + this.MSRId)
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
@@ -2865,7 +2878,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosaveplan', 'Plans', 'PlansForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -2971,7 +2984,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosaveassumption', 'Assumptions', 'AssumptionsForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -3077,7 +3090,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosaverisk', 'Risks', 'RisksForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -3183,7 +3196,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosaveopportunity', 'Opportunities', 'OpportunitiesForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -3288,7 +3301,7 @@ export default {
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosavedeliverable', 'Deliverables', 'DeliverablesForm')
-          }, 150000)
+          }, vm.timeout)
           break
         }
 
@@ -3376,6 +3389,28 @@ export default {
         }
         /* #endregion */
       }
+    },
+    async checkAccomplishment() {
+      let lsAccomplishments = JSON.parse(localStorage.getItem('accomplishment-' + this.MSRId))
+      // check if HTML is an empty string and localStorage accomplishment.HTML is not empty
+      if (!this.Accomplishments[this.SelectedIndex].HTML && lsAccomplishments[this.SelectedIndex].HTML) {
+        // TODO: throw a modal explaining that there is something in cache that can overwrite this empty Accomplishment
+        // If yes - use from localStorage
+        // If No - delete entry from localStorage
+        this.$bvModal.show('accomplishmentModal')
+      } else {
+        this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
+        this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
+      }
+    },
+    async restoreAccomplishment() {
+      let lsAccomplishments = JSON.parse(localStorage.getItem('accomplishment-' + this.MSRId))
+      this.SelectedAccomplishment = lsAccomplishments[this.SelectedIndex].HTML
+      this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
+    },
+    async overwriteAccomplishment() {
+      this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
+      this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
     },
     onRTEChanged: function(args) {
       console.log('RTECHANGED: ' + args)
@@ -3528,7 +3563,7 @@ export default {
         .endOf('month')
         .date()
       let pop = months[m] + ' ' + popstart + ' - ' + popend + ' ' + y
-      let published = this.$moment().format('DD MMM YYYY')
+      let published = this.$moment().format('DD MM YYYY')
 
       this.busyTitle = 'Publishing To SharePoint'
       this.$bvToast.show('form-toast')
@@ -4154,8 +4189,9 @@ export default {
               let uri = response.data.d.ListItemAllFields.__deferred.uri
               MSR.dispatch('getMSRDocument', uri).then(function(response) {
                 let payload = response.data.d.__metadata
-                payload.WorkplanNumber = vm.WorkplanNumber
-                payload.WorkplanTitle = vm.WorkplanTitle
+                console.log(`GOT THE MSR DOCUMENT ${JSON.stringify(payload)}`)
+                payload.WorkplanNumber0 = vm.WorkplanNumber
+                payload.WorkplanTitle0 = vm.WorkplanTitle
                 payload.Month = months[m]
                 payload.Year = y
                 MSR.dispatch('updateMSRDocument', payload).then(function() {

@@ -441,7 +441,7 @@
         <b-row class="m-0 pl-1 mt-1">
           <div class="col-4 p-0 text-left">
             <b-button-group class="mt-2">
-              <b-button v-if="isWPManager" variant="primary" @click="emailTravelPOC" class="mr-2 p-1">Email Travel POC</b-button>
+              <b-button v-if="isWPManager && !isAFRL" variant="primary" @click="emailTravelPOC" class="mr-2 p-1">Email Travel POC</b-button>
               <b-button v-if="isWPManager && travelmodel.OCONUS == 'Yes'" variant="primary" @click="emailTravelDocs" class="p-1">Email Travel Documents</b-button>
               <a ref="TPOCLink" :href="'mailto:' + travelmodel.CreatedByEmail" v-show="false">{{ travelmodel.CreatedBy }}</a>
               <a ref="DocsLink" v-bind:href="generateDocsLink()" v-show="false">Travel Documents</a>
@@ -569,6 +569,9 @@ export default {
     },
     appversion() {
       return User.getters('AppVersion')
+    },
+    isAFRL() {
+      return User.getters('isAFRL')
     },
     isDeveloper() {
       return User.getters('isDeveloper')

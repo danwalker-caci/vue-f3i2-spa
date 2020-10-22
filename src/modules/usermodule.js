@@ -50,6 +50,9 @@ const getters = {
   isMember: state => {
     return state.isMember
   },
+  isAFRL: state => {
+    return state.isAFRL
+  },
   isAdmin: state => {
     return state.isAdmin
   },

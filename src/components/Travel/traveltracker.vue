@@ -222,6 +222,9 @@ export default {
       o = o * -1
       return o
     },
+    isAFRL() {
+      return User.getters()
+    },
     isDeveloper() {
       return User.getters('isDeveloper')
     },
