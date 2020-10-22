@@ -193,6 +193,32 @@ let financialMenu = {
   ]
 }
 
+let trainingMenu = {
+  path: '/training',
+  component: ThemeLayout,
+  redirect: '/training/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Training',
+      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
+      props: true
+    },
+    {
+      path: '/training/home/subcontractor/:subcontractor',
+      name: 'Training',
+      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
+      props: true
+    },
+    {
+      path: '/training/home/AFRL/:AFLR',
+      name: 'Training',
+      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
+      props: true
+    }
+  ]
+}
+
 let calendarMenu = {
   path: '/calendar',
   component: ThemeLayout,
@@ -322,6 +348,7 @@ const routes = [
   featuresMenu,
   bugsMenu,
   personnelMenu,
+  trainingMenu,
   workplanMenu,
   refreshMenu,
   {

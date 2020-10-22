@@ -114,7 +114,7 @@ export default {
     return {
       todocount: 0,
       userdisplayname: '',
-      userpic: baseurl + '/SiteAssets/webparts/portal/static/img/user.png',
+      userpic: baseurl + '/SiteAssets/html/static/img/user.png',
       userurl: '#',
       isClosed: true,
       variants: ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark', 'black'],
