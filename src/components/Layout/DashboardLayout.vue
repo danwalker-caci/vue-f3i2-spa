@@ -28,9 +28,9 @@
           <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Report Library', library: 'fas', icon: 'folder', path: '/msr/library' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item :link="{ name: 'Training', library: 'fas', icon: 'chalkboard-teacher' }">
-          <sidebar-item v-if="isAFRL" :link="{ name: 'Documents', library: 'fas', icon: 'file-signature', path: '/training/home/AFRL/true' }"></sidebar-item>
-          <sidebar-item v-if="isSubcontractor" :link="{ name: 'Documents', library: 'fas', icon: 'folder', path: '/training/home/Subcontractor/true' }"></sidebar-item>
-          <sidebar-item v-if="!isSubcontractor && !isAdmin" :link="{ name: 'Documents', library: 'fas', icon: 'folder', path: '/training/home/' }"></sidebar-item>
+          <sidebar-item v-if="!isSubcontractor" :link="{ name: 'AFRL Training', library: 'fas', icon: 'folder', path: '/training/AFRL' }"></sidebar-item>
+          <sidebar-item v-if="!isAFRL" :link="{ name: 'Subcontractor Training', library: 'fas', icon: 'folder', path: '/training/Subcontractor' }"></sidebar-item>
+          <sidebar-item v-if="" :link="{ name: 'CACI Training', library: 'fas', icon: 'folder', path: '/training/CACI' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
           <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
@@ -63,6 +63,15 @@ export default {
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
+    },
+    isMember() {
+      return User.getters('isMember')
+    },
+    isDeveloper() {
+      return User.getters('isDeveloper')
+    },
+    isCACI() {
+      return !this.isSubcontractor && !this.isAdmin
     }
   },
   components: {

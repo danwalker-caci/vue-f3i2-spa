@@ -219,8 +219,8 @@ export default {
                 payload.value = 'Yes'
                 payload.uri = data.uri
                 payload.etag = data.etag
-                MSR.dispatch('updateMSRData', payload).then(function() {
-                  vm.$router.push({ name: 'MSRForm', params: { id: data.Id, msrdata: data } })
+                MSR.dispatch('updateMSRData', payload).then(function(response) {
+                  vm.$router.push({ name: 'MSRForm', params: { id: response.Id, msrdata: response } })
                 })
               },
               distribution: function(data) {

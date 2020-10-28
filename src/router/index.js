@@ -205,13 +205,7 @@ let trainingMenu = {
       props: true
     },
     {
-      path: '/training/home/subcontractor/:subcontractor',
-      name: 'Training',
-      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
-      props: true
-    },
-    {
-      path: '/training/home/AFRL/:AFLR',
+      path: '/training/:library',
       name: 'Training',
       component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
       props: true

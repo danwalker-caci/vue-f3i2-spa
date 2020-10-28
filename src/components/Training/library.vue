@@ -5,30 +5,31 @@
 </template>
 
 <script>
+//let vm = null
 export default {
   name: 'training-library',
   props: {
-    AFRL: {
-      type: Boolean,
-      default: false
-    },
-    Subcontractor: {
-      type: Boolean,
-      default: false
+    library: {
+      Type: String
     }
   },
   data: function() {
     return {
-      url: '/sites/f3i2/Training/Forms/AllItems.aspx?isDlg=1'
+      url: '',
+      afrlUrl: '/sites/f3i2/AFRL%20Training/Forms/AllItems.aspx?isDlg=1',
+      subUrl: '/sites/f3i2/Subcontractor%20Training/Forms/AllItems.aspx?isDlg=1',
+      caciUrl: '/sites/f3i2/CACI%20Training/Forms/AllItems.aspx?isDlg=1'
     }
   },
   mounted: function() {
-    if (this.AFRL) {
-      this.url += '&FilterField1=UserTpe&FilterValue1=AFRL'
-    } else if (this.Subcontractor) {
-      this.url += '&FilterField1=UserTpe&FilterValue1=Subcontractor'
+    //vm = this
+    this.routeLibrary(this.library)
+  },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    $route(to, from) {
+      this.routeLibrary(to.params.library)
     }
-    this.$options.interval = setInterval(this.hideRibbon, 850)
   },
   methods: {
     hideRibbon: function() {
@@ -43,6 +44,20 @@ export default {
       } catch (e) {
         // don't care here
       }
+    },
+    routeLibrary: function(lib) {
+      switch (lib) {
+        case 'AFRL':
+          this.url = this.afrlUrl
+          break
+        case 'Subcontractor':
+          this.url = this.subUrl
+          break
+        case 'CACI':
+          this.url = this.caciUrl
+          break
+      }
+      this.$options.interval = setInterval(this.hideRibbon, 500)
     }
   }
 }

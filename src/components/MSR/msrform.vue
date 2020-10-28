@@ -1960,7 +1960,7 @@
                 </b-col>
               </b-row>
             </b-tab>
-            <b-tab :disabled="!isPM || !isDeveloper" class="mtab">
+            <b-tab :disabled="!isPM" class="mtab">
               <template slot="title">
                 <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
                 Publish
@@ -2311,6 +2311,7 @@ export default {
       isDirty: false,
       isSaving: false,
       timeoutId: null,
+      publishedTimeout: null,
       timerid: null,
       timeout: 120000,
       headerText: '',
@@ -2332,6 +2333,7 @@ export default {
       arotabs: 0,
       POPStart: null,
       POPEnd: null,
+      publishedMSR: false,
       fontFamily: {
         default: 'Calibri',
         items: [
@@ -2490,12 +2492,21 @@ export default {
       if (console) {
         console.log('MSRFORM GETDATA')
       }
+      if (this.publishedMSR) {
+        const notification = {
+          type: 'success',
+          title: 'MSR',
+          message: 'Successfully Published MSR!',
+          push: false
+        }
+        this.$store.dispatch('notification/add', notification, { root: true })
+      }
       MSR.dispatch('getMSR', this.msrdata).then(function() {
         vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrform-getMSR: ' + vm.$moment().format() + '</div>')
         vm.waitForMSR()
       })
     },
-    waitForMSR: function() {
+    waitForMSR: async function() {
       if (this.msrloaded) {
         this.MSRId = this.msr.Id
         this.WorkplanTitle = this.msr.WorkplanTitle
@@ -2523,13 +2534,22 @@ export default {
         this.Deliverables = this.formatData2('Deliverables', this.msr.Deliverables)
         this.isDirty = false
         this.isSaving = false
-        this.$bvToast.hide('form-toast')
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         // set the localStorage for the Accomplishments here
         window.localStorage.setItem('accomplishment-' + this.MSRId, JSON.stringify(this.Accomplishments))
+        if (this.publishedMSR) {
+          this.publishedMSR = false
+        } else {
+          this.$bvToast.hide('form-toast')
+        }
       } else {
         this.waitForMSR()
       }
+    },
+    toastWait: function() {
+      return setInterval(function() {
+        vm.$bvToast.hide('form-toast')
+      }, 5000)
     },
     setupTimers: function() {
       document.addEventListener('mousemove', vm.resetTimer, false)
@@ -3563,9 +3583,9 @@ export default {
         .endOf('month')
         .date()
       let pop = months[m] + ' ' + popstart + ' - ' + popend + ' ' + y
-      let published = this.$moment().format('DD MM YYYY')
+      let published = this.$moment().format('DD MMM YYYY')
 
-      this.busyTitle = 'Publishing To SharePoint'
+      this.busyTitle = 'Publishing MSR To SharePoint'
       this.$bvToast.show('form-toast')
 
       /* #region Document Creation */
@@ -4189,7 +4209,6 @@ export default {
               let uri = response.data.d.ListItemAllFields.__deferred.uri
               MSR.dispatch('getMSRDocument', uri).then(function(response) {
                 let payload = response.data.d.__metadata
-                console.log(`GOT THE MSR DOCUMENT ${JSON.stringify(payload)}`)
                 payload.WorkplanNumber0 = vm.WorkplanNumber
                 payload.WorkplanTitle0 = vm.WorkplanTitle
                 payload.Month = months[m]
@@ -4199,7 +4218,10 @@ export default {
                   payload = {}
                   payload.uri = vm.msr.uri
                   payload.etag = vm.msr.etag
-                  MSR.dispatch('publishMSR', payload)
+                  MSR.dispatch('publishMSR', payload).then(function() {
+                    vm.publishedMSR = true
+                    vm.getData()
+                  })
                   vm.$bvToast.hide('form-toast')
                   vm.$emit('close')
                 })

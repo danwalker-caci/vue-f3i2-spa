@@ -67,7 +67,7 @@ const actions = {
     let response = await MSRService.updateMSRData(payload, state.digest)
     state.currentmsr = formatMSR(response)
     state.msrloaded = true
-    return response
+    return formatMSR(response)
   },
   async publishMSR({ state }, payload) {
     let response = await MSRService.publishMSR(payload, state.digest)

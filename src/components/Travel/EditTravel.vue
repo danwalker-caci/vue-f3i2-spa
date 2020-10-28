@@ -346,7 +346,18 @@
                           <template slot="title">
                             <font-awesome-icon fas icon="cog" class="icon"></font-awesome-icon>
                             CACI Approvals
+                            <font-awesome-icon id="travelApproversHelp" fas icon="question-circle" class="icon" @click="showApprovalHelp = !showApprovalHelp"></font-awesome-icon>
+                            <b-tooltip target="travelApproversHelp" triggers="hover">
+                              Show helpful video on Travel Approvals.
+                            </b-tooltip>
                           </template>
+                          <b-row v-show="showApprovalHelp" class="mb-1">
+                            <video width="100%" controls>
+                              <source src="/sites/f3i2/TrainingVideos/Travel%20Approval.mp4" type="video/mp4" />
+                              Your Browser does not support this video.
+                            </video>
+                            <b-button size="sm" class="helpHide" @click="showApprovalHelp = !showApprovalHelp" variant="primary">Hide</b-button>
+                          </b-row>
                           <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                             <b-col cols="4">PreApproved</b-col>
                             <b-col cols="8">
@@ -608,6 +619,7 @@ export default {
       tabInvalid: false,
       InvalidMessage: 'Not all fields are filled out correctly.',
       headerBgVariant: 'warning',
+      showApprovalHelp: false,
       travelmodel: {
         id: 0,
         Status: '',
@@ -1351,6 +1363,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.helpHide {
+  margin: 1rem;
+}
+
 .summarytable {
   font-size: 0.8rem !important;
   width: 100%;
