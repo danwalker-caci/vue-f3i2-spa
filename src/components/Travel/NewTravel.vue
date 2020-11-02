@@ -215,7 +215,8 @@
                         <b-form-checkbox v-model="travelmodel.VisitRequest" value="Yes" unchecked-value="No" ref="VisitRequest" switch>Required</b-form-checkbox>
                       </div>
                       <div class="col" v-if="travelmodel.VisitRequest === 'Yes'">
-                        <b-form-select class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="!isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
                         <b-form-invalid-feedback>
                           Please select a valid option
                         </b-form-invalid-feedback>
@@ -325,7 +326,7 @@
           <div class="col-4 p-0 text-right">
             <b-button-group class="mt-2">
               <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalCancel">Cancel</b-button>
-              <b-button v-if="formValid" variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
+              <b-button v-if="formValid" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
               <a ref="EmailLink" href="#" v-show="false">Email</a>
             </b-button-group>
           </div>
@@ -439,6 +440,9 @@ export default {
     },
     isDeveloper() {
       return User.getters('isDeveloper')
+    },
+    isTravelApprover() {
+      return User.getters('isTravelApprover')
     },
     portalemail() {
       return this.$store.state.support.portalemail
@@ -588,6 +592,10 @@ export default {
         { value: 'None', text: 'None' },
         { value: 'S', text: 'S' },
         { value: 'TS', text: 'TS' },
+        { value: 'TSSCI', text: 'TS/SCI' }
+      ],
+      subcontractorLevels: [
+        { value: 'None', text: 'None' },
         { value: 'TSSCI', text: 'TS/SCI' }
       ],
       yesno: [
@@ -905,6 +913,14 @@ export default {
     },
     deleteme: function(idx) {
       this.travelmodel.Travelers.splice(idx, 1)
+    },
+    async verifyModalSave() {
+      this.tabInvalid = false
+      if (!(await this.validateFirstTab()) && !(await this.validateSecondTab()) && !(await this.validateThirdTab())) {
+        this.tabInvalid = true
+      } else {
+        await this.onModalSave()
+      }
     },
     async onModalSave() {
       // Update the trip information in SharePoint.
