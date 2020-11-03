@@ -171,31 +171,6 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col">POC Name</div>
-                      <div class="col">POC Email</div>
-                      <div class="col">POC Phone</div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Enter a Name
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Invalid email address
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          (###)-###-#### Format
-                        </b-form-invalid-feedback>
-                      </div>
-                    </div>
-                    <div class="row">
                       <div class="col-12">Purpose</div>
                     </div>
                     <div class="row">
@@ -233,7 +208,8 @@
                         <b-form-checkbox v-model="travelmodel.VisitRequest" value="Yes" unchecked-value="No" ref="VisitRequest" switch>Required</b-form-checkbox>
                       </div>
                       <div class="col" v-if="travelmodel.VisitRequest === 'Yes'">
-                        <b-form-select class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="!isSubcontracotr" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
                         <b-form-invalid-feedback>
                           Please select a valid option
                         </b-form-invalid-feedback>
@@ -243,6 +219,31 @@
                       </div>
                       <div class="col" v-if="isSecurity">
                         <b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.SecurityActionCompleted" ref="SecurityActionCompleted" type="date" title="SecurityActionCompleted"></b-form-input>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">Government POC Name</div>
+                      <div class="col">Government POC Email</div>
+                      <div class="col">Government POC Phone</div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Enter a Name
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Invalid email address
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          (###)-###-#### Format
+                        </b-form-invalid-feedback>
                       </div>
                     </div>
                   </b-form>
@@ -286,9 +287,9 @@
                       </tr>
                       <tr class="bg-warning text-white">
                         <td>Gov Sponsor</td>
-                        <td>POC Name</td>
-                        <td colspan="2">POC Email</td>
-                        <td>POC Phone</td>
+                        <td>Gov POC Name</td>
+                        <td colspan="2">Gov POC Email</td>
+                        <td>Gov POC Phone</td>
                       </tr>
                       <tr>
                         <td>{{ travelmodel.Sponsor }}</td>
@@ -709,8 +710,8 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
-      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'POCName', 'POCEmail', 'POCPhone', 'Comments', 'IndexNumber'],
-      fieldsFourthTab: ['Clearance'],
+      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'IndexNumber'],
+      fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
       ManagerEmail: null,
       formValid: false,
@@ -745,6 +746,10 @@ export default {
         { value: 'None', text: 'None' },
         { value: 'S', text: 'S' },
         { value: 'TS', text: 'TS' },
+        { value: 'TSSCI', text: 'TS/SCI' }
+      ],
+      subcontractorLevels: [
+        { value: 'None', text: 'None' },
         { value: 'TSSCI', text: 'TS/SCI' }
       ],
       yesno: [

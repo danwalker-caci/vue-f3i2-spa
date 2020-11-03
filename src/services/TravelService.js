@@ -189,7 +189,7 @@ export default {
     // need to somehow pass the id in the link and then have the system display info for that travel request
     let body = '<p>A new Travel Request has been submitted on your workplan.</p><p></p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },

@@ -86,13 +86,13 @@
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelFrom" :state="ValidateMe('TravelFrom')" ref="TravelFrom"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelTo" :state="ValidateMe('TravelTo')" ref="TravelTo"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                     </div>
@@ -155,31 +155,6 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col">POC Name</div>
-                      <div class="col">POC Email</div>
-                      <div class="col">POC Phone</div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Enter a Name
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Invalid email address
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          (###)-###-#### Format
-                        </b-form-invalid-feedback>
-                      </div>
-                    </div>
-                    <div class="row">
                       <div class="col-12">Purpose</div>
                     </div>
                     <div class="row">
@@ -219,6 +194,31 @@
                         <b-form-select v-if="isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
                         <b-form-invalid-feedback>
                           Please select a valid option
+                        </b-form-invalid-feedback>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">Government POC Name</div>
+                      <div class="col">Government POC Email</div>
+                      <div class="col">Government POC Phone</div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Enter a Name
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Invalid email address
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          (###)-###-#### Format
                         </b-form-invalid-feedback>
                       </div>
                     </div>
@@ -263,9 +263,9 @@
                       </tr>
                       <tr class="bg-warning text-white">
                         <td>Gov Sponsor</td>
-                        <td>POC Name</td>
-                        <td colspan="2">POC Email</td>
-                        <td>POC Phone</td>
+                        <td>Gov POC Name</td>
+                        <td colspan="2">Gov POC Email</td>
+                        <td>Gov POC Phone</td>
                       </tr>
                       <tr>
                         <td>{{ travelmodel.Sponsor }}</td>
@@ -557,8 +557,8 @@ export default {
       },
       NewTravelfilterSettings: { type: 'Menu' },
       fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
-      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'POCName', 'POCEmail', 'POCPhone', 'Comments', 'Clearance'],
-      fieldsFourthTab: ['Clearance'],
+      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'Clearance'],
+      fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
       formValid: false,
       fields: [
