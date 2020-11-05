@@ -86,13 +86,13 @@
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelFrom" :state="ValidateMe('TravelFrom')" ref="TravelFrom"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelTo" :state="ValidateMe('TravelTo')" ref="TravelTo"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                     </div>
@@ -155,31 +155,6 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col">POC Name</div>
-                      <div class="col">POC Email</div>
-                      <div class="col">POC Phone</div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Enter a Name
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          Invalid email address
-                        </b-form-invalid-feedback>
-                      </div>
-                      <div class="col">
-                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
-                        <b-form-invalid-feedback>
-                          (###)-###-#### Format
-                        </b-form-invalid-feedback>
-                      </div>
-                    </div>
-                    <div class="row">
                       <div class="col-12">Purpose</div>
                     </div>
                     <div class="row">
@@ -215,9 +190,35 @@
                         <b-form-checkbox v-model="travelmodel.VisitRequest" value="Yes" unchecked-value="No" ref="VisitRequest" switch>Required</b-form-checkbox>
                       </div>
                       <div class="col" v-if="travelmodel.VisitRequest === 'Yes'">
-                        <b-form-select class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="!isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <b-form-select v-if="isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
                         <b-form-invalid-feedback>
                           Please select a valid option
+                        </b-form-invalid-feedback>
+                      </div>
+                    </div>
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
+                      <div class="col">Government POC Name</div>
+                      <div class="col">Government POC Email</div>
+                      <div class="col">Government POC Phone</div>
+                    </div>
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Enter a Name
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCEmail" ref="POCEmail" :state="ValidateMe('POCEmail')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          Invalid email address
+                        </b-form-invalid-feedback>
+                      </div>
+                      <div class="col">
+                        <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCPhone" ref="POCPhone" :state="ValidateMe('POCPhone')"></b-form-input>
+                        <b-form-invalid-feedback>
+                          (###)-###-#### Format
                         </b-form-invalid-feedback>
                       </div>
                     </div>
@@ -262,9 +263,9 @@
                       </tr>
                       <tr class="bg-warning text-white">
                         <td>Gov Sponsor</td>
-                        <td>POC Name</td>
-                        <td colspan="2">POC Email</td>
-                        <td>POC Phone</td>
+                        <td>Gov POC Name</td>
+                        <td colspan="2">Gov POC Email</td>
+                        <td>Gov POC Phone</td>
                       </tr>
                       <tr>
                         <td>{{ travelmodel.Sponsor }}</td>
@@ -325,7 +326,7 @@
           <div class="col-4 p-0 text-right">
             <b-button-group class="mt-2">
               <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalCancel">Cancel</b-button>
-              <b-button v-if="formValid" variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
+              <b-button v-if="formValid" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
               <a ref="EmailLink" href="#" v-show="false">Email</a>
             </b-button-group>
           </div>
@@ -440,6 +441,9 @@ export default {
     isDeveloper() {
       return User.getters('isDeveloper')
     },
+    isTravelApprover() {
+      return User.getters('isTravelApprover')
+    },
     portalemail() {
       return this.$store.state.support.portalemail
     }
@@ -553,8 +557,8 @@ export default {
       },
       NewTravelfilterSettings: { type: 'Menu' },
       fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
-      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'POCName', 'POCEmail', 'POCPhone', 'Comments', 'Clearance'],
-      fieldsFourthTab: ['Clearance'],
+      fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'Clearance'],
+      fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
       formValid: false,
       fields: [
@@ -588,6 +592,10 @@ export default {
         { value: 'None', text: 'None' },
         { value: 'S', text: 'S' },
         { value: 'TS', text: 'TS' },
+        { value: 'TSSCI', text: 'TS/SCI' }
+      ],
+      subcontractorLevels: [
+        { value: 'None', text: 'None' },
         { value: 'TSSCI', text: 'TS/SCI' }
       ],
       yesno: [
@@ -732,6 +740,18 @@ export default {
           let req = this.travelmodel.VisitRequest
           let val = this.travelmodel.Clearance
           if (req === 'yes' && val === 'Select') {
+            valid = false
+          }
+        }
+      }
+      return valid
+    },
+    validateFourthTab: function() {
+      // If VR is selected YES then we need to check POCName, POCEmail and POCPhone
+      let valid = true
+      if (this.travelmodel.VisitRequest.toLowerCase() === 'yes') {
+        for (let i = 0; i < this.fieldsFourthTab.length; i++) {
+          if (this.$refs[this.fieldsFourthTab[i]].state === false) {
             valid = false
           }
         }
@@ -905,6 +925,21 @@ export default {
     },
     deleteme: function(idx) {
       this.travelmodel.Travelers.splice(idx, 1)
+    },
+    async verifyModalSave() {
+      this.tabInvalid = false
+      if (!(await this.validateFirstTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateSecondTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateThirdTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateFourthTab())) {
+        this.tabInvalid = true
+      }
+      if (!this.tabInvalid) {
+        await this.onModalSave()
+      }
     },
     async onModalSave() {
       // Update the trip information in SharePoint.
