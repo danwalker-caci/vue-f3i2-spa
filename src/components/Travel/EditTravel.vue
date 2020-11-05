@@ -95,13 +95,13 @@
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelFrom" :state="ValidateMe('TravelFrom')" ref="TravelFrom"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                       <div class="col-6">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.TravelTo" :state="ValidateMe('TravelTo')" ref="TravelTo"></b-form-input>
                         <b-form-invalid-feedback>
-                          Enter at least 3 letters
+                          Enter City, State or Country
                         </b-form-invalid-feedback>
                       </div>
                     </div>
@@ -221,12 +221,12 @@
                         <b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.SecurityActionCompleted" ref="SecurityActionCompleted" type="date" title="SecurityActionCompleted"></b-form-input>
                       </div>
                     </div>
-                    <div class="row">
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
                       <div class="col">Government POC Name</div>
                       <div class="col">Government POC Email</div>
                       <div class="col">Government POC Phone</div>
                     </div>
-                    <div class="row">
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
                       <div class="col">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
                         <b-form-invalid-feedback>
@@ -906,7 +906,7 @@ export default {
     ValidateMe: function(control) {
       let phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/
       let emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
-      let ti = /([\d]{2})-([\d]{4})-([\d]{1,})/
+      let ti = /([\d]{2})-([a-zA-Z0-9]{4})-([\d]{1,})/
       let ret = false
       switch (control) {
         case 'O':
@@ -1030,6 +1030,18 @@ export default {
           let req = this.travelmodel.VisitRequest
           let val = this.travelmodel.Clearance
           if (req === 'yes' && val === 'Select') {
+            valid = false
+          }
+        }
+      }
+      return valid
+    },
+    validateFourthTab: function() {
+      // If VR is selected YES then we need to check POCName, POCEmail and POCPhone
+      let valid = true
+      if (this.travelmodel.VisitRequest.toLowerCase() === 'yes') {
+        for (let i = 0; i < this.fieldsFourthTab.length; i++) {
+          if (this.$refs[this.fieldsFourthTab[i]].state === false) {
             valid = false
           }
         }
@@ -1216,9 +1228,16 @@ export default {
     },
     async verifyModalSave() {
       this.tabInvalid = false
-      if (!(await this.validateFirstTab()) && !(await this.validateSecondTab()) && !(await this.validateThirdTab())) {
+      if (!(await this.validateFirstTab())) {
         this.tabInvalid = true
-      } else {
+      } else if (!(await this.validateSecondTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateThirdTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateFourthTab())) {
+        this.tabInvalid = true
+      }
+      if (!this.tabInvalid) {
         await this.onModalSave()
       }
     },

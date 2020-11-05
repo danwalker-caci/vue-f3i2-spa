@@ -197,12 +197,12 @@
                         </b-form-invalid-feedback>
                       </div>
                     </div>
-                    <div class="row">
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
                       <div class="col">Government POC Name</div>
                       <div class="col">Government POC Email</div>
                       <div class="col">Government POC Phone</div>
                     </div>
-                    <div class="row">
+                    <div v-if="travelmodel.VisitRequest === 'Yes'" class="row">
                       <div class="col">
                         <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.POCName" ref="POCName" :state="ValidateMe('POCName')"></b-form-input>
                         <b-form-invalid-feedback>
@@ -746,6 +746,18 @@ export default {
       }
       return valid
     },
+    validateFourthTab: function() {
+      // If VR is selected YES then we need to check POCName, POCEmail and POCPhone
+      let valid = true
+      if (this.travelmodel.VisitRequest.toLowerCase() === 'yes') {
+        for (let i = 0; i < this.fieldsFourthTab.length; i++) {
+          if (this.$refs[this.fieldsFourthTab[i]].state === false) {
+            valid = false
+          }
+        }
+      }
+      return valid
+    },
     /* ---------------------------------------------------------------------------------------------------------------- End Validation Events ------------------------------------------------------------------------ */
     /* ---------------------------------------------------------------------------------------------------------------- Form Events ---------------------------------------------------------------------------------- */
     onModalCancel: function() {
@@ -916,9 +928,16 @@ export default {
     },
     async verifyModalSave() {
       this.tabInvalid = false
-      if (!(await this.validateFirstTab()) && !(await this.validateSecondTab()) && !(await this.validateThirdTab())) {
+      if (!(await this.validateFirstTab())) {
         this.tabInvalid = true
-      } else {
+      } else if (!(await this.validateSecondTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateThirdTab())) {
+        this.tabInvalid = true
+      } else if (!(await this.validateFourthTab())) {
+        this.tabInvalid = true
+      }
+      if (!this.tabInvalid) {
         await this.onModalSave()
       }
     },
