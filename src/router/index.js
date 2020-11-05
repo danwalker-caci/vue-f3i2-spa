@@ -33,6 +33,20 @@ let travelMenu = {
   ]
 }
 
+let securityMenu = {
+  path: '/security',
+  component: ThemeLayout,
+  redirect: '/security/accounts',
+  children: [
+    {
+      path: 'accounts',
+      name: 'Accounts',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/Security/securityforms.vue'),
+      props: true
+    }
+  ]
+}
+
 let msrMenu = {
   path: '/msr',
   component: ThemeLayout,
@@ -343,6 +357,7 @@ const routes = [
   bugsMenu,
   personnelMenu,
   trainingMenu,
+  securityMenu,
   workplanMenu,
   refreshMenu,
   {
