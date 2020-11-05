@@ -190,8 +190,12 @@
                         <b-form-checkbox v-model="travelmodel.VisitRequest" value="Yes" unchecked-value="No" ref="VisitRequest" switch>Required</b-form-checkbox>
                       </div>
                       <div class="col" v-if="travelmodel.VisitRequest === 'Yes'">
-                        <b-form-select v-if="!isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
-                        <b-form-select v-if="isSubcontractor" class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        <div v-if="!isSubcontractor">
+                          <b-form-select class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="levels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        </div>
+                        <div v-if="isSubcontractor">
+                          <b-form-select class="form-control-sm form-control-travel float-left" v-model="travelmodel.Clearance" :options="subcontractorLevels" ref="Clearance" :state="ValidateMe('Clearance')"></b-form-select>
+                        </div>
                         <b-form-invalid-feedback>
                           Please select a valid option
                         </b-form-invalid-feedback>
@@ -443,6 +447,9 @@ export default {
     },
     isTravelApprover() {
       return User.getters('isTravelApprover')
+    },
+    isSubcontractor() {
+      return User.getters('isSubcontractor')
     },
     portalemail() {
       return this.$store.state.support.portalemail

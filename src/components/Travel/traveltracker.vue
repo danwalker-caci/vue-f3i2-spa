@@ -746,6 +746,12 @@ export default {
               <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
+              <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+                <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button v-if="isWPManager" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+                <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
+              </b-button>
             </div>`,
             data: function() {
               return {
@@ -778,6 +784,34 @@ export default {
                 vm.TripReport = false
                 vm.TripId = data.Id
                 vm.TripReport = true
+              },
+              postpone: async function(data) {
+                console.log('Postpone Data: ' + data)
+                // post the data to the list and then reload the data
+                let event = []
+                event.push({
+                  etag: data.etag,
+                  uri: data.uri,
+                  Status: 'Postponed'
+                })
+                let response = await Travel.dispatch('postponeTravel', event)
+                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
+                let path = '/travel/home/refresh' + vm.mode
+                vm.$router.push({ path: path })
+              },
+              cancel: async function(data) {
+                console.log('Cancel Data: ' + data)
+                // post the data to the list and then reload the data
+                let event = []
+                event.push({
+                  etag: data.etag,
+                  uri: data.uri,
+                  Status: 'Cancelled'
+                })
+                let response = await Travel.dispatch('cancelTravel', event)
+                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
+                let path = '/travel/home/refresh' + vm.mode
+                vm.$router.push({ path: path })
               }
             }
           })

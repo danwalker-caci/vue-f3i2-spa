@@ -1,6 +1,11 @@
 <template>
   <!-- Add Form where users can download master docs and upload the changed docs. -->
-  <div></div>
+  <div>
+    <!-- Use the upload travel docs as a template for uploading documents -->
+    <!-- If user is SUBC, only load the related personnel to their company. 
+         Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
+    <!-- on submission, split the personnel first name, last name out of the dropdown. -->
+  </div>
 </template>
 <script>
 import User from '@/models/User'
