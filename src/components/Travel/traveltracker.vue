@@ -892,6 +892,7 @@ export default {
           vm.SelectedStart = null
           vm.SelectedEnd = null
           vm.NewTravel = true
+          vm.formValid = false
           break
       }
     },
