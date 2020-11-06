@@ -106,15 +106,25 @@ const actions = {
     })
     return trip
   },
-  async postponeTravel({ state }, payload) {
-    payload.Status = 'Postponed'
-    let response = await TravelService.editTravelData(payload, state.digest)
-    return response
+  postponeTravel({ state }, payload) {
+    Travel.delete(payload.id)
+    return TravelService.postponeTravel(payload.id, payload.uri, payload.etag, state.digest)
+      .then(response => {
+        return response
+      })
+      .catch(error => {
+        console.log('There was an error postponing your travel request: ', error.response)
+      })
   },
-  async cancelTravel({ state }, payload) {
-    payload.Status = 'Cancelled'
-    let response = await TravelService.editTravelData(payload, state.digest)
-    return response
+  cancelTravel({ state }, payload) {
+    Travel.delete(payload.id)
+    return TravelService.cancelTravel(payload.id, payload.uri, payload.etag, state.digest)
+      .then(response => {
+        return response
+      })
+      .catch(error => {
+        console.log('There was an error cancelling your travel request: ', error.response)
+      })
   },
   approveTravel({ state }, payload) {
     Travel.delete(payload.id) // this removes it from the collection but does not actually delete since we are not deleting the travel item!

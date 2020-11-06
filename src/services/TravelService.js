@@ -528,5 +528,63 @@ export default {
       .catch(function(error) {
         console.log('TravelService Error Approving Travel: ' + error)
       })
+  },
+  cancelTravel(id, uri, etag, digest) {
+    // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
+    let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
+    if (!isNullOrUndefined(uri)) {
+      taskurl = uri
+    }
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': etag
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TravelListItem' },
+      Status: 'Cancelled'
+    }
+    return axios
+      .post(taskurl, itemprops, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        console.log('TravelService Error Cancelling Travel: ' + error)
+      })
+  },
+  postponeTravel(id, uri, etag, digest) {
+    // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
+    let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
+    if (!isNullOrUndefined(uri)) {
+      taskurl = uri
+    }
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': etag
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TravelListItem' },
+      Status: 'Postponed'
+    }
+    return axios
+      .post(taskurl, itemprops, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        console.log('TravelService Error Postponing Travel: ' + error)
+      })
   }
 }

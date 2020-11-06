@@ -786,29 +786,17 @@ export default {
                 vm.TripReport = true
               },
               postpone: async function(data) {
-                console.log('Postpone Data: ' + data)
+                console.log(`Postpone Data: ${JSON.stringify(data)}`)
                 // post the data to the list and then reload the data
-                let event = []
-                event.push({
-                  etag: data.etag,
-                  uri: data.uri,
-                  Status: 'Postponed'
-                })
-                let response = await Travel.dispatch('postponeTravel', event)
+                let response = await Travel.dispatch('postponeTravel', data)
                 vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
                 let path = '/travel/home/refresh' + vm.mode
                 vm.$router.push({ path: path })
               },
               cancel: async function(data) {
-                console.log('Cancel Data: ' + data)
+                console.log(`Cancel Data: ${JSON.stringify(data)}`)
                 // post the data to the list and then reload the data
-                let event = []
-                event.push({
-                  etag: data.etag,
-                  uri: data.uri,
-                  Status: 'Cancelled'
-                })
-                let response = await Travel.dispatch('cancelTravel', event)
+                let response = await Travel.dispatch('cancelTravel', data)
                 vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
                 let path = '/travel/home/refresh' + vm.mode
                 vm.$router.push({ path: path })
