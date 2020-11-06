@@ -7,7 +7,7 @@
         <sidebar-item :link="{ name: 'Travel', library: 'fas', icon: 'plane', path: '/travel/home' }">
           <sidebar-item :link="{ name: 'Travel Calendar', library: 'fas', icon: 'calendar', path: '/travel/home/refreshcalendar' }"></sidebar-item>
           <sidebar-item :link="{ name: 'Travel Tracker', library: 'fas', icon: 'subway', path: '/travel/home/refreshtracker' }"></sidebar-item>
-          <sidebar-item v-if="!isSubcontractor" :link="{ name: 'New Travel Request', library: 'fas', icon: 'plane-departure', path: '/travel/home/new' }"></sidebar-item>
+          <sidebar-item :link="{ name: 'New Travel Request', library: 'fas', icon: 'plane-departure', path: '/travel/home/new' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Personnel', library: 'fas', icon: 'users' }">
           <sidebar-item :link="{ name: 'Onboarding', library: 'fas', icon: 'user-check', path: '/personnel/home/new/onboarding' }"></sidebar-item>
