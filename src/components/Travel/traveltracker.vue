@@ -223,7 +223,7 @@ export default {
       return o
     },
     isAFRL() {
-      return User.getters()
+      return User.getters('isAFRL')
     },
     isDeveloper() {
       return User.getters('isDeveloper')
@@ -746,6 +746,12 @@ export default {
               <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
+              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+                <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+                <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
+              </b-button>
             </div>`,
             data: function() {
               return {
@@ -764,6 +770,9 @@ export default {
               },
               isSubcontractor() {
                 return User.getters('isSubcontractor')
+              },
+              isAFRL() {
+                return User.getters('isAFRL')
               }
             },
             methods: {
@@ -778,6 +787,22 @@ export default {
                 vm.TripReport = false
                 vm.TripId = data.Id
                 vm.TripReport = true
+              },
+              postpone: async function(data) {
+                console.log(`Postpone Data: ${JSON.stringify(data)}`)
+                // post the data to the list and then reload the data
+                let response = await Travel.dispatch('postponeTravel', data)
+                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
+                let path = '/travel/home/refresh' + vm.mode
+                vm.$router.push({ path: path })
+              },
+              cancel: async function(data) {
+                console.log(`Cancel Data: ${JSON.stringify(data)}`)
+                // post the data to the list and then reload the data
+                let response = await Travel.dispatch('cancelTravel', data)
+                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
+                let path = '/travel/home/refresh' + vm.mode
+                vm.$router.push({ path: path })
               }
             }
           })
