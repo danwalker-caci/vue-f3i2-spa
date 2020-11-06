@@ -223,7 +223,7 @@ export default {
       return o
     },
     isAFRL() {
-      return User.getters()
+      return User.getters('isAFRL')
     },
     isDeveloper() {
       return User.getters('isDeveloper')
@@ -746,10 +746,10 @@ export default {
               <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="!isSubcontractor || !isAFRL" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
                 <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="!isSubcontractor || !isAFRL" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
                 <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -770,6 +770,9 @@ export default {
               },
               isSubcontractor() {
                 return User.getters('isSubcontractor')
+              },
+              isAFRL() {
+                return User.getters('isAFRL')
               }
             },
             methods: {
