@@ -21,6 +21,22 @@
   @include transition (300ms, linear);
 }
 
+.sidebar-badge {
+  border-radius: 50%;
+  font-size: .8rem !important;
+  width: 20px;
+  height: 20px;
+  float: right;
+  margin-right: 15px;
+}
+
+.loading-spinner {
+  width: 20px !important;
+  height: 20px !important;
+  float: right;
+  margin-right: 15px;
+}
+
 // THE SIDEBAR
 
 .sidebar{
@@ -207,12 +223,12 @@
     }
     .info{
       .caret{
-        right: 15px;
+        right: 5px;
         top: -5px;
       }
       a{
         color: $white;
-        padding: 8px 14px;
+        padding: 5x;
         display: block;
         white-space: nowrap;
         line-height: 18px;
@@ -221,6 +237,10 @@
         position: relative;
         display: block;
       }
+      .UserName {
+        width: 100%;
+      }
+      
       .collapse{
         .sidebar-normal{
           padding-left: 0;
@@ -284,9 +304,25 @@
         padding: 0.25rem 0.5rem;
         white-space: nowrap;
 
-        &:hover{
-          background: rgba(255, 255, 255, 0.13);
-          opacity: 1;
+        &:hover,
+        &.router-link-active{
+          background: $warning;
+        }
+
+        .sidebar-icon {
+          text-transform: uppercase;
+          text-align: left;
+        }
+        
+        .sidebar-text {
+          text-align: left;
+          text-transform: uppercase;
+          margin-left: 8px;
+          padding: 0;
+        }
+
+        .sidebar-header {
+          font-size: 1.25rem;
         }
 
         i{
