@@ -5,6 +5,28 @@
     <!-- If user is SUBC, only load the related personnel to their company. 
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
+    <b-modal v-model="Show" ref="TripReport" centered hide-footer no-fade modal-class="animated bounceInLeft" @close="onModalHide">
+      <template v-slot:modal-title>Upload Account Forms</template>
+      <table class="mt-1">
+        <tbody>
+          <tr class="text-center bg-warning text-white">
+            <th>Upload an Account From</th>
+          </tr>
+          <tr>
+            <td><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="col p-0 text-right">
+                <b-button-group class="mt-2">
+                  <b-button variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
+                </b-button-group>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -23,7 +45,7 @@ export default {
   },
   computed: {
     personnel() {
-      return Personnel.getters('allPersonnel')
+      return Personnel.getters('getPersonalByCompany')
     },
     workplans() {
       return Workplan.getters('DropDown')
@@ -40,7 +62,7 @@ export default {
   },
   data: function() {
     return {
-      AccountMasterDocs: '/sites/f3i2/AccountsMasterDocs/',
+      AccountMasterDocs: '/sites/f3i2/SiteDocuments/',
       AccountsNIPRDocs: '/sites/f3i2/AccountsNIPR/',
       AccountsDRENDocs: '/sites/f3i2/AccountsDREN/',
       AccountsSIPRDocs: '/sites/f3i2/AccountsSIPR/',

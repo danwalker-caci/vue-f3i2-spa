@@ -50,6 +50,10 @@ const actions = {
     let response = await PersonnelService.getPersonnelByEmail(email)
     return response
   },
+  async getPersonnelByCompany({ state }, company) {
+    let response = await PersonnelService.getPersonnelByCompany(company)
+    return formatPersonnel(response)
+  },
   async getPersonnelAllValuesById({ state }, id) {
     // console.log('GETTING PERSONNEL BY EMAIL.')
     let response = await PersonnelService.getPersonnelAllValuesById(id)

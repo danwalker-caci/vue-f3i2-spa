@@ -66,6 +66,29 @@ export default {
     let results = response.data.d.results
     return results
   },
+  async getPersonnelByCompany(company) {
+    let allPersonnel = []
+    async function getAllPersonnel(eurl) {
+      if (!eurl) {
+        eurl = url
+        eurl += "?$filter=(Company eq '" + company + "')"
+      }
+      console.log('GETPERSONNELBYCOMPANY FILTER: ' + eurl)
+      let response = await axios.get(eurl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      allPersonnel = allPersonnel.concat(response)
+      if (response.data.d.__next) {
+        eurl = response.data.d.__next
+        return getAllPersonnel(eurl)
+      } else {
+        return allPersonnel
+      }
+    }
+    getAllPersonnel(null)
+  },
   async getPersonnelAllValuesById(id) {
     let idurl = url
     idurl += "?$filter=(Id eq '" + id + "')"
