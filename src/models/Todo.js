@@ -22,6 +22,7 @@ export default class Todo extends Model {
       DueDate: this.attr(null),
       AssignedTo: this.attr(null),
       TaskType: this.attr(null),
+      Body: this.attr(null),
       etag: this.attr(null), // Used for updating
       uri: this.attr(null) // Used for updating
     }
