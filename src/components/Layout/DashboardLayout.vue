@@ -37,8 +37,8 @@
           <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
         </sidebar-item>
         <!-- Add Security Menu Links -->
-        <sidebar-item :link="{ name: 'Security', libray: 'fas', icon: 'sheild-alt' }">
-          <sidebar-item :link="{ name: 'Accounts', library: 'fas', icon: 'user-shield', path: '/security/accounts' }"></sidebar-item>
+        <sidebar-item :link="{ name: 'Security', libray: 'fas', icon: 'shield-alt' }">
+          <sidebar-item :link="{ name: 'Accounts', library: 'fas', icon: 'user-shield', path: '/security/account' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
       </template>

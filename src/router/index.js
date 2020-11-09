@@ -39,8 +39,8 @@ let securityMenu = {
   redirect: '/security/accounts',
   children: [
     {
-      path: 'accounts',
-      name: 'Accounts',
+      path: 'account',
+      name: 'Account',
       component: () => import(/* webpackChunkName: "msr" */ '../components/Security/securityforms.vue'),
       props: true
     }

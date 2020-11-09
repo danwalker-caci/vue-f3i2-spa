@@ -50,6 +50,10 @@ const actions = {
     let response = await PersonnelService.getPersonnelByEmail(email)
     return response
   },
+  async getPersonnelByCompanyDropdown({ state }, company) {
+    let response = await PersonnelService.getPersonnelByCompany(company)
+    return formatDropdown(response)
+  },
   async getPersonnelByCompany({ state }, company) {
     let response = await PersonnelService.getPersonnelByCompany(company)
     return formatPersonnel(response)
@@ -155,6 +159,22 @@ function formatContacts(j) {
       Phone: j[i]['Phone'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
+    })
+  }
+  return p
+}
+
+function formatDropdown(j) {
+  let n = j.sort((a, b) => (a.Title > b.Title) ? 1 : -1)
+  let p = []
+  p.push({
+    text: 'Select...',
+    value: 'S'
+  })
+  for (let i = 0; i < n.length; i++) {
+    p.push({
+      text: n[i]['FirstName'] + ' ' + n[i]['Title'],
+      value: n[i]['Id']
     })
   }
   return p
