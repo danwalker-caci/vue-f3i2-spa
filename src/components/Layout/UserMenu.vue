@@ -3,24 +3,7 @@
     <b-modal id="Todos" ref="Todos" scrollable size="xl" centered hide-footer header-bg-variant="warning" header-text-variant="white">
       <template v-slot:modal-title>My Todos</template>
       <b-form>
-        <!-- <b-table id="TodosTable" :ref="TodosTable" v-model="shownData" responsive :striped="striped" :bordered="bordered" :small="small" :hover="hover" :items="mytodos" :fields="fields" :primary-key="ID" style="table-layout: fixed;">
-          <template v-slot:cell(actions)="data">
-            <b-button size="sm" class="actionbutton" @click="completeme(data.index)" title="Mark Complete">
-              <font-awesome-icon far icon="check-circle" class="icon" :style="{ color: 'green' }"></font-awesome-icon>
-            </b-button>
-            <b-button size="sm" class="actionbutton" @click="data.toggleDetails">
-              <font-awesome-icon v-if="data.detailsShowing" far class="icon" icon="minus-square" :style="{ color: 'black' }"></font-awesome-icon>
-              <font-awesome-icon v-else-if="shownData[data.index].Body !== ''" far class="icon" icon="plus-square" :style="{ color: 'green' }"></font-awesome-icon>
-              <font-awesome-icon v-else far class="icon" icon="plus-square" :style="{ color: 'black' }"></font-awesome-icon>
-            </b-button>
-          </template>
-          <template v-slot:row-details="data">
-            <b-input-group size="sm" prepend="Description">
-              <b-form-input v-model="shownData[data.index].Body"></b-form-input>
-            </b-input-group>
-          </template>
-        </b-table> -->
-        <ejs-grid id="WorkplanGrid" ref="WorkplanGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
+        <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
           <e-columns>
             <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
             <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
@@ -29,6 +12,7 @@
             <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
             <e-column field="TaskType" headerText="Manager" textAlign="Left" width="200"></e-column>
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+            <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
           </e-columns>
@@ -99,7 +83,7 @@ export default {
       userdisplayname: '',
       userurl: '#',
       isClosed: true,
-      pageSettings: { pageSize: 30 },
+      pageSettings: { pageSize: 15 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -164,7 +148,7 @@ export default {
               <b-container fluid>
                 <b-row>
                   <b-col cols="12">
-                    <b-form-textarea size="lg" rows="3" plaintext :value="data.body"></b-form-textarea>
+                    <div class="detailDiv" v-html="data.Body"></div>
                   </b-col>
                 </b-row>
               </b-container>`,
@@ -237,7 +221,7 @@ export default {
   },
   cron: [
     {
-      time: 10000,
+      time: 60000,
       method: 'refreshMyTodos',
       autoStart: true
     }
@@ -268,5 +252,16 @@ export default {
   float: right;
   right: -10px;
   margin-top: 4px;
+}
+
+.e-icon-grightarrow,
+.e-icon-gdownarrow {
+  color: black !important;
+}
+
+.detailDiv {
+  min-height: 50px;
+  font-size: 14px;
+  color: black !important;
 }
 </style>
