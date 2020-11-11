@@ -200,7 +200,7 @@ export default {
         this.$refs.EventCalendar.deleteEvent(oldevents)
         this.$refs.EventCalendar.addEvent(this.events)
         // what are we here for? default view? Or are we here to edit/update event requests
-        document.getElementById('PageTitle').innerHTML = ' -  Calendar'
+        // document.getElementById('PageTitle').innerHTML = ' -  Calendar'
       }
     },
     resetEventModel: function() {

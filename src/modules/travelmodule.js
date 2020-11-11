@@ -53,6 +53,18 @@ const actions = {
         console.log('There was an error: ', error.response)
       })
   },
+  async getTripsByCompany({ state }, payload) {
+    TravelService.getTripsByCompany(payload, state)
+      .then(response => {
+        Travel.create({ data: formatTravel(response) })
+        Travel.commit(state => {
+          state.loaded = true
+        })
+      })
+      .catch(error => {
+        console.log('There was an error: ', error.response)
+      })
+  },
   async getAFRLTrips() {
     TravelService.getAFRLTrips()
       .then(response => {

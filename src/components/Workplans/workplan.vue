@@ -424,7 +424,7 @@ export default {
         clearInterval(this.$options.interval)
         this.data = this.workplans
         this.filtereddata = this.workplans
-        document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
+        // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
         this.$bvToast.hide('busy-toast')
         // load any saved filters
         this.loadfilters()
@@ -781,11 +781,11 @@ export default {
       this.mode = to.params.mode
       switch (this.mode) {
         case 'manning':
-          document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
+          // document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
           break
 
         case 'default':
-          document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
+          // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
           break
       }
     }

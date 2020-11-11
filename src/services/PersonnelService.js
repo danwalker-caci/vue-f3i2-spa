@@ -13,6 +13,7 @@ let portalemail = ''
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Title"
 geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
 let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=ContactOrder"
+let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Company eq '"
 curl += '&$filter=(Contact eq 1)'
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items"
 let surl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
@@ -53,6 +54,33 @@ export default {
       }
     }
     return getAllPersonnel(null)
+  },
+  async getPersonnelByCompany(payload, state) {
+    if (console) {
+      console.log(state)
+    }
+    let company = payload.company
+    let allPersonnel = []
+    async function getAllPersonnel(purl, company) {
+      if (purl === '') {
+        purl = zurl + company + "')"
+      }
+      let response = await axios.get(purl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let results = response.data.d.results
+      allPersonnel = allPersonnel.concat(results)
+      // recursively load
+      if (response.data.d.__next) {
+        purl = response.data.d.__next
+        return getAllPersonnel(purl)
+      } else {
+        return allPersonnel
+      }
+    }
+    return getAllPersonnel('', company)
   },
   async getPersonnelByEmail(email) {
     let eurl = url

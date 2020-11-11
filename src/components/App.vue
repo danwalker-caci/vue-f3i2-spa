@@ -4,11 +4,47 @@
     <router-view></router-view>
   </div>
 </template>
+
 <script>
+let vm = null
+import User from '@/models/User'
+import Todo from '@/models/Todo'
 export default {
-  name: 'App'
+  name: 'App',
+  computed: {
+    userloaded() {
+      return User.getters('Loaded')
+    },
+    UserId() {
+      return User.getters('CurrentUserId')
+    }
+  },
+  mounted: function() {
+    vm = this
+    this.$nextTick(function() {
+      Todo.dispatch('getDigest')
+      if (!vm.userloaded) {
+        User.dispatch('getUserId').then(function() {
+          User.dispatch('getUserProfile').then(function() {
+            vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
+          })
+        })
+      }
+    })
+  },
+  methods: {
+    updateUserInfo() {
+      clearInterval(this.$options.interval)
+      User.dispatch('getUserGroups').then(function() {
+        Todo.dispatch('getTodosByUser', vm.UserId).then(function() {
+          console.log('APP MOUNT COMPLETED')
+        })
+      })
+    }
+  }
 }
 </script>
+
 <style>
 #app {
   -webkit-font-smoothing: antialiased;

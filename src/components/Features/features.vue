@@ -526,7 +526,7 @@ export default {
         this.loadfilters()
         switch (this.mode) {
           case 'default':
-            document.getElementById('PageTitle').innerHTML = ' -  Reports'
+            // document.getElementById('PageTitle').innerHTML = ' -  Reports'
             break
         }
       }

@@ -1,7 +1,7 @@
 <template>
   <div class="user">
     <b-modal id="Todos" ref="Todos" scrollable size="xl" centered hide-footer header-bg-variant="warning" header-text-variant="white">
-      <template v-slot:modal-title>My Todos</template>
+      <template v-slot:modal-title>My Tasks</template>
       <b-form>
         <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
           <e-columns>
@@ -23,9 +23,11 @@
       <a data-toggle="collapse" :aria-expanded="!isClosed" @click.stop="toggleMenu" href="#">
         <span class="UserName">
           {{ userdisplayname }}
-          <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
-          <span v-if="mytodos.length > 0" class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>
-          <b class="caret"></b>
+          <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks"
+            >My Tasks
+            <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
+            <span class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>
+          </b-button>
         </span>
       </a>
       <div class="clearfix"></div>
@@ -44,9 +46,9 @@
 let vm = null
 import Vue from 'vue'
 import User from '@/models/User'
-import Personnel from '@/models/Personnel'
+/* import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
-import Company from '@/models/Company'
+import Company from '@/models/Company' */
 import Todo from '@/models/Todo'
 import { Page, VirtualScroll, DetailRow } from '@syncfusion/ej2-vue-grids'
 
@@ -60,9 +62,6 @@ export default {
     },
     UserId() {
       return User.getters('CurrentUserId')
-    },
-    usergroups() {
-      return User.getters('CurrentUserGroups')
     },
     mytodosloaded() {
       return Todo.getters('MyTodosLoaded')
@@ -175,25 +174,21 @@ export default {
     vm = this
     this.$nextTick(function() {
       Todo.dispatch('getDigest')
-      Company.dispatch('getCompanies')
-      Workplan.dispatch('getDigest')
-      Workplan.dispatch('getWorkplans')
-      Personnel.dispatch('getDigest')
-      Personnel.dispatch('getPersonnel')
-      if (!vm.userloaded) {
+      this.userdisplayname = this.profiledata.DisplayName
+      /* if (!vm.userloaded) {
         User.dispatch('getUserId').then(function() {
           User.dispatch('getUserProfile').then(function() {
             vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
           })
         })
-      }
+      } */
     })
   },
   methods: {
     toggleMenu() {
       this.isClosed = !this.isClosed
     },
-    updateUserInfo() {
+    /* updateUserInfo() {
       clearInterval(this.$options.interval)
       this.userdisplayname = this.profiledata.DisplayName
       User.dispatch('getUserGroups').then(function() {
@@ -201,7 +196,7 @@ export default {
           console.log('USERMENU MOUNT COMPLETED')
         })
       })
-    },
+    }, */
     OpenTodos: function() {
       this.$bvModal.show('Todos')
     },

@@ -1,15 +1,44 @@
 <template>
-  <b-container fluid class="contentHeight m-0 p-0">
-    <b-row no-gutters class="contentHeight">
-      <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
-        <template v-slot:toast-title>
-          <div class="d-flex flex-grow-1 align-items-baseline">
-            <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
-            <strong class="mr-auto">{{ busyTitle }}</strong>
-          </div>
-        </template>
-        <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
-      </b-toast>
+  <b-container fluid class="contentHeight">
+    <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+      <template v-slot:toast-title>
+        <div class="d-flex flex-grow-1 align-items-baseline">
+          <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
+          <strong class="mr-auto">{{ busyTitle }}</strong>
+        </div>
+      </template>
+      <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
+    </b-toast>
+    <edit-travel :TripId="TripId" :Show="EditTravel" v-on:close="setClosed('edit')" :mode="mode"></edit-travel>
+    <new-travel :Show="NewTravel" :Start="SelectedStart" :End="SelectedEnd" v-on:close="setClosed('new')" :mode="mode"></new-travel>
+    <trip-report :TripId="TripId" :Show="TripReport" v-on:close="setClosed('report')" :mode="mode"></trip-report>
+    <b-row v-if="mode == 'calendar'" ref="CalendarRow" class="contentHeight">
+      <ejs-schedule
+        id="TravelCalendar"
+        ref="TravelCalendar"
+        cssClass="contentHeight"
+        :enablePersistence="false"
+        :eventSettings="eventSettings"
+        :selectedDate="defaultDate"
+        :views="views"
+        :currentView="currentView"
+        :eventRendered="onEventRendered"
+        :eventClick="onEventClick"
+        :moreEventsClick="onMoreEventsClick"
+        :cellClick="onCellClick"
+        :popupOpen="onPopupOpen"
+        :select="onSelect"
+        :actionBegin="onActionBegin"
+        :actionComplete="onActionComplete"
+      >
+        <e-views>
+          <e-view option="Day"></e-view>
+          <e-view option="Week"></e-view>
+          <e-view option="Month"></e-view>
+        </e-views>
+      </ejs-schedule>
+    </b-row>
+    <b-row v-else ref="GridRow" class="contentHeight">
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Travel Filter</template>
         <div>
@@ -66,13 +95,13 @@
         </div>
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="buttonrow">
+        <b-row class="contentHeight">
+          <div class="col-12 py40">
             <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
               Toggle Filters
             </b-button>
-          </b-row>
-          <b-row no-gutters class="gridrow">
+          </div>
+          <div class="col-12 tableHeight">
             <ejs-grid
               id="TravelGrid"
               ref="TravelGrid"
@@ -127,8 +156,8 @@
                 <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
               </e-columns>
             </ejs-grid>
-          </b-row>
-        </b-container>
+          </div>
+        </b-row>
       </b-col>
     </b-row>
   </b-container>
@@ -140,6 +169,10 @@ import { SchedulePlugin, Day, Week, Month } from '@syncfusion/ej2-vue-schedule'
 import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import EditTravel from './EditTravel'
+import NewTravel from './NewTravel'
+import TripReport from './TripReport'
+import Company from '@/models/Company'
 
 Vue.use(SchedulePlugin)
 
@@ -148,10 +181,15 @@ let data = []
 
 export default {
   name: 'Tracker',
+  components: {
+    EditTravel,
+    NewTravel,
+    TripReport
+  },
   props: {
-    Show: {
-      type: Boolean,
-      default: false
+    mode: {
+      type: String,
+      default: 'default'
     }
   },
   errorCaptured(err, vm, info) {
@@ -175,6 +213,9 @@ export default {
     },
     currentuser() {
       return User.getters('CurrentUser')
+    },
+    companies() {
+      return Company.getters('DropDown')
     },
     offset() {
       let o = this.$moment().utcOffset()
@@ -741,17 +782,15 @@ export default {
             methods: {
               edit: function(data) {
                 // TODO: close any modal that may be open. Most likely should never have one open at this point. Then set travelid to selected travel and open edit form
-                /* vm.EditTravel = false
+                vm.EditTravel = false
                 vm.TripId = data.Id
-                vm.EditTravel = true */
-                vm.$router.push({ name: 'Edit Travel', params: { TripId: data.Id } })
+                vm.EditTravel = true
               },
               report: function(data) {
-                /* vm.IndexNumber = data.IndexNumber
+                vm.IndexNumber = data.IndexNumber
                 vm.TripReport = false
                 vm.TripId = data.Id
-                vm.TripReport = true */
-                vm.$router.push({ name: 'Trip Report', params: { TripId: data.Id, IndexNumber: data.IndexNumber } })
+                vm.TripReport = true
               },
               postpone: async function(data) {
                 console.log(`Postpone Data: ${JSON.stringify(data)}`)
@@ -777,25 +816,29 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED: ' + this.Show + '</div>')
     this.company = this.currentuser[0].Company
     if (console) {
       console.log('COMPANY: ' + this.company)
     }
-    this.$bvToast.show('busy-toast')
-    // Check if user is subcontractor first.
-    if (this.isSubcontractor == true) {
-      if (this.company !== null) {
-        let payload = {}
-        payload.company = this.company
-        Travel.dispatch('getTripsByCompany', payload).then(function() {
-          vm.$bvToast.hide('busy-toast')
-          vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-        })
-      } else {
-        // TODO: LET THE USER KNOW?
-      }
-    } else {
+    this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-MOUNTED: ' + this.mode + '</div>')
+    // Get Travel. This will make sure that the latest travel items are available.
+    if (this.mode == 'refreshtracker') {
+      this.$router.push({ path: '/travel/home/tracker' })
+    }
+    if (this.mode == 'refreshcalendar') {
+      this.$router.push({ path: '/travel/home/calendar' })
+    }
+    if (this.mode == 'edit') {
+      Travel.dispatch('getDigest')
+      this.$bvToast.show('busy-toast')
+      Travel.dispatch('getTRIPS').then(function() {
+        vm.$bvToast.hide('busy-toast')
+        vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+      })
+    }
+    if (this.mode == 'new') {
+      Travel.dispatch('getDigest')
+      this.$bvToast.show('busy-toast')
       Travel.dispatch('getTRIPS').then(function() {
         vm.$bvToast.hide('busy-toast')
         vm.$options.interval = setInterval(vm.waitForEvents, 1000)
@@ -811,24 +854,54 @@ export default {
       if (this.travel && this.travel.length > 0) {
         this.$bvToast.hide('busy-toast')
         clearInterval(this.$options.interval)
-        this.filteredtravel = Vue._.orderBy(this.travel, 'Id', 'desc')
-        // load any saved filters
-        this.loadfilters()
-        this.fields[9]['Options'] = this.companies
-        if (this.mode == 'edit') {
-          let id = Number(this.$route.query.id)
-          this.EditTravel = false
-          this.TripId = id
-          this.EditTravel = true
-        }
-        if (this.mode == 'new') {
-          this.NewTravel = true
+        // document.getElementById('PageTitle').innerHTML = ' - ' + this.capitalizeFirstLetter(this.mode)
+        if (this.mode == 'calendar') {
+          if (console) {
+            console.log('SETTING CALENDAR EVENTS: ' + this.travel.length)
+          }
+          let oldevents = this.$refs.TravelCalendar.getEvents()
+          this.$refs.TravelCalendar.deleteEvent(oldevents)
+          this.$refs.TravelCalendar.addEvent(this.travel)
+        } else {
+          this.filteredtravel = Vue._.orderBy(this.travel, 'Id', 'desc')
+          // load any saved filters
+          this.loadfilters()
+          this.fields[9]['Options'] = this.companies
+          if (this.mode == 'edit') {
+            let id = Number(this.$route.query.id)
+            this.EditTravel = false
+            this.TripId = id
+            this.EditTravel = true
+          }
+          if (this.mode == 'new') {
+            this.NewTravel = true
+          }
         }
         this.$store.dispatch('support/setLegendItems', this.legenditems)
       }
     },
     getRef: function(text, idx) {
       return text + '_' + idx
+    },
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+    setClosed: function(dialog) {
+      switch (dialog) {
+        case 'new':
+          this.SelectedStart = null
+          this.SelectedEnd = null
+          this.NewTravel = false
+          break
+
+        case 'edit':
+          this.EditTravel = false
+          break
+
+        case 'report':
+          this.TripReport = false
+          break
+      }
     },
     /* ----------------------------------------------------------------------------------- BEGIN TRACKER EVENTS -------------------------------------------------------------------------------- */
     toolbarClick: function(args) {
@@ -1358,44 +1431,127 @@ export default {
     onMoreEventsClick: function() {
       this.moreevents = true
     }
-  }
-  /* watch: {
-    Show: function() {
-      if (this.Show == true) {
-        this.company = this.currentuser[0].Company
-        if (console) {
-          console.log('COMPANY: ' + this.company)
+  },
+  beforeRouteUpdate(to, from, next) {
+    console.log('TRAVELTRACKER.VUE TO: ' + to + ', FROM: ' + from)
+    next()
+  },
+  watch: {
+    $route(to, from) {
+      if (console) {
+        console.log('ROUTE TO: ' + to + ', FROM: ' + from)
+      }
+      this.mode = to.params.mode
+      switch (this.mode) {
+        case 'view': {
+          // document.getElementById('PageTitle').innerHTML = ' -  View'
+          this.selectedtrip = {} // clear any existing item
+          let id = Number(this.$route.query.id)
+          var trip = this.travel.filter(trip => trip.id == id)
+          trip = trip[0]
+          trip.Travelers = JSON.parse(trip.Travelers)
+          this.selectedtrip = trip
+          this.$bvModal.show('ViewModal')
+          break
         }
-        this.$bvToast.show('busy-toast')
-        if (this.isSubcontractor == true) {
-          if (this.company !== null) {
-            let payload = {}
-            payload.company = this.company
-            Travel.dispatch('getTripsByCompany', payload).then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          } else {
-            // TODO: LET THE USER KNOW?
-          }
-        } else {
+
+        case 'new': {
+          // document.getElementById('PageTitle').innerHTML = ' -  New Travel Request'
+          this.NewTravel = true
+          break
+        }
+
+        case 'edit': {
+          Travel.dispatch('getDigest')
+          this.$bvToast.show('busy-toast')
           Travel.dispatch('getTRIPS').then(function() {
             vm.$bvToast.hide('busy-toast')
             vm.$options.interval = setInterval(vm.waitForEvents, 1000)
           })
+          break
+        }
+
+        case 'refreshtracker': {
+          this.$router.push({ path: '/travel/home/tracker' })
+          break
+        }
+
+        case 'refreshcalendar': {
+          this.$router.push({ path: '/travel/home/calendar' })
+          break
+        }
+
+        case 'tracker': {
+          if (console) {
+            console.log('LOADING: ' + this.isSubcontractor)
+          }
+          Travel.dispatch('getDigest')
+          this.$bvToast.show('busy-toast')
+          // Check if user is subcontractor first.
+          if (this.isSubcontractor == true) {
+            if (this.company !== null) {
+              let payload = {}
+              payload.company = this.company
+              Travel.dispatch('getTripsByCompany', payload).then(function() {
+                vm.$bvToast.hide('busy-toast')
+                vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+              })
+            } else {
+              // TODO: LET THE USER KNOW?
+            }
+          } else {
+            Travel.dispatch('getTRIPS').then(function() {
+              vm.$bvToast.hide('busy-toast')
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          }
+          /* Company.dispatch('getCompanies').then(function() {
+            Travel.dispatch('getTRIPS').then(function() {
+              vm.$bvToast.hide('busy-toast')
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          }) */
+          break
+        }
+
+        case 'calendar': {
+          if (console) {
+            console.log('LOADING: ' + this.isSubcontractor)
+          }
+          Travel.dispatch('getDigest')
+          this.$bvToast.show('busy-toast')
+          if (this.isSubcontractor == true) {
+            if (this.company !== null) {
+              let payload = {}
+              payload.company = this.company
+              Travel.dispatch('getTripsByCompany', payload).then(function() {
+                vm.$bvToast.hide('busy-toast')
+                vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+              })
+            } else {
+              // TODO: LET THE USER KNOW?
+            }
+          } else {
+            Travel.dispatch('getTRIPS').then(function() {
+              vm.$bvToast.hide('busy-toast')
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          }
+          /* Travel.dispatch('getTRIPS').then(function() {
+            vm.$bvToast.hide('busy-toast')
+            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+          }) */
+          break
         }
       }
     }
-  } */
+  }
 }
 </script>
 
 <style lang="scss">
-.buttonrow {
-  height: 50px;
-}
-.gridrow {
-  height: calc(100vh - 150px);
+.modal-body {
+  padding: 0.5rem !important;
 }
 
 .sorted {
