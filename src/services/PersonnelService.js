@@ -66,22 +66,23 @@ export default {
     let results = response.data.d.results
     return results
   },
-  async getPersonnelByCompany(company) {
+  getPersonnelByCompany(company) {
     let allPersonnel = []
     async function getAllPersonnel(eurl) {
       if (!eurl) {
-        eurl = url
-        eurl += "?$filter=(Company eq '" + company + "')"
+        // added the top to overcome some diffuclty parsing a large dataset.
+        eurl = url + "?$filter=(Company eq '" + company + "')&$top=1000"
       }
-      console.log('GETPERSONNELBYCOMPANY FILTER: ' + eurl)
       let response = await axios.get(eurl, {
         headers: {
           accept: 'application/json;odata=verbose'
         }
       })
-      allPersonnel = allPersonnel.concat(response)
+      let results = response.data.d.results
+      allPersonnel = allPersonnel.concat(results)
       if (response.data.d.__next) {
         eurl = response.data.d.__next
+        console.log('GETTING NEXT PERSONNEL: ' + eurl)
         return getAllPersonnel(eurl)
       } else {
         return allPersonnel

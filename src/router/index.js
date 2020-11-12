@@ -36,11 +36,11 @@ let travelMenu = {
 let securityMenu = {
   path: '/security',
   component: ThemeLayout,
-  redirect: '/security/accounts',
+  redirect: '/security/account',
   children: [
     {
-      path: 'account',
-      name: 'Account',
+      path: '/security/:formType',
+      name: 'Form',
       component: () => import(/* webpackChunkName: "msr" */ '../components/Security/securityforms.vue'),
       props: true
     }

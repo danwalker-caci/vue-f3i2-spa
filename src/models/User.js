@@ -9,6 +9,7 @@ export default class User extends Model {
       appversion: '1.0.02',
       loaded: false,
       userid: 0,
+      company: '',
       usergroups: [],
       isPM: false,
       isSecurity: false,

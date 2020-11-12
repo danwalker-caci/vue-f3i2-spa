@@ -52,7 +52,8 @@ const actions = {
   },
   async getPersonnelByCompanyDropdown({ state }, company) {
     let response = await PersonnelService.getPersonnelByCompany(company)
-    return formatDropdown(response)
+    console.log('PERSONNEL DROPDOWN: ' + response)
+    return dropdown
   },
   async getPersonnelByCompany({ state }, company) {
     let response = await PersonnelService.getPersonnelByCompany(company)
@@ -164,7 +165,7 @@ function formatContacts(j) {
   return p
 }
 
-function formatDropdown(j) {
+async function formatDropdown(j) {
   let n = j.sort((a, b) => (a.Title > b.Title) ? 1 : -1)
   let p = []
   p.push({
