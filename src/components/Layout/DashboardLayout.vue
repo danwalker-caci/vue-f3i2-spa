@@ -2,7 +2,7 @@
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
     <NotificationContainer />
     <side-bar>
-      <user-menu></user-menu>
+      <user-menu v-if="userloaded"></user-menu>
       <template slot="links">
         <sidebar-item :link="{ name: 'Travel', library: 'fas', icon: 'plane', path: '/travel/home' }">
           <sidebar-item :link="{ name: 'Travel Calendar', library: 'fas', icon: 'calendar', path: '/travel/home/refreshcalendar' }"></sidebar-item>
@@ -76,6 +76,9 @@ export default {
     },
     isCACI() {
       return !this.isSubcontractor && !this.isAdmin
+    },
+    userloaded() {
+      return User.getters('Loaded')
     }
   },
   components: {

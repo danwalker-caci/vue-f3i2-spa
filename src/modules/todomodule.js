@@ -3,7 +3,6 @@ import TodoService from '@/services/TodoService.js'
 import User from '@/models/User'
 import Todo from '@/models/Todo'
 import moment from 'moment'
-import { isNullOrUndefined } from 'util'
 
 const getters = {
   allTodos () {
@@ -32,10 +31,10 @@ const actions = {
         console.log('There was an error getting digest data: ', error.response)
       })
   },
-  getTodos({ state, commit }) {
+
+  /* getTodos({ state, commit }) {
     TodoService.getTodos()
       .then(response => {
-        // console.log('Todo Data: ' + response)
         Todo.insert({ data: formatAllTodos(response)})
         Todo.commit((state) => {
           state.loaded = true
@@ -44,12 +43,11 @@ const actions = {
       .catch(error => {
         console.log('There was an error getting todo data: ', error.response)
       })
-  },
-  getTodoById({ state }, id) {
-
-  },
+  }, */
+  
   getTodosByUser({ state, commit }, userid) {
     // console.log('getTodosByUser: Getting Todos By User Id: ' + userid)
+    state.mytodosloaded = false
     TodoService.getTodosByUser(userid)
       .then(response => {
         // console.log('Todo Data: ' + response)
@@ -74,53 +72,24 @@ const actions = {
   }
 }
 
-/* function fixEtag(etag) {
-  let t = etag.length
-  if (etag.charAt(0) == '"') etag = etag.substring(1, t--)
-  if (etag.charAt(--t) == '"') etag = etag.substring(0, t)
-  return etag
-} */
-
 function formatTodos(j) {
   let todos = []
   for (let i = 0; i < j.length; i++) {
     let body = ''
-    if (!isNullOrUndefined(j[i]['Body'])) { body = String(j[i]['Body']) }
+    if (j[i]['Body'] !== null || j[i]['Body'] !== undefined) { body = String(j[i]['Body']) }
     todos.push({
-      id: String(j[i]['Id']),
-      user_id: String(j[i]['AssignedToId']['results'][0]),
+      Id: String(j[i]['Id']),
+      AssignedTo: {
+        Title: j[i]["AssignedTo"]["Title"],
+        Id: j[i]["AssignedTo"]["ID"],
+        Email: j[i]["AssignedTo"]["EMail"]
+      },
       Title: j[i]['Title'],
       Body: body.length > 0 ? body : '',
       Status: j[i]['Status'],
-      StartDate: moment(j[i]['StartDate']).format('MM/DD/YYYY'),
-      DueDate: moment(j[i]['DueDate']).format('MM/DD/YYYY'),
-      Priority: j[i]['Priority'],
-      etag: j[i]['__metadata']['etag'],
-      uri: j[i]['__metadata']['uri']
-    })
-  }
-  return todos
-}
-
-function formatAllTodos(j) {
-  let todos = []
-  for (let i = 0; i < j.length; i++) {
-    let body = ''
-    if (!isNullOrUndefined(j[i]['Body'])) { body = String(j[i]['Body']) }
-    todos.push({
-      id: String(j[i]['Id']),
-      Title: j[i]['Title'],
-      Body: body.length > 0 ? body : '',
-      Status: j[i]['Status'],
-      StartDate: moment(j[i]['StartDate']).format('MM/DD/YYYY'),
-      DueDate: moment(j[i]['DueDate']).format('MM/DD/YYYY'),
-      PercentComplete: j[i]['PercentComplete'],
-      Priority: j[i]['Priority'],
-      FirstName: j[i]['AssignedTo']['FirstName'],
-      LastName: j[i]['AssignedTo']['LastName'],
-      EMail: j[i]['AssignedTo']['EMail'],
-      IsMilestone: j[i]['IsMilestone'],
-      Milestone: isNullOrUndefined(j[i]['Milestone']) ? '' : j[i]['Milestone'],
+      StartDate: moment(j[i]["StartDate"]).isValid() ? moment(j[i]["StartDate"]).format("MM/DD/YYYY") : "",
+      DueDate: moment(j[i]["DueDate"]).isValid() ? moment(j[i]["DueDate"]).format("MM/DD/YYYY") : "",
+      TaskType: j[i]["TaskType"],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })

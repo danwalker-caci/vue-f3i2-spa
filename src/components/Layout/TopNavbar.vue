@@ -15,7 +15,6 @@
         </button>
       </div>
       <a class="navbar-brand">{{ this.$route.name }}</a>
-      <span id="PageTitle"></span>
       <button type="button" class="navbar-toggler navbar-toggler-right btn-burger" :class="{ toggled: $sidebar.showSidebar }" aria-expanded="false" @click="toggleSidebar">
         <span class="navbar-toggler-bar burger-lines"></span>
         <span class="navbar-toggler-bar burger-lines"></span>

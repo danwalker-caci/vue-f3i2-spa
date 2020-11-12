@@ -13,6 +13,7 @@ let portalemail = ''
 
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc"
 let gurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Status eq 'AFRLReview')"
+let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Company eq '"
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
@@ -29,6 +30,31 @@ export default {
     })
     portalemail = store.state.support.portalemail
     return response
+  },
+  async getTripsByCompany(payload, state) {
+    console.log('TRAVEL SERVICE PAYLOAD:' + payload + ', ' + state)
+    let company = payload.company
+    let allTrips = []
+    async function getAllTrips(tripurl, company) {
+      if (tripurl === '') {
+        tripurl = curl + company + "')"
+      }
+      let response = await axios.get(tripurl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let results = response.data.d.results
+      allTrips = allTrips.concat(results)
+      // recursively load
+      if (response.data.d.__next) {
+        tripurl = response.data.d.__next
+        return getAllTrips(tripurl)
+      } else {
+        return allTrips
+      }
+    }
+    return getAllTrips('', company)
   },
   async getAllTrips() {
     let allTrips = []

@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { isNullOrUndefined } from 'util'
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -81,7 +80,7 @@ export default {
   completeTodo(id, uri, etag, digest) {
     // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
     let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
-    if (!isNullOrUndefined(uri)) {
+    if (uri !== null || uri !== undefined) {
       taskurl = uri
     }
     let headers = {

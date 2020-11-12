@@ -337,7 +337,7 @@ export default {
         }
         this.filtereddata = this.WorkplanData
         this.fields[8]['Options'] = this.companies
-        document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
+        // document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
         this.$bvToast.hide('busy-toast')
         // load any saved filters
         this.loadfilters()

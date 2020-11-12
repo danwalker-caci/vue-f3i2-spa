@@ -45,6 +45,18 @@ const actions = {
       state.loaded = true
     })
   },
+  async getPersonnelByCompany({ state }, payload) {
+    PersonnelService.getPersonnelByCompany(payload, state)
+      .then(response => {
+        Personnel.create({ data: formatPersonnel(response) })
+        Personnel.commit(state => {
+          state.loaded = true
+        })
+      })
+      .catch(error => {
+        console.log('There was an error: ', error.response)
+      })
+  },
   async getPersonnelByEmail({ state }, email) {
     // console.log('GETTING PERSONNEL BY EMAIL.')
     let response = await PersonnelService.getPersonnelByEmail(email)

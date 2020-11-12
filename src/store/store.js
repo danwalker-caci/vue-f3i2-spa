@@ -5,6 +5,8 @@ import * as support from '@/store/modules/support.js'
 import * as notification from '@/store/modules/notification.js'
 import User from '@/models/User'
 import usermodule from '@/modules/usermodule'
+import Todo from '@/models/Todo'
+import todomodule from '@/modules/todomodule'
 import Event from '@/models/Event'
 import eventmodule from '@/modules/eventmodule'
 import Travel from '@/models/Travel'
@@ -27,6 +29,7 @@ const database = new VuexORM.Database()
 
 // Register Models.
 database.register(User, usermodule)
+database.register(Todo, todomodule)
 database.register(Event, eventmodule)
 database.register(Travel, travelmodule)
 database.register(Personnel, personnelmodule)

@@ -31,6 +31,10 @@ export default {
         this.$router.push({ name: 'Travel',  path: '/travel/home/tracker' })
         break
 
+      case 'travelcalendar':
+        this.$router.push({ name: 'Travel',  path: '/travel/home/calendar' })
+        break
+
       case 'msrhome':
         this.$router.push({ name: 'Home',  path: '/msr/home' })
         break

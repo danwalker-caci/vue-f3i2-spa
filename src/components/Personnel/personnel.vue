@@ -723,11 +723,11 @@ export default {
         this.loadfilters()
         switch (this.mode) {
           case 'onboarding':
-            document.getElementById('PageTitle').innerHTML = ' -  Onboarding'
+            // document.getElementById('PageTitle').innerHTML = ' -  Onboarding'
             this.$bvModal.show('NewModal')
             break
           case 'default':
-            document.getElementById('PageTitle').innerHTML = ' -  Reports'
+            // document.getElementById('PageTitle').innerHTML = ' -  Reports'
             break
         }
       } else {
@@ -1185,7 +1185,7 @@ export default {
       this.mode = to.params.mode
       switch (this.mode) {
         case 'onboarding':
-          document.getElementById('PageTitle').innerHTML = ' -  Onboarding'
+          // document.getElementById('PageTitle').innerHTML = ' -  Onboarding'
           this.$bvModal.show('NewModal')
           break
         case 'default':

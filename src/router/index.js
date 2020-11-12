@@ -19,6 +19,20 @@ let adminMenu = {
   ]
 }
 
+//let travelMenu = {
+//path: '/travel',
+//component: ThemeLayout,
+//redirect: '/travel/home',
+//children: [
+// {
+// path: 'home/:mode',
+// name: 'Travel',
+// component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
+// props: true
+// }
+// ]
+// }
+
 let travelMenu = {
   path: '/travel',
   component: ThemeLayout,
@@ -27,7 +41,37 @@ let travelMenu = {
     {
       path: 'home/:mode',
       name: 'Travel',
-      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/Home.vue'),
+      props: true
+    },
+    {
+      path: 'tracker',
+      name: 'Travel Tracker',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelTracker.vue'),
+      props: true
+    },
+    {
+      path: 'calendar',
+      name: 'Travel Calendar',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelCalendar.vue'),
+      props: true
+    },
+    {
+      path: 'new',
+      name: 'New Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/NewTravel.vue'),
+      props: true
+    },
+    {
+      path: 'edit',
+      name: 'Edit Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/EditTravel.vue'),
+      props: true
+    },
+    {
+      path: 'report',
+      name: 'Trip Report',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TripReport.vue'),
       props: true
     }
   ]
