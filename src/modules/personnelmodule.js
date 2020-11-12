@@ -50,14 +50,13 @@ const actions = {
     let response = await PersonnelService.getPersonnelByEmail(email)
     return response
   },
-  async getPersonnelByCompanyDropdown({ state }, company) {
-    let response = await PersonnelService.getPersonnelByCompany(company)
-    console.log('PERSONNEL DROPDOWN: ' + response)
-    return dropdown
-  },
   async getPersonnelByCompany({ state }, company) {
     let response = await PersonnelService.getPersonnelByCompany(company)
-    return formatPersonnel(response)
+    return response
+  },
+  async getPersonnelByCompanyDropdown({ state }, email) {
+    let response = await PersonnelService.getPersonnelByCompany(company)
+    return formatDropdown(response)
   },
   async getPersonnelAllValuesById({ state }, id) {
     // console.log('GETTING PERSONNEL BY EMAIL.')
@@ -165,7 +164,7 @@ function formatContacts(j) {
   return p
 }
 
-async function formatDropdown(j) {
+function formatDropdown(j) {
   let n = j.sort((a, b) => (a.Title > b.Title) ? 1 : -1)
   let p = []
   p.push({
