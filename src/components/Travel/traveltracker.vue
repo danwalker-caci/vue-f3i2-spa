@@ -136,24 +136,15 @@
 
 <script>
 import Vue from 'vue'
-import { SchedulePlugin, Day, Week, Month } from '@syncfusion/ej2-vue-schedule'
 import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
-
-Vue.use(SchedulePlugin)
 
 let vm = null
 let data = []
 
 export default {
   name: 'Tracker',
-  props: {
-    Show: {
-      type: Boolean,
-      default: false
-    }
-  },
   errorCaptured(err, vm, info) {
     const notification = {
       type: 'danger',
@@ -207,7 +198,6 @@ export default {
     }
   },
   provide: {
-    schedule: [Day, Week, Month],
     grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
   },
   data: function() {
@@ -740,18 +730,10 @@ export default {
             },
             methods: {
               edit: function(data) {
-                // TODO: close any modal that may be open. Most likely should never have one open at this point. Then set travelid to selected travel and open edit form
-                /* vm.EditTravel = false
-                vm.TripId = data.Id
-                vm.EditTravel = true */
-                vm.$router.push({ name: 'Edit Travel', params: { TripId: data.Id } })
+                vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               report: function(data) {
-                /* vm.IndexNumber = data.IndexNumber
-                vm.TripReport = false
-                vm.TripId = data.Id
-                vm.TripReport = true */
-                vm.$router.push({ name: 'Trip Report', params: { TripId: data.Id, IndexNumber: data.IndexNumber } })
+                vm.$router.push({ name: 'Trip Report', params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               postpone: async function(data) {
                 console.log(`Postpone Data: ${JSON.stringify(data)}`)
@@ -815,22 +797,12 @@ export default {
         // load any saved filters
         this.loadfilters()
         this.fields[9]['Options'] = this.companies
-        if (this.mode == 'edit') {
-          let id = Number(this.$route.query.id)
-          this.EditTravel = false
-          this.TripId = id
-          this.EditTravel = true
-        }
-        if (this.mode == 'new') {
-          this.NewTravel = true
-        }
         this.$store.dispatch('support/setLegendItems', this.legenditems)
       }
     },
     getRef: function(text, idx) {
       return text + '_' + idx
     },
-    /* ----------------------------------------------------------------------------------- BEGIN TRACKER EVENTS -------------------------------------------------------------------------------- */
     toolbarClick: function(args) {
       switch (args.item.id) {
         case 'TravelGrid_excelexport':
@@ -849,10 +821,7 @@ export default {
       switch (args.requestType) {
         case 'add':
           args.cancel = true
-          vm.SelectedStart = null
-          vm.SelectedEnd = null
-          vm.NewTravel = true
-          vm.formValid = false
+          this.$router.push({ name: 'New Travel', params: { back: 'Travel Tracker' } })
           break
       }
     },
@@ -1205,188 +1174,8 @@ export default {
           })
         }
       }
-    },
-    /* ----------------------------------------------------------------------------------- END TRACKER EVENTS ----------------------------------------------------------------------------------- */
-    /* ----------------------------------------------------------------------------------- BEGIN CALENDAR EVENTS -------------------------------------------------------------------------------- */
-    onPopupOpen: function(args) {
-      if (console) {
-        console.log('Popup Open')
-      }
-      try {
-        let element = String(args.data.element.className)
-        if (element.indexOf('more') <= 0) {
-          args.cancel = true
-        }
-      } catch (e) {
-        if (console) {
-          console.log(e)
-        }
-        args.cancel = true
-      }
-    },
-    onCellClick: function(args) {
-      /* if (console) {
-        console.log('Cell Clicked: ' + args.requestType)
-      } */
-      args.cancel = true
-      if (this.moreevents) {
-        // do nothing here
-        this.moreevents = false
-      } else {
-        if (this.NewTravel == false) {
-          let s = args.startTime
-          let e = args.endTime
-          s = this.$moment(s).format() // 'YYYY-MM-DD[T]HH:MM:[00Z]'
-          s = this.$moment(s)
-            .utc()
-            .format()
-          s = this.$moment(s)
-            .add(this.offset, 'm')
-            .format()
-          s = this.$moment(s).format('YYYY-MM-DD')
-          this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: s: ' + s + '</div>')
-          e = this.$moment(e).format()
-          e = this.$moment(e)
-            .utc()
-            .format()
-          e = this.$moment(e)
-            .subtract(this.offset, 'm')
-            .format()
-          e = this.$moment(e).format('YYYY-MM-DD')
-          this.NewTravel = true
-          this.SelectedStart = s
-          this.SelectedEnd = e
-          let html = ''
-          html += '<div class="bg-info">traveltracker-onCellClick: SelectedStart: ' + s + '</div><br/>'
-          html += '<div class="bg-info">traveltracker-onCellClick: SelectedEnd: ' + e + '</div><br/>'
-          this.$store.dispatch('support/addActivity', html)
-        }
-      }
-    },
-    onSelect: function(args) {
-      args.cancel = true
-      if (console) {
-        console.log('ONSELECT: ' + args.requestType)
-      }
-      if (args.requestType === 'cellSelect') {
-        let s = args.data.StartTime
-        let e = args.data.EndTime
-        s = this.$moment(s).format() // 'YYYY-MM-DD[T]HH:MM:[00Z]'
-        s = this.$moment(s)
-          .utc()
-          .format()
-        s = this.$moment(s)
-          .add(this.offset, 'm')
-          .format()
-        s = this.$moment(s).format('YYYY-MM-DD')
-        this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: s: ' + s + '</div>')
-        e = this.$moment(e).format()
-        e = this.$moment(e)
-          .utc()
-          .format()
-        e = this.$moment(e)
-          .subtract(this.offset, 'm')
-          .format()
-        e = this.$moment(e).format('YYYY-MM-DD')
-        this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: e: ' + e + '</div>')
-        this.NewTravel = true
-        this.SelectedStart = s
-        this.SelectedEnd = e
-        /* let html = ''
-        html += '<div class="bg-info">traveltracker-onSelect: SelectedStart: ' + s + '</div><br/>'
-        html += '<div class="bg-info">traveltracker-onSelect: SelectedEnd: ' + e + '</div><br/>'
-        this.$store.dispatch('support/addActivity', html) */
-      }
-      if (args.requestType === 'eventSelect') {
-        this.EditTravel = false
-        this.TripId = args.event.id
-        if (this.moreevents) {
-          this.moreevents = false
-        } else {
-          if (this.isWPManager || this.isDeveloper) {
-            this.EditTravel = true
-          }
-        }
-      }
-    },
-    onEventRendered: function(args) {
-      let c = args.data.Status
-      switch (c) {
-        case 'Approved': {
-          args.element.classList.add('bg-orange', 'text-dark')
-          break
-        }
-
-        case 'WPMReview': {
-          args.element.classList.add('bg-blue')
-          break
-        }
-
-        case 'AFRLReview': {
-          args.element.classList.add('bg-cyan')
-          break
-        }
-
-        case 'ReportDue': {
-          args.element.classList.add('bg-yellow', 'text-dark')
-          break
-        }
-
-        case 'ReportLate': {
-          args.element.classList.add('bg-red')
-          break
-        }
-
-        case 'Completed': {
-          args.element.classList.add('bg-green')
-          break
-        }
-      }
-    },
-    onEventClick(args) {
-      args.cancel = true
-      this.EditTravel = false
-      this.TripId = args.event.id
-      if (this.moreevents) {
-        this.moreevents = false
-      } else {
-        if (this.isWPManager || this.isDeveloper) {
-          this.EditTravel = true
-        }
-      }
-    },
-    onMoreEventsClick: function() {
-      this.moreevents = true
     }
   }
-  /* watch: {
-    Show: function() {
-      if (this.Show == true) {
-        this.company = this.currentuser[0].Company
-        if (console) {
-          console.log('COMPANY: ' + this.company)
-        }
-        this.$bvToast.show('busy-toast')
-        if (this.isSubcontractor == true) {
-          if (this.company !== null) {
-            let payload = {}
-            payload.company = this.company
-            Travel.dispatch('getTripsByCompany', payload).then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          } else {
-            // TODO: LET THE USER KNOW?
-          }
-        } else {
-          Travel.dispatch('getTRIPS').then(function() {
-            vm.$bvToast.hide('busy-toast')
-            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-          })
-        }
-      }
-    }
-  } */
 }
 </script>
 

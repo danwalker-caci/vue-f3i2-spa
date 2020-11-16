@@ -13,7 +13,7 @@ let portalemail = ''
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Title"
 geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
 let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=ContactOrder"
-let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Company eq '"
+let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$filter=(Company eq '"
 curl += '&$filter=(Contact eq 1)'
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items"
 let surl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'

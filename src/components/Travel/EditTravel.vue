@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="formdiv">
     <b-toast id="form-toast" variant="success" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
@@ -9,18 +9,15 @@
       </template>
       <b-spinner style="width: 5rem; height: 5rem;" variant="success" label="Waiting Spinner"></b-spinner>
     </b-toast>
-    <!-- <b-modal id="edit-travel-wizard" size="xl" centered hide-footer @close="onModalHide" v-model="Show" @shown="onModalShown">
-      <template v-slot:modal-title> Edit Travel For: {{ travelmodel.Subject }} </template> -->
-    <b-container class="p-0 my-auto">
-      <b-row class="bg-warning text-black formheader">
-        <b-col cols="4" class="p-0 text-left"></b-col>
+    <b-container class="p-0">
+      <b-row no-gutters class="bg-warning text-black formheader">
+        <b-col cols="4" class="p-0 text-center">
+          <b-alert v-if="tabInvalid" variant="danger" show class="p-0">{{ InvalidMessage }}</b-alert>
+        </b-col>
         <b-col cols="4" class="p-0 text-center"> Edit Travel For: {{ travelmodel.Subject }}</b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <b-row class="m-0 pl-1" v-if="tabInvalid">
-        <b-alert variant="danger" show>{{ InvalidMessage }}</b-alert>
-      </b-row>
-      <b-row class="m-0 pl-1">
+      <b-row no-gutters class="bg-white formbody">
         <div class="col-12 p-0">
           <b-card no-body>
             <b-tabs ref="dashboardtabs" class="tabArea" card v-model="tabIndex" @activate-tab="onTabSelected">
@@ -61,7 +58,10 @@
                     <div class="col-6">WorkPlan</div>
                   </div>
                   <div class="row">
-                    <div class="col-6">
+                    <div v-if="isSubcontractor" class="col-6">
+                      <b-form-input class="form-control-sm form-control-travel" disabled v-model="travelmodel.Company" :state="ValidateMe('Company')" ref="Company"></b-form-input>
+                    </div>
+                    <div v-else class="col-6">
                       <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.Company" :options="companies" :state="ValidateMe('Company')" ref="Company" @change="onCompanySelected"></b-form-select>
                       <b-form-invalid-feedback>
                         Please Select A Company
@@ -459,19 +459,19 @@
           </b-card>
         </div>
       </b-row>
-      <b-row class="m-0 pl-1 mt-1">
+      <b-row no-gutters class="bg-warning formfooter">
         <div class="col-4 p-0 text-left">
           <b-button-group class="mt-2">
-            <b-button v-if="isWPManager && !isAFRL && !iSubcontractor" variant="primary" @click="emailTravelPOC" class="mr-2 p-1">Email Travel POC</b-button>
-            <b-button v-if="isWPManager && travelmodel.OCONUS == 'Yes'" variant="primary" @click="emailTravelDocs" class="p-1">Email Travel Documents</b-button>
+            <b-button v-if="isWPManager && !isAFRL && !iSubcontractor" variant="info" @click="emailTravelPOC" class="mr-2 p-1">Email Travel POC</b-button>
+            <b-button v-if="isWPManager && travelmodel.OCONUS == 'Yes'" variant="info" @click="emailTravelDocs" class="p-1">Email Travel Documents</b-button>
             <a ref="TPOCLink" :href="'mailto:' + travelmodel.CreatedByEmail" v-show="false">{{ travelmodel.CreatedBy }}</a>
             <a ref="DocsLink" v-bind:href="generateDocsLink()" v-show="false">Travel Documents</a>
           </b-button-group>
         </div>
         <div class="col-4 p-0 text-center">
           <b-button-group class="mt-2">
-            <b-button variant="warning" v-if="tabIndex > 0" ref="btnPrev" @click="tabIndex--" class="mr-2 text-white">Previous</b-button>
-            <b-button variant="warning" v-if="tabIndex < 5" ref="btnNext" @click="tabIndex++" class="text-white">Next</b-button>
+            <b-button variant="primary" v-if="tabIndex > 0" ref="btnPrev" @click="tabIndex--" class="mr-2 text-white">Previous</b-button>
+            <b-button variant="primary" v-if="tabIndex < 5" ref="btnNext" @click="tabIndex++" class="text-white">Next</b-button>
           </b-button-group>
         </div>
         <div class="col-4 p-0 text-right">
@@ -483,7 +483,6 @@
         </div>
       </b-row>
     </b-container>
-    <!-- </b-modal> -->
     <b-modal id="EditTravelUser" ref="EditTravelUser" size="xl" centered hide-footer :header-bg-variant="headerBgVariant">
       <template v-slot:modal-title>Add Traveler [Double Click To Add The User]</template>
       <b-container fluid class="p-0">
@@ -554,10 +553,6 @@ export default {
     },
     TripId: {
       type: Number
-    },
-    Show: {
-      type: Boolean,
-      default: false
     }
   },
   provide: {
@@ -615,6 +610,8 @@ export default {
   },
   mounted: function() {
     console.log('EditTravel Mounted')
+    Travel.dispatch('getDigest')
+    this.company = this.currentuser[0].Company
     vm = this
     let payload = {}
     payload.id = vm.TripId
@@ -622,12 +619,10 @@ export default {
       vm.$options.interval = setInterval(vm.waitForTrip, 1000)
     })
   },
-  updated: function() {
-    // console.log('EditTravel Updated')
-  },
   data: function() {
     return {
       busyTitle: 'Getting Trip Data. Please Wait.',
+      company: null,
       searchinput: '',
       newindex: null,
       editing: false,
@@ -798,6 +793,12 @@ export default {
   },
   methods: {
     /* ---------------------------------------------------------------------------------------------------------------- Base Events -------------------------------------------------------------------------------- */
+    setPersonnel() {
+      if (this.personnel.length > 0) {
+        clearInterval(this.$options.interval)
+        this.pdata = this.personnel
+      }
+    },
     waitForTrip: function() {
       // Waits for the travel item to load
       if (this.triploaded) {
@@ -842,9 +843,21 @@ export default {
         // personnel are filtered by company
         let payload = {}
         payload.company = this.company
-        Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-          // This should be reflected when selecting users for travel
-        })
+        if (this.isSubcontractor == true) {
+          Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+            Workplan.dispatch('getWorkplans').then(function() {
+              vm.$options.interval = setInterval(vm.setPersonnel, 1000)
+            })
+          })
+        } else {
+          Personnel.dispatch('getPersonnel').then(function() {
+            Workplan.dispatch('getWorkplans').then(function() {
+              Company.dispatch('getCompanies').then(function() {
+                vm.$options.interval = setInterval(vm.setPersonnel, 1000)
+              })
+            })
+          })
+        }
       }
     },
     getRef(text, idx) {
@@ -858,70 +871,6 @@ export default {
     },
     refreshRte() {
       this.$refs.rteOCONUSApprovedEmail.refreshUI()
-    },
-    resetTravelModel: function() {
-      // reset travelmodel
-      this.travelmodel = {
-        id: 0,
-        Status: '',
-        WorkPlan: '',
-        WorkPlanText: '',
-        WorkPlanNumber: '',
-        OriginalWorkPlanNumber: '',
-        OCONUS: '',
-        OCONUSLocation: 'Select...',
-        OCONUSRequest: 'Select...',
-        OCONUSApprovedBy: '',
-        OCONUSApprovedOn: '',
-        OCONUSApprovedEmail: '',
-        PreApproved: 'Select...',
-        RequestApproval: 'Select...',
-        Approval: 'Select...',
-        WorkPlanData: '',
-        Company: '',
-        Subject: '',
-        StartTime: '',
-        EndTime: '',
-        TravelFrom: '',
-        TravelTo: '',
-        Travelers: [],
-        Sponsor: '',
-        POCName: '',
-        POCEmail: '',
-        POCPhone: '',
-        Comments: '',
-        Clearance: 'None',
-        InternalData: {
-          Status: 'WPMReview',
-          PreApproved: 'No',
-          OCONUSTravel: 'No',
-          ApprovalRequested: 'No',
-          Approval: '',
-          ApprovedBy: '',
-          ApprovedOn: '',
-          DeniedBy: '',
-          DeniedOn: '',
-          DenialComments: '',
-          ATPRequested: 'No',
-          ATP: '',
-          ATPGrantedBy: '',
-          ATPGrantedOn: '',
-          ATPDeniedBy: '',
-          ATPDeniedOn: '',
-          ATPDenialComments: '',
-          ManagerEmail: '',
-          date: this.$moment().format('MM/DD/YYYY')
-        },
-        VisitRequest: '',
-        SecurityAction: '',
-        SecurityActionCompleted: '',
-        EstimatedCost: '',
-        IndexNumber: '',
-        CreatedBy: '',
-        CreatedByEmail: '',
-        etag: '',
-        uri: ''
-      }
     },
     /* ---------------------------------------------------------------------------------------------------------------- End Base Events ---------------------------------------------------------------------------- */
     /* ---------------------------------------------------------------------------------------------------------------- Validation Events -------------------------------------------------------------------------- */
@@ -958,7 +907,11 @@ export default {
           break
 
         case 'Company':
-          ret = this.travelmodel.Company != '' ? true : false
+          if (this.isSubcontractor) {
+            ret = this.travelmodel.Company == this.company ? true : false
+          } else {
+            ret = this.travelmodel.Company != '' ? true : false
+          }
           break
 
         case 'WorkPlan':
@@ -1073,8 +1026,11 @@ export default {
     /* ---------------------------------------------------------------------------------------------------------------- End Validation Events ------------------------------------------------------------------------ */
     /* ---------------------------------------------------------------------------------------------------------------- Form Events ---------------------------------------------------------------------------------- */
     onModalHide: function() {
-      this.resetTravelModel()
-      this.$emit('close')
+      if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
+        this.$router.push({ name: this.$router.currentRoute.params.back })
+      } else {
+        this.$router.push({ name: 'Travel Tracker' }) // default
+      }
     },
     onTabSelected: function(newidx, oldidx, event) {
       // Now we can validate the tabs based on what tab is clicked
@@ -1269,7 +1225,6 @@ export default {
       let event = []
       let start = this.$moment(this.travelmodel.StartTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
       let end = this.$moment(this.travelmodel.EndTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
-      // let oconusapprovedon = this.$moment(this.travelmodel.OCONUSApprovedOn).isValid() ? this.$moment(this.travelmodel.OCONUSApprovedOn).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let securityactioncompleted = this.$moment(this.travelmodel.SecurityActionCompleted).isValid() ? this.$moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
@@ -1376,40 +1331,10 @@ export default {
       let response = await Travel.dispatch('editTrip', event)
       this.$store.dispatch('support/addActivity', '<div class="bg-success">EditTravel - Edit Trip completed</div>')
       this.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-      this.resetTravelModel()
-      this.$emit('close')
-      let path = '/travel/home/refresh' + this.mode
-      this.$router.push({ path: path })
-    }
-  },
-  watch: {
-    Show: function() {
-      if (this.Show == true) {
-        this.$bvToast.show('form-toast')
-        // Load supporting data and the trip
-        if (this.personnel && this.personnel.length > 0) {
-          // If personnel exist then companies and workplans should exist. companies could already exist if opened from travel tracker.
-          vm.pdata = vm.personnel
-          let payload = {}
-          payload.id = vm.TripId
-          Travel.dispatch('getTripById', payload).then(function() {
-            vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-          })
-        } else {
-          Personnel.dispatch('getPersonnel').then(function() {
-            Workplan.dispatch('getWorkplans').then(function() {
-              Company.dispatch('getCompanies').then(function() {
-                let payload = {}
-                payload.id = vm.TripId
-                Travel.dispatch('getTripById', payload).then(function() {
-                  vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-                })
-              })
-            })
-          })
-        }
+      if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
+        this.$router.push({ name: this.$router.currentRoute.params.back })
       } else {
-        // TODO: Do we need to clean up here? Or do some other action
+        this.$router.push({ name: 'Travel Tracker' }) // default
       }
     }
   }
@@ -1426,6 +1351,10 @@ export default {
   width: 100%;
 }
 
+.formdiv {
+  height: 450px;
+}
+
 .form-control-travel {
   padding: 2px !important;
   font-size: 0.75rem !important;
@@ -1433,7 +1362,6 @@ export default {
 }
 
 .form-control-travel-textarea {
-  height: 400px !important;
   width: 100%;
 }
 
@@ -1442,5 +1370,21 @@ export default {
 .was-validated .form-control-travel-date:invalid,
 .was-validated .form-control-travel-date:valid {
   background-position: right calc(1.5rem) center !important;
+}
+
+.formheader,
+.formmessage,
+.formfooter {
+  height: 50px !important;
+  color: white;
+  vertical-align: middle;
+}
+
+.formheader {
+  line-height: 50px !important;
+}
+
+.formbody {
+  min-height: 360px;
 }
 </style>
