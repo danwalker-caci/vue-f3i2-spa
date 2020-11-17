@@ -329,6 +329,7 @@ export default {
   data: function() {
     return {
       waterMark: 'Select a date',
+      company: null,
       showDenial: false,
       showOldData: false,
       approvalOnly: false,
@@ -679,6 +680,7 @@ export default {
   },
   mounted: function() {
     vm = this
+    this.company = this.user[0].Company
     const notification = {
       type: 'info',
       title: 'Getting Data',
@@ -688,9 +690,17 @@ export default {
     this.$store.dispatch('notification/add', notification, { root: true })
     Personnel.dispatch('getDigest')
     Workplan.dispatch('getWorkplans').then(function() {
-      Personnel.dispatch('getPersonnel').then(function() {
-        vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-      })
+      if (vm.isSubcontractor) {
+        let payload = {}
+        payload.company = vm.company
+        Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+          vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+        })
+      } else {
+        Personnel.dispatch('getPersonnel').then(function() {
+          vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+        })
+      }
     })
     if (this.mode === 'edit') {
       // Don't show all of the records until after the form is submitted

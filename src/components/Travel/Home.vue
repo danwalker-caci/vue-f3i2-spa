@@ -30,39 +30,11 @@ export default {
       this.$router.push({ name: 'Travel Calendar' })
     }
     if (this.mode == 'new') {
-      this.$router.push({ path: '/travel/new' })
+      this.$router.push({ name: 'New Travel', params: { back: 'tracker' } })
     }
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log('TRAVELTRACKER.VUE TO: ' + to + ', FROM: ' + from)
-    next()
-  },
-  watch: {
-    $route(to, from) {
-      if (console) {
-        console.log('ROUTE TO: ' + to + ', FROM: ' + from)
-      }
-      this.mode = to.params.mode
-      switch (this.mode) {
-        case 'new': {
-          this.$router.push({ path: '/travel/new' })
-          break
-        }
-
-        case 'refreshtracker': {
-          this.$router.push({ name: 'Travel Tracker' })
-          break
-        }
-
-        case 'refreshcalendar': {
-          this.$router.push({ name: 'Travel Calendar' })
-          break
-        }
-      }
-    }
   }
 }
 </script>

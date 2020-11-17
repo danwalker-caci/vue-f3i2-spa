@@ -1,26 +1,34 @@
 <template>
-  <b-modal v-model="Show" ref="TripReport" centered hide-footer no-fade modal-class="animated bounceInLeft" @close="onModalHide">
-    <template v-slot:modal-title>Upload Trip Report</template>
-    <table class="mt-1">
-      <tbody>
-        <tr class="text-center bg-warning text-white">
-          <th>Upload Trip Report [This replaces any existing trip report]</th>
-        </tr>
-        <tr>
-          <td><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="col p-0 text-right">
-              <b-button-group class="mt-2">
-                <b-button variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
-              </b-button-group>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </b-modal>
+  <div class="formdiv">
+    <b-container class="p-0">
+      <b-row no-gutters class="bg-warning text-black formheader">
+        <b-col cols="4" class="p-0 text-center"></b-col>
+        <b-col cols="4" class="p-0 text-center">Upload Trip Report</b-col>
+        <b-col cols="4" class="p-0 text-right"></b-col>
+      </b-row>
+      <b-row no-gutters class="bg-white formbody">
+        <table class="mt-1">
+          <tbody>
+            <tr class="text-center bg-warning text-white">
+              <th>Upload Trip Report [This replaces any existing trip report]</th>
+            </tr>
+            <tr>
+              <td><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="col p-0 text-right">
+                  <b-button-group class="mt-2">
+                    <b-button variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
+                  </b-button-group>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </b-row>
+    </b-container>
+  </div>
 </template>
 
 <script>
@@ -45,10 +53,6 @@ export default {
     },
     TripId: {
       type: Number
-    },
-    Show: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -103,7 +107,7 @@ export default {
       }
     },
     onModalHide: function() {
-      this.$emit('close') // emit close event which will be picked up by parent traveltracker.vue
+      this.$router.push({ name: 'Travel Tracker', path: '/travel/home/tracker' })
     },
     async onModalSave() {
       // perform upload and refresh the page
@@ -130,7 +134,7 @@ export default {
         let event = []
         event.push({
           name: vm.fileName,
-          Status: 'WPMReview',
+          Status: 'Trip Report Review',
           TripReport: library + vm.fileSelected,
           etag: vm.travelmodel.etag,
           uri: vm.travelmodel.uri
@@ -138,9 +142,7 @@ export default {
         Travel.dispatch('editTripReport', event).then(function() {
           // Reload tracker
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
-          vm.$emit('close')
-          let path = '/travel/home/refresh' + vm.mode
-          vm.$router.push({ path: path })
+          vm.$router.push({ name: 'Travel Tracker', path: '/travel/home/tracker' })
         })
       })
     },
@@ -164,22 +166,15 @@ export default {
       })
       return p
     }
-  },
-  watch: {
-    Show: function() {
-      // console.log('SHOW: ' + this.Show)
-      if (this.Show == true) {
-        let payload = {}
-        payload.id = vm.TripId
-        Travel.dispatch('getTripById', payload).then(function() {
-          vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-        })
-      } else {
-        // TODO: Do we need to clean up here? Or do some other action
-      }
-    }
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.formheader {
+  height: 50px !important;
+  color: white;
+  vertical-align: middle;
+  line-height: 50px !important;
+}
+</style>

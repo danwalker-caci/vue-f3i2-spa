@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
     <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
@@ -9,10 +9,7 @@
       </template>
       <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
     </b-toast>
-    <edit-travel :TripId="TripId" :Show="EditTravel" v-on:close="setClosed('edit')" :mode="mode"></edit-travel>
-    <new-travel :Show="NewTravel" :Start="SelectedStart" :End="SelectedEnd" v-on:close="setClosed('new')" :mode="mode"></new-travel>
-    <trip-report :TripId="TripId" :Show="TripReport" v-on:close="setClosed('report')" :mode="mode"></trip-report>
-    <b-row v-if="mode == 'calendar'" ref="CalendarRow" class="contentHeight">
+    <b-row no-gutters ref="CalendarRow" class="contentHeight">
       <ejs-schedule
         id="TravelCalendar"
         ref="TravelCalendar"
@@ -38,140 +35,14 @@
         </e-views>
       </ejs-schedule>
     </b-row>
-    <b-row v-else ref="GridRow" class="contentHeight">
-      <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
-        <template v-slot:modal-title>Travel Filter</template>
-        <div>
-          <ul id="ulFields">
-            <li v-for="field in fields" :key="field">
-              <div v-if="field.FieldName !== 'Version'">
-                <ejs-checkbox :label="field.DisplayName" :checked="field.Visible" @change="showorhide" :value="field.FieldName"></ejs-checkbox>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Filter ? null : 'collapsed'" :aria-expanded="field.Filter ? 'true' : 'false'" :aria-controls="getRef('collapse', field.FieldName)" @click="field.Filter = !field.Filter">
-                  <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
-                </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Down' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
-                  <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
-                </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Up' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
-                  <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
-                </b-button>
-                <b-collapse class="mt-1" :id="getRef('collapse', field.FieldName)" v-model="field.Filter">
-                  <b-container fluid>
-                    <b-row class="mb-1">
-                      <ejs-dropdownlist v-if="field.DataType == 'Text'" v-model="field.Predicate" :dataSource="textpredicate" :fields="ddfields"></ejs-dropdownlist>
-                      <ejs-dropdownlist v-if="field.DataType == 'Number'" v-model="field.Predicate" :dataSource="numberpredicate" :fields="ddfields"></ejs-dropdownlist>
-                      <ejs-dropdownlist v-if="field.DataType == 'Date'" v-model="field.Predicate" :dataSource="datepredicate" :fields="ddfields"></ejs-dropdownlist>
-                    </b-row>
-                    <b-row v-if="field.Control == 'DropdownBox'" class="mb-1">
-                      <div v-if="field.DataType == 'Choice'" class="full">
-                        <ejs-dropdownlist v-model="field.Selected" :dataSource="field.Options" :fields="ddfields"></ejs-dropdownlist>
-                      </div>
-                    </b-row>
-                    <b-row v-if="field.Control != 'DropdownBox'" class="mb-1">
-                      <b-form-input class="filterform" v-if="field.DataType == 'Text'" v-model="field.FilterValue"></b-form-input>
-                      <b-form-input class="filterform" v-if="field.DataType == 'Number'" v-model="field.FilterValue"></b-form-input>
-                      <ejs-datepicker v-if="field.DataType == 'Date'" v-model="field.FilterValue"></ejs-datepicker>
-                    </b-row>
-                    <b-row v-if="field.Predicate == 'B'" class="mb-1">
-                      <ejs-datepicker v-if="field.DataType == 'Date'" v-model="field.FilterValue2"></ejs-datepicker>
-                    </b-row>
-                    <b-row>
-                      <div class="full">
-                        <b-button size="sm" variant="danger" :id="getRef('clear', field.FieldName)" class="float-right ml-1" @click="clearfilter">Clear</b-button>
-                        <b-button size="sm" variant="success" :id="getRef('filter', field.FieldName)" class="float-right" @click="setfilter">Filter</b-button>
-                      </div>
-                    </b-row>
-                  </b-container>
-                </b-collapse>
-              </div>
-            </li>
-            <li class="py30">
-              <div class="full py30">
-                <b-button size="sm" variant="danger" id="clearfilters" class="float-right ml-1" @click="clearfilters">Clear Filters</b-button>
-                <b-button size="sm" variant="success" id="savefilters" class="float-right" @click="savefilters">Save Filters</b-button>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </b-modal>
-      <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </div>
-          <div class="col-12 tableHeight">
-            <ejs-grid
-              id="TravelGrid"
-              ref="TravelGrid"
-              :enablePersistence="false"
-              :dataSource="filteredtravel"
-              :allowPaging="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :rowDataBound="rowDataBound"
-              :queryCellInfo="formatCell"
-              :excelQueryCellInfo="formatExcelCell"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="120"></e-column>
-                <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
-                <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
-                <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
-                <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
-                <e-column field="Created" headerText="Travel Requested" textAlign="Left" width="150" type="date" format="yMd"></e-column>
-                <e-column field="StartTime" headerText="Departure Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="EndTime" headerText="Return Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="TravelersText" headerText="Travelers" textAlign="Left" width="200"></e-column>
-                <e-column field="Company" headerText="Company" textAlign="Left" width="150"></e-column>
-                <e-column field="Sponsor" headerText="Sponsor" textAlign="Left" width="150"></e-column>
-                <e-column field="EstimatedCost" headerText="Est Cost" textAlign="Left" width="100"></e-column>
-                <e-column field="PreApproved" headerText="Pre Approved" textAlign="Left" width="100"></e-column>
-                <e-column field="VisitRequest" headerText="Visit Request" textAlign="Left" width="150"></e-column>
-                <e-column field="Clearance" headerText="Clearance" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUS" headerText="OCONUS" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUSLocation" headerText="OCONUS Location" textAlign="Left" width="150"></e-column>
-                <e-column field="OCONUSApprovedBy" headerText="OCONUS Approved By" textAlign="Left" width="180"></e-column>
-                <e-column field="OCONUSApprovedOn" headerText="OCONUS Approved Date" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TravelFrom" headerText="Travel From" textAlign="Left" width="150"></e-column>
-                <e-column field="TravelTo" headerText="Travel To" textAlign="Left" width="150"></e-column>
-                <e-column field="POCName" headerText="POC Name" textAlign="Left" width="120"></e-column>
-                <e-column field="POCEmail" headerText="POC Email" textAlign="Left" width="180"></e-column>
-                <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
-                <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
-                <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-              </e-columns>
-            </ejs-grid>
-          </div>
-        </b-row>
-      </b-col>
-    </b-row>
   </b-container>
 </template>
 
 <script>
 import Vue from 'vue'
 import { SchedulePlugin, Day, Week, Month } from '@syncfusion/ej2-vue-schedule'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
-import EditTravel from './EditTravel'
-import NewTravel from './NewTravel'
-import TripReport from './TripReport'
 import Company from '@/models/Company'
 
 Vue.use(SchedulePlugin)
@@ -180,18 +51,7 @@ let vm = null
 let data = []
 
 export default {
-  name: 'Tracker',
-  components: {
-    EditTravel,
-    NewTravel,
-    TripReport
-  },
-  props: {
-    mode: {
-      type: String,
-      default: 'default'
-    }
-  },
+  name: 'Calendar',
   errorCaptured(err, vm, info) {
     const notification = {
       type: 'danger',
@@ -248,8 +108,7 @@ export default {
     }
   },
   provide: {
-    schedule: [Day, Week, Month],
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    schedule: [Day, Week, Month]
   },
   data: function() {
     return {
@@ -816,29 +675,25 @@ export default {
   },
   mounted: function() {
     vm = this
+    this.$store.dispatch('support/addActivity', '<div class="bg-info">Travel Calendar Mounted</div>')
     this.company = this.currentuser[0].Company
     if (console) {
       console.log('COMPANY: ' + this.company)
     }
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-MOUNTED: ' + this.mode + '</div>')
-    // Get Travel. This will make sure that the latest travel items are available.
-    if (this.mode == 'refreshtracker') {
-      this.$router.push({ path: '/travel/home/tracker' })
-    }
-    if (this.mode == 'refreshcalendar') {
-      this.$router.push({ path: '/travel/home/calendar' })
-    }
-    if (this.mode == 'edit') {
-      Travel.dispatch('getDigest')
-      this.$bvToast.show('busy-toast')
-      Travel.dispatch('getTRIPS').then(function() {
-        vm.$bvToast.hide('busy-toast')
-        vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-      })
-    }
-    if (this.mode == 'new') {
-      Travel.dispatch('getDigest')
-      this.$bvToast.show('busy-toast')
+    this.$bvToast.show('busy-toast')
+    // Check if user is subcontractor first.
+    if (this.isSubcontractor == true) {
+      if (this.company !== null) {
+        let payload = {}
+        payload.company = this.company
+        Travel.dispatch('getTripsByCompany', payload).then(function() {
+          vm.$bvToast.hide('busy-toast')
+          vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+        })
+      } else {
+        // TODO: LET THE USER KNOW?
+      }
+    } else {
       Travel.dispatch('getTRIPS').then(function() {
         vm.$bvToast.hide('busy-toast')
         vm.$options.interval = setInterval(vm.waitForEvents, 1000)
@@ -850,437 +705,19 @@ export default {
   },
   methods: {
     waitForEvents: function() {
-      this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-WAITING FOR EVENTS:  ' + this.mode + '</div>')
+      this.$store.dispatch('support/addActivity', '<div class="bg-info">Travel Calendar WAITING FOR EVENTS</div>')
       if (this.travel && this.travel.length > 0) {
         this.$bvToast.hide('busy-toast')
         clearInterval(this.$options.interval)
-        // document.getElementById('PageTitle').innerHTML = ' - ' + this.capitalizeFirstLetter(this.mode)
-        if (this.mode == 'calendar') {
-          if (console) {
-            console.log('SETTING CALENDAR EVENTS: ' + this.travel.length)
-          }
-          let oldevents = this.$refs.TravelCalendar.getEvents()
-          this.$refs.TravelCalendar.deleteEvent(oldevents)
-          this.$refs.TravelCalendar.addEvent(this.travel)
-        } else {
-          this.filteredtravel = Vue._.orderBy(this.travel, 'Id', 'desc')
-          // load any saved filters
-          this.loadfilters()
-          this.fields[9]['Options'] = this.companies
-          if (this.mode == 'edit') {
-            let id = Number(this.$route.query.id)
-            this.EditTravel = false
-            this.TripId = id
-            this.EditTravel = true
-          }
-          if (this.mode == 'new') {
-            this.NewTravel = true
-          }
-        }
-        this.$store.dispatch('support/setLegendItems', this.legenditems)
+        let oldevents = this.$refs.TravelCalendar.getEvents()
+        this.$refs.TravelCalendar.deleteEvent(oldevents)
+        this.$refs.TravelCalendar.addEvent(this.travel)
       }
+      this.$store.dispatch('support/setLegendItems', this.legenditems)
     },
     getRef: function(text, idx) {
       return text + '_' + idx
     },
-    capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1)
-    },
-    setClosed: function(dialog) {
-      switch (dialog) {
-        case 'new':
-          this.SelectedStart = null
-          this.SelectedEnd = null
-          this.NewTravel = false
-          break
-
-        case 'edit':
-          this.EditTravel = false
-          break
-
-        case 'report':
-          this.TripReport = false
-          break
-      }
-    },
-    /* ----------------------------------------------------------------------------------- BEGIN TRACKER EVENTS -------------------------------------------------------------------------------- */
-    toolbarClick: function(args) {
-      switch (args.item.id) {
-        case 'TravelGrid_excelexport':
-          this.$refs['TravelGrid'].excelExport()
-          break
-
-        case 'TravelGrid_print':
-          this.$refs['TravelGrid'].print()
-          break
-      }
-    },
-    ToggleFilters() {
-      this.$refs['FilterModal'].toggle('#ShowFilters')
-    },
-    actionBegin(args) {
-      switch (args.requestType) {
-        case 'add':
-          args.cancel = true
-          vm.SelectedStart = null
-          vm.SelectedEnd = null
-          vm.NewTravel = true
-          vm.formValid = false
-          break
-      }
-    },
-    actionComplete(args) {
-      // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
-      if (args.requestType == 'columnstate') {
-        this.$refs['TravelGrid'].autoFitColumns()
-      }
-      if (args.requestType == 'refresh') {
-        let h1 = 0
-        let h2 = this.$refs.TravelGrid.$el.children[7].children[0].clientHeight // cildren[7] matches .e-gridconent
-        h1 = Math.floor(h2 / 20)
-        this.pageSettings.pageSize = h1
-        this.$refs.TravelGrid.pageSettings = { pageSize: h1 }
-      }
-    },
-    dataBound: function() {
-      this.$refs.TravelGrid.autoFitColumns()
-    },
-    rowDataBound: function(args) {
-      let c = String(args.data['Status'])
-      switch (c) {
-        case 'Approved': {
-          args.row.classList.add('bg-orange', 'text-dark')
-          break
-        }
-
-        case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-white')
-          break
-        }
-
-        case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-white')
-          break
-        }
-
-        case 'ReportDue': {
-          args.row.classList.add('bg-yellow', 'text-dark')
-          break
-        }
-
-        case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-white')
-          break
-        }
-
-        case 'Completed': {
-          args.row.classList.add('bg-green', 'text-white')
-          break
-        }
-      }
-      // args.row.classList.add(c)
-    },
-    formatCell: function(args) {
-      if (args.column.field == 'TripReport') {
-        args.cell.classList.add('bg-white', 'text-dark')
-      }
-    },
-    formatExcelCell: function(args) {
-      switch (args.column.field) {
-        case 'Created': {
-          args.value = this.$moment(args.value).format('MM/DD/YYYY')
-          break
-        }
-        case 'StartTime': {
-          args.value = this.$moment(args.value).format('MM/DD/YYYY')
-          break
-        }
-        case 'EndTime': {
-          args.value = this.$moment(args.value).format('MM/DD/YYYY')
-          break
-        }
-        case 'OCONUSApprovedOn': {
-          args.value = this.$moment(args.value).format('MM/DD/YYYY')
-          break
-        }
-        case 'SecurityActionCompleted': {
-          args.value = this.$moment(args.value).format('MM/DD/YYYY')
-          break
-        }
-      }
-    },
-    hideme: function(modal, action) {
-      vm.$bvModal.hide(modal)
-      if (action == 'refresh') {
-        vm.$router.push({ name: 'Refresh', params: { action: 'travel' } })
-      }
-    },
-    sortup: function(e, t) {
-      // ascending
-      var p = this.filteredtravel
-      if (t == 'Date') {
-        p = Vue._.orderBy(
-          p,
-          function(o) {
-            return new vm.$moment(o[e]).format('YYYYMMDD')
-          },
-          'asc'
-        )
-      } else {
-        p = Vue._.orderBy(p, e, 'asc')
-      }
-      this.filteredtravel = p
-      this.$refs.TravelGrid.refresh()
-      for (var i = 0; i < this.fields.length; i++) {
-        if (this.fields[i].FieldName == e) {
-          console.log('SORT UP: ' + e)
-          this.fields[i].Sort = 'Up'
-        } else {
-          this.fields[i].Sort = ''
-        }
-      }
-    },
-    sortdown: function(e, t) {
-      // descending
-      var p = this.filteredtravel
-      if (t == 'Date') {
-        p = Vue._.orderBy(
-          p,
-          function(o) {
-            return new vm.$moment(o[e]).format('YYYYMMDD')
-          },
-          'desc'
-        )
-      } else {
-        p = Vue._.orderBy(p, e, 'desc')
-      }
-      this.filteredtravel = p
-      this.$refs.TravelGrid.refresh()
-      for (var i = 0; i < this.fields.length; i++) {
-        if (this.fields[i].FieldName == e) {
-          // console.log('SORT DOWN: ' + e)
-          this.fields[i].Sort = 'Down'
-        } else {
-          this.fields[i].Sort = ''
-        }
-      }
-    },
-    showorhide: function(e) {
-      // console.log('SHOW OR HIDE: ' + e)
-      var checked = e.checked
-      // var fieldname = e.event.target.value
-      var displayname = e.event.target.labels[0].innerText
-      if (checked) {
-        this.$refs.TravelGrid.showColumns([displayname])
-        this.$refs.TravelGrid.autoFitColumns()
-      } else {
-        this.$refs.TravelGrid.hideColumns([displayname])
-        this.$refs.TravelGrid.autoFitColumns()
-      }
-    },
-    setfilter: function() {
-      // always reset to all records then do all filters as they are selected.
-      // this is a top down filter
-      // loop through all the fields and filter the ones that have a predicate and filtervalue set
-      var p = this.travel // set initial filter to all based on the module. travel in this case
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].Predicate !== 'S') {
-          if (vm.fields[i].FilterValue !== '' || vm.fields[i].Selected !== 'S') {
-            // determine what to filter based on predicate
-            switch (vm.fields[i].Predicate) {
-              case 'SW':
-                // Starts With
-                p = p.filter(search => Vue._.startsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
-                break
-
-              case 'EW':
-                // Ends With
-                p = p.filter(search => Vue._.endsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
-                break
-
-              case 'C':
-                // Contains
-                p = p.filter(search => Vue._.includes(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
-                break
-
-              case 'E':
-                // Equals
-                if (vm.fields[i].DataType == 'Choice') {
-                  p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].Selected))
-                } else {
-                  if (vm.fields[i].DataType == 'Number') {
-                    p = p.filter(search => search[vm.fields[i].FieldName] == vm.fields[i].FilterValue)
-                  } else {
-                    p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isSame(vm.$moment(vm.fields[i].FilterValue), 'day'))
-                  }
-                }
-                break
-
-              case 'NE':
-                // Not Equals
-                p = p.filter(search => Vue._.without(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
-                break
-
-              case 'GT':
-                // Greater Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] > vm.fields[i].FilterValue)
-                } else {
-                  // date
-                  p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isAfter(vm.$moment(vm.fields[i].FilterValue)))
-                }
-                break
-
-              case 'LT':
-                // Less Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] < vm.fields[i].FilterValue)
-                } else {
-                  // date
-                  p = p.filter(search => vm.$moment(vm.fields[i].FilterValue).isAfter(vm.$moment(search[vm.fields[i].FieldName])))
-                }
-                break
-
-              case 'B':
-                // Between
-                p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isBetween(vm.$moment(vm.fields[i].FilterValue), vm.$moment(vm.fields[i].FilterValue2)))
-                break
-            }
-            if (vm.sortfield !== '') {
-              // if this is a date field we need to do a bit more work to convert and test for sorting
-              if (vm.fields[i].DataType == 'Date') {
-                var f = vm.fields[i].FieldName
-                p = Vue._.orderBy(
-                  p,
-                  function(o) {
-                    return new vm.$moment(o[f]).format('YYYYMMDD')
-                  },
-                  vm.sortdir
-                )
-              } else {
-                p = Vue._.orderBy(p, vm.sortfield, vm.sortdir)
-              }
-            } else {
-              p = Vue._.orderBy(p, 'Id', 'desc')
-            }
-          }
-        }
-      }
-      if (vm.sortfield == '') {
-        p = Vue._.orderBy(p, 'Id', 'desc')
-      }
-      vm.filteredtravel = p
-    },
-    clearfilter: function(e) {
-      var f = String(e.target.id).split('_')[1]
-      // console.log('CLEARING FILTER: ' + f)
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].FieldName == f) {
-          vm.fields[i].Predicate = 'S'
-          vm.fields[i].FilterValue = ''
-          if (vm.fields[i].DataType == 'Date') {
-            vm.fields[i].FilterValue2 = ''
-          }
-          if (vm.fields[i].DataType == 'Choice') {
-            vm.fields[i].Predicate = 'E'
-            vm.fields[i].Selected = 'S'
-          }
-          if (vm.fields[i].DataType == 'Number' && vm.fields[i].Control == 'DropdownBox') {
-            vm.fields[i].Predicate = 'S'
-            vm.fields[i].FilterValue = 'S'
-          }
-        }
-      }
-      vm.setfilter()
-    },
-    clearfilters: function() {
-      window.localStorage.removeItem('travel')
-      for (var i = 1; i < vm.fields.length; i++) {
-        vm.fields[i].Predicate = 'S'
-        vm.fields[i].FilterValue = ''
-        vm.fields[i].Sort = ''
-        if (vm.fields[i].DataType == 'Date') {
-          vm.fields[i].FilterValue2 = ''
-        }
-        if (vm.fields[i].DataType == 'Choice') {
-          vm.fields[i].Predicate = 'E'
-          vm.fields[i].Selected = 'S'
-        }
-        if (vm.fields[i].DataType == 'Number' && vm.fields[i].Control == 'DropdownBox') {
-          vm.fields[i].Predicate = 'S'
-          vm.fields[i].FilterValue = 'S'
-        }
-      }
-      vm.filteredtravel = vm.travel
-      vm.setfilter()
-    },
-    savefilters: function() {
-      this.fields[0].Value = this.appversion
-      window.localStorage.setItem('travel', JSON.stringify(this.fields))
-    },
-    loadfilters: function() {
-      let f = String(window.localStorage.getItem('travel'))
-      if (f != 'null') {
-        // here we will load the fields from local storage and test the version.
-        // if the version matches the current app version then load the fields.
-        // if not use the new fields from the file and alert the user that they need to rebuild their filters
-        let flds = JSON.parse(f)
-        let version = flds[0]['Value']
-        // console.log('TEST POINT A: ' + version + ', flds: ' + flds)
-        if (version == this.appversion) {
-          // ask the user if they want to apply the saved filters or clear them
-          this.$bvModal
-            .msgBoxConfirm('Load your saved filter?', {
-              title: 'Please Confirm',
-              size: 'sm',
-              buttonSize: 'sm',
-              okVariant: 'danger',
-              okTitle: 'YES',
-              cancelTitle: 'NO',
-              footerClass: 'p-2',
-              hideHeaderClose: false,
-              centered: true
-            })
-            .then(value => {
-              if (value == true) {
-                this.fields = flds
-                // loop to display the selected columns
-                for (var i = 1; i < this.fields.length; i++) {
-                  // starting at 1 to skip the version 'field'
-                  if (this.fields[i].Visible) {
-                    this.$refs.TravelGrid.showColumns(this.fields[i].DisplayName)
-                    this.$refs.TravelGrid.autoFitColumns()
-                  } else {
-                    this.$refs.TravelGrid.hideColumns(this.fields[i].DisplayName)
-                    this.$refs.TravelGrid.autoFitColumns()
-                  }
-                  if (this.fields[i].Sort !== '') {
-                    this.sortfield = this.fields[i].FieldName
-                    this.sortdir = this.fields[i].Sort
-                  }
-                }
-                this.setfilter()
-              }
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        } else {
-          // versions don't match so let the user know
-          this.$bvModal.msgBoxOk('The fields have changed so you will need to reapply your filters', {
-            title: 'Confirmation',
-            size: 'md',
-            buttonSize: 'md',
-            okVariant: 'success',
-            headerClass: 'p-2 border-bottom-0',
-            footerClass: 'p-2 border-top-0',
-            centered: true
-          })
-        }
-      }
-    },
-    /* ----------------------------------------------------------------------------------- END TRACKER EVENTS ----------------------------------------------------------------------------------- */
-    /* ----------------------------------------------------------------------------------- BEGIN CALENDAR EVENTS -------------------------------------------------------------------------------- */
     onPopupOpen: function(args) {
       if (console) {
         console.log('Popup Open')
@@ -1317,7 +754,6 @@ export default {
             .add(this.offset, 'm')
             .format()
           s = this.$moment(s).format('YYYY-MM-DD')
-          this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: s: ' + s + '</div>')
           e = this.$moment(e).format()
           e = this.$moment(e)
             .utc()
@@ -1326,13 +762,7 @@ export default {
             .subtract(this.offset, 'm')
             .format()
           e = this.$moment(e).format('YYYY-MM-DD')
-          this.NewTravel = true
-          this.SelectedStart = s
-          this.SelectedEnd = e
-          let html = ''
-          html += '<div class="bg-info">traveltracker-onCellClick: SelectedStart: ' + s + '</div><br/>'
-          html += '<div class="bg-info">traveltracker-onCellClick: SelectedEnd: ' + e + '</div><br/>'
-          this.$store.dispatch('support/addActivity', html)
+          this.$router.push({ name: 'New Travel', params: { back: 'Travel Calendar', start: s, end: e } })
         }
       }
     },
@@ -1352,7 +782,6 @@ export default {
           .add(this.offset, 'm')
           .format()
         s = this.$moment(s).format('YYYY-MM-DD')
-        this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: s: ' + s + '</div>')
         e = this.$moment(e).format()
         e = this.$moment(e)
           .utc()
@@ -1361,14 +790,10 @@ export default {
           .subtract(this.offset, 'm')
           .format()
         e = this.$moment(e).format('YYYY-MM-DD')
-        this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-onSelect: e: ' + e + '</div>')
         this.NewTravel = true
         this.SelectedStart = s
         this.SelectedEnd = e
-        /* let html = ''
-        html += '<div class="bg-info">traveltracker-onSelect: SelectedStart: ' + s + '</div><br/>'
-        html += '<div class="bg-info">traveltracker-onSelect: SelectedEnd: ' + e + '</div><br/>'
-        this.$store.dispatch('support/addActivity', html) */
+        this.$router.push({ name: 'New Travel', params: { back: 'Travel Calendar', start: s, end: e } })
       }
       if (args.requestType === 'eventSelect') {
         this.EditTravel = false
@@ -1418,132 +843,16 @@ export default {
     },
     onEventClick(args) {
       args.cancel = true
-      this.EditTravel = false
-      this.TripId = args.event.id
       if (this.moreevents) {
         this.moreevents = false
       } else {
         if (this.isWPManager || this.isDeveloper) {
-          this.EditTravel = true
+          this.$router.push({ name: 'Edit Travel', params: { back: 'Travel Calendar', TripId: args.event.id } })
         }
       }
     },
     onMoreEventsClick: function() {
       this.moreevents = true
-    }
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log('TRAVELTRACKER.VUE TO: ' + to + ', FROM: ' + from)
-    next()
-  },
-  watch: {
-    $route(to, from) {
-      if (console) {
-        console.log('ROUTE TO: ' + to + ', FROM: ' + from)
-      }
-      this.mode = to.params.mode
-      switch (this.mode) {
-        case 'view': {
-          // document.getElementById('PageTitle').innerHTML = ' -  View'
-          this.selectedtrip = {} // clear any existing item
-          let id = Number(this.$route.query.id)
-          var trip = this.travel.filter(trip => trip.id == id)
-          trip = trip[0]
-          trip.Travelers = JSON.parse(trip.Travelers)
-          this.selectedtrip = trip
-          this.$bvModal.show('ViewModal')
-          break
-        }
-
-        case 'new': {
-          // document.getElementById('PageTitle').innerHTML = ' -  New Travel Request'
-          this.NewTravel = true
-          break
-        }
-
-        case 'edit': {
-          Travel.dispatch('getDigest')
-          this.$bvToast.show('busy-toast')
-          Travel.dispatch('getTRIPS').then(function() {
-            vm.$bvToast.hide('busy-toast')
-            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-          })
-          break
-        }
-
-        case 'refreshtracker': {
-          this.$router.push({ path: '/travel/home/tracker' })
-          break
-        }
-
-        case 'refreshcalendar': {
-          this.$router.push({ path: '/travel/home/calendar' })
-          break
-        }
-
-        case 'tracker': {
-          if (console) {
-            console.log('LOADING: ' + this.isSubcontractor)
-          }
-          Travel.dispatch('getDigest')
-          this.$bvToast.show('busy-toast')
-          // Check if user is subcontractor first.
-          if (this.isSubcontractor == true) {
-            if (this.company !== null) {
-              let payload = {}
-              payload.company = this.company
-              Travel.dispatch('getTripsByCompany', payload).then(function() {
-                vm.$bvToast.hide('busy-toast')
-                vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-              })
-            } else {
-              // TODO: LET THE USER KNOW?
-            }
-          } else {
-            Travel.dispatch('getTRIPS').then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          }
-          /* Company.dispatch('getCompanies').then(function() {
-            Travel.dispatch('getTRIPS').then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          }) */
-          break
-        }
-
-        case 'calendar': {
-          if (console) {
-            console.log('LOADING: ' + this.isSubcontractor)
-          }
-          Travel.dispatch('getDigest')
-          this.$bvToast.show('busy-toast')
-          if (this.isSubcontractor == true) {
-            if (this.company !== null) {
-              let payload = {}
-              payload.company = this.company
-              Travel.dispatch('getTripsByCompany', payload).then(function() {
-                vm.$bvToast.hide('busy-toast')
-                vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-              })
-            } else {
-              // TODO: LET THE USER KNOW?
-            }
-          } else {
-            Travel.dispatch('getTRIPS').then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          }
-          /* Travel.dispatch('getTRIPS').then(function() {
-            vm.$bvToast.hide('busy-toast')
-            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-          }) */
-          break
-        }
-      }
     }
   }
 }
