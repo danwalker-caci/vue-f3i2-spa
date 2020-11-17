@@ -13,7 +13,7 @@ let portalemail = ''
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Title"
 geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
 let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=ContactOrder"
-let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Company eq '"
+let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$filter=(Company eq '"
 curl += '&$filter=(Contact eq 1)'
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items"
 let surl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
@@ -94,30 +94,6 @@ export default {
     let results = response.data.d.results
     return results
   },
-  getPersonnelByCompany(company) {
-    let allPersonnel = []
-    async function getAllPersonnel(eurl) {
-      if (!eurl) {
-        // added the top to overcome some diffuclty parsing a large dataset.
-        eurl = url + "?$filter=(Company eq '" + company + "')&$top=1000"
-      }
-      let response = await axios.get(eurl, {
-        headers: {
-          accept: 'application/json;odata=verbose'
-        }
-      })
-      let results = response.data.d.results
-      allPersonnel = allPersonnel.concat(results)
-      if (response.data.d.__next) {
-        eurl = response.data.d.__next
-        console.log('GETTING NEXT PERSONNEL: ' + eurl)
-        return getAllPersonnel(eurl)
-      } else {
-        return allPersonnel
-      }
-    }
-    getAllPersonnel(null)
-  },
   async getPersonnelAllValuesById(id) {
     let idurl = url
     idurl += "?$filter=(Id eq '" + id + "')"
@@ -132,6 +108,17 @@ export default {
   async getPersonnelById(id) {
     let url = gpbidurl + id + ')'
     let response = await axios.get(url, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
+    let results = response.data.d.results
+    return results
+  },
+  async getPersonnelByUserAccount(id) {
+    let idurl = url
+    idurl += "?$filter=(UserAccount eq '" + id + "')"
+    let response = await axios.get(idurl, {
       headers: {
         accept: 'application/json;odata=verbose'
       }

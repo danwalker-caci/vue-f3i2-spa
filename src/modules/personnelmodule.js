@@ -8,7 +8,7 @@ const getters = {
   allPersonnel() {
     return Personnel.all()
   },
-  dropDown: state => {
+  DropDown: state => {
     return state.dropdown
   },
   Loaded: state => {
@@ -52,6 +52,7 @@ const actions = {
         Personnel.commit(state => {
           state.loaded = true
         })
+        state.dropdown = formatDropdown(response)
       })
       .catch(error => {
         console.log('There was an error: ', error.response)
@@ -62,14 +63,6 @@ const actions = {
     let response = await PersonnelService.getPersonnelByEmail(email)
     return response
   },
-  async getPersonnelByCompany({ state }, company) {
-    let response = await PersonnelService.getPersonnelByCompany(company)
-    return response
-  },
-  async getPersonnelByCompanyDropdown({ state }, email) {
-    let response = await PersonnelService.getPersonnelByCompany(company)
-    return formatDropdown(response)
-  },
   async getPersonnelAllValuesById({ state }, id) {
     // console.log('GETTING PERSONNEL BY EMAIL.')
     let response = await PersonnelService.getPersonnelAllValuesById(id)
@@ -79,6 +72,10 @@ const actions = {
     // console.log('GETTING PERSONNEL BY EMAIL.')
     let response = await PersonnelService.getPersonnelById(id)
     return response
+  },
+  async getPersonnelByUserAccount({ state }, id) {
+    let response = await PersonnelService.getPersonnelByUserAccount(id)
+    return formatPersonnel(response)
   },
   async getContacts({ state, commit }) {
     // console.log('GETTING ALL PERSONNEL.')

@@ -47,7 +47,7 @@ let travelMenu = {
     {
       path: 'tracker',
       name: 'Travel Tracker',
-      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelTracker.vue'),
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
       props: true
     },
     {
@@ -85,7 +85,7 @@ let securityMenu = {
     {
       path: '/security/:formType',
       name: 'Form',
-      component: () => import(/* webpackChunkName: "msr" */ '../components/Security/securityforms.vue'),
+      component: () => import(/* webpackChunkName: "securitys" */ '../components/Security/securityforms.vue'),
       props: true
     }
   ]

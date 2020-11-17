@@ -37,8 +37,10 @@
           <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
         </sidebar-item>
         <!-- Add Security Menu Links -->
-        <sidebar-item :link="{ name: 'Security', libray: 'fas', icon: 'user-shield' }">
-          <sidebar-item :link="{ name: 'Accounts', library: 'fas', icon: 'id-badge', path: '/security/account' }"></sidebar-item>
+        <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">
+          <sidebar-item :link="{ name: 'Accounts', library: 'fas', icon: 'id-card-alt', path: '/security/account' }"></sidebar-item>
+          <sidebar-item :link="{ name: 'CAC', library: 'fas', icon: 'id-badge', path: '/security/cac' }"></sidebar-item>
+          <sidebar-item :link="{ name: 'SCI', library: 'fas', icon: 'id-card', path: '/security/sci' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
       </template>
