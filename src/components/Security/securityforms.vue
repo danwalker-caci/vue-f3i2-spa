@@ -16,7 +16,7 @@
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
       <b-card no-body class="p-3">
-        <b-alert v-show="formError" variant="danger">Please correct the Form</b-alert>
+        <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
         <p class="font-weight-bolder">Please complete and submit the forms for each account you require.</p>
         <p v-if="formAccount" class="font-italic">All forms must be signed by a CAC.</p>
         <b-form-row>
@@ -41,7 +41,7 @@
             <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
             <b-form-group label="Type: " label-for="formType">
               <div v-if="formAccount">
-                <b-form-select id="formType" v-model="form.Type" :options="accountTypes" :state="ValidateMe('FormType')" required></b-form-select>
+                <b-form-select id="formType" v-model="form.Type" :options="accountTypes" :state="ValidateMe('Type')" required></b-form-select>
                 <b-form-invalid-feedback>
                   Select an Account Type.
                 </b-form-invalid-feedback>
@@ -111,7 +111,7 @@
           <b-col cols="6">
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
-                <b-form-select id="formPerson" v-model="person" :options="personnel"></b-form-select>
+                <b-form-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"> </b-form-select>
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
@@ -196,9 +196,9 @@ export default {
       form: {
         Company: '',
         Type: null,
-        PersonnelID: this.person.value,
+        PersonnelID: null,
         setName: 'No',
-        Name: this.person.text,
+        Name: null,
         etag: '',
         uri: ''
       },
@@ -209,10 +209,6 @@ export default {
       formSCI: false,
       fileSelected: null,
       formTitle: '',
-      person: {
-        value: '',
-        text: ''
-      },
       url: ''
     }
   },
@@ -235,9 +231,9 @@ export default {
         Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
           // Company loaded into state
           Personnel.dispatch('getPersonnelByUserAccount', vm.userid).then(function(result) {
-            vm.person.value = result ? result[0].Id : 'S'
+            vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
-            vm.person.text = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+            vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
           })
         })
         clearInterval(vm.$options.interval)
@@ -253,32 +249,39 @@ export default {
         }
       })
     },
+    onPersonnelChange: function() {
+      this.personnel.forEach(person => {
+        if (person.value === vm.form.PersonnelID) {
+          vm.form.Name = person.text
+        }
+      })
+    },
     checkType: function() {
       switch (this.formType) {
         case 'account':
-          vm.formCAC = false
-          vm.formSCI = false
-          vm.formAccount = true
-          vm.formTitle = 'Upload Account Forms'
-          vm.form.Type = vm.accountTypes[0]
+          this.formCAC = false
+          this.formSCI = false
+          this.formAccount = true
+          this.formTitle = 'Upload Account Forms'
+          this.form.Type = this.accountTypes[0]
           // Set the correct document library to post to
           // Load the Account form
           break
         case 'cac':
-          vm.formAccount = false
-          vm.formSCI = false
-          vm.formCAC = true
-          vm.formTitle = 'Upload CAC Forms'
-          vm.form.Type = 'CAC'
+          this.formAccount = false
+          this.formSCI = false
+          this.formCAC = true
+          this.formTitle = 'Upload CAC Forms'
+          this.form.Type = 'CAC'
           // Set the correct document library to post to
           // Load CAC Form
           break
         case 'sci':
-          vm.formAccount = false
-          vm.formCAC = false
-          vm.formSCI = true
-          vm.formTitle = 'Upload SCI Forms'
-          vm.form.Type = 'SCI'
+          this.formAccount = false
+          this.formCAC = false
+          this.formSCI = true
+          this.formTitle = 'Upload SCI Forms'
+          this.form.Type = 'SCI'
           // Set the correct document library to post to
           // Load SCI Form
           break
@@ -293,8 +296,10 @@ export default {
       if (this.isSubcontractor && this.form.Company !== this.currentuser[0].Company) {
         this.formError = true
       }
-
-      if (this.formType === 'account' && this.form.Type === 'S') {
+      if (this.formType === 'account' && this.form.Type === 'Select...') {
+        this.formError = true
+      }
+      if (!this.fileSelected) {
         this.formError = true
       }
       if (!this.formError) {
@@ -325,7 +330,7 @@ export default {
         payload.library = library
         let response = await Security.dispatch('getDigest')
         let digest = response.data.d.GetContextWebInformation.FormDigestValue
-        let name = this.form.PersonnelID + '-' + '-' + this.form.Name + this.fileSelected.split('.')[0]
+        let name = this.form.PersonnelID + '-' + this.form.Name + '-' + this.fileSelected.split('.')[0]
         this.fileName = name
         payload.file = this.fileSelected
         payload.name = name
@@ -343,6 +348,7 @@ export default {
         // spayload.IndexNumber = this.IndexNumber
         payload.Company = this.form.Company
         payload.PersonnelID = this.form.PersonnelID
+        payload.PersonName = this.form.Name
         Security.dispatch('updateForm', payload).then(function() {
           // Add a task to the task list for Security Group
 
@@ -386,27 +392,25 @@ export default {
       return p
     },
     // Removing Validation because it doesn't work for on load and there isn't any free text.
-    ValidateMe(input) {
-      this.formError = false
+    ValidateMe: function(input) {
       let ret = false
       switch (input) {
         case 'Company':
-          if (this.form.Company != '') {
+          if (this.form.Company !== '') {
             ret = true
           }
           break
         case 'Person':
-          if (this.form.PersonnelID != '') {
+          if (this.form.PersonnelID !== '') {
             ret = true
           }
           break
         case 'Type':
-          if (this.form.Type !== '' || this.form.Type !== 'S') {
+          if (this.form.Type !== 'Select...') {
             ret = true
           }
           break
       }
-      this.formError = ret
       return ret
     }
   },

@@ -73,6 +73,7 @@ export default {
       FileLeafRef: payload.name,
       Title: payload.name,
       PersonnelID: payload.PersonnelID,
+      PersonName: payload.PersonName,
       Company: payload.Company
     }
     return axios
