@@ -5,6 +5,8 @@ if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
 
+let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
+
 export default {
   getFormDigest() {
     return axios.request({
@@ -12,6 +14,37 @@ export default {
       method: 'post',
       headers: { Accept: 'application/json; odata=verbose' }
     })
+  },
+  addTodo: async function(payload, digest) {
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TasksListItem' },
+      TaskName: payload.TaskName,
+      AssignedTo: {
+        __metadata: { type: 'Collection(Edm.Int32)' },
+        results: [payload.AssignedTo]
+      },
+      Description: payload.Description,
+      //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
+      //EndDate: moment(payload[0].EndTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
+      isMilestone: payload.isMilestone,
+      PercentComplete: payload.PercentComplete,
+      TaskType: payload.TaskType
+    }
+    try {
+      const response = await axios.post(url, itemprops, config)
+      return response
+    } catch (error) {
+      console.log('Todo Error Adding Task: ' + error)
+    }
   },
   getTodos() {
     var allTodos = []

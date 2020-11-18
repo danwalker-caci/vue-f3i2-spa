@@ -60,7 +60,7 @@
                   <a :href="this.masterDocs + '/DD2875-NIPRNet.pdf'">DD2875</a>
                 </li>
                 <li v-show="form.Type == 'NIPR'">
-                  <a :href="this.masterDocs + '/af4394-NIPR.pdf'">AF4394</a>
+                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
                 </li>
                 <li v-show="form.Type == 'SIPR'">
                   <a :href="this.masterDocs + '/DD2875-SIPRNet.pdf'">DD2875</a>
@@ -75,7 +75,7 @@
                   <a :href="this.masterDocs + '/DD2875-JWICS.pdf'">DD2875</a>
                 </li>
                 <li v-show="form.Type == 'JWICS'">
-                  <a :href="this.masterDocs + '/af4394-JWICS.pdf'">AF4394</a>
+                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
                 </li>
                 <li v-show="form.Type == 'JWICS' || form.Type == 'NIPR'">
                   <a href="https://public.cyber.mil/training/cyber-awareness-challenge/" target="_blank">Cyber Awareness Challenge</a>
@@ -153,6 +153,7 @@ import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
+import Todo from '@/models/Todo'
 export default {
   name: 'SecurityForms',
   props: {
@@ -321,10 +322,10 @@ export default {
             library = 'AccountsJWICS'
             break
           case 'CAC':
-            library = 'CAC'
+            library = 'CACForms'
             break
           case 'SCI':
-            library = 'SCI'
+            library = 'SCIForms'
             break
         }
         payload.library = library
@@ -349,17 +350,36 @@ export default {
         payload.Company = this.form.Company
         payload.PersonnelID = this.form.PersonnelID
         payload.PersonName = this.form.Name
-        Security.dispatch('updateForm', payload).then(function() {
+        Security.dispatch('updateForm', payload).then(async function() {
           // Add a task to the task list for Security Group
+          let todoDigest = await Todo.dispatch('getDigest')
+          payload = {
+            'Task Name': name,
+            AssignedTo: 64, // Hardcoding the Security Group
+            Description: 'Approve or reject ' + name,
+            isMilestone: 'No',
+            PercentComplete: null,
+            TaskType: vm.form.Type + ' Request',
+            digest: todoDigest
+          }
+          Todo.dispatch('addTodo', payload).then(function() {
+            const notification = {
+              type: 'success',
+              title: 'Succesfully Uploaded Form',
+              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+              push: true
+            }
+            vm.store.dispatch('notification/add', notification, { root: true })
 
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-          let event = []
-          event.push({
-            name: vm.fileName,
-            Status: 'SecurityReview',
-            Form: library + vm.fileSelected,
-            etag: vm.form.etag,
-            uri: vm.form.uri
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+            let event = []
+            event.push({
+              name: vm.fileName,
+              Status: 'SecurityReview',
+              Form: library + vm.fileSelected,
+              etag: vm.form.etag,
+              uri: vm.form.uri
+            })
           })
         })
         // Clear form after submission
