@@ -17,7 +17,7 @@
       </b-row>
       <b-card no-body class="p-3">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
-        <p class="font-weight-bolder">Please complete and submit the forms for each account you require.</p>
+        <p class="font-weight-bolder">Please complete and submit the forms for each account you require. Downloaded Forms <u>must</u> be opened by Acrobat Reader DC.</p>
         <p v-if="formAccount" class="font-italic">All forms must be signed by a CAC.</p>
         <b-form-row>
           <b-col>
@@ -41,7 +41,7 @@
             <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
             <b-form-group label="Type: " label-for="formType">
               <div v-if="formAccount">
-                <b-form-select id="formType" v-model="form.Type" :options="accountTypes" :state="ValidateMe('Type')" required></b-form-select>
+                <b-form-select id="formType" v-model="form.Type" :options="accountOptions" :state="ValidateMe('Type')" required></b-form-select>
                 <b-form-invalid-feedback>
                   Select an Account Type.
                 </b-form-invalid-feedback>
@@ -50,6 +50,12 @@
                 <b-form-input id="formType" v-model="form.Type" disabled></b-form-input>
                 <b-form-invalid-feedback>
                   Please use the provided Type.
+                </b-form-invalid-feedback>
+              </div>
+              <div v-if="formSCI">
+                <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
+                <b-form-invalid-feedback>
+                  Select an SCI Option.
                 </b-form-invalid-feedback>
               </div>
             </b-form-group>
@@ -126,6 +132,11 @@
           </b-col>
         </b-form-row>
         <b-form-row>
+          <b-form-group>
+            <ejs-datepicker v-model="form.GovSentDate"></ejs-datepicker>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row>
           <b-col>
             <b-form-group>
               <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="false"></ejs-uploader>
@@ -192,7 +203,7 @@ export default {
       AccountsJWICSForms: url + '/AccountsJWICS/',
       CACForms: url + '/CACForms/',
       SCIForms: url + '/SCIForms/',
-      accountTypes: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
+      accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
       form: {
         Company: '',
@@ -200,8 +211,10 @@ export default {
         PersonnelID: null,
         setName: 'No',
         Name: null,
+        GovSentDate: null,
         etag: '',
-        uri: ''
+        uri: '',
+        SCIType: ''
       },
       formAccount: false,
       formCAC: false,
@@ -210,6 +223,7 @@ export default {
       formSCI: false,
       fileSelected: null,
       formTitle: '',
+      sciOptions: ['Nomination', 'Transfer'],
       url: ''
     }
   },
@@ -264,7 +278,7 @@ export default {
           this.formSCI = false
           this.formAccount = true
           this.formTitle = 'Upload Account Forms'
-          this.form.Type = this.accountTypes[0]
+          this.form.Type = this.accountOptions[0]
           // Set the correct document library to post to
           // Load the Account form
           break
@@ -362,6 +376,9 @@ export default {
             TaskType: vm.form.Type + ' Request',
             digest: todoDigest
           }
+          if (this.form.Type === 'SCI') {
+            payload.SCIType = this.form.SCIType
+          }
           Todo.dispatch('addTodo', payload).then(function() {
             const notification = {
               type: 'success',
@@ -384,7 +401,7 @@ export default {
         })
         // Clear form after submission
         if (this.formType === 'account') {
-          this.form.Type = this.accountTypes[0]
+          this.form.Type = this.accountOptions[0]
         }
         document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
         this.fileSelected = null
@@ -427,6 +444,11 @@ export default {
           break
         case 'Type':
           if (this.form.Type !== 'Select...') {
+            ret = true
+          }
+          break
+        case 'SCIType':
+          if (this.form.SCIType !== '') {
             ret = true
           }
           break
