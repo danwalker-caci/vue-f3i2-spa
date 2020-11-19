@@ -15,7 +15,6 @@
         </sidebar-item>
         <sidebar-item :link="{ name: 'Work Plans', library: 'fas', icon: 'briefcase' }">
           <sidebar-item :link="{ name: 'Active Work Plans', library: 'fas', icon: 'briefcase', path: '/workplans/home/active' }"></sidebar-item>
-          <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Manning Report', library: 'fas', icon: 'tasks', path: '/workplans/home/manning' }"></sidebar-item>
         </sidebar-item>
         <sidebar-item :link="{ name: 'PMO Calendar', library: 'far', icon: 'calendar-alt', path: '/calendar/home' }"></sidebar-item>
         <sidebar-item :link="{ name: 'Features and Bugs', library: 'far', icon: 'lightbulb' }">

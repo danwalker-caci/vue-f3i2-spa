@@ -30,7 +30,7 @@ export default {
       this.$router.push({ name: 'Travel Calendar' })
     }
     if (this.mode == 'new') {
-      this.$router.push({ name: 'New Travel', params: { back: 'tracker' } })
+      this.$router.push({ name: 'New Travel', params: { back: 'Travel Tracker' } })
     }
   },
   beforeDestroy() {
