@@ -788,8 +788,10 @@ export default {
     /* ---------------------------------------------------------------------------------------------------------------- End Validation Events ------------------------------------------------------------------------ */
     /* ---------------------------------------------------------------------------------------------------------------- Form Events ---------------------------------------------------------------------------------- */
     onModalCancel: function() {
-      if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
-        this.$router.push({ name: this.$router.currentRoute.params.back })
+      let back = String(this.$router.currentRoute.params.back)
+      console.log('BACK: ' + back)
+      if (back !== 'undefined' || back !== 'null') {
+        this.$router.push({ name: back })
       } else {
         this.$router.push({ name: 'Travel Tracker' }) // default
       }
