@@ -19,20 +19,6 @@ let adminMenu = {
   ]
 }
 
-//let travelMenu = {
-//path: '/travel',
-//component: ThemeLayout,
-//redirect: '/travel/home',
-//children: [
-// {
-// path: 'home/:mode',
-// name: 'Travel',
-// component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
-// props: true
-// }
-// ]
-// }
-
 let travelMenu = {
   path: '/travel',
   component: ThemeLayout,
