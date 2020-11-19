@@ -13,6 +13,12 @@ const getters = {
       .where('Status', 'New')
       .get()
   },
+  testtrips: state => {
+    return state.testtrips
+  },
+  testtripsloaded: state => {
+    return state.testtripsloaded
+  },
   emailRequired: state => {
     return state.sendEmail
   },
@@ -33,9 +39,6 @@ const getters = {
 const actions = {
   async getDigest() {
     let response = await TravelService.getFormDigest()
-    /* if (console) {
-      console.log('TravelModule DIGEST: ' + response)
-    } */
     Travel.commit(state => {
       state.digest = response.data.d.GetContextWebInformation.FormDigestValue
     })
@@ -64,6 +67,23 @@ const actions = {
       .catch(error => {
         console.log('There was an error: ', error.response)
       })
+  },
+  async getTripsForLateReport() {
+    TravelService.getTripsForLateReport()
+      .then(response => {
+        // Travel.create({ data: formatTravel(response) })
+        Travel.commit(state => {
+          state.testtrips = formatTripsForTesting(response)
+          state.testtripsloaded = true
+        })
+      })
+      .catch(error => {
+        console.log('There was an error: ', error.response)
+      })
+  },
+  async updateTravelStatus({ state }, payload) {
+    let response = await TravelService.updateTravelStatus(payload, state.digest)
+    return response
   },
   async getAFRLTrips() {
     TravelService.getAFRLTrips()
@@ -351,6 +371,43 @@ function formatTravel(j) {
       Title: j[i]['IndexNumber'] + '-' + j[i]['Title'],
       TripReport: !isNullOrUndefined(j[i]['TripReport']) ? String(j[i]['TripReport']['Description']) : '',
       TripReportLink: !isNullOrUndefined(j[i]['TripReport']) ? String(j[i]['TripReport']['Url']) : '',
+      etag: j[i]['__metadata']['etag'],
+      uri: j[i]['__metadata']['uri']
+    })
+  }
+  /* p = Vue._.orderBy(p, 'Id', 'desc') */
+  return p
+}
+
+function formatTripsForTesting(j) {
+  let p = []
+  console.log('j.length: ' + j.length)
+  for (let i = 0; i < j.length; i++) {
+    let offset = moment().utcOffset()
+    offset = offset * -1
+    if (offset === 240) {
+      offset = 300
+    } // weird DST quirk
+    let start = String(j[i]['StartDate'])
+    let end = String(j[i]['EndDate'])
+    start = moment(start)
+      .utc()
+      .add(offset, 'm')
+      .format()
+    end = moment(end)
+      .utc()
+      .add(offset, 'm')
+      .format()
+    p.push({
+      id: j[i]['Id'],
+      Id: j[i]['Id'],
+      StartTime: start,
+      EndTime: end,
+      Status: j[i]['Status'] !== null ? String(j[i]['Status']) : '',
+      WorkPlanNumber: j[i]['WorkPlanNumber'] !== null ? String(j[i]['WorkPlanNumber']) : '',
+      IndexNumber: j[i]['IndexNumber'] !== null ? String(j[i]['IndexNumber']) : '',
+      TripReport: j[i]['TripReport'] == null ? 'NULL' : String(j[i]['TripReport']['Description']),
+      TripReportLink: j[i]['TripReport'] == null ? 'NULL' : String(j[i]['TripReport']['Url']),
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })

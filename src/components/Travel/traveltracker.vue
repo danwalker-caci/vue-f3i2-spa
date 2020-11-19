@@ -798,6 +798,10 @@ export default {
         this.loadfilters()
         this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
+        if (this.$route) {
+          if (this.$route.query.IndexNumber !== null || this.$route.query.IndexNumber !== undefined) {
+          }
+        }
       }
     },
     getRef: function(text, idx) {

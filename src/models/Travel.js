@@ -6,6 +6,8 @@ export default class Travel extends Model {
   static state = {
     digest: null,
     trips: [],
+    testtrips: [],
+    testtripsloaded: false,
     afrltrips: [],
     trip: {},
     loaded: false,
