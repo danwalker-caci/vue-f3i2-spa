@@ -295,7 +295,7 @@ export default {
       console.log('DIFF: ' + diff)
       let wp = item.WorkPlanNumber
       let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
-      /* if (manager[0]) {
+      if (manager[0]) {
         let email = manager[0]['Manager']['EMail']
         console.log('MGR EMAIL: ' + email)
         switch (true) {
@@ -309,15 +309,15 @@ export default {
         }
       } else {
         // could not get manager email
-      } */
+      }
       // send email
       let payload = {}
       let body = ''
       body += '<p>Hello ' + manager[0]['Manager']['Title'] + ',</p><p></p>'
       body += '<p>A Trip Report for ' + item.IndexNumber + ' has not been uploaded and is now late.</p><p></p>'
       body += '<p>Please click the link below for more details.</p><p></p>'
-      // body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
-      body += '<p><a href="' + baseurl + '/Pages/Dan.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      // body += '<p><a href="' + baseurl + '/Pages/Dan.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
       payload.To = AllEmails
       payload.Subject = 'Late TripReport'
       payload.Body = body

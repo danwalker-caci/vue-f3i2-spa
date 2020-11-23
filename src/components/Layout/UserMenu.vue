@@ -23,11 +23,11 @@
       <a data-toggle="collapse" :aria-expanded="!isClosed" @click.stop="toggleMenu" href="#">
         <span class="UserName">
           {{ userdisplayname }}
-          <!-- <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks"
+          <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks"
             >My Tasks
             <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
             <span class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>
-          </b-button> -->
+          </b-button>
         </span>
       </a>
       <div class="clearfix"></div>
@@ -46,9 +46,6 @@
 let vm = null
 import Vue from 'vue'
 import User from '@/models/User'
-/* import Personnel from '@/models/Personnel'
-import Workplan from '@/models/WorkPlan'
-import Company from '@/models/Company' */
 import Todo from '@/models/Todo'
 import { Page, VirtualScroll, DetailRow } from '@syncfusion/ej2-vue-grids'
 
