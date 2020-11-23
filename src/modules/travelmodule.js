@@ -404,6 +404,7 @@ function formatTripsForTesting(j) {
       StartTime: start,
       EndTime: end,
       Status: j[i]['Status'] !== null ? String(j[i]['Status']) : '',
+      WorkPlanText: j[i]['WorkPlanText'] !== null ? String(j[i]['WorkPlanText']) : '',
       WorkPlanNumber: j[i]['WorkPlanNumber'] !== null ? String(j[i]['WorkPlanNumber']) : '',
       IndexNumber: j[i]['IndexNumber'] !== null ? String(j[i]['IndexNumber']) : '',
       TripReport: j[i]['TripReport'] == null ? 'NULL' : String(j[i]['TripReport']['Description']),

@@ -196,6 +196,7 @@ export default {
       console.log('sp.js is loaded')
     })
     vm = this
+    User.dispatch('getDigest')
     MSR.dispatch('getDigest')
     Travel.dispatch('getDigest')
     // Travel.dispatch('getTRIPS')
@@ -286,14 +287,15 @@ export default {
     },
     async sendTREmails(item) {
       // calculate the need to send an email based on the lateness of the report
-      let AllEmails = ['mogaard@caci.com', 'sheila.jackson@caci.com']
+      // let AllEmails = ['mogaard@caci.com', 'sheila.jackson@caci.com']
+      let AllEmails = ['alexie.hazen@caci.com']
       let end = this.$moment(item.EndTime)
       let today = this.$moment()
       let diff = today.diff(end, 'days')
       console.log('DIFF: ' + diff)
       let wp = item.WorkPlanNumber
       let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
-      if (manager[0]) {
+      /* if (manager[0]) {
         let email = manager[0]['Manager']['EMail']
         console.log('MGR EMAIL: ' + email)
         switch (true) {
@@ -307,17 +309,21 @@ export default {
         }
       } else {
         // could not get manager email
-      }
+      } */
       // send email
       let payload = {}
       let body = ''
-      body += '<p>Hello ' + manager[0]['Manager']['Name'] + ',</p><p></p>'
+      body += '<p>Hello ' + manager[0]['Manager']['Title'] + ',</p><p></p>'
       body += '<p>A Trip Report for ' + item.IndexNumber + ' has not been uploaded and is now late.</p><p></p>'
       body += '<p>Please click the link below for more details.</p><p></p>'
-      body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/refreshtracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      // body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      body += '<p><a href="' + baseurl + '/Pages/Dan.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
       payload.To = AllEmails
       payload.Subject = 'Late TripReport'
       payload.Body = body
+      User.dispatch('SendEmail', payload).then(function() {
+        console.log('SendEmail Called')
+      })
     },
     waitForMSRs: function() {
       if (this.loaded && this.workplansloaded) {

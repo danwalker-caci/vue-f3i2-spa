@@ -9,9 +9,9 @@ if (window._spPageContextInfo) {
 }
 
 /* #region BASE */
-let a = moment()
+/* let a = moment()
   .subtract(8, 'days')
-  .format('YYYY-MM-DD[T]HH:MM:[00Z]')
+  .format('YYYY-MM-DD[T]HH:MM:[00Z]') */
 let b = moment()
   .subtract(1, 'days')
   .format('YYYY-MM-DD[T]HH:MM:[00Z]')
@@ -25,7 +25,8 @@ let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
 geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
-let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
+// let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
+let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=EndDate le datetime'" + b + "'"
 /* #endregion */
 
 export default {
