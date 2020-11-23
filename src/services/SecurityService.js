@@ -32,6 +32,17 @@ export default {
     })
     return response
   },
+  async getFormByTypeId(payload) {
+    let url = formurlstart + payload.library + "')/items?filter=(Id eq " + payload.id + "')"
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
+  },
   async uploadForm(payload) {
     let part = "(url='"
     part += payload.file + "',overwrite=true)"

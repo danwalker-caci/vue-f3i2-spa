@@ -23,11 +23,11 @@
       <a data-toggle="collapse" :aria-expanded="!isClosed" @click.stop="toggleMenu" href="#">
         <span class="UserName">
           {{ userdisplayname }}
-          <!-- <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks"
+          <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks rounded"
             >My Tasks
             <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
             <span class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>
-          </b-button> -->
+          </b-button>
         </span>
       </a>
       <div class="clearfix"></div>
@@ -235,6 +235,10 @@ export default {
 }
 .UserName {
   font-size: 14px;
+}
+.info {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 #userbadgeA {
   float: right;

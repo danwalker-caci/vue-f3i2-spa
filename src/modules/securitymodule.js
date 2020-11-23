@@ -22,11 +22,15 @@ const actions = {
     let response = await SecurityService.getForm(state, uri)
     return response
   },
+  async getFormByTypeId(payload) {
+    if (console) {
+      console.log('GETTING FORM BY TYPE ID')
+    }
+    let response = await SecurityService.getFormByTypeId(payload)
+    return response.d.data.reponse
+  },
   async uploadForm({ state }, payload) {
     payload.state = state
-    if (console) {
-      console.log('PAYLOAD TO UPLOAD FORM: ' + JSON.stringify(payload))
-    }
     let report = await SecurityService.uploadForm(payload)
     return report
   },

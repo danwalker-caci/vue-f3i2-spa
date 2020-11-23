@@ -28,16 +28,17 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.TasksListItem' },
       TaskName: payload.TaskName,
-      AssignedTo: {
+      AssignedToId: {
         __metadata: { type: 'Collection(Edm.Int32)' },
-        results: [payload.AssignedTo]
+        results: [payload.AssignedToId]
       },
-      Description: payload.Description,
+      Body: payload.Description,
       //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
       //EndDate: moment(payload[0].EndTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
-      isMilestone: payload.isMilestone,
+      IsMilestone: payload.IsMilestone,
       PercentComplete: payload.PercentComplete,
-      TaskType: payload.TaskType
+      TaskType: payload.TaskType,
+      TaskLink: payload.TaskLink
     }
     try {
       const response = await axios.post(url, itemprops, config)

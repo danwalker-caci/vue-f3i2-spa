@@ -132,11 +132,6 @@
           </b-col>
         </b-form-row>
         <b-form-row>
-          <b-form-group>
-            <ejs-datepicker v-model="form.GovSentDate"></ejs-datepicker>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row>
           <b-col>
             <b-form-group>
               <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="false"></ejs-uploader>
@@ -345,7 +340,8 @@ export default {
         payload.library = library
         let response = await Security.dispatch('getDigest')
         let digest = response.data.d.GetContextWebInformation.FormDigestValue
-        let name = this.form.PersonnelID + '-' + this.form.Name + '-' + this.fileSelected.split('.')[0]
+        let pdfName = this.form.PersonnelID + '-' + this.form.Name + '-' + this.fileSelected
+        let name = pdfName.split('.')[0]
         this.fileName = name
         payload.file = this.fileSelected
         payload.name = name
@@ -354,39 +350,40 @@ export default {
         let item = await Security.dispatch('uploadForm', payload)
         let itemlink = item.data.d.ListItemAllFields.__deferred.uri
         let form = await Security.dispatch('getForm', itemlink)
-        payload = form.data.d.__metadata
-        this.form.etag = payload.etag
-        this.form.uri = payload.uri
-        payload.file = this.fileSelected
-        payload.digest = digest
-        payload.name = name
-        // spayload.IndexNumber = this.IndexNumber
-        payload.Company = this.form.Company
-        payload.PersonnelID = this.form.PersonnelID
-        payload.PersonName = this.form.Name
-        Security.dispatch('updateForm', payload).then(async function() {
-          // Add a task to the task list for Security Group
-          let todoDigest = await Todo.dispatch('getDigest')
-          payload = {
-            'Task Name': name,
-            AssignedTo: 64, // Hardcoding the Security Group
-            Description: 'Approve or reject ' + name,
-            isMilestone: 'No',
-            PercentComplete: null,
-            TaskType: vm.form.Type + ' Request',
-            digest: todoDigest
+        let todoDigest = await Todo.dispatch('getDigest')
+        payload = {
+          Title: 'Approve ' + name,
+          AssignedToId: vm.userid, // Hardcoding the Security Group
+          Description: 'Approve or reject ' + name,
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: vm.form.Type + ' Request',
+          TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id,
+          digest: todoDigest
+        }
+        Todo.dispatch('addTodo', payload).then(function(results) {
+          payload = form.data.d.__metadata
+          payload.file = vm.fileSelected
+          payload.digest = digest
+          payload.name = pdfName
+          // spayload.IndexNumber = this.IndexNumber
+          payload.Company = vm.form.Company
+          payload.PersonnelID = vm.form.PersonnelID
+          payload.PersonName = vm.form.Name
+          payload.TaskId = results.data.d.Id
+          if (vm.form.Type === 'SCI') {
+            payload.SCIType = vm.form.SCIType
           }
-          if (this.form.Type === 'SCI') {
-            payload.SCIType = this.form.SCIType
-          }
-          Todo.dispatch('addTodo', payload).then(function() {
+          Security.dispatch('updateForm', payload).then(async function() {
+            // Add a task to the task list for Security Group
+
             const notification = {
               type: 'success',
               title: 'Succesfully Uploaded Form',
               message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
               push: true
             }
-            vm.store.dispatch('notification/add', notification, { root: true })
+            vm.$store.dispatch('notification/add', notification, { root: true })
 
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
             let event = []
@@ -397,15 +394,16 @@ export default {
               etag: vm.form.etag,
               uri: vm.form.uri
             })
+            // Clear form after submission
+
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+            vm.fileSelected = null
+            vm.fileBuffer = null
           })
         })
-        // Clear form after submission
-        if (this.formType === 'account') {
-          this.form.Type = this.accountOptions[0]
-        }
-        document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-        this.fileSelected = null
-        this.fileBuffer = null
       }
     },
     async onFileSelect(args) {
