@@ -31,31 +31,31 @@ let travelMenu = {
       props: true
     },
     {
-      path: 'tracker',
+      path: 'page/tracker',
       name: 'Travel Tracker',
-      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelTracker2.vue'),
       props: true
     },
     {
-      path: 'calendar',
+      path: 'page/calendar',
       name: 'Travel Calendar',
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelCalendar.vue'),
       props: true
     },
     {
-      path: 'new',
+      path: 'page/new',
       name: 'New Travel',
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/NewTravel.vue'),
       props: true
     },
     {
-      path: 'edit',
+      path: 'page/edit',
       name: 'Edit Travel',
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/EditTravel.vue'),
       props: true
     },
     {
-      path: 'report',
+      path: 'page/report',
       name: 'Trip Report',
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TripReport.vue'),
       props: true

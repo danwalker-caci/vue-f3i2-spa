@@ -1,6 +1,6 @@
 /* eslint-disable */
 import store from '../store/store'
-import UserProfileService from '@/services/UserProfileService.js'
+import UserService from '@/services/UserService.js'
 import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 
@@ -62,8 +62,15 @@ const getters = {
 }
 
 const actions = {
+  async getDigest() {
+    let response = await UserService.getFormDigest()
+    User.commit(state => {
+      state.digest = response.data.d.GetContextWebInformation.FormDigestValue
+    })
+    return response
+  },
   getUserId() {
-    UserProfileService.getUserId()
+    UserService.getUserId()
       .then(response => {
         User.commit(state => {
           // if (console) { console.log('USER ID: ' + response.data.d.Id) }
@@ -75,19 +82,19 @@ const actions = {
       })
   },
   async getUserById({ state }, payload) {
-    let response = await UserProfileService.getUserById(payload);
+    let response = await UserService.getUserById(payload);
     return response;
   },
   async getUserProfileFor({ state }, payload) {
-    let response = await UserProfileService.getUserProfileFor(payload);
+    let response = await UserService.getUserProfileFor(payload);
     return response;
   },
   async getPickerUserId(usr) {
-    let response = await UserProfileService.getPickerUserId(usr)
+    let response = await UserService.getPickerUserId(usr)
     return response
   },
   async getUserProfile() {
-    UserProfileService.getUserProfile()
+    UserService.getUserProfile()
       .then(response => {
         if (console) {
           console.log('PROFILE INFORMATION: ' + response)
@@ -156,7 +163,7 @@ const actions = {
       })
   },
   getUserGroups({ state }) {
-    UserProfileService.getUserGroups(state.userid)
+    UserService.getUserGroups(state.userid)
       .then(response => {
         User.commit(state => {
           state.usergroups = response.data.d.results
@@ -235,6 +242,16 @@ const actions = {
           push: true
         }
         store.dispatch('notification/add', notification, { root: true })
+      })
+  },
+  SendEmail({ state }, payload) {
+    // send email to security that this request needs to have security paperwork
+    UserService.SendEmail(payload, state.digest)
+      .then(response => {
+        return response
+      })
+      .catch(error => {
+        console.log('There was an error sending email: ', error.response)
       })
   }
 }

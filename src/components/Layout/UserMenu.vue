@@ -175,6 +175,7 @@ export default {
     this.$nextTick(function() {
       Todo.dispatch('getDigest')
       this.userdisplayname = this.profiledata.DisplayName
+      document.getElementById('LoadingBars').style.display = 'none'
       /* if (!vm.userloaded) {
         User.dispatch('getUserId').then(function() {
           User.dispatch('getUserProfile').then(function() {

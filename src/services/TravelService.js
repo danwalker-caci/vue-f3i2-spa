@@ -9,6 +9,12 @@ if (window._spPageContextInfo) {
 }
 
 /* #region BASE */
+/* let a = moment()
+  .subtract(8, 'days')
+  .format('YYYY-MM-DD[T]HH:MM:[00Z]') */
+let b = moment()
+  .subtract(1, 'days')
+  .format('YYYY-MM-DD[T]HH:MM:[00Z]')
 let portalemail = ''
 
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc"
@@ -19,6 +25,8 @@ let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
 geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
+// let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
+let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=EndDate le datetime'" + b + "'"
 /* #endregion */
 
 export default {
@@ -30,6 +38,29 @@ export default {
     })
     portalemail = store.state.support.portalemail
     return response
+  },
+  async getTripsForLateReport() {
+    let allTrips = []
+    async function getAllTrips(tripurl) {
+      if (tripurl === '') {
+        tripurl = trurl
+      }
+      let response = await axios.get(tripurl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let results = response.data.d.results
+      allTrips = allTrips.concat(results)
+      // recursively load
+      if (response.data.d.__next) {
+        tripurl = response.data.d.__next
+        return getAllTrips(tripurl)
+      } else {
+        return allTrips
+      }
+    }
+    return getAllTrips('')
   },
   async getTripsByCompany(payload, state) {
     console.log('TRAVEL SERVICE PAYLOAD:' + payload + ', ' + state)
@@ -183,7 +214,7 @@ export default {
     body += '<p>Subject: ' + payload.Subject + '</p>'
     body += '<p>Clearance Required: ' + payload.Clearance + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/view?id=' + id + '">Travel Calendar</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/view?id=' + id + '">Travel</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -524,6 +555,29 @@ export default {
       return response
     } catch (error) {
       console.log('TravelService Error Ediing Travel: ' + error)
+    }
+  },
+  async updateTravelStatus(payload, digest) {
+    let uri = payload.uri !== null || payload.uri !== undefined ? payload.uri : null
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': payload.etag
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TravelListItem' },
+      Status: payload.status
+    }
+    try {
+      const response = await axios.post(uri, itemprops, config)
+      return response
+    } catch (error) {
+      console.log('TravelService Error Updating Travel Status: ' + error)
     }
   },
   approveTravel(id, uri, etag, digest) {

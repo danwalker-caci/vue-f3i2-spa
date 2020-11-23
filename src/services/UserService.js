@@ -4,12 +4,21 @@ let SPCI = null
 if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
-
+let portalemail = 'F3I-2Portal@caci.com'
 let baseUrl = SPCI.webServerRelativeUrl
 let userurl = baseUrl + '/_api/SP.UserProfiles.PeopleManager/GetMyProperties'
 let idurl = baseUrl + '/_api/Web/CurrentUser?$select=Id'
+let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 
 export default {
+  async getFormDigest() {
+    const response = await axios.request({
+      url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+      method: 'post',
+      headers: { Accept: 'application/json; odata=verbose' }
+    })
+    return response
+  },
   getUserId() {
     return axios
       .get(idurl, {
@@ -62,5 +71,34 @@ export default {
       }
     })
     return response
+  },
+  SendEmail(payload, digest) {
+    // need to somehow pass the id in the link and then have the system display info for that travel request
+    let mail = {
+      properties: {
+        __metadata: { type: 'SP.Utilities.EmailProperties' },
+        From: portalemail,
+        To: { results: payload.To },
+        Body: payload.Body,
+        Subject: payload.Subject
+      }
+    }
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    return axios
+      .post(eurl, mail, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        console.log('TravelService Error Sending Email: ' + error)
+      })
   }
 }
