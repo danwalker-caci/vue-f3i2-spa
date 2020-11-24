@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="contentHeight">
-    <b-row v-if="mode == 'default'" class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
       <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
@@ -66,13 +66,13 @@
         </div>
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-row no-gutters class="buttonrow">
             <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
               Toggle Filters
             </b-button>
-          </div>
-          <div class="col-12 tableHeight">
+          </b-row>
+          <b-row no-gutters class="gridrow">
             <ejs-grid
               id="WorkplanGrid"
               ref="WorkplanGrid"
@@ -161,8 +161,8 @@
                 </table>
               </b-container>
             </b-modal>
-          </div>
-        </b-row>
+          </b-row>
+        </b-container>
       </b-col>
     </b-row>
   </b-container>
@@ -415,7 +415,9 @@ export default {
     this.$bvToast.show('busy-toast')
     Workplan.dispatch('getDigest')
     Workplan.dispatch('getManagers').then(function() {
-      vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+      Workplan.dispatch('getWorkplans').then(function() {
+        vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+      })
     })
   },
   methods: {
@@ -774,26 +776,18 @@ export default {
   },
   provide: {
     grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
-  },
-  watch: {
-    // eslint-disable-next-line no-unused-vars
-    $route(to, from) {
-      this.mode = to.params.mode
-      switch (this.mode) {
-        case 'manning':
-          // document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
-          break
-
-        case 'default':
-          // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
-          break
-      }
-    }
   }
 }
 </script>
 
 <style lang="scss">
+.buttonrow {
+  height: 50px;
+}
+.gridrow {
+  height: calc(100vh - 150px);
+}
+
 .detailtable td {
   font-size: 13px;
   padding: 4px;
