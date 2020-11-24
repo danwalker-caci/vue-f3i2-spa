@@ -257,7 +257,7 @@
                       <b-row id="AccomplishmentsAnchor">
                         <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
                         <b-button id="btn_CancelAccomplishments" ref="btn_CancelAccomplishments" class="formbutton" variant="info" @click="handleit('cancelaccomplishment', '', '')">Cancel</b-button>
-                        <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="checkAccomplishment()" title="Save and Edit Later">Save</b-button>
+                        <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')" title="Save and Edit Later">Save</b-button>
                         <b-button id="btn_PrivateAccomplishment" ref="btn_PrivateAccomplishment" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateaccomplishment', '', '')">Make Private</b-button>
                         <b-button id="btn_CompleteAccomplishment" ref="btn_CompleteAccomplishment" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeaccomplishment', '', '')">Complete</b-button>
                       </b-row>
