@@ -361,48 +361,48 @@ export default {
           TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id,
           digest: todoDigest
         }
-        Todo.dispatch('addTodo', payload).then(function(results) {
-          payload = form.data.d.__metadata
-          payload.file = vm.fileSelected
-          payload.digest = digest
-          payload.name = pdfName
-          // spayload.IndexNumber = this.IndexNumber
-          payload.Company = vm.form.Company
-          payload.PersonnelID = vm.form.PersonnelID
-          payload.PersonName = vm.form.Name
-          payload.TaskId = results.data.d.Id
-          if (vm.form.Type === 'SCI') {
-            payload.SCIType = vm.form.SCIType
+        let results = await Todo.dispatch('addTodo', payload)
+        payload = form.data.d.__metadata
+        payload.file = this.fileSelected
+        payload.digest = digest
+        payload.name = pdfName
+        // spayload.IndexNumber = this.IndexNumber
+        payload.Company = this.form.Company
+        payload.PersonnelID = this.form.PersonnelID
+        payload.PersonName = this.form.Name
+        payload.TaskID = results.data.d.Id
+        if (vm.form.Type === 'SCI') {
+          payload.SCIType = this.form.SCIType
+        }
+        console.log(payload)
+        await Security.dispatch('updateForm', payload).then(async function() {
+          // Add a task to the task list for Security Group
+
+          const notification = {
+            type: 'success',
+            title: 'Succesfully Uploaded Form',
+            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+            push: true
           }
-          Security.dispatch('updateForm', payload).then(async function() {
-            // Add a task to the task list for Security Group
+          vm.$store.dispatch('notification/add', notification, { root: true })
 
-            const notification = {
-              type: 'success',
-              title: 'Succesfully Uploaded Form',
-              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-              push: true
-            }
-            vm.$store.dispatch('notification/add', notification, { root: true })
-
-            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-            let event = []
-            event.push({
-              name: vm.fileName,
-              Status: 'SecurityReview',
-              Form: library + vm.fileSelected,
-              etag: vm.form.etag,
-              uri: vm.form.uri
-            })
-            // Clear form after submission
-
-            if (vm.formType === 'account') {
-              vm.form.Type = vm.accountOptions[0]
-            }
-            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-            vm.fileSelected = null
-            vm.fileBuffer = null
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+          let event = []
+          event.push({
+            name: vm.fileName,
+            Status: 'SecurityReview',
+            Form: library + vm.fileSelected,
+            etag: vm.form.etag,
+            uri: vm.form.uri
           })
+          // Clear form after submission
+
+          if (vm.formType === 'account') {
+            vm.form.Type = vm.accountOptions[0]
+          }
+          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+          vm.fileSelected = null
+          vm.fileBuffer = null
         })
       }
     },

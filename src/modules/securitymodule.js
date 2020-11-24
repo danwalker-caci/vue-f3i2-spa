@@ -10,9 +10,6 @@ const getters = {
 const actions = {
   async getDigest() {
     let response = await SecurityService.getFormDigest()
-    /* if (console) {
-      console.log('TravelModule DIGEST: ' + response)
-    } */
     Security.commit(state => {
       state.digest = response.data.d.GetContextWebInformation.FormDigestValue
     })
@@ -22,12 +19,10 @@ const actions = {
     let response = await SecurityService.getForm(state, uri)
     return response
   },
-  async getFormByTypeId(payload) {
-    if (console) {
-      console.log('GETTING FORM BY TYPE ID')
-    }
+  async getFormByTypeId({ state }, payload) {
+    payload.state = state
     let response = await SecurityService.getFormByTypeId(payload)
-    return response.d.data.reponse
+    return response.data.d
   },
   async uploadForm({ state }, payload) {
     payload.state = state
@@ -35,7 +30,15 @@ const actions = {
     return report
   },
   async updateForm({ state }, payload) {
-    let response = await SecurityService.updateForm(payload, state.diget)
+    let response = await SecurityService.updateForm(payload, state.digest)
+    return response
+  },
+  async ApproveForm({ state }, payload) {
+    let response = await SecurityService.ApproveForm(payload, state.digest)
+    return response
+  },
+  async DeleteForm({ state }, payload) {
+    let response = await SecurityService.DeleteForm(payload, state.digest)
     return response
   }
 }

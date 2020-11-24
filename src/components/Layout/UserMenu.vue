@@ -8,6 +8,7 @@
             <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
             <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
             <e-column field="Status" headerText="Number" width="100"></e-column>
+            <e-column headerText="Go To Item" textAlign="Left" width="125" :template="GoToTemplate"></e-column>
             <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="150"></e-column>
             <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
             <e-column field="TaskType" headerText="Manager" textAlign="Left" width="200"></e-column>
@@ -91,6 +92,28 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
+      GoToTemplate: function() {
+        return {
+          template: Vue.component('columnTemplate', {
+            template: `
+            <div>
+              <b-button class="actionbutton" variant="primary" @click="goto(data)" title="Go To Item">
+                <font-awesome-icon far icon="directions" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>`,
+            data: function() {
+              return {
+                data: {}
+              }
+            },
+            methods: {
+              goto: function(data) {
+                vm.$router.push({ path: data.TaskLink })
+              }
+            }
+          })
+        }
+      },
       ActionsTemplate: function() {
         return {
           template: Vue.component('columnTemplate', {

@@ -17,6 +17,7 @@ export default class Security extends Model {
       Title: this.attr(''),
       Company: this.attr(''),
       PersonnelID: this.number(null),
+      library: this.attr(''),
       Type: this.attr(''),
       etag: this.attr(null),
       uri: this.attr(null)

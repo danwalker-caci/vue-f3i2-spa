@@ -27,7 +27,7 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.TasksListItem' },
-      TaskName: payload.TaskName,
+      Title: payload.Title,
       AssignedToId: {
         __metadata: { type: 'Collection(Edm.Int32)' },
         results: [payload.AssignedToId]
@@ -77,6 +77,17 @@ export default {
         })
     }
     return getAllTodos(null)
+  },
+  async getTodoById(id) {
+    let todoUrl = url + '(' + id + ')'
+    const response = await axios({
+      method: 'GET',
+      url: todoUrl,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
   },
   getTodosByUser(id) {
     // console.log('TodoService Getting Todos By User Id: ' + id)
