@@ -9,7 +9,7 @@
       </template>
       <b-progress :variant="busyVariant" :value="busyValue" :max="busyMax" show-progress animated></b-progress>
     </b-toast>
-    <b-row ref="MainRow" class="contentHeight">
+    <b-row class="mb-1">
       <b-col cols="3">
         <b-card border-variant="success" text-variant="dark">
           <template v-slot:header>
@@ -41,7 +41,22 @@
           </b-card-body>
         </b-card>
       </b-col>
-      <b-col cols="3"></b-col>
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">Travel Actions</span>
+              <font-awesome-icon fas icon="helicopter" class="icon text-danger float-right ml-1"></font-awesome-icon>
+            </h3>
+          </template>
+          <b-card-body>
+            <b-row class="p-0 m-0">
+              <b-button ref="btn_LateTripReports" variant="success" @click="btn_LateTripReports_Clicked">Calculate Late TRs</b-button>
+              <span class="badge badge-xs badge-danger">{{ tripcount }}</span>
+            </b-row>
+          </b-card-body>
+        </b-card>
+      </b-col>
       <b-col cols="3">
         <b-card border-variant="success" text-variant="dark">
           <template v-slot:header>
@@ -76,6 +91,11 @@ import Personnel from '@/models/Personnel'
 import Travel from '@/models/Travel'
 
 let vm = null
+let SPCI = null
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
+let baseurl = SPCI.webAbsoluteUrl
 
 export default {
   name: 'admin',
@@ -125,6 +145,12 @@ export default {
     travel() {
       return Travel.getters('allTravel')
     },
+    testtrips() {
+      return Travel.getters('testtrips')
+    },
+    testtripsloaded() {
+      return Travel.getters('testtripsloaded')
+    },
     appversion() {
       return User.getters('AppVersion')
     },
@@ -161,7 +187,8 @@ export default {
       selecteddata: null,
       ManagerEmail: '',
       cloneMSR: false,
-      dataMap: []
+      dataMap: [],
+      tripcount: 0
     }
   },
   mounted: function() {
@@ -169,9 +196,10 @@ export default {
       console.log('sp.js is loaded')
     })
     vm = this
+    User.dispatch('getDigest')
     MSR.dispatch('getDigest')
     Travel.dispatch('getDigest')
-    Travel.dispatch('getTRIPS')
+    // Travel.dispatch('getTRIPS')
     const notification = {
       type: 'info',
       title: 'Getting MSRs',
@@ -180,9 +208,9 @@ export default {
     }
     this.$store.dispatch('notification/add', notification, { root: true })
     Workplan.dispatch('getWorkplans').then(function() {
-      MSR.dispatch('getMSRs').then(function() {
+      /* MSR.dispatch('getMSRs').then(function() {
         vm.$options.interval = setInterval(vm.waitForMSRs, 1000)
-      })
+      }) */
     })
   },
   beforeDestroy() {
@@ -219,6 +247,83 @@ export default {
           console.log('Install Failed: ' + args.get_message())
         }
       )
+    },
+    async btn_LateTripReports_Clicked() {
+      // calculate late trip reports
+      Travel.dispatch('getDigest').then(function() {
+        Travel.dispatch('getTripsForLateReport').then(function() {
+          vm.$options.interval = setInterval(vm.waitForTestTrips, 1000)
+        })
+      })
+    },
+    waitForTestTrips: function() {
+      if (this.testtripsloaded) {
+        clearInterval(this.$options.interval)
+        if (this.testtrips.length > 0) {
+          this.tripcount = this.testtrips.length
+          for (let i = 0; i < this.testtrips.length; i++) {
+            if (this.testtrips[i].TripReport == 'NULL') {
+              // is it due or late?
+              if (this.$moment(this.testtrips[i].EndTime).isBefore(this.$moment().subtract(7, 'days'))) {
+                // late. Update Status and then check for needed emails
+                let payload = {}
+                payload.uri = this.testtrips[i].uri
+                payload.etag = this.testtrips[i].etag
+                payload.status = 'ReportLate'
+                Travel.dispatch('updateTravelStatus', payload)
+                this.sendTREmails(this.testtrips[i])
+              } else {
+                // due
+                let payload = {}
+                payload.uri = this.testtrips[i].uri
+                payload.etag = this.testtrips[i].etag
+                payload.status = 'ReportDue'
+                Travel.dispatch('updateTravelStatus', payload)
+              }
+            }
+          }
+        }
+      }
+    },
+    async sendTREmails(item) {
+      // calculate the need to send an email based on the lateness of the report
+      // let AllEmails = ['mogaard@caci.com', 'sheila.jackson@caci.com']
+      let AllEmails = ['alexie.hazen@caci.com']
+      let end = this.$moment(item.EndTime)
+      let today = this.$moment()
+      let diff = today.diff(end, 'days')
+      console.log('DIFF: ' + diff)
+      let wp = item.WorkPlanNumber
+      let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
+      if (manager[0]) {
+        let email = manager[0]['Manager']['EMail']
+        console.log('MGR EMAIL: ' + email)
+        switch (true) {
+          case diff == 7:
+            AllEmails = [email]
+            break
+
+          case diff > 7:
+            AllEmails.push(email)
+            break
+        }
+      } else {
+        // could not get manager email
+      }
+      // send email
+      let payload = {}
+      let body = ''
+      body += '<p>Hello ' + manager[0]['Manager']['Title'] + ',</p><p></p>'
+      body += '<p>A Trip Report for ' + item.IndexNumber + ' has not been uploaded and is now late.</p><p></p>'
+      body += '<p>Please click the link below for more details.</p><p></p>'
+      body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      // body += '<p><a href="' + baseurl + '/Pages/Dan.aspx#/travel/page/tracker?IndexNumber=' + item.IndexNumber + '">Travel Tracker</a></p>'
+      payload.To = AllEmails
+      payload.Subject = 'Late TripReport'
+      payload.Body = body
+      User.dispatch('SendEmail', payload).then(function() {
+        console.log('SendEmail Called')
+      })
     },
     waitForMSRs: function() {
       if (this.loaded && this.workplansloaded) {

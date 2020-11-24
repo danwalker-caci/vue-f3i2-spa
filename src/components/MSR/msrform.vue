@@ -2635,7 +2635,7 @@ export default {
     },
     async handleit(action, field, form) {
       if (console) {
-        console.log('HANDLEIT CALLED: ' + field + ', ' + form)
+        console.log('HANDLEIT CALLED: ' + action + ', ' + field + ', ' + form)
       }
       switch (action) {
         /* #region BASE */
@@ -3414,13 +3414,15 @@ export default {
       let lsAccomplishments = JSON.parse(localStorage.getItem('accomplishment-' + this.MSRId))
       // check if HTML is an empty string and localStorage accomplishment.HTML is not empty
       if (!this.Accomplishments[this.SelectedIndex].HTML && lsAccomplishments[this.SelectedIndex].HTML) {
-        // TODO: throw a modal explaining that there is something in cache that can overwrite this empty Accomplishment
+        // throw a confirm box explaining that there is something in cache that can overwrite this empty Accomplishment
         // If yes - use from localStorage
         // If No - delete entry from localStorage
+        // TODO: Convert to confirm box
         this.$bvModal.show('accomplishmentModal')
       } else {
         this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
-        this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
+        return true
+        // this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
       }
     },
     async restoreAccomplishment() {

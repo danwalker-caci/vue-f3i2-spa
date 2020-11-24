@@ -324,6 +324,9 @@ export default {
     },
     user() {
       return User.getters('CurrentUser')
+    },
+    userloaded() {
+      return User.getters('Loaded')
     }
   },
   data: function() {
@@ -680,49 +683,56 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.company = this.user[0].Company
-    const notification = {
-      type: 'info',
-      title: 'Getting Data',
-      message: 'Getting Workplans and Personnel. Please wait...',
-      push: false
-    }
-    this.$store.dispatch('notification/add', notification, { root: true })
-    Personnel.dispatch('getDigest')
-    Workplan.dispatch('getWorkplans').then(function() {
-      if (vm.isSubcontractor) {
-        let payload = {}
-        payload.company = vm.company
-        Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-          vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+    this.$nextTick(function() {
+      if (vm.companies.length === 0) {
+        Company.dispatch('getCompanies')
+      }
+      if (vm.userloaded) {
+        vm.company = vm.user[0].Company
+        const notification = {
+          type: 'info',
+          title: 'Getting Data',
+          message: 'Getting Workplans and Personnel. Please wait...',
+          push: false
+        }
+        vm.$store.dispatch('notification/add', notification, { root: true })
+        Personnel.dispatch('getDigest')
+        Workplan.dispatch('getWorkplans').then(function() {
+          if (vm.isSubcontractor) {
+            let payload = {}
+            payload.company = vm.company
+            Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+            })
+          } else {
+            Personnel.dispatch('getPersonnel').then(function() {
+              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+            })
+          }
         })
-      } else {
-        Personnel.dispatch('getPersonnel').then(function() {
-          vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-        })
+        if (vm.mode === 'edit') {
+          // Don't show all of the records until after the form is submitted
+          vm.approvalOnly = true
+          vm.PersonnelId = this.id
+          Workplan.dispatch('getWorkplans').then(function() {
+            Personnel.dispatch('getPersonnelAllValuesById', vm.id).then(async person => {
+              let modData = {}
+              if (person[0].Modification && person[0].Modification.length > 0) {
+                modData = JSON.parse(person[0].Modification)
+                modData.uri = person[0].uri
+                modData.etag = person[0].etag
+                modData.Id = person[0].Id
+                vm.oldData = person[0]
+                vm.showOldData = true
+              } else {
+                modData = person[0]
+              }
+              vm.editRow(modData)
+            })
+          })
+        }
       }
     })
-    if (this.mode === 'edit') {
-      // Don't show all of the records until after the form is submitted
-      this.approvalOnly = true
-      this.PersonnelId = this.id
-      Workplan.dispatch('getWorkplans').then(function() {
-        Personnel.dispatch('getPersonnelAllValuesById', this.id).then(async person => {
-          let modData = {}
-          if (person[0].Modification && person[0].Modification.length > 0) {
-            modData = JSON.parse(person[0].Modification)
-            modData.uri = person[0].uri
-            modData.etag = person[0].etag
-            modData.Id = person[0].Id
-            vm.oldData = person[0]
-            vm.showOldData = true
-          } else {
-            modData = person[0]
-          }
-          vm.editRow(modData)
-        })
-      })
-    }
   },
   methods: {
     waitForPeople: function() {

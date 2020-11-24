@@ -19,6 +19,7 @@
               <td>
                 <div class="col p-0 text-right">
                   <b-button-group class="mt-2">
+                    <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalHide">Cancel</b-button>
                     <b-button variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
                   </b-button-group>
                 </div>
@@ -77,6 +78,11 @@ export default {
   },
   mounted: function() {
     vm = this
+    let payload = {}
+    payload.id = vm.TripId
+    Travel.dispatch('getTripById', payload).then(function() {
+      vm.$options.interval = setInterval(vm.waitForTrip, 1000)
+    })
   },
   data: function() {
     return {
@@ -107,7 +113,7 @@ export default {
       }
     },
     onModalHide: function() {
-      this.$router.push({ name: 'Travel Tracker', path: '/travel/home/tracker' })
+      this.$router.push({ name: 'Travel Tracker' })
     },
     async onModalSave() {
       // perform upload and refresh the page
@@ -142,7 +148,7 @@ export default {
         Travel.dispatch('editTripReport', event).then(function() {
           // Reload tracker
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
-          vm.$router.push({ name: 'Travel Tracker', path: '/travel/home/tracker' })
+          vm.$router.push({ name: 'Travel Tracker' })
         })
       })
     },

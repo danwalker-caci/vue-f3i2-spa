@@ -164,6 +164,9 @@ export default {
     appversion() {
       return User.getters('AppVersion')
     },
+    userloaded() {
+      return User.getters('Loaded')
+    },
     currentuser() {
       return User.getters('CurrentUser')
     },
@@ -247,6 +250,8 @@ export default {
             { text: 'WPMReview', value: 'WPMReview' },
             { text: 'Approved', value: 'Approved' },
             { text: 'Rejected', value: 'Rejected' },
+            { text: 'TripReportLate', value: 'ReportLate' },
+            { text: 'TripReportDue', value: 'ReportDue' },
             { text: 'AFRLReview', value: 'AFRLReview' },
             { text: 'ATPRequested', value: 'ATPRequested' },
             { text: 'ATPApproved', value: 'ATPApproved' },
@@ -733,7 +738,7 @@ export default {
                 vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               report: function(data) {
-                vm.$router.push({ name: 'Trip Report', params: { back: 'Travel Tracker', TripId: data.Id } })
+                vm.$router.push({ name: 'Trip Report', params: { back: 'Travel Tracker', TripId: data.Id, IndexNumber: data.IndexNumber } })
               },
               postpone: async function(data) {
                 console.log(`Postpone Data: ${JSON.stringify(data)}`)
@@ -759,35 +764,42 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED: ' + this.Show + '</div>')
-    this.company = this.currentuser[0].Company
-    if (console) {
-      console.log('COMPANY: ' + this.company)
-    }
-    this.$bvToast.show('busy-toast')
-    // Check if user is subcontractor first.
-    if (this.isSubcontractor == true) {
-      if (this.company !== null) {
-        let payload = {}
-        payload.company = this.company
-        Travel.dispatch('getTripsByCompany', payload).then(function() {
-          vm.$bvToast.hide('busy-toast')
-          vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-        })
-      } else {
-        // TODO: LET THE USER KNOW?
-      }
-    } else {
-      Travel.dispatch('getTRIPS').then(function() {
-        vm.$bvToast.hide('busy-toast')
-        vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-      })
-    }
+    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
+    this.$options.interval = setInterval(this.waitForUser, 500)
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
   },
   methods: {
+    waitForUser: function() {
+      if (this.userloaded) {
+        clearInterval(this.$options.interval)
+        this.company = this.currentuser[0].Company
+        if (console) {
+          console.log('COMPANY: ' + this.company)
+        }
+        this.$bvToast.show('busy-toast')
+        // Check if user is subcontractor first.
+        if (this.isSubcontractor == true) {
+          if (this.company !== null) {
+            let payload = {}
+            payload.company = this.company
+            Travel.dispatch('getTripsByCompany', payload).then(function() {
+              vm.$bvToast.hide('busy-toast')
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          } else {
+            // TODO: LET THE USER KNOW?
+          }
+        } else {
+          Travel.dispatch('getTRIPS').then(function() {
+            vm.$bvToast.hide('busy-toast')
+            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+          })
+        }
+      }
+    },
+    loadEvents: function() {},
     waitForEvents: function() {
       this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-WAITING FOR EVENTS:  ' + this.mode + '</div>')
       if (this.travel && this.travel.length > 0) {
@@ -799,7 +811,12 @@ export default {
         this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         if (this.$route) {
-          if (this.$route.query.IndexNumber !== null || this.$route.query.IndexNumber !== undefined) {
+          let idx = String(this.$route.query.IndexNumber)
+          if (idx == 'null' || idx == 'undefined') {
+            // do nothing here
+          } else {
+            console.log('QUERY: ' + idx)
+            this.$refs.TravelGrid.search(idx)
           }
         }
       }

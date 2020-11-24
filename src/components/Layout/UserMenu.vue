@@ -47,9 +47,6 @@
 let vm = null
 import Vue from 'vue'
 import User from '@/models/User'
-/* import Personnel from '@/models/Personnel'
-import Workplan from '@/models/WorkPlan'
-import Company from '@/models/Company' */
 import Todo from '@/models/Todo'
 import { Page, VirtualScroll, DetailRow } from '@syncfusion/ej2-vue-grids'
 
@@ -198,6 +195,7 @@ export default {
     this.$nextTick(function() {
       Todo.dispatch('getDigest')
       this.userdisplayname = this.profiledata.DisplayName
+      document.getElementById('LoadingBars').style.display = 'none'
       /* if (!vm.userloaded) {
         User.dispatch('getUserId').then(function() {
           User.dispatch('getUserProfile').then(function() {
