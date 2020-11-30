@@ -8,12 +8,16 @@ const getters = {
 }
 
 const actions = {
-  async getDigest() {
-    let response = await SecurityService.getFormDigest()
-    Security.commit(state => {
-      state.digest = response.data.d.GetContextWebInformation.FormDigestValue
-    })
-    return response
+  getDigest() {
+    SecurityService.getFormDigest()
+      .then(response => {
+        Security.commit(state => {
+          state.digest = response.data.d.GetContextWebInformation.FormDigestValue
+        })
+      })
+      .catch(error => {
+        console.log('There was an error getting digest data: ', error.response)
+      })
   },
   async getForm({ state }, uri) {
     let response = await SecurityService.getForm(state, uri)
@@ -33,12 +37,12 @@ const actions = {
     let response = await SecurityService.updateForm(payload, state.digest)
     return response
   },
-  async ApproveForm({ state }, payload) {
-    let response = await SecurityService.ApproveForm(payload, state.digest)
+  ApproveForm({ state }, payload) {
+    let response = SecurityService.ApproveForm(payload, state.digest)
     return response
   },
-  async DeleteForm({ state }, payload) {
-    let response = await SecurityService.DeleteForm(payload, state.digest)
+  DeleteForm({ state }, payload) {
+    let response = SecurityService.DeleteForm(payload, state.digest)
     return response
   }
 }

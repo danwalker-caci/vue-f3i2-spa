@@ -338,8 +338,8 @@ export default {
             break
         }
         payload.library = library
-        let response = await Security.dispatch('getDigest')
-        let digest = response.data.d.GetContextWebInformation.FormDigestValue
+        let digest = await Security.dispatch('getDigest')
+        //let digest = response.data.d.GetContextWebInformation.FormDigestValue
         let pdfName = this.form.PersonnelID + '-' + this.form.Name + '-' + this.fileSelected
         let name = pdfName.split('.')[0]
         this.fileName = name

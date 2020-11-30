@@ -13,13 +13,12 @@ let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
 
 export default {
-  async getFormDigest() {
-    const response = await axios.request({
+  getFormDigest() {
+    return axios.request({
       url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
       method: 'post',
       headers: { Accept: 'application/json; odata=verbose' }
     })
-    return response
   },
   async getForm(state, uri) {
     const response = await axios({
@@ -42,14 +41,14 @@ export default {
     })
     return response
   },
-  async uploadForm(payload) {
+  async uploadForm(payload, digest) {
     let part = "(url='"
     part += payload.file + "',overwrite=true)"
     let url = formurlstart + payload.library + formurlend + part
     let data = payload.buffer
     let headers = {
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': payload.digest
+      'X-RequestDigest': payload.digest ? payload.digest : digest
     }
     try {
       // doing the upload
@@ -102,7 +101,7 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  async ApproveForm(payload, digest) {
+  ApproveForm(payload, digest) {
     let endpoint = payload.uri
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
@@ -133,13 +132,13 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  async DeleteForm(payload, digest) {
+  DeleteForm(payload, digest) {
     let endpoint = absurl + "/_api/web/GetFileByServerRelativeUrl('" + relurl + '/' + payload.library + '/' + payload.name + "')"
     //let endpoint = formurlstart + payload.library + "')/items(" + payload.id + ')'
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': digest,
+      'X-RequestDigest': payload.digest ? payload.digest : digest,
       'X-HTTP-Method': 'DELETE',
       'If-Match': '*'
     }

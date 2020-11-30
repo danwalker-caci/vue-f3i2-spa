@@ -180,8 +180,8 @@ export default {
     },
     approveForm: async function() {
       // Post Approval data
-      let response = await Security.dispatch('getDigest')
-      let digest = response.data.d.GetContextWebInformation.FormDigestValue
+      let digest = await Security.dispatch('getDigest')
+      //let digest = response.data.d.GetContextWebInformation.FormDigestValue
       let payload = {
         digest: digest,
         etag: this.etag,
@@ -209,35 +209,11 @@ export default {
       })
     },
     rejectForm: async function() {
-      // Add task for whoever created the original form
-      let todoDigest = await Todo.dispatch('getDigest')
-      let payload = {
-        Title: 'Correct ' + vm.formName,
-        AssignedToId: this.authorId, // Hardcoding the Security Group
-        Description: 'Correct ' + vm.formName + ' by uploading a form.',
-        IsMilestone: false,
-        PercentComplete: 0,
-        TaskType: vm.form.Type + ' Request',
-        TaskLink: '/security/' + this.form,
-        digest: todoDigest
-      }
-      await Todo.dispatch('addTodo', payload)
-      // Complete related task
-      Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
-        payload = {
-          digest: todoDigest,
-          etag: task.__metadata.etag,
-          uri: task.__metadata.uri,
-          id: task.Id
-        }
-        Todo.dispatch('completeTodo', payload)
-      })
       // Delete form from doc library
-      let response = await Security.dispatch('getDigest')
-      let digest = response.data.d.GetContextWebInformation.FormDigestValue
+      let digest = await Security.dispatch('getDigest')
       //console.log('TODO DIGEST: ' + todoDigest)
       console.log('SECURITY DIGEST: ' + digest)
-      payload = {
+      let payload = {
         id: this.formId,
         library: this.library,
         name: this.formName,
@@ -245,7 +221,30 @@ export default {
         etag: this.etag,
         digest: digest
       }
-      Security.dispatch('DeleteForm', payload).then(function() {
+      Security.dispatch('DeleteForm', payload).then(async function() {
+        // Add task for whoever created the original form
+        let todoDigest = await Todo.dispatch('getDigest')
+        payload = {
+          Title: 'Correct ' + vm.formName,
+          AssignedToId: this.authorId, // Hardcoding the Security Group
+          Description: 'Correct ' + vm.formName + ' by uploading a form.',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: vm.form.Type + ' Request',
+          TaskLink: '/security/' + this.form,
+          digest: todoDigest
+        }
+        await Todo.dispatch('addTodo', payload)
+        // Complete related task
+        Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+          payload = {
+            digest: todoDigest,
+            etag: task.__metadata.etag,
+            uri: task.__metadata.uri,
+            id: task.Id
+          }
+          Todo.dispatch('completeTodo', payload)
+        })
         const notification = {
           type: 'success',
           title: 'Rejected Form',

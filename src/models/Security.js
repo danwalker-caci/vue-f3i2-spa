@@ -5,9 +5,7 @@ export default class Security extends Model {
 
   static state = {
     digest: null,
-    loaded: false,
-    loading: true,
-    createTask: false
+    loaded: false
   }
 
   static fields() {

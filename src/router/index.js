@@ -33,11 +33,7 @@ let travelMenu = {
     {
       path: 'page/tracker',
       name: 'Travel Tracker',
-<<<<<<< HEAD
-      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/traveltracker.vue'),
-=======
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelTracker2.vue'),
->>>>>>> 49e09c61e5eb4d693d7edd9f48ef59d07e44d6e3
       props: true
     },
     {
