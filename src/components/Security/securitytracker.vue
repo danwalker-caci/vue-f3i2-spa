@@ -1,5 +1,21 @@
 <template>
-  <div></div>
+  <div>
+    <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
+      <e-columns>
+        <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+        <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+        <e-column field="Status" headerText="Number" width="100"></e-column>
+        <e-column headerText="Go To Item" textAlign="Left" width="125" :template="GoToTemplate"></e-column>
+        <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="150"></e-column>
+        <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
+        <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="200"></e-column>
+        <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+        <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
+        <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+        <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+      </e-columns>
+    </ejs-grid>
+  </div>
 </template>
 <script>
 let vm = null
@@ -10,7 +26,6 @@ import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
-import Todo from '@/models/Todo'
 
 export default {
   name: 'SecurityForms',

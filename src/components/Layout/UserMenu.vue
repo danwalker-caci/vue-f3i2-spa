@@ -11,7 +11,7 @@
             <e-column headerText="Go To Item" textAlign="Left" width="125" :template="GoToTemplate"></e-column>
             <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="150"></e-column>
             <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
-            <e-column field="TaskType" headerText="Manager" textAlign="Left" width="200"></e-column>
+            <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="200"></e-column>
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
             <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>

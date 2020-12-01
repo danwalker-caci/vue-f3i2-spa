@@ -30,7 +30,7 @@ export default {
     })
     return response
   },
-  async getFormByTypeId(payload) {
+  async getFormByTypeId(state, payload) {
     let url = formurlstart + payload.library + "')/items(" + payload.id + ')'
     const response = await axios({
       method: 'GET',
@@ -41,6 +41,10 @@ export default {
     })
     return response
   },
+  async getForms(state, payload) {
+    let url = formurlstart + payload.library + "')/items"
+    console.log(url)
+  },
   async uploadForm(payload, digest) {
     let part = "(url='"
     part += payload.file + "',overwrite=true)"
@@ -48,7 +52,7 @@ export default {
     let data = payload.buffer
     let headers = {
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': payload.digest ? payload.digest : digest
+      'X-RequestDigest': digest
     }
     try {
       // doing the upload
@@ -70,7 +74,7 @@ export default {
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': payload.digest ? payload.digest : digest,
+      'X-RequestDigest': digest,
       'X-HTTP-Method': 'MERGE',
       'If-Match': payload.etag
     }
@@ -85,6 +89,9 @@ export default {
       PersonName: payload.PersonName,
       Company: payload.Company,
       TaskID: payload.TaskID
+    }
+    if (payload.SCIType) {
+      itemprops.SCIType = payload.SCIType
     }
     return axios
       .post(endpoint, itemprops, config)
@@ -106,7 +113,7 @@ export default {
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': payload.digest ? payload.digest : digest,
+      'X-RequestDigest': digest,
       'X-HTTP-Method': 'MERGE',
       'If-Match': payload.etag
     }
@@ -138,7 +145,7 @@ export default {
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': payload.digest ? payload.digest : digest,
+      'X-RequestDigest': digest,
       'X-HTTP-Method': 'DELETE',
       'If-Match': '*'
     }
@@ -146,7 +153,7 @@ export default {
       headers: headers
     }
     return axios
-      .post(endpoint, config)
+      .post(endpoint, null, config)
       .then(function(response) {
         return response
       })

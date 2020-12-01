@@ -17,7 +17,10 @@
       </b-row>
       <b-card no-body class="p-3">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
-        <p class="font-weight-bolder">Please complete and submit the forms for each account you require. Downloaded Forms <u>must</u> be opened by Acrobat Reader DC.</p>
+        <p class="font-weight-bolder">Please complete and submit the forms for each account you require.</p>
+        <p class="font-weight-bolder text-danger">
+          <u>Downloaded Forms <u>must</u> be opened by Acrobat Reader DC.</u>
+        </p>
         <p v-if="formAccount" class="font-italic">All forms must be signed by a CAC.</p>
         <b-form-row>
           <b-col>
@@ -89,16 +92,16 @@
                 <li v-show="form.Type == 'CAC'">
                   <a :href="this.masterDocs + '/TASS-Form.pdf'">TASS Form</a>
                 </li>
-                <li v-show="form.Type == 'SCI'">
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
                   <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
                 </li>
-                <li v-show="form.Type == 'SCI'">
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
                   <a :href="this.masterDocs + '/SCI-Contract-Transfer-Form-(F3I-to-F3I-2).pdf'">SCI Contract Transfer Form (F3I to F3I 2)</a>
                 </li>
-                <li v-show="form.Type == 'SCI'">
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
                   <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form (F3I to F3I 2)</a>
                 </li>
-                <li v-show="form.Type == 'SCI'">
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
                   <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
                 </li>
               </ul>
@@ -218,17 +221,18 @@ export default {
       formSCI: false,
       fileSelected: null,
       formTitle: '',
-      sciOptions: ['Nomination', 'Transfer'],
+      sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: ''
     }
   },
   mounted: async function() {
     vm = this
     // First get current user informaiton
+    await Security.dispatch('getDigest')
     this.checkType()
     // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
     Company.dispatch('getCompanies').then(function() {
-      vm.$options.interval = setInterval(vm.waitForPersonnel, 1500)
+      vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
     })
   },
   methods: {
@@ -338,7 +342,6 @@ export default {
             break
         }
         payload.library = library
-        let digest = await Security.dispatch('getDigest')
         //let digest = response.data.d.GetContextWebInformation.FormDigestValue
         let pdfName = this.form.PersonnelID + '-' + this.form.Name + '-' + this.fileSelected
         let name = pdfName.split('.')[0]
@@ -346,11 +349,9 @@ export default {
         payload.file = this.fileSelected
         payload.name = name
         payload.buffer = this.fileBuffer
-        payload.digest = digest
         let item = await Security.dispatch('uploadForm', payload)
         let itemlink = item.data.d.ListItemAllFields.__deferred.uri
         let form = await Security.dispatch('getForm', itemlink)
-        let todoDigest = await Todo.dispatch('getDigest')
         payload = {
           Title: 'Approve ' + name,
           AssignedToId: vm.userid, // Hardcoding the Security Group
@@ -358,13 +359,11 @@ export default {
           IsMilestone: false,
           PercentComplete: 0,
           TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id,
-          digest: todoDigest
+          TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
         }
         let results = await Todo.dispatch('addTodo', payload)
         payload = form.data.d.__metadata
         payload.file = this.fileSelected
-        payload.digest = digest
         payload.name = pdfName
         // spayload.IndexNumber = this.IndexNumber
         payload.Company = this.form.Company
@@ -374,7 +373,6 @@ export default {
         if (vm.form.Type === 'SCI') {
           payload.SCIType = this.form.SCIType
         }
-        console.log(payload)
         await Security.dispatch('updateForm', payload).then(async function() {
           // Add a task to the task list for Security Group
 

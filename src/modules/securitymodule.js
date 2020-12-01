@@ -24,13 +24,15 @@ const actions = {
     return response
   },
   async getFormByTypeId({ state }, payload) {
-    payload.state = state
-    let response = await SecurityService.getFormByTypeId(payload)
+    let response = await SecurityService.getFormByTypeId(state, payload)
     return response.data.d
   },
+  async getForms({ state }, payload) {
+    let response = await SecurityService.getForms(state, payload)
+    return formatForms(response)
+  },
   async uploadForm({ state }, payload) {
-    payload.state = state
-    let report = await SecurityService.uploadForm(payload)
+    let report = await SecurityService.uploadForm(payload, state.digest)
     return report
   },
   async updateForm({ state }, payload) {
@@ -50,4 +52,10 @@ const actions = {
 export default {
   getters,
   actions
+}
+
+function formatForms(forms) {
+  for (let i = 0; i < forms.length; i++) {
+    //extrapulate the forms into a nice array of objects
+  }
 }

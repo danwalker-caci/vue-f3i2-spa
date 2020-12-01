@@ -108,6 +108,7 @@ export default {
   },
   mounted: async function() {
     vm = this
+    await Security.dispatch('getDigest')
     await this.checkType()
     await this.getForm()
   },
@@ -180,19 +181,15 @@ export default {
     },
     approveForm: async function() {
       // Post Approval data
-      let digest = await Security.dispatch('getDigest')
-      //let digest = response.data.d.GetContextWebInformation.FormDigestValue
       let payload = {
-        digest: digest,
         etag: this.etag,
         uri: this.uri,
         type: this.docLibraryType
       }
       await Security.dispatch('ApproveForm', payload)
       // Complete related task
-      Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+      Todo.dispatch('getTodoById', vm.taskId).then(async function(task) {
         payload = {
-          digest: digest,
           etag: task.__metadata.etag,
           uri: task.__metadata.uri,
           id: task.Id
@@ -210,35 +207,29 @@ export default {
     },
     rejectForm: async function() {
       // Delete form from doc library
-      let digest = await Security.dispatch('getDigest')
       //console.log('TODO DIGEST: ' + todoDigest)
-      console.log('SECURITY DIGEST: ' + digest)
       let payload = {
         id: this.formId,
         library: this.library,
         name: this.formName,
         uri: this.uri,
-        etag: this.etag,
-        digest: digest
+        etag: this.etag
       }
       Security.dispatch('DeleteForm', payload).then(async function() {
+        await Todo.dispatch('getDispatch')
         // Add task for whoever created the original form
-        let todoDigest = await Todo.dispatch('getDigest')
         payload = {
           Title: 'Correct ' + vm.formName,
-          AssignedToId: this.authorId, // Hardcoding the Security Group
+          AssignedToId: vm.authorId, // Hardcoding the Security Group
           Description: 'Correct ' + vm.formName + ' by uploading a form.',
           IsMilestone: false,
           PercentComplete: 0,
           TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/' + this.form,
-          digest: todoDigest
+          TaskLink: '/security/' + vm.form
         }
-        await Todo.dispatch('addTodo', payload)
         // Complete related task
         Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
           payload = {
-            digest: todoDigest,
             etag: task.__metadata.etag,
             uri: task.__metadata.uri,
             id: task.Id
