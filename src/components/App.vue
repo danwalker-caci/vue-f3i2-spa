@@ -7,6 +7,7 @@
 
 <script>
 let vm = null
+import Company from '@/models/Company'
 import User from '@/models/User'
 import Todo from '@/models/Todo'
 export default {
@@ -23,6 +24,7 @@ export default {
     vm = this
     this.$nextTick(function() {
       Todo.dispatch('getDigest')
+      Company.dispatch('getDigest')
       if (!vm.userloaded) {
         User.dispatch('getUserId').then(function() {
           User.dispatch('getUserProfile').then(function() {

@@ -6,11 +6,11 @@ if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
 
-// Rimming out until we need to send emails from Security
 let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -40,10 +40,6 @@ export default {
       }
     })
     return response
-  },
-  async getForms(state, payload) {
-    let url = formurlstart + payload.library + "')/items"
-    console.log(url)
   },
   async uploadForm(payload, digest) {
     let part = "(url='"
@@ -107,6 +103,95 @@ export default {
         }
         store.dispatch('notification/add', notification, { root: true })
       })
+  },
+  addSecurityForm(payload, digest) {
+    let endpoint = securityformurl
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST',
+      'If-Match': '*'
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      Title: payload.Title,
+      Types: payload.Types,
+      PersonnelID: payload.PersonnelID,
+      PersonName: payload.PersonName,
+      Company: payload.Company
+    }
+    return axios
+      .post(endpoint, itemprops, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        const notification = {
+          type: 'danger',
+          title: 'Security Service Error: ' + error,
+          message: 'Error Approving Security Form Data',
+          push: true
+        }
+        store.dispatch('notification/add', notification, { root: true })
+      })
+  },
+  updateSecurityForm(payload, digest) {
+    let endpoint = payload.uri
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': payload.etag
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      Title: payload.Title,
+      Types: payload.Types,
+      PersonnelID: payload.PersonnelID,
+      PersonName: payload.PersonName,
+      Company: payload.Company
+    }
+    return axios
+      .post(endpoint, itemprops, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        const notification = {
+          type: 'danger',
+          title: 'Security Service Error: ' + error,
+          message: 'Error Updating Security Form Data',
+          push: true
+        }
+        store.dispatch('notification/add', notification, { root: true })
+      })
+  },
+  async getSecurityFormByPersonnelId(payload) {
+    let url = securityformurl + '?$filter=(PersonnelID eq ' + payload.PersonnelID + ')'
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    }).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Adding Security Form Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response
   },
   ApproveForm(payload, digest) {
     let endpoint = payload.uri

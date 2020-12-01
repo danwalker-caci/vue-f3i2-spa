@@ -362,6 +362,7 @@ export default {
           TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
         }
         let results = await Todo.dispatch('addTodo', payload)
+        let formId = form.data.d.Id
         payload = form.data.d.__metadata
         payload.file = this.fileSelected
         payload.name = pdfName
@@ -374,8 +375,35 @@ export default {
           payload.SCIType = this.form.SCIType
         }
         await Security.dispatch('updateForm', payload).then(async function() {
-          // Add a task to the task list for Security Group
-
+          // First check to see if there is an entry for the PersonnelID in the Security Form List
+          let payload = {
+            Title: vm.form.PersonnelID + '-' + vm.form.Name,
+            PersonnelID: vm.form.PersonnelID,
+            PersonName: vm.form.Name,
+            Company: vm.form.Company,
+            Types: ''
+          }
+          let types = [{ type: vm.form.Type, id: formId, library: library, GovSentDate: '', GovCompleteDate: '' }]
+          let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+          console.log(securityForm)
+          if (securityForm && securityForm.results.length == 0) {
+            payload.Types = JSON.stringify(types)
+            console.log(payload)
+            await Security.dispatch('addSecurityForm', payload)
+          } else {
+            let securityFormsTypes = JSON.parse(securityForm.results[0].Types)
+            securityFormsTypes.forEach(type => {
+              types.push(type)
+            })
+            payload.Types = JSON.stringify(types)
+            payload.etag = securityForm.results[0].__metadata.etag
+            payload.uri = securityForm.results[0].__metadata.uri
+            console.log(payload)
+            await Security.dispatch('updateSecurityForm', payload)
+          }
+          // Run conditional on the results of the security form to either add or update security form
+          //await Security.dispatch('')
+          // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
           const notification = {
             type: 'success',
             title: 'Succesfully Uploaded Form',
@@ -395,12 +423,12 @@ export default {
           })
           // Clear form after submission
 
-          if (vm.formType === 'account') {
+          /*if (vm.formType === 'account') {
             vm.form.Type = vm.accountOptions[0]
           }
           document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
           vm.fileSelected = null
-          vm.fileBuffer = null
+          vm.fileBuffer = null*/
         })
       }
     },

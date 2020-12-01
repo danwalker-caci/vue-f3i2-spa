@@ -1,16 +1,14 @@
 <template>
   <div>
-    <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
+    <ejs-grid id="FormsGrid" ref="FormsGrid" :dataSource="forms" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
       <e-columns>
-        <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-        <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-        <e-column field="Status" headerText="Number" width="100"></e-column>
-        <e-column headerText="Go To Item" textAlign="Left" width="125" :template="GoToTemplate"></e-column>
-        <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="150"></e-column>
-        <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
-        <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="200"></e-column>
+        <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
+        <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
+        <e-column field="AccountTypes" headerText="Account Types" textAlign="Left" width="150"></e-column>
         <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-        <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
+        <!-- Add a hidden column that is showable using the Types entries. Need to format the Types entries and add conditional logical buttons for each. -->
+        <e-column field="GovSentDate" :visible="false" textAlign="Left" width="40"></e-column>
+        <e-column field="GovCompleteDate" :visible="false" textAlign="Left" width="40"></e-column>
         <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
         <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
       </e-columns>
@@ -56,6 +54,20 @@ export default {
       return User.getters('isSubcontractor')
     }
   },
+  data: function() {
+    return {
+      forms: null,
+      pageSettings: { pageSize: 15 },
+      editSettings: {
+        allowEditing: false,
+        allowAdding: false,
+        allowDeleting: false,
+        mode: 'Dialog'
+      },
+      filterSettings: { type: 'Menu' },
+      toolbar: ['Edit', 'Print', 'Search', 'ExcelExport']
+    }
+  },
   mounted: async function() {
     vm = this
     // First get current user informaiton
@@ -65,10 +77,43 @@ export default {
         vm.$options.interval = setInterval(vm.waitForPersonnel, 1500)
       })
     }
+    // get all of the entries from the SecurityForms list
   },
   methods: {
     checkType: async function() {
-      console.log('Check the route and then determine what should be loaded.')
+      switch (this.form) {
+        case 'NIPR':
+          // set the url for the post of file
+          this.library = 'AccountsNIPR'
+          this.libraryUrl = this.AccountsNIPRForms
+          this.formType = 'account'
+          break
+        case 'SIPR':
+          this.library = 'AccountsSIPR'
+          this.libraryUrl = this.AccountsSIPRForms
+          this.formType = 'account'
+          break
+        case 'DREN':
+          this.library = 'AccountsDREN'
+          this.libraryUrl = this.AccountsDRENForms
+          this.formType = 'account'
+          break
+        case 'JWICS':
+          this.library = 'AccountsJWICS'
+          this.libraryUrl = this.AccountsJWICSForms
+          this.formType = 'account'
+          break
+        case 'CAC':
+          this.library = 'CACForms'
+          this.libraryUrl = this.CACForms
+          this.formType = 'cac'
+          break
+        case 'SCI':
+          this.library = 'SCIForms'
+          this.libraryUrl = this.SCIForms
+          this.formType = 'sci'
+          break
+      }
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {

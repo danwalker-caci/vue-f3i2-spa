@@ -39,6 +39,18 @@ const actions = {
     let response = await SecurityService.updateForm(payload, state.digest)
     return response
   },
+  async addSecurityForm({ state }, payload) {
+    let response = await SecurityService.addSecurityForm(payload, state.digest)
+    return response
+  },
+  async updateSecurityForm({ state }, payload) {
+    let response = await SecurityService.updateSecurityForm(payload, state.digest)
+    return response
+  },
+  async getSecurityFormByPersonnelId({ state }, payload) {
+    let response = await SecurityService.getSecurityFormByPersonnelId(payload, state.digest)
+    return response.data.d
+  },
   ApproveForm({ state }, payload) {
     let response = SecurityService.ApproveForm(payload, state.digest)
     return response
