@@ -97,7 +97,7 @@
             >
               <e-columns>
                 <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="120"></e-column>
+                <e-column field="Status" headerText="Status" width="150"></e-column>
                 <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
                 <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                 <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
@@ -250,8 +250,9 @@ export default {
             { text: 'WPMReview', value: 'WPMReview' },
             { text: 'Approved', value: 'Approved' },
             { text: 'Rejected', value: 'Rejected' },
-            { text: 'TripReportLate', value: 'ReportLate' },
-            { text: 'TripReportDue', value: 'ReportDue' },
+            { text: 'Trip Report Late', value: 'ReportLate' },
+            { text: 'Trip Report Due', value: 'ReportDue' },
+            { text: 'Trip Report Review', value: 'TripReportReview' },
             { text: 'AFRLReview', value: 'AFRLReview' },
             { text: 'ATPRequested', value: 'ATPRequested' },
             { text: 'ATPApproved', value: 'ATPApproved' },
@@ -674,7 +675,7 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
               <div>
-                <a :href="href" target="_blank">{{ tripreport }}</span>
+                <a :href="href" target="_blank">{{ tripreport }}</a>
               </div>
             `,
             data: function() {
@@ -745,16 +746,14 @@ export default {
                 // post the data to the list and then reload the data
                 let response = await Travel.dispatch('postponeTravel', data)
                 vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-                let path = '/travel/home/refresh' + vm.mode
-                vm.$router.push({ path: path })
+                vm.$router.push({ name: 'Travel', params: { mode: 'refreshtracker' } })
               },
               cancel: async function(data) {
                 console.log(`Cancel Data: ${JSON.stringify(data)}`)
                 // post the data to the list and then reload the data
                 let response = await Travel.dispatch('cancelTravel', data)
                 vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-                let path = '/travel/home/refresh' + vm.mode
-                vm.$router.push({ path: path })
+                vm.$router.push({ name: 'Travel', params: { mode: 'refreshtracker' } })
               }
             }
           })
@@ -764,6 +763,7 @@ export default {
   },
   mounted: function() {
     vm = this
+    Travel.dispatch('getDigest')
     this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
     this.$options.interval = setInterval(this.waitForUser, 500)
   },

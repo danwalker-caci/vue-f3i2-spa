@@ -44,7 +44,10 @@ const actions = {
         console.log('There was an error getting todo data: ', error.response)
       })
   }, */
-  
+  async getTodoById({ state }, id) {
+    let response = await TodoService.getTodoById(id)
+    return response.data.d
+  },
   getTodosByUser({ state, commit }, userid) {
     // console.log('getTodosByUser: Getting Todos By User Id: ' + userid)
     state.mytodosloaded = false
@@ -69,6 +72,11 @@ const actions = {
     .catch(error => {
       console.log('There was an error completing your todo: ', error.response)
     })
+  },
+  addTodo: async function({ state }, payload) {
+    let digest = state.digest ? state.digest : payload.digest
+    let response = await TodoService.addTodo(payload, digest)
+    return response
   }
 }
 
@@ -90,6 +98,8 @@ function formatTodos(j) {
       StartDate: moment(j[i]["StartDate"]).isValid() ? moment(j[i]["StartDate"]).format("MM/DD/YYYY") : "",
       DueDate: moment(j[i]["DueDate"]).isValid() ? moment(j[i]["DueDate"]).format("MM/DD/YYYY") : "",
       TaskType: j[i]["TaskType"],
+      TaskLink: j[i]["TaskLink"],
+      TaskData: String(j[i]["TaskData"]),
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })

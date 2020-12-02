@@ -85,6 +85,10 @@ const actions = {
     let response = await TravelService.updateTravelStatus(payload, state.digest)
     return response
   },
+  async updateTravelStatusByID({ state }, payload) {
+    let response = await TravelService.updateTravelStatusByID(payload, state.digest)
+    return response
+  },
   async getAFRLTrips() {
     TravelService.getAFRLTrips()
       .then(response => {

@@ -5,6 +5,8 @@ if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
 
+let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
+
 export default {
   getFormDigest() {
     return axios.request({
@@ -12,6 +14,39 @@ export default {
       method: 'post',
       headers: { Accept: 'application/json; odata=verbose' }
     })
+  },
+  addTodo: async function(payload, digest) {
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TasksListItem' },
+      Title: payload.Title,
+      AssignedToId: {
+        __metadata: { type: 'Collection(Edm.Int32)' },
+        results: [payload.AssignedToId]
+      },
+      Body: payload.Description,
+      //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
+      //EndDate: moment(payload[0].EndTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
+      IsMilestone: payload.IsMilestone,
+      PercentComplete: payload.PercentComplete,
+      TaskType: payload.TaskType,
+      TaskLink: payload.TaskLink,
+      TaskData: payload.TaskData !== null || payload.TaskData !== undefined ? JSON.stringify(payload.TaskData) : ''
+    }
+    try {
+      const response = await axios.post(url, itemprops, config)
+      return response
+    } catch (error) {
+      console.log('Todo Error Adding Task: ' + error)
+    }
   },
   getTodos() {
     var allTodos = []
@@ -43,6 +78,17 @@ export default {
         })
     }
     return getAllTodos(null)
+  },
+  async getTodoById(id) {
+    let todoUrl = url + '(' + id + ')'
+    const response = await axios({
+      method: 'GET',
+      url: todoUrl,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
   },
   getTodosByUser(id) {
     // console.log('TodoService Getting Todos By User Id: ' + id)

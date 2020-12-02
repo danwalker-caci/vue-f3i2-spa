@@ -1176,6 +1176,7 @@ export default {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
         // Reset the ATP request to no
+        this.travelmodel.InternalData.Approval = 'Denied'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
       }
@@ -1184,6 +1185,7 @@ export default {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
         // Reset the ATP request to no
+        this.travelmodel.InternalData.Approval = 'Approved'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
       }
