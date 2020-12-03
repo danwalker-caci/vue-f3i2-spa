@@ -333,38 +333,38 @@ export default {
             // set the url for the post of file
             library = 'AccountsNIPR'
             libraryUrl = this.AccountsNIPRForms
-            console.log(vm.$store.state.support.AccountUserID)
-            this.taskUserId = vm.$store.state.support.AccountUserID
+            console.log(vm.$store.state.support.AccountUserId)
+            this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'SIPR':
             library = 'AccountsSIPR'
             libraryUrl = this.AccountsSIPRForms
-            console.log(vm.$store.state.support.AccountUserID)
-            this.taskUserId = vm.$store.state.support.AccountUserID
+            console.log(vm.$store.state.support.AccountUserId)
+            this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'DREN':
             library = 'AccountsDREN'
             libraryUrl = this.AccountsDRENForms
-            console.log(vm.$store.state.support.AccountUserID)
-            this.taskUserId = vm.$store.state.support.AccountUserID
+            console.log(vm.$store.state.support.AccountUserId)
+            this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'JWICS':
             library = 'AccountsJWICS'
             libraryUrl = this.AccountsJWICSForms
-            console.log(vm.$store.state.support.AccountUserID)
-            this.taskUserId = vm.$store.state.support.AccountUserID
+            console.log(vm.$store.state.support.AccountUserId)
+            this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'CAC':
             library = 'CACForms'
             libraryUrl = this.AccountsCACForms
-            console.log(vm.$store.state.support.CACSCIUserID)
-            this.taskUserId = vm.$store.state.support.CACSCIUserID
+            console.log(vm.$store.state.support.CACSCIUserId)
+            this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
           case 'SCI':
             library = 'SCIForms'
             libraryUrl = this.AccountsSCIForms
-            console.log(vm.$store.state.support.CACSCIUserID)
-            this.taskUserId = vm.$store.state.support.CACSCIUserID
+            console.log(vm.$store.state.support.CACSCIUserId)
+            this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
         }
         payload.library = library
@@ -381,7 +381,8 @@ export default {
         console.log('TASK USER ID: ' + this.taskUserId)
         payload = {
           Title: 'Approve ' + name,
-          AssignedToId: vm.userid, // Hardcoding the Security Group
+          //AssignedToId: vm.userid, // Hardcoding the Security Group
+          AssignedToId: this.taskUserId,
           Description: 'Approve or reject ' + name,
           IsMilestone: false,
           PercentComplete: 0,
@@ -459,12 +460,12 @@ export default {
           })
           // Clear form after submission
 
-          /*if (vm.formType === 'account') {
+          if (vm.formType === 'account') {
             vm.form.Type = vm.accountOptions[0]
           }
           document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
           vm.fileSelected = null
-          vm.fileBuffer = null*/
+          vm.fileBuffer = null
         })
       }
     },

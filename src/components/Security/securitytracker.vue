@@ -117,7 +117,7 @@ export default {
                             <b-td v-if="t.GovCompleteDate == ''">
                               <span><!-- add a check if user is in AFRL -->
                                 <b-button ref="CompleteGov" variant="primary" :data-id="t.id" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                <b-button ref="RejectGov" variant="danger" :data-id="t.id" class="btn-sm" @click="RejectGov(data, $event)">Reject</b-button>
+                                <b-button ref="RejectGov" variant="danger" :data-id="t.id" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
                               </span>
                             </b-td>
                             <b-td><a :href="t.href" target="_blank">View Form</a></b-td>
@@ -149,7 +149,8 @@ export default {
                 console.log('TASK USER ID: ' + taskUserId)
                 let payload = {
                   Title: 'Complete or Reject ' + data.PersonName + ' ' + account + ' Request',
-                  AssignedToId: vm.userid, // Hardcode to Juan
+                  //AssignedToId: vm.userid, // Hardcode to Juan
+                  AssignedToId: taskUserId,
                   Description: 'Complete or reject ' + data.PersonName + ' ' + account + ' Request',
                   IsMilestone: false,
                   PercentComplete: 0,
@@ -208,7 +209,8 @@ export default {
                 // Notify Monica via task list
                 let payload = {
                   Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
-                  AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                  AssignedToId: taskUserId,
                   Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
                   IsMilestone: false,
                   PercentComplete: 0,
@@ -315,13 +317,4 @@ export default {
   }*/
 }
 </script>
-<style lang="scss">
-.e-grid .e-headercelldiv {
-  font-size: 1.25rem !important;
-}
-.e-columnheader {
-  height: 3rem !important;
-  color: #fff;
-  background-color: #212529;
-}
-</style>
+<style lang="scss"></style>

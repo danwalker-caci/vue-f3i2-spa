@@ -221,10 +221,10 @@ export default {
         }
         Todo.dispatch('completeTodo', payload).then(async function() {
           // add new task for AFRL user
-          console.log(vm.$store.state.support.AFRLUserID)
+          // console.log(vm.$store.state.support.AFRLUserID)
           payload = {
             Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
-            AssignedToId: vm.userid, // need to get Juan
+            AssignedToId: vm.$store.state.support.AFRLUserID, // need to get Juan
             Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
             IsMilestone: false,
             PercentComplete: 0,
@@ -306,4 +306,8 @@ export default {
   }
 }
 </script>
-<style lang="sass"></style>
+<style lang="scss">
+#MainContainer {
+  overflow: auto;
+}
+</style>

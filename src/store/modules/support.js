@@ -38,6 +38,15 @@ export const mutations = {
     } else {
       state.activity += '<br/>' + activity
     }
+  },
+  SET_ACCOUNTID(state, accountid) {
+    state.AccountUserId = accountid
+  },
+  SET_AFRLID(state, afrlid) {
+    state.AFRLUserId = afrlid
+  },
+  SET_CACSCIID(state, cacsciid) {
+    state.CACSCIUserId = cacsciid
   }
 }
 
@@ -85,23 +94,17 @@ export const actions = {
   setContentRect({ commit }, values) {
     commit('SET_CONTENTRECT', values)
   },
-  async getAccountUser() {
+  async getAccountUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.AccountUserEmail)
-    this.commit(state => {
-      state.AccountUserId = response.data.d.results[0].Id
-    })
+    commit('SET_ACCOUNTID', response.data.d.results[0].Id)
   },
-  async getAFRLUser() {
+  async getAFRLUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.AFRLUserEmail)
-    this.commit(state => {
-      state.AFRLUserId = response.data.d.results[0].Id
-    })
+    commit('SET_AFRLID', response.data.d.results[0].Id)
   },
-  async getCACSCIUser() {
+  async getCACSCIUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.CACSCIUserEmail)
-    this.commit(state => {
-      state.CACSCIUserId = response.data.d.results[0].Id
-    })
+    commit('SET_CACSCIID', response.data.d.results[0].Id)
   }
 }
 

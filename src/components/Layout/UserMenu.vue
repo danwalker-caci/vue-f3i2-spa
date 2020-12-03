@@ -99,29 +99,6 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      GoToTemplate: function() {
-        return {
-          template: Vue.component('columnTemplate', {
-            template: `
-            <div>
-              <b-button class="actionbutton" variant="primary" @click="goto(data)" title="Go To Item">
-                <font-awesome-icon far icon="directions" class="icon"></font-awesome-icon>
-              </b-button>
-            </div>`,
-            data: function() {
-              return {
-                data: {}
-              }
-            },
-            methods: {
-              goto: function(data) {
-                vm.$router.push({ path: data.TaskLink })
-                vm.isClosed = !vm.isClosed
-              }
-            }
-          })
-        }
-      },
       ActionsTemplate: function() {
         return {
           template: Vue.component('columnTemplate', {
@@ -292,8 +269,11 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <a :href="tasklink" target="_blank">{{ tasklink }}</a>
-            </div>`,
+              <b-button class="actionbutton" variant="primary" @click="goto(data)" title="Go To Item">
+                {{ tasklink }}
+              </b-button>
+            </div>
+            `,
             data: function() {
               return {
                 data: {}
@@ -302,6 +282,12 @@ export default {
             computed: {
               tasklink() {
                 return this.data.TaskLink
+              }
+            },
+            methods: {
+              goto: function(data) {
+                vm.$router.push({ path: data.TaskLink })
+                vm.isClosed = !vm.isClosed
               }
             }
           })
