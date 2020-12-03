@@ -91,6 +91,7 @@ function formatWorkplan(j) {
       Number: j[i]['Number'],
       Revision: j[i]['Revision'],
       Subs: j[i]['Subs'],
+      Status: j[i]['Status'],
       POPStart: moment(j[i]['POPStart']).isValid() ? moment(j[i]['POPStart']).format('MM/DD/YYYY') : '',
       POPEnd: moment(j[i]['POPEnd']).isValid() ? moment(j[i]['POPEnd']).format('MM/DD/YYYY') : '',
       DateApproved: moment(j[i]['DateApproved']).isValid() ? moment(j[i]['DateApproved']).format('MM/DD/YYYY') : '',

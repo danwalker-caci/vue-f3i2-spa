@@ -93,6 +93,7 @@
             >
               <e-columns>
                 <e-column field="WorkplanTitle" headerText="Title" textAlign="Left" width="300"></e-column>
+                <e-column field="Status" headerText="Status" textAlign="Left" width="100"></e-column>
                 <e-column field="WorkplanNumber" headerText="Number" width="100"></e-column>
                 <e-column field="LastName" headerText="Last" textAlign="Left" width="100"></e-column>
                 <e-column field="FirstName" headerText="First" width="100"></e-column>
