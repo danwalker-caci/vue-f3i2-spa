@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="contentHeight p-0">
-    <iframe id="LibraryFrame" :src="url" height="100%" width="100%"></iframe>
+    <iframe id="LibraryFrame" :src="iframe.src" @load="load" v-show="iframe.loaded" height="100%" width="100%"></iframe>
   </b-container>
 </template>
 
@@ -15,7 +15,10 @@ export default {
   },
   data: function() {
     return {
-      url: '',
+      iframe: {
+        src: '',
+        loaded: false
+      },
       afrlUrl: '/sites/f3i2/AFRL%20Training/Forms/AllItems.aspx?isDlg=1',
       subUrl: '/sites/f3i2/Subcontractor%20Training/Forms/AllItems.aspx?isDlg=1',
       caciUrl: '/sites/f3i2/CACI%20Training/Forms/AllItems.aspx?isDlg=1'
@@ -32,7 +35,22 @@ export default {
     }
   },
   methods: {
-    hideRibbon: function() {
+    routeLibrary: function(lib) {
+      this.iframe.loaded = false
+      switch (lib) {
+        case 'AFRL':
+          this.iframe.src = this.afrlUrl
+          break
+        case 'Subcontractor':
+          this.iframe.src = this.subUrl
+          break
+        case 'CACI':
+          this.iframe.src = this.caciUrl
+          break
+      }
+      this.$options.interval = setInterval(this.load, 750)
+    },
+    load: function() {
       clearInterval(this.$options.interval)
       try {
         let frame = document.getElementsByTagName('iframe')[0].contentWindow
@@ -44,20 +62,7 @@ export default {
       } catch (e) {
         // don't care here
       }
-    },
-    routeLibrary: function(lib) {
-      switch (lib) {
-        case 'AFRL':
-          this.url = this.afrlUrl
-          break
-        case 'Subcontractor':
-          this.url = this.subUrl
-          break
-        case 'CACI':
-          this.url = this.caciUrl
-          break
-      }
-      this.$options.interval = setInterval(this.hideRibbon, 500)
+      this.iframe.loaded = true
     }
   }
 }

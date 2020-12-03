@@ -17,7 +17,7 @@
       <b-button variant="success" class="filterSelection" @click="filterLibrary()">Filter</b-button>
       <b-button variant="light" class="filterSelection" @click="copyFilter()">Copy Filter Link</b-button>
     </b-row>
-    <iframe id="LibraryFrame" :src="url" height="100%" width="100%"></iframe>
+    <iframe id="LibraryFrame" :src="iframe.src" @load="load" v-show="iframe.loaded" height="100%" width="100%"></iframe>
   </b-container>
 </template>
 
@@ -51,7 +51,10 @@ export default {
   },
   data: function() {
     return {
-      url: originalUrl,
+      iframe: {
+        src: originalUrl,
+        loaded: false
+      },
       filterArray: [],
       clinValues: [
         { value: null, text: 'Select ...' },
@@ -124,17 +127,6 @@ export default {
       document.execCommand('copy')
       document.body.removeChild(filterText)
     },
-    hideRibbon: function() {
-      clearInterval(this.$options.interval)
-      try {
-        let frame = document.getElementsByTagName('iframe')[0].contentWindow
-        frame.document.getElementById('s4-ribbonrow').style.display = 'none'
-        frame.document.getElementById('s4-workspace').style.padding = '15px'
-        frame.document.getElementById('WPQ4_ListTitleViewSelectorMenu_Container').style.display = 'none'
-      } catch (e) {
-        // don't care here
-      }
-    },
     filterLibrary: function() {
       this.url = originalUrl
       if (this.clin) {
@@ -171,7 +163,22 @@ export default {
           console.log(`ERROR: ${e}`)
         }
       }
-      this.$options.interval = setInterval(this.hideRibbon, 850)
+      this.$options.interval = setInterval(this.load, 750)
+    },
+    load: function() {
+      clearInterval(this.$options.interval)
+      console.log('HIDING ELEMENTS')
+      try {
+        let frame = document.getElementsByTagName('iframe')[0].contentWindow
+        frame.document.getElementById('s4-ribbonrow').style.display = 'none'
+        frame.document.getElementById('s4-workspace').style.padding = '15px'
+        frame.document.getElementById('WPQ2_ListTitleViewSelectorMenu_Container').style.display = 'none'
+        frame.document.getElementById('Hero-WPQ2').style.display = 'none'
+        frame.document.querySelector('.ms-pivotControl-container').style.display = 'none'
+      } catch (e) {
+        // don't care here
+      }
+      this.iframe.loaded = true
     }
   }
 }

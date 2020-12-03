@@ -2,7 +2,7 @@
   <b-container fluid class="contentHeight" id="MainContainer">
     <b-row ref="MainRow" class="contentHeight">
       <b-col md="12" xs="12">
-        <iframe id="FinancialDashboard" title="Financial Dashboard" ref="frame" :src="iframe.src" class="full-frame"></iframe>
+        <iframe id="FinancialDashboard" title="Financial Dashboard" ref="frame" @load="load" v-show="iframe.loaded" :src="iframe.src" class="full-frame"></iframe>
       </b-col>
     </b-row>
   </b-container>
@@ -33,6 +33,11 @@ export default {
       }
       this.$store.dispatch('notification/add', notification, { root: true })
     })
+  },
+  methods: {
+    load: function() {
+      this.iframe.loaded = true
+    }
   }
 }
 </script>
