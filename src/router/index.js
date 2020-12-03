@@ -71,13 +71,19 @@ let securityMenu = {
     {
       path: '/security/:formType',
       name: 'Form',
-      component: () => import(/* webpackChunkName: "securitys" */ '../components/Security/securityforms.vue'),
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityforms.vue'),
       props: true
     },
     {
       path: '/security/view/:form/:id',
       name: 'View',
-      component: () => import(/* webpackChunkName: "securitys" */ '../components/Security/securityview.vue'),
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityview.vue'),
+      props: true
+    },
+    {
+      path: '/security/tracker/:formType',
+      name: 'Tracker',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securitytracker.vue'),
       props: true
     }
   ]

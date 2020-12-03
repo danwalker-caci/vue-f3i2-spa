@@ -56,11 +56,11 @@ const actions = {
   },
   async getMSRs({ state, commit }) {
     let response = await MSRService.getMSRs();
-    MSR.create({ data: formatMSRs(response) });
+    MSR.create({ data: formatMSRs(response) })
     MSR.commit(state => {
-      state.loaded = true;
-    });
-    state.currentmsrs = getCurrentMSRs(response);
+      state.loaded = true
+    })
+    state.currentmsrs = getCurrentMSRs(response)
   },
   async updateMSRData({ state }, payload) {
     state.msrloaded = false

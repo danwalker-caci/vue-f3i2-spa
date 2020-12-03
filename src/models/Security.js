@@ -5,7 +5,8 @@ export default class Security extends Model {
 
   static state = {
     digest: null,
-    loaded: false
+    loaded: false,
+    securityforms: []
   }
 
   static fields() {

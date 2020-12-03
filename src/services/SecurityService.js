@@ -174,6 +174,54 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
+  async getSecurityForms() {
+    let allSecurityForms = []
+    async function getAllSecurityForms(sfurl) {
+      if (sfurl === null) {
+        sfurl = securityformurl
+      }
+
+      let response = await axios.get(sfurl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let results = response.data.d.results
+      allSecurityForms = allSecurityForms.concat(results)
+      // recursively load people if there is a next result
+      if (response.data.d.__next) {
+        sfurl = response.data.d.__next
+        return getAllSecurityForms(sfurl)
+      } else {
+        return allSecurityForms
+      }
+    }
+    return getAllSecurityForms(null)
+  },
+  async getSecurityFormsByCompany(payload) {
+    let allSecurityForms = []
+    async function getAllSecurityForms(sfurl) {
+      if (sfurl === null) {
+        sfurl = securityformurl + '?$filter=(Company eq ' + payload.company + ')'
+      }
+
+      let response = await axios.get(sfurl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let results = response.data.d.results
+      allSecurityForms = allSecurityForms.concat(results)
+      // recursively load people if there is a next result
+      if (response.data.d.__next) {
+        sfurl = response.data.d.__next
+        return getAllSecurityForms(sfurl)
+      } else {
+        return allSecurityForms
+      }
+    }
+    return getAllSecurityForms(null)
+  },
   async getSecurityFormByPersonnelId(payload) {
     let url = securityformurl + '?$filter=(PersonnelID eq ' + payload.PersonnelID + ')'
     const response = await axios({
@@ -191,7 +239,7 @@ export default {
       }
       store.dispatch('notification/add', notification, { root: true })
     })
-    return response
+    return response.data.d.results
   },
   ApproveForm(payload, digest) {
     let endpoint = payload.uri

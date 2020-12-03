@@ -7,6 +7,7 @@ if (window._spPageContextInfo) {
 
 let baseUrl = SPCI.webServerRelativeUrl
 let userurl = baseUrl + '/_api/SP.UserProfiles.PeopleManager/GetMyProperties'
+let useridurl = baseUrl + '/_api/Web/SiteUsers?$filter=Email eq '
 
 export default {
   getUserProfile() {
@@ -50,5 +51,17 @@ export default {
         })
     }
     return getAllTasks(null)
+  },
+  getUserIdByEmail(email) {
+    let url = useridurl + "'" + email + "'"
+    return axios
+      .get(url, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      .then(function(response) {
+        return response
+      })
   }
 }

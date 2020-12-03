@@ -4,6 +4,9 @@ import SecurityService from '@/services/SecurityService.js'
 const getters = {
   allSecurity() {
     return Security.all()
+  },
+  SecurityForms: state => {
+    return state.securityforms
   }
 }
 
@@ -47,9 +50,29 @@ const actions = {
     let response = await SecurityService.updateSecurityForm(payload, state.digest)
     return response
   },
+  async getSecurityForms({ state }) {
+    let response = await SecurityService.getSecurityForms()
+    Security.create({ data: formatForms(response) })
+    Security.commit(state => {
+      state.loaded = true
+    })
+    state.securityforms = formatForms(response)
+  },
+  async getSecurityFormsByCompany({ state }, payload) {
+    let response = await SecurityService.getSecurityFormsByCompany(payload)
+    Security.create({ data: formatForms(response) })
+    Security.commit(state => {
+      state.loaded = true
+    })
+    state.securityforms = formatForms(response)
+  },
   async getSecurityFormByPersonnelId({ state }, payload) {
     let response = await SecurityService.getSecurityFormByPersonnelId(payload, state.digest)
-    return response.data.d
+    if (response.length == 0) {
+      return response
+    } else {
+      return formatForm(response)
+    }
   },
   ApproveForm({ state }, payload) {
     let response = SecurityService.ApproveForm(payload, state.digest)
@@ -61,13 +84,45 @@ const actions = {
   }
 }
 
+function formatForms(j) {
+  let p = []
+  //extrapulate the forms into a nice array of objects
+  for (let i = 0; i < j.length; i++) {
+    var types = JSON.parse(j[i]['Types'])
+    p.push({
+      id: j[i]['Id'],
+      Id: j[i]['Id'],
+      Company: j[i]['Company'],
+      PersonnelId: j[i]['PersonnelID'],
+      PersonName: j[i]['PersonName'],
+      Types: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+      Title: j[i]['Title'],
+      etag: j[i]['__metadata']['etag'],
+      uri: j[i]['__metadata']['uri']
+    })
+  }
+  return p
+}
+
+function formatForm(j) {
+  let p = {}
+  //extrapulate the forms into a nice array of objects
+  var types = JSON.parse(j[0]['Types'])
+  p = {
+    id: j[0]['Id'],
+    Id: j[0]['Id'],
+    Company: j[0]['Company'],
+    PersonnelId: j[0]['PersonnelID'],
+    PersonName: j[0]['PersonName'],
+    Types: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+    Title: j[0]['Title'],
+    etag: j[0]['__metadata']['etag'],
+    uri: j[0]['__metadata']['uri']
+  }
+  return p
+}
+
 export default {
   getters,
   actions
-}
-
-function formatForms(forms) {
-  for (let i = 0; i < forms.length; i++) {
-    //extrapulate the forms into a nice array of objects
-  }
 }

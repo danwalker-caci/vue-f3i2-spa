@@ -221,6 +221,7 @@ export default {
       formSCI: false,
       fileSelected: null,
       formTitle: '',
+      taskUserId: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: ''
     }
@@ -230,12 +231,18 @@ export default {
     // First get current user informaiton
     await Security.dispatch('getDigest')
     this.checkType()
+    this.getUserIDs()
     // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
     Company.dispatch('getCompanies').then(function() {
       vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
     })
   },
   methods: {
+    getUserIDs: async function() {
+      this.$store.dispatch('support/getAccountUser')
+      this.$store.dispatch('support/getAFRLUser')
+      this.$store.dispatch('support/getCACSCIUser')
+    },
     waitForPersonnel: async function() {
       if (this.currentuser) {
         // finally have user - now get the personnel based on their company
@@ -318,27 +325,46 @@ export default {
       }
       if (!this.formError) {
         // Add post to correct document library with required MetaData
-        let library = ''
+        let library = '',
+          libraryUrl = ''
         let payload = {}
         switch (this.form.Type) {
           case 'NIPR':
             // set the url for the post of file
             library = 'AccountsNIPR'
+            libraryUrl = this.AccountsNIPRForms
+            console.log(vm.$store.state.support.AccountUserID)
+            this.taskUserId = vm.$store.state.support.AccountUserID
             break
           case 'SIPR':
             library = 'AccountsSIPR'
+            libraryUrl = this.AccountsSIPRForms
+            console.log(vm.$store.state.support.AccountUserID)
+            this.taskUserId = vm.$store.state.support.AccountUserID
             break
           case 'DREN':
             library = 'AccountsDREN'
+            libraryUrl = this.AccountsDRENForms
+            console.log(vm.$store.state.support.AccountUserID)
+            this.taskUserId = vm.$store.state.support.AccountUserID
             break
           case 'JWICS':
             library = 'AccountsJWICS'
+            libraryUrl = this.AccountsJWICSForms
+            console.log(vm.$store.state.support.AccountUserID)
+            this.taskUserId = vm.$store.state.support.AccountUserID
             break
           case 'CAC':
             library = 'CACForms'
+            libraryUrl = this.AccountsCACForms
+            console.log(vm.$store.state.support.CACSCIUserID)
+            this.taskUserId = vm.$store.state.support.CACSCIUserID
             break
           case 'SCI':
             library = 'SCIForms'
+            libraryUrl = this.AccountsSCIForms
+            console.log(vm.$store.state.support.CACSCIUserID)
+            this.taskUserId = vm.$store.state.support.CACSCIUserID
             break
         }
         payload.library = library
@@ -352,6 +378,7 @@ export default {
         let item = await Security.dispatch('uploadForm', payload)
         let itemlink = item.data.d.ListItemAllFields.__deferred.uri
         let form = await Security.dispatch('getForm', itemlink)
+        console.log('TASK USER ID: ' + this.taskUserId)
         payload = {
           Title: 'Approve ' + name,
           AssignedToId: vm.userid, // Hardcoding the Security Group
@@ -383,22 +410,31 @@ export default {
             Company: vm.form.Company,
             Types: ''
           }
-          let types = [{ type: vm.form.Type, id: formId, library: library, GovSentDate: '', GovCompleteDate: '' }]
+          let types = [
+            {
+              account: vm.form.Type,
+              id: formId,
+              library: library,
+              GovSentDate: '',
+              GovCompleteDate: '',
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
+            }
+          ]
           let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-          console.log(securityForm)
-          if (securityForm && securityForm.results.length == 0) {
+          if (securityForm && securityForm.length == 0) {
             payload.Types = JSON.stringify(types)
-            console.log(payload)
             await Security.dispatch('addSecurityForm', payload)
           } else {
-            let securityFormsTypes = JSON.parse(securityForm.results[0].Types)
-            securityFormsTypes.forEach(type => {
+            securityForm.Types.forEach(type => {
               types.push(type)
             })
             payload.Types = JSON.stringify(types)
-            payload.etag = securityForm.results[0].__metadata.etag
-            payload.uri = securityForm.results[0].__metadata.uri
-            console.log(payload)
+            payload.etag = securityForm.etag
+            payload.uri = securityForm.uri
             await Security.dispatch('updateSecurityForm', payload)
           }
           // Run conditional on the results of the security form to either add or update security form

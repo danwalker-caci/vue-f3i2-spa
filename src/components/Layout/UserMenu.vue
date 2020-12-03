@@ -106,6 +106,7 @@ export default {
             methods: {
               goto: function(data) {
                 vm.$router.push({ path: data.TaskLink })
+                vm.isClosed = !vm.isClosed
               }
             }
           })

@@ -10,6 +10,12 @@ export const state = {
   loaded: false,
   activity: '',
   portalemail: 'F3I-2Portal@caci.com',
+  AFRLUserEmail: 'juan.esparza@us.af.mil',
+  AFRLUserId: null,
+  AccountUserEmail: 'monica.dennis@caci.com',
+  AccountUserId: null,
+  CACSCIUserEmail: 'michele.dade@caci.com',
+  CACSCIUser: null,
   contentrect: {}
 }
 
@@ -78,6 +84,24 @@ export const actions = {
   },
   setContentRect({ commit }, values) {
     commit('SET_CONTENTRECT', values)
+  },
+  async getAccountUser() {
+    let response = await SupportService.getUserIdByEmail(state.AccountUserEmail)
+    this.commit(state => {
+      state.AccountUserId = response.data.d.results[0].Id
+    })
+  },
+  async getAFRLUser() {
+    let response = await SupportService.getUserIdByEmail(state.AFRLUserEmail)
+    this.commit(state => {
+      state.AFRLUserId = response.data.d.results[0].Id
+    })
+  },
+  async getCACSCIUser() {
+    let response = await SupportService.getUserIdByEmail(state.CACSCIUserEmail)
+    this.commit(state => {
+      state.CACSCIUserId = response.data.d.results[0].Id
+    })
   }
 }
 
@@ -90,5 +114,14 @@ export const getters = {
   },
   getPortalEmail(state) {
     return state.portalemail
+  },
+  getAccountUserId(state) {
+    return state.AccountUserId
+  },
+  getCACSCIUserId(state) {
+    return state.CACSCIUserId
+  },
+  getAFRLUserId(state) {
+    return state.AFRLUserId
   }
 }

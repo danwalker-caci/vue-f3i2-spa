@@ -60,6 +60,7 @@ let url = _spPageContextInfo.webAbsoluteUrl
 import moment from 'moment'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
+import User from '@/models/User'
 
 export default {
   name: 'SecurityView',
@@ -75,6 +76,9 @@ export default {
   computed: {
     submittedurl() {
       return this.libraryUrl + this.formName
+    },
+    userid() {
+      return User.getters('CurrentUserId')
     }
   },
   data: function() {
@@ -86,6 +90,10 @@ export default {
       AccountsJWICSForms: url + '/AccountsJWICS/',
       CACForms: url + '/CACForms/',
       SCIForms: url + '/SCIForms/',
+      AFRLUserID: null,
+      AccountsUserID: null,
+      CACSCIUserID: null,
+      securityFormTracker: {},
       authorId: '',
       docLibraryType: '',
       libraryUrl: '',
@@ -95,6 +103,7 @@ export default {
       formTitle: '',
       company: '',
       name: '',
+      personId: null,
       sciType: null,
       formName: '',
       formUrl: '',
@@ -109,33 +118,49 @@ export default {
   mounted: async function() {
     vm = this
     await Security.dispatch('getDigest')
+    await this.getUserIDs()
     await this.checkType()
     await this.getForm()
   },
   methods: {
+    getUserIDs: async function() {
+      this.$store.dispatch('support/getAccountUser')
+      this.$store.dispatch('support/getAFRLUser')
+      this.$store.dispatch('support/getCACSCIUser')
+    },
     getForm: async function() {
       // Run query to load the form
       let payload = {
         library: this.library,
         id: this.id
       }
-      Security.dispatch('getFormByTypeId', payload).then(function(results) {
-        vm.company = results.Company
-        vm.name = results.PersonName
-        vm.sciType = results.SCIType ? results[0].SCIType : null
-        vm.creator = results.AuthorId
-        vm.etag = results.__metadata.etag
-        vm.uri = results.__metadata.uri
-        vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
-        vm.taskId = results.TaskID
-        vm.formId = results.Id
-        vm.authorId = results.AuthorId
-        vm.docLibraryType = results.__metadata.type
-        // Format the Created column using moment
-        vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-        // need to check the response for the direct url to the document
-        vm.loaded = true
-      })
+      Security.dispatch('getFormByTypeId', payload)
+        .then(function(results) {
+          vm.company = results.Company
+          vm.name = results.PersonName
+          vm.personId = results.PersonnelID
+          vm.sciType = results.SCIType ? results.SCIType : null
+          vm.creator = results.AuthorId
+          vm.etag = results.__metadata.etag
+          vm.uri = results.__metadata.uri
+          vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
+          vm.taskId = results.TaskID
+          vm.formId = results.Id
+          vm.authorId = results.AuthorId
+          vm.docLibraryType = results.__metadata.type
+          // Format the Created column using moment
+          vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
+          // need to check the response for the direct url to the document
+          vm.loaded = true
+        })
+        .then(async function() {
+          // Get the SecurityForms entry here
+          let payload = {
+            PersonnelID: vm.personId
+          }
+          vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+          console.log(vm.securityFormTracker)
+        })
       await Security.dispatch('getFormDigest')
     },
     checkType: async function() {
@@ -194,7 +219,29 @@ export default {
           uri: task.__metadata.uri,
           id: task.Id
         }
-        Todo.dispatch('completeTodo', payload).then(function() {
+        Todo.dispatch('completeTodo', payload).then(async function() {
+          // add new task for AFRL user
+          console.log(vm.$store.state.support.AFRLUserID)
+          payload = {
+            Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
+            AssignedToId: vm.userid, // need to get Juan
+            Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form + ' Request',
+            TaskLink: '/security/tracker/accounts'
+          }
+          let results = await Todo.dispatch('addTodo', payload)
+          let newTaskId = results.data.d.Id
+          vm.securityFormTracker.Types.forEach(type => {
+            if (vm.formId === type.id) {
+              // Set the task id
+              type.GovSentDate = vm.$moment().format('MM/DD/YYYY')
+              type.task = newTaskId
+            }
+          })
+          vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
+          await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
           const notification = {
             type: 'success',
             title: 'Approved Form',
@@ -202,12 +249,12 @@ export default {
             push: true
           }
           vm.$store.dispatch('notification/add', notification, { root: true })
+          vm.$router.push({ path: '/security/tracker/accounts' })
         })
       })
     },
     rejectForm: async function() {
       // Delete form from doc library
-      //console.log('TODO DIGEST: ' + todoDigest)
       let payload = {
         id: this.formId,
         library: this.library,
@@ -216,6 +263,17 @@ export default {
         etag: this.etag
       }
       Security.dispatch('DeleteForm', payload).then(async function() {
+        // Need to update the SecurityForms Types with the deleted ID
+        let index = 0
+        vm.securityFormTracker.Types.forEach((type, i) => {
+          if (vm.formId === type.id) {
+            index = i
+            // Pop it off the freaking Types
+          }
+        })
+        vm.securityFormTracker.Types.splice(index, 1)
+        vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
+        await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
         await Todo.dispatch('getDispatch')
         // Add task for whoever created the original form
         payload = {
