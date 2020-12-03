@@ -647,6 +647,24 @@ export default {
           type: 'alert',
           name: 'Completed',
           variant: 'green'
+        },
+        {
+          id: 6,
+          type: 'alert',
+          name: 'TripReportReview',
+          variant: 'teal'
+        },
+        {
+          id: 7,
+          type: 'alert',
+          name: 'Postponed',
+          variant: 'azure'
+        },
+        {
+          id: 8,
+          type: 'alert',
+          name: 'Cancelled',
+          variant: 'purple'
         }
       ],
       TravelersTemplate: function() {
@@ -871,12 +889,12 @@ export default {
         }
 
         case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-white')
+          args.row.classList.add('bg-blue', 'text-light')
           break
         }
 
         case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-white')
+          args.row.classList.add('bg-cyan', 'text-light')
           break
         }
 
@@ -886,12 +904,27 @@ export default {
         }
 
         case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-white')
+          args.row.classList.add('bg-red', 'text-light')
           break
         }
 
         case 'Completed': {
-          args.row.classList.add('bg-green', 'text-white')
+          args.row.classList.add('bg-green', 'text-light')
+          break
+        }
+
+        case 'TripReportReview': {
+          args.row.classList.add('bg-teal', 'text-light')
+          break
+        }
+
+        case 'Postponed': {
+          args.row.classList.add('bg-azure', 'text-dark')
+          break
+        }
+
+        case 'Cancelled': {
+          args.row.classList.add('bg-purple', 'text-light')
           break
         }
       }
