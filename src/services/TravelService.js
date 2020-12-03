@@ -580,6 +580,29 @@ export default {
       console.log('TravelService Error Updating Travel Status: ' + error)
     }
   },
+  async updateTravelStatusByID(payload, digest) {
+    let uri = payload.uri
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': '*'
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.TravelListItem' },
+      Status: payload.status
+    }
+    try {
+      const response = await axios.post(uri, itemprops, config)
+      return response
+    } catch (error) {
+      console.log('TravelService Error Updating Travel Status: ' + error)
+    }
+  },
   approveTravel(id, uri, etag, digest) {
     // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
     let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"

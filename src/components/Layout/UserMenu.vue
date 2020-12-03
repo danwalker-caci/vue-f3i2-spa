@@ -8,14 +8,15 @@
             <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
             <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
             <e-column field="Status" headerText="Number" width="100"></e-column>
-            <e-column headerText="Go To Item" textAlign="Left" width="125" :template="GoToTemplate"></e-column>
-            <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="150"></e-column>
-            <e-column field="DueDate" headerText="POP End" textAlign="Left" width="150"></e-column>
-            <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="200"></e-column>
+            <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="100"></e-column>
+            <e-column field="DueDate" headerText="POP End" textAlign="Left" width="100"></e-column>
+            <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
+            <e-column headerText="Task Link" textAlign="Left" width="300" :template="LinkTemplate"></e-column>
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
             <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+            <e-column field="TaskLink" :visible="false" textAlign="Left" width="40"></e-column>
           </e-columns>
         </ejs-grid>
       </b-form>
@@ -29,6 +30,7 @@
             <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
             <span class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>
           </b-button>
+          <a id="UserEmailLink" href="" style="display: none;"></a>
         </span>
       </a>
       <div class="clearfix"></div>
@@ -48,7 +50,15 @@ let vm = null
 import Vue from 'vue'
 import User from '@/models/User'
 import Todo from '@/models/Todo'
+import Travel from '@/models/Travel'
 import { Page, VirtualScroll, DetailRow } from '@syncfusion/ej2-vue-grids'
+
+let SPCI = null
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
+
+let tripurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items("
 
 export default {
   computed: {
@@ -116,8 +126,19 @@ export default {
         return {
           template: Vue.component('columnTemplate', {
             template: `
-            <div>
-              <b-button class="actionbutton" variant="danger" @click="completeme(data)" title="Mark Complete">
+            <div v-if="data.TaskType == 'Trip Report Review'">
+              <b-button class="actionbutton" variant="info" @click="reviewme(data)" title="Review Trip Report">
+                <font-awesome-icon far icon="file-invoice" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button class="actionbutton" variant="success" @click="approveme(data)" title="Approve">
+                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button class="actionbutton" variant="danger" @click="rejectme(data)" title="Reject">
+                <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>
+            <div v-else>
+              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Mark Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -156,6 +177,92 @@ export default {
                   .catch(err => {
                     console.log(err)
                   })
+              },
+              reviewme: function(data) {
+                window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
+              },
+              approveme: function(data) {
+                Travel.dispatch('getDigest')
+                this.$bvModal
+                  .msgBoxConfirm('Approve The Trip Report?', {
+                    title: 'Please Confirm',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'YES',
+                    cancelTitle: 'NO',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                  })
+                  .then(value => {
+                    if (value == true) {
+                      console.log('COMPLETE ID: ' + data.Id)
+                      let payload = {}
+                      payload.etag = data.etag
+                      payload.uri = data.uri
+                      payload.id = data.Id
+                      let taskdata = JSON.parse(data.TaskData)
+                      console.log('TASKDATA: ' + taskdata.CreatedByEmail)
+                      Todo.dispatch('completeTodo', payload).then(function() {
+                        // Complete the travel
+                        payload = {}
+                        payload.uri = tripurl
+                        payload.uri += taskdata.TravelID
+                        payload.uri += ')'
+                        payload.status = 'Completed'
+                        Travel.dispatch('updateTravelStatusByID', payload).then(function() {
+                          let userid = vm.UserId
+                          Todo.dispatch('getTodosByUser', userid)
+                        })
+                      })
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
+              },
+              rejectme: function(data) {
+                Travel.dispatch('getDigest')
+                this.$bvModal
+                  .msgBoxConfirm('Reject The Trip Report?', {
+                    title: 'Please Confirm',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'YES',
+                    cancelTitle: 'NO',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                  })
+                  .then(value => {
+                    if (value == true) {
+                      console.log('COMPLETE ID: ' + data.Id)
+                      let payload = {}
+                      payload.etag = data.etag
+                      payload.uri = data.uri
+                      payload.id = data.Id
+                      let taskdata = JSON.parse(data.TaskData)
+                      Todo.dispatch('completeTodo', payload).then(function() {
+                        payload = {}
+                        payload.uri = tripurl
+                        payload.uri += taskdata.TravelID
+                        payload.uri += ')'
+                        payload.status = 'ReportDue'
+                        Travel.dispatch('updateTravelStatusByID', payload).then(function() {
+                          let userid = vm.UserId
+                          Todo.dispatch('getTodosByUser', userid)
+                          let url = 'mailto:' + taskdata.CreatedByEmail + '?subject=Trip Report Rejected&body=Trip Report For IndexNumber ' + taskdata.IndexNumber
+                          document.getElementById('UserEmailLink').href = url
+                          document.getElementById('UserEmailLink').click()
+                        })
+                      })
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
               }
             }
           })
@@ -175,6 +282,26 @@ export default {
             data: function() {
               return {
                 data: {}
+              }
+            }
+          })
+        }
+      },
+      LinkTemplate: function() {
+        return {
+          template: Vue.component('columnTemplate', {
+            template: `
+            <div>
+              <a :href="tasklink" target="_blank">{{ tasklink }}</a>
+            </div>`,
+            data: function() {
+              return {
+                data: {}
+              }
+            },
+            computed: {
+              tasklink() {
+                return this.data.TaskLink
               }
             }
           })

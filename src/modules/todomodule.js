@@ -99,6 +99,7 @@ function formatTodos(j) {
       DueDate: moment(j[i]["DueDate"]).isValid() ? moment(j[i]["DueDate"]).format("MM/DD/YYYY") : "",
       TaskType: j[i]["TaskType"],
       TaskLink: j[i]["TaskLink"],
+      TaskData: String(j[i]["TaskData"]),
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })

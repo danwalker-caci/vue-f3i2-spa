@@ -38,7 +38,8 @@ export default {
       IsMilestone: payload.IsMilestone,
       PercentComplete: payload.PercentComplete,
       TaskType: payload.TaskType,
-      TaskLink: payload.TaskLink
+      TaskLink: payload.TaskLink,
+      TaskData: payload.TaskData !== null || payload.TaskData !== undefined ? JSON.stringify(payload.TaskData) : ''
     }
     try {
       const response = await axios.post(url, itemprops, config)

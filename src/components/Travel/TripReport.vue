@@ -35,6 +35,8 @@
 <script>
 import Travel from '@/models/Travel'
 import User from '@/models/User'
+import Workplan from '@/models/WorkPlan'
+import Todo from '@/models/Todo'
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -80,6 +82,7 @@ export default {
     vm = this
     let payload = {}
     payload.id = vm.TripId
+    Todo.dispatch('getDigest')
     Travel.dispatch('getTripById', payload).then(function() {
       vm.$options.interval = setInterval(vm.waitForTrip, 1000)
     })
@@ -94,13 +97,16 @@ export default {
         Status: '',
         TripReport: '',
         IndexNumber: '',
+        WPNumber: '',
+        CreatedByEmail: '',
         etag: '',
         uri: ''
-      }
+      },
+      ManagerID: null
     }
   },
   methods: {
-    waitForTrip: function() {
+    async waitForTrip() {
       // Waits for the travel item to load
       if (this.triploaded) {
         clearInterval(this.$options.interval)
@@ -108,8 +114,14 @@ export default {
         this.travelmodel.Status = this.selectedtrip.Status
         this.travelmodel.TripReport = this.selectedtrip.TripReport
         this.travelmodel.IndexNumber = this.selectedtrip.IndexNumber
+        this.travelmodel.WPNumber = this.selectedtrip.WorkPlanNumber
+        this.travelmodel.CreatedByEmail = this.selectedtrip.CreatedByEmail
         this.travelmodel.etag = this.selectedtrip.etag
         this.travelmodel.uri = this.selectedtrip.uri
+        if (this.travelmodel.WPNumber !== '') {
+          let manager = await Workplan.dispatch('getManagerByWPNumber', this.travelmodel.WPNumber)
+          this.ManagerID = manager[0]['Manager']['ID']
+        }
       }
     },
     onModalHide: function() {
@@ -140,7 +152,7 @@ export default {
         let event = []
         event.push({
           name: vm.fileName,
-          Status: 'Trip Report Review',
+          Status: 'TripReportReview',
           TripReport: library + vm.fileSelected,
           etag: vm.travelmodel.etag,
           uri: vm.travelmodel.uri
@@ -148,7 +160,26 @@ export default {
         Travel.dispatch('editTripReport', event).then(function() {
           // Reload tracker
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
-          vm.$router.push({ name: 'Travel Tracker' })
+          // Create task for WP Manager to approve reject trip report
+          let taskdata = {
+            Type: 'Travel Data',
+            TravelID: vm.TripId,
+            IndexNumber: vm.travelmodel.IndexNumber,
+            CreatedByEmail: vm.travelmodel.CreatedByEmail
+          }
+          payload = {
+            Title: 'Approve/Reject Trip Report',
+            AssignedToId: vm.ManagerID,
+            Description: 'Approve or Reject Trip Report',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'Trip Report Review',
+            TaskLink: library + vm.fileSelected,
+            TaskData: taskdata
+          }
+          Todo.dispatch('addTodo', payload).then(function() {
+            vm.$router.push({ name: 'Travel Tracker' })
+          })
         })
       })
     },
