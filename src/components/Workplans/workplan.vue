@@ -35,7 +35,7 @@
                     </b-row>
                     <b-row v-if="field.Control == 'DropdownBox'" class="mb-1">
                       <div v-if="field.DataType == 'Choice'" class="full">
-                        <ejs-dropdownlist v-if="field.DropdownSource === 'statuses'" v-model="field.Selected" :dataSource="statuses" :fields="ddfields"></ejs-dropdownlist>
+                        <ejs-dropdownlist v-if="field.DropdownSource === 'status'" v-model="field.Selected" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
                         <!--<ejs-dropdownlist v-model="field.Selected" :dataSource="field.Options" :fields="ddfields"></ejs-dropdownlist>-->
                       </div>
                     </b-row>
@@ -130,8 +130,8 @@
                       <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
                       <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
-                      <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="statuses" :fields="ddfields"></ejs-dropdownlist></td>
-                      <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.Manager" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.ManagerId" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
                   </tbody>
@@ -159,7 +159,7 @@
                       <td><input class="e-input" type="text" v-model="newData.Revision" /></td>
                       <td><ejs-datepicker v-model="newData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
-                      <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="statuses" :fields="ddfields"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
                       <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
@@ -226,7 +226,6 @@ export default {
       WorkplanData: [],
       filtereddata: [],
       manager: null,
-      status: null,
       fields: [
         {
           FieldName: 'Version',
@@ -239,7 +238,7 @@ export default {
           Filter: false,
           Control: 'DropdownBox',
           DataType: 'Choice',
-          DropdownSource: 'statuses',
+          DropdownSource: 'status',
           Selected: 'S',
           Predicate: 'E',
           FilterValue: '',
@@ -356,7 +355,7 @@ export default {
         mode: 'Dialog'
       },
       filterSettings: { type: 'Menu' },
-      statuses: [
+      status: [
         //In Progress, Submitted, Approved, PM Review
         { text: 'Select...', value: 'S' },
         { text: 'In Progress', value: 'In Progress' },
@@ -513,18 +512,14 @@ export default {
     },
     EditManagerSelected: function() {
       this.manager = document.getElementById('ddManagerEdit').ej2_instances[0].text
+      this.rowData.Manager = this.manager
     },
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
     },
-    /*EditStatusSelected: function() {
-      // this.status = document.getElementById('ddStatusEdit').ej2_instances[0].text
-    },
-    NewStatusSelected: function() {
-      // this.status = document.getElementById('ddStatusNew').ej2_instances[0].text
-    },*/
     editRow: function(data) {
       this.rowData = data
+      console.log(this.rowData)
       this.$bvModal.show('EditModal')
     },
     editOk: function(bvEvent) {
@@ -533,7 +528,6 @@ export default {
         let j = response.data.d
         vm.rowData.etag = j['__metadata']['etag']
         vm.rowData.Manager = vm.manager
-        vm.rowData.Status = vm.status
         vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
         vm.$bvModal.hide('EditModal')
         vm.$refs.WorkplanGrid.refresh()
