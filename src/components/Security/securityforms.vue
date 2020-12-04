@@ -333,25 +333,21 @@ export default {
             // set the url for the post of file
             library = 'AccountsNIPR'
             libraryUrl = this.AccountsNIPRForms
-            console.log(vm.$store.state.support.AccountUserId)
             this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'SIPR':
             library = 'AccountsSIPR'
             libraryUrl = this.AccountsSIPRForms
-            console.log(vm.$store.state.support.AccountUserId)
             this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'DREN':
             library = 'AccountsDREN'
             libraryUrl = this.AccountsDRENForms
-            console.log(vm.$store.state.support.AccountUserId)
             this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'JWICS':
             library = 'AccountsJWICS'
             libraryUrl = this.AccountsJWICSForms
-            console.log(vm.$store.state.support.AccountUserId)
             this.taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'CAC':
