@@ -120,7 +120,7 @@
                       <th>Revision</th>
                       <th>POP Start</th>
                       <th>POP End</th>
-                      <th colspan="2">Status</th>
+                      <th>Status</th>
                       <th>Manager</th>
                       <th>Date Approved</th>
                     </tr>
@@ -130,7 +130,7 @@
                       <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
                       <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
-                      <td colspan="2"><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="statuses" :fields="ddfields" @change="EditStatusSelected"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="statuses" :fields="ddfields"></ejs-dropdownlist></td>
                       <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.Manager" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
@@ -149,7 +149,7 @@
                       <th>Revision</th>
                       <th>POP Start</th>
                       <th>POP End</th>
-                      <th colspan="2">Status</th>
+                      <th>Status</th>
                       <th>Manager</th>
                       <th>Date Approved</th>
                     </tr>
@@ -159,7 +159,7 @@
                       <td><input class="e-input" type="text" v-model="newData.Revision" /></td>
                       <td><ejs-datepicker v-model="newData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
-                      <td colspan="2"><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="statuses" :fields="ddfields" @change="NewStatusSelected"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="statuses" :fields="ddfields"></ejs-dropdownlist></td>
                       <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
@@ -517,12 +517,12 @@ export default {
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
     },
-    EditStatusSelected: function() {
-      this.status = document.querySelector('#ddStatusEdit').ej2_instances[0].text
+    /*EditStatusSelected: function() {
+      // this.status = document.getElementById('ddStatusEdit').ej2_instances[0].text
     },
     NewStatusSelected: function() {
-      this.status = document.querySelector('#ddStatusNew').ej2_instances[0].text
-    },
+      // this.status = document.getElementById('ddStatusNew').ej2_instances[0].text
+    },*/
     editRow: function(data) {
       this.rowData = data
       this.$bvModal.show('EditModal')
