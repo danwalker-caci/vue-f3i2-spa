@@ -356,14 +356,12 @@ export default {
             break
           case 'CAC':
             library = 'CACForms'
-            libraryUrl = this.AccountsCACForms
-            console.log(vm.$store.state.support.CACSCIUserId)
+            libraryUrl = this.CACForms
             this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
           case 'SCI':
             library = 'SCIForms'
-            libraryUrl = this.AccountsSCIForms
-            console.log(vm.$store.state.support.CACSCIUserId)
+            libraryUrl = this.SCIForms
             this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
         }
