@@ -21,13 +21,6 @@
   @include transition (300ms, linear);
 }
 
-a[aria-controls~="menu"] .caret {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-  -webkit-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  transform: rotate(180deg);
-}
-
 .sidebar-tasks {
   float: right;
   width: 100px;
@@ -59,7 +52,7 @@ a[aria-controls~="menu"] .caret {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 320px;
+  width: 300px;
   display: block;
   z-index: 1;
   color: #fff;
@@ -124,6 +117,15 @@ a[aria-controls~="menu"] .caret {
       margin: 10px 10px;
       line-height: 20px;
     }
+
+    &:before{
+      content: "";
+      position: absolute;
+      bottom: 0px;
+      right: 15px;
+      width: calc(100% - 30px);
+      height: 1px;
+    }
   }
 
   .sidebar-wrapper{
@@ -131,16 +133,12 @@ a[aria-controls~="menu"] .caret {
     max-height: calc(100vh - 75px);
     min-height: 100%;
     overflow: auto;
-    width: 320px;
+    /* width: 260px; */
+    width: 300px;
     z-index: 4;
     padding-bottom: 100px;
 
-    .nav {
-      min-height: 20px;
-    }
-
     .nav .nav-item {
-      cursor: pointer;
       [data-toggle="collapse"] ~ div{
         .nav{
           .nav-item{
@@ -157,24 +155,13 @@ a[aria-controls~="menu"] .caret {
             &:focus,
             &.active{
               .nav-link{
-                background: $warning;
+                background: rgba(255, 255, 255, 0.13);
               }
             }
           }
           .sidebar-normal{
             left: 0.5rem;
           }
-        }
-      }
-    }
-
-    .nav .nav-header {
-      height: 50px !important;
-      .nav-link {
-        height: 50px;
-        padding: 15px;
-        .sidebar-icon {
-          font-size: 1.25rem;
         }
       }
     }
@@ -193,15 +180,6 @@ a[aria-controls~="menu"] .caret {
         display: block;
         height: auto;
         opacity: 1;
-      }
-    }
-
-    .nav .nav-item .nav-link.not-collapsed {
-      .caret {
-        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-        -webkit-transform: rotate(180deg);
-        -ms-transform: rotate(180deg);
-        transform: rotate(180deg);
       }
     }
 
@@ -236,14 +214,29 @@ a[aria-controls~="menu"] .caret {
    ~ .nav {
      margin-top: 15px;
    }
+    .photo{
+      width: 34px;
+      height: 34px;
+      overflow: hidden;
+      border-radius: 50%;
+      float: left;
+      margin-right: 11px;
+      margin-left: 15px;
+      z-index: 5;
+      border: 2px solid #e0ba0f;
+
+      img{
+        width: 100%;
+      }
+    }
     .info{
       .caret{
-        right: 15px;
+        right: 5px;
         top: -5px;
       }
       a{
         color: $white;
-        padding: 8px 14px;
+        padding: 5x;
         display: block;
         white-space: nowrap;
         line-height: 18px;
@@ -252,6 +245,10 @@ a[aria-controls~="menu"] .caret {
         position: relative;
         display: block;
       }
+      .UserName {
+        width: 100%;
+      }
+      
       .collapse{
         .sidebar-normal{
           padding-left: 0;
@@ -303,21 +300,17 @@ a[aria-controls~="menu"] .caret {
     display: block;
 
     .nav-item{
-      .nav-header {
-        height: 50px;
-      }
-
       .nav-link{
         color: $white;
         margin: 0;
-        opacity: 1;
+        opacity: .86;
+        border-radius: 4px;
         text-transform: uppercase;
         line-height: 1.5rem;
         font-size: 0.75rem;
         font-weight: 600;
         padding: 0.25rem 0.5rem;
         white-space: nowrap;
-        text-align: left;
 
         &:hover,
         &.router-link-active{
@@ -334,13 +327,6 @@ a[aria-controls~="menu"] .caret {
           text-transform: uppercase;
           margin-left: 8px;
           padding: 0;
-        }
-        
-        .sidebar-badge {
-          border-radius: 50%;
-          font-size: .8rem;
-          position: fixed;
-          right: 10px;
         }
 
         .sidebar-header {
@@ -364,7 +350,6 @@ a[aria-controls~="menu"] .caret {
           vertical-align: middle;
           float: left;
         }
-
       }
 
       &:not(.collapse .nav-link):hover .nav-link{
@@ -375,7 +360,7 @@ a[aria-controls~="menu"] .caret {
       &.active .nav-link{
         color: $white;
         opacity: 1;
-        background: $warning;
+        background: rgba(255,255,255,0.23);
 
       }
 
@@ -453,7 +438,7 @@ a[aria-controls~="menu"] .caret {
       }
     }
 
-    /* &:before{
+    &:before{
       content: "";
       position: absolute;
       bottom: 0px;
@@ -461,7 +446,7 @@ a[aria-controls~="menu"] .caret {
       width: calc(100% - 30px);
       height: 1px;
       background-color: rgba($white, 0.3);
-    } */
+    }
 
   }
   .logo-mini{
@@ -513,10 +498,13 @@ a[aria-controls~="menu"] .caret {
 
 
 .main-panel{
+  /* background: #ffffff; */
   position: relative;
-  width: 100%;
+  float: right;
+  width: $sidebar-width;
 
   .content{
+    /* padding: 30px 15px; */
     height: calc(100vh - 100px);
     background: $BACKGROUNDCOLOR;
     display: flex;
@@ -528,11 +516,9 @@ a[aria-controls~="menu"] .caret {
     border-top: 1px solid #000000;
   } */
 
-}
-
-.main-panel.sidebarOpen 
-{
-  width: calc(100vw - 320px)
+  .navbar{
+    margin-bottom: 0;
+  }
 }
 
 
