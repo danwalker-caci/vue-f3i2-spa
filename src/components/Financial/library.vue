@@ -163,6 +163,8 @@ export default {
           console.log(`ERROR: ${e}`)
         }
       }
+      this.iframe.loaded = false
+      this.iframe.src = this.url
       this.$options.interval = setInterval(this.load, 750)
     },
     load: function() {
