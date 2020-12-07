@@ -49,9 +49,11 @@ export default {
 
 <style>
 #app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #000000;
+  /* text-align: center; */
+  color: #000;
   /* background-color: white !important; */
   background-image: url('/sites/f3i2/SiteAssets/html/static/img/background-1.JPG');
   background-size: cover;

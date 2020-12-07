@@ -37,7 +37,8 @@ export default {
     let allMSRs = []
     async function getallMSRs(surl) {
       if (surl === null) {
-        surl = msrurl // + "?$filter=(Created ge datetime'" + searchdate + "')"
+        // surl = msrurl // + "?$filter=(Created ge datetime'" + searchdate + "')"
+        surl = msrurl + "?$filter=(Status ne 'Published')"
       }
 
       let response = await axios.get(surl, {
