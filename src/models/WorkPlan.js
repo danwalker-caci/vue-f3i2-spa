@@ -27,7 +27,6 @@ export default class Workplan extends Model {
       ManagerId: this.attr(''),
       ManagerEmail: this.attr(''),
       DateApproved: this.attr(''),
-      Status: this.attr(''),
       Subs: this.attr(''),
       LastIndex: this.attr(''),
       etag: this.attr(null), // Used for updating

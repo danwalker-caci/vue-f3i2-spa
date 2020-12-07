@@ -96,7 +96,6 @@
               <e-columns>
                 <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                 <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                <e-column field="Status" headerText="Status" textAlign="Left" width="150"></e-column>
                 <e-column field="Number" headerText="Number" width="100"></e-column>
                 <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
                 <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
@@ -372,8 +371,7 @@ export default {
         POPStart: '',
         POPEnd: '',
         Manager: '',
-        DateApproved: '',
-        Status: ''
+        DateApproved: ''
       },
       ActionsTemplate: function() {
         return {
