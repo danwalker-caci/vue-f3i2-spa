@@ -453,7 +453,6 @@ export default {
         clearInterval(this.$options.interval)
         this.data = this.workplans
         this.filtereddata = this.workplans
-        console.log(this.filtereddata)
         // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
         this.$bvToast.hide('busy-toast')
         // load any saved filters
@@ -527,7 +526,15 @@ export default {
       Workplan.dispatch('editWorkplan', this.rowData).then(function(response) {
         let j = response.data.d
         vm.rowData.etag = j['__metadata']['etag']
-        vm.rowData.Manager = vm.manager
+        if (vm.manager === undefined || vm.manager === null) {
+          let currentManager = vm.managers.filter(obj => {
+            return obj.value === vm.rowData.ManagerId
+          })
+          vm.rowData.Manager = currentManager[0].text
+        } else {
+          vm.rowData.Manager = vm.manager
+        }
+        //vm.rowData.Manager = vm.manager
         vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
         vm.$bvModal.hide('EditModal')
         vm.$refs.WorkplanGrid.refresh()
