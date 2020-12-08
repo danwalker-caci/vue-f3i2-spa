@@ -96,6 +96,7 @@
               <e-columns>
                 <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                 <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                <e-column field="Status" headerText="Status" width="125"></e-column>
                 <e-column field="Number" headerText="Number" width="100"></e-column>
                 <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
                 <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
@@ -452,6 +453,7 @@ export default {
         clearInterval(this.$options.interval)
         this.data = this.workplans
         this.filtereddata = this.workplans
+        console.log(this.filtereddata)
         // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
         this.$bvToast.hide('busy-toast')
         // load any saved filters
@@ -514,10 +516,10 @@ export default {
     },
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
+      this.newData.ManagerId = document.getElementById('ddManagerNew').ej2_instances[0].value
     },
     editRow: function(data) {
       this.rowData = data
-      console.log(this.rowData)
       this.$bvModal.show('EditModal')
     },
     editOk: function(bvEvent) {
