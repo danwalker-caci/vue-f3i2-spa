@@ -171,7 +171,7 @@ let financialMenu = {
     {
       path: 'library',
       name: 'Financial Documents',
-      component: () => import('../components/Financial/library.vue'),
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
       props: true
     },
     {
@@ -244,6 +244,12 @@ let financialMenu = {
       path: 'library/workplan/:workplan',
       name: 'Financial Documents',
       component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'manning',
+      name: 'Manning Report',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/manning.vue'),
       props: true
     }
   ]
@@ -373,12 +379,6 @@ let workplanMenu = {
       path: 'home/active',
       name: 'Work Plans',
       component: () => import(/* webpackChunkName: "workplan" */ '../components/Workplans/workplan.vue'),
-      props: true
-    },
-    {
-      path: 'home/manning',
-      name: 'Manning Report',
-      component: () => import(/* webpackChunkName: "workplan" */ '../components/Workplans/manning.vue'),
       props: true
     }
   ]
