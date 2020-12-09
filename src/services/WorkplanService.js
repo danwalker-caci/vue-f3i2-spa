@@ -138,7 +138,8 @@ export default {
             .add(6, 'hours')
             .format('YYYY-MM-DD[T]HH:MM:[00Z]')
         : null,
-      ManagerId: Number(payload.Manager)
+      ManagerId: Number(payload.ManagerId),
+      Status: payload.Status
     }
 
     try {

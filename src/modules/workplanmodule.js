@@ -90,6 +90,7 @@ function formatWorkplan(j) {
       Title: j[i]['Title'], // This is the Title column in SharePoint
       Number: j[i]['Number'],
       Revision: j[i]['Revision'],
+      Status: j[i]['Status'],
       Subs: j[i]['Subs'],
       POPStart: moment(j[i]['POPStart']).isValid() ? moment(j[i]['POPStart']).format('MM/DD/YYYY') : '',
       POPEnd: moment(j[i]['POPEnd']).isValid() ? moment(j[i]['POPEnd']).format('MM/DD/YYYY') : '',
