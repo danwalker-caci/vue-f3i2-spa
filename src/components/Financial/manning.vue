@@ -67,11 +67,11 @@
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="buttonrow">
+          <!-- <b-row no-gutters class="buttonrow">
             <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
               Toggle Filters
             </b-button>
-          </b-row>
+          </b-row> -->
           <b-row no-gutters class="gridrow">
             <ejs-grid
               id="ManningGrid"
@@ -93,11 +93,11 @@
               width="100%"
             >
               <e-columns>
-                <!-- <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column> -->
+                <!-- <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column> -->
                 <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
                 <e-column field="Number" headerText="Number" width="100"></e-column>
-                <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :editTemplate="METemplate"></e-column>
-                <e-column field="SubEffort" headerText="Sub Effort" width="200" :editTemplate="SETemplate"></e-column>
+                <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
+                <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
                 <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
                 <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
                 <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
@@ -107,12 +107,20 @@
                 <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
                 <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
                 <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
-                <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :editTemplate="PSTemplate"></e-column>
+                <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
                 <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
                 <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
                 <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
               </e-columns>
             </ejs-grid>
+          </b-row>
+          <b-row no-gutters class="bg-warning buttonrow">
+            <b-col cols="4" class="p-0 text-left"></b-col>
+            <b-col cols="4" class="p-0 text-center"></b-col>
+            <b-col cols="4" class="p-0 mt-2 text-right">
+              <b-button variant="danger" ref="btnCancel" class="mr-1" @click="FormCancel">Cancel</b-button>
+              <b-button variant="success" ref="btnSave" class="mr-2" @click="FormSave">Save</b-button>
+            </b-col>
           </b-row>
         </b-container>
       </b-col>
@@ -121,13 +129,21 @@
 </template>
 
 <script>
+/* eslint-disable */
 import Vue from 'vue'
 import Company from '@/models/Company'
 import User from '@/models/User'
 // import Workplan from '@/models/WorkPlan'
 import Manning from '@/models/Manning'
+import { DropDownList } from '@syncfusion/ej2-vue-dropdowns'
 import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
+let me = null
+let meObj = null
+let se = null
+let seObj = null
+let ps = null
+let psObj = null
 let vm = null
 
 export default {
@@ -283,7 +299,6 @@ export default {
           Options: []
         }
       ],
-      // ddfields: { text: 'text', value: 'value', index: 'index' },
       textpredicate: [
         { text: 'Select...', value: 'S' },
         { text: 'Starts With', value: 'SW' },
@@ -357,64 +372,72 @@ export default {
           })
         }
       },
-      METemplate: function() {
-        return {
-          template: Vue.component('MasterEffortPicker', {
-            template: `<ejs-dropdownlist v-model="data.MasterEffort" :dataSource="mastereffort" :fields="ddfields" class="ddInline px300"></ejs-dropdownlist>`,
-            data() {
-              return { data: {} }
-            },
-            computed: {
-              mastereffort() {
-                return Manning.getters('MasterEffort')
-              },
-              ddfields() {
-                return Manning.getters('DDFields')
-              }
-            }
+      MEParams: {
+        create: function() {
+          me = document.createElement('input')
+          return me
+        },
+        read: () => {
+          return meObj.value
+        },
+        destroy: () => {
+          meObj.destroy()
+        },
+        write: (args) => {
+          meObj = new DropDownList({
+            dataSource: this.mastereffort,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
           })
+          meObj.appendTo(me)
         }
       },
-      SETemplate: function() {
-        return {
-          template: Vue.component('SubEffortPicker', {
-            template: `<ejs-dropdownlist v-model="data.SubEffort" :dataSource="subeffort" :fields="ddfields" class="ddInline px300"></ejs-dropdownlist>`,
-            data() {
-              return { data: {} }
-            },
-            computed: {
-              subeffort() {
-                return Manning.getters('SubEffort')
-              },
-              ddfields() {
-                return Manning.getters('DDFields')
-              }
-            }
+      SEParams: {
+        create: function() {
+          se = document.createElement('input')
+          return se
+        },
+        read: () => {
+          return seObj.value
+        },
+        destroy: () => {
+          seObj.destroy()
+        },
+        write: (args) => {
+          seObj = new DropDownList({
+            dataSource: this.subeffort,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
           })
+          seObj.appendTo(se)
         }
       },
-      PSTemplate: function() {
-        return {
-          template: Vue.component('PercentSupportPicker', {
-            template: `<ejs-dropdownlist v-model="data.PercentSupport" :dataSource="percentsupport" :fields="ddfields"></ejs-dropdownlist>`,
-            data() {
-              return { data: {} }
-            },
-            computed: {
-              percentsupport() {
-                return Manning.getters('PercentSupport')
-              },
-              ddfields() {
-                return Manning.getters('DDFields')
-              }
-            }
+      PSParams: {
+        create: function() {
+          ps = document.createElement('input')
+          return ps
+        },
+        read: () => {
+          return psObj.value
+        },
+        destroy: () => {
+          psObj.destroy()
+        },
+        write: (args) => {
+          psObj = new DropDownList({
+            dataSource: this.percentsupport,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
           })
+          psObj.appendTo(ps)
         }
       }
     }
   },
   mounted: function() {
     vm = this
+    /* flds = this.ddfields
+    me = this.mastereffort */
     this.$bvToast.show('busy-toast')
     Manning.dispatch('getDigest')
     Company.dispatch('getCompanies').then(function() {
