@@ -50,10 +50,7 @@
                 </b-form-invalid-feedback>
               </div>
               <div v-if="formCAC || formSCI">
-                <b-form-input id="formType" v-model="form.Type" disabled></b-form-input>
-                <b-form-invalid-feedback>
-                  Please use the provided Type.
-                </b-form-invalid-feedback>
+                <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
               </div>
               <div v-if="formSCI">
                 <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
@@ -106,6 +103,13 @@
                 </li>
               </ul>
             </div>
+          </b-col>
+        </b-form-row>
+        <b-form-row v-if="formSCI">
+          <b-col cols="6">
+            <b-form-group label="Scheduled Indoctrination Date: " label-for="formSCIIndocDate">
+              <ejs-datepicker id="formSCIIndocDate" v-model="form.SCIIndocDate"></ejs-datepicker>
+            </b-form-group>
           </b-col>
         </b-form-row>
         <b-form-row>
@@ -212,7 +216,9 @@ export default {
         GovSentDate: null,
         etag: '',
         uri: '',
-        SCIType: ''
+        SCIType: '',
+        SCIIndocDate: '',
+        SCIStatus: ''
       },
       formAccount: false,
       formCAC: false,
@@ -255,6 +261,10 @@ export default {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+            // Pulled from personnel list
+            if (vm.formSCI && result && result[0].SCIFormStatus) {
+              vm.form.SCIStatus = result[0].SCIFormStatus
+            }
           })
         })
         clearInterval(vm.$options.interval)
@@ -274,6 +284,7 @@ export default {
       this.personnel.forEach(person => {
         if (person.value === vm.form.PersonnelID) {
           vm.form.Name = person.text
+          vm.form.PersonnelID = person.value
         }
       })
     },
@@ -305,6 +316,7 @@ export default {
           this.form.Type = 'SCI'
           // Set the correct document library to post to
           // Load SCI Form
+          // Run a function to get the original SCI information from the personnel module.
           break
       }
     },
@@ -372,7 +384,6 @@ export default {
         let item = await Security.dispatch('uploadForm', payload)
         let itemlink = item.data.d.ListItemAllFields.__deferred.uri
         let form = await Security.dispatch('getForm', itemlink)
-        console.log('TASK USER ID: ' + this.taskUserId)
         payload = {
           Title: 'Approve ' + name,
           //AssignedToId: vm.userid, // Hardcoding the Security Group
@@ -403,10 +414,15 @@ export default {
             PersonnelID: vm.form.PersonnelID,
             PersonName: vm.form.Name,
             Company: vm.form.Company,
-            Types: ''
+            Accounts: '',
+            SCI: '',
+            CAC: ''
           }
-          let types = [
-            {
+          let types = [],
+            scis = [],
+            cacs = []
+          if (vm.formAccount) {
+            types.push({
               account: vm.form.Type,
               id: formId,
               library: library,
@@ -417,23 +433,67 @@ export default {
               href: libraryUrl + pdfName,
               etag: form.data.d.__metadata.etag,
               uri: form.data.d.__metadata.uri
-            }
-          ]
+            })
+          }
+          if (vm.formSCI) {
+            scis.push({
+              id: formId,
+              library: library,
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
+            })
+            payload.SCIIndoc = vm.$moment(vm.form.SCIIndocDate).format('YYYY-MM-DD[T]HH:MM:[00Z]')
+            payload.SCIStatus = vm.form.SCIStatus
+            //
+          }
+          if (vm.formCAC) {
+            cacs.push({
+              id: formId,
+              library: library
+            })
+          }
           let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
           if (securityForm && securityForm.length == 0) {
-            payload.Types = JSON.stringify(types)
+            payload.Accounts = JSON.stringify(types)
+            payload.SCI = JSON.stringify(scis)
+            payload.CAC = JSON.stringify(cacs)
             await Security.dispatch('addSecurityForm', payload)
           } else {
-            securityForm.Types.forEach(type => {
-              types.push(type)
-            })
-            payload.Types = JSON.stringify(types)
+            if (securityForm.Account && securityForm.Account.length > 0) {
+              securityForm.Accounts.forEach(type => {
+                types.push(type)
+              })
+            }
+            // Don't overwrite SCI
+            if (securityForm.SCI && securityForm.SCI.length > 0) {
+              securityForm.SCI.forEach(sci => {
+                scis.push(sci)
+              })
+            }
+            // Don't overwrite CAC
+            if (securityForm.CAC && securityForm.CAC.length > 0) {
+              securityForm.SCI.forEach(cac => {
+                cacs.push(cac)
+              })
+            }
+            if (types.length > 0) {
+              payload.Accounts = JSON.stringify(types)
+            }
+            if (scis.length > 0) {
+              payload.SCI = JSON.stringify(scis)
+            }
+            if (cacs.length > 0) {
+              payload.CAC = JSON.stringify(cacs)
+            }
             payload.etag = securityForm.etag
             payload.uri = securityForm.uri
             await Security.dispatch('updateSecurityForm', payload)
           }
           // Run conditional on the results of the security form to either add or update security form
-          //await Security.dispatch('')
+          // await Security.dispatch('')
           // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
           const notification = {
             type: 'success',

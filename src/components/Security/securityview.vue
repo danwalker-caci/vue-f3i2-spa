@@ -233,14 +233,14 @@ export default {
           }
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
-          vm.securityFormTracker.Types.forEach(type => {
+          vm.securityFormTracker.Accounts.forEach(type => {
             if (vm.formId === type.id) {
               // Set the task id
               type.GovSentDate = vm.$moment().format('MM/DD/YYYY')
               type.task = newTaskId
             }
           })
-          vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
+          vm.securityFormTracker.Accounts = JSON.stringify(vm.securityFormTracker.Accounts)
           await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
           const notification = {
             type: 'success',
@@ -265,14 +265,14 @@ export default {
       Security.dispatch('DeleteForm', payload).then(async function() {
         // Need to update the SecurityForms Types with the deleted ID
         let index = 0
-        vm.securityFormTracker.Types.forEach((type, i) => {
+        vm.securityFormTracker.Accounts.forEach((type, i) => {
           if (vm.formId === type.id) {
             index = i
             // Pop it off the freaking Types
           }
         })
-        vm.securityFormTracker.Types.splice(index, 1)
-        vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
+        vm.securityFormTracker.Accounts.splice(index, 1)
+        vm.securityFormTracker.Accounts = JSON.stringify(vm.securityFormTracker.Accounts)
         await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
         await Todo.dispatch('getDispatch')
         // Add task for whoever created the original form

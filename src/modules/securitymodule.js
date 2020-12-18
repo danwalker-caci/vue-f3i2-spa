@@ -95,7 +95,15 @@ function formatForms(j) {
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Types: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+      Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+      SCI: JSON.parse(j[i]['SCI']), // TODO: sort the SCI forms
+      SCIStatus: j[i]['SCIStatus'],
+      SCIIndocAssistDate: j[i]['SCIIndocAssistDate'],
+      SCIAccessCheckDate: j[i]['SCIAccessCheckDate'],
+      SCIPR: j[i]['SCIPR'],
+      SCICE: j[i]['SCICE'],
+      SCIIndoc: j[i]['SCIIndoc'],
+      CAC: JSON.parse(j[i]['CAC']), // TODO: sort the CAC forms
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
@@ -114,7 +122,15 @@ function formatForm(j) {
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],
-    Types: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+    Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+    SCI: JSON.parse(j[0]['SCI']),
+    SCIStatus: j[0]['SCIStatus'],
+    SCIIndocAssistDate: j[0]['SCIIndocAssistDate'],
+    SCIAccessCheckDate: j[0]['SCIAccessCheckDate'],
+    SCIPR: j[0]['SCIPR'],
+    SCICE: j[0]['SCICE'],
+    SCIIndoc: j[0]['SCIIndoc'],
+    CAC: JSON.parse(j[0]['CAC']),
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']

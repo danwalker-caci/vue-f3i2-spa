@@ -119,10 +119,19 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityFormsListItem' },
       Title: payload.Title,
-      Types: payload.Types,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
       Company: payload.Company
+    }
+    if (payload.Accounts) {
+      itemprops.Types = payload.Accounts
+    }
+    if (payload.SCI) {
+      itemprops.SCI = payload.SCI
+      itemprops.SCIIndoc = payload.SCIIndoc
+    }
+    if (payload.CAC) {
+      itemprops.CAC = payload.CAC
     }
     return axios
       .post(endpoint, itemprops, config)
@@ -154,10 +163,24 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityFormsListItem' },
       Title: payload.Title,
-      Types: payload.Types,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
-      Company: payload.Company
+      Company: payload.Company,
+      SCIAccessCheckDate: payload.SCIAccessCheckDate,
+      SCIStatus: payload.SCIStatus,
+      SCIIndocAssistDate: payload.SCIIndocAssistDate,
+      SCIPR: payload.SCIPR,
+      SCICE: payload.SCICE,
+      SCIIndoc: payload.SCIIndoc
+    }
+    if (payload.Accounts) {
+      itemprops.Types = payload.Accounts
+    }
+    if (payload.SCI) {
+      itemprops.SCI = payload.SCI
+    }
+    if (payload.CAC) {
+      itemprops.CAC = payload.CAC
     }
     return axios
       .post(endpoint, itemprops, config)
