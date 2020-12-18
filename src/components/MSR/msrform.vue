@@ -44,7 +44,7 @@
                               </b-row>
                               <b-form v-if="FundingForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_Funding" id="rte_Funding" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Funding" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                                  <ejs-richtexteditor ref="rte_Funding" id="rte_Funding" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Funding" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                                 <b-row>
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
@@ -120,7 +120,7 @@
                               </b-row>
                               <b-form v-if="TravelAccomplishedForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_TravelAccomplished" id="rte_TravelAccomplished" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                                  <ejs-richtexteditor ref="rte_TravelAccomplished" id="rte_TravelAccomplished" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                                 <b-row id="TravelAccomplishedAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
@@ -260,7 +260,7 @@
                         </b-row>
                         <b-form v-if="AccomplishmentsForm">
                           <b-row>
-                            <ejs-richtexteditor ref="rte_Accomplishments" id="rte_Accomplishments" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAccomplishment" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                            <ejs-richtexteditor ref="rte_Accomplishments" id="rte_Accomplishments" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAccomplishment" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                           <b-row id="AccomplishmentsAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
@@ -407,7 +407,7 @@
                         </b-row>
                         <b-form v-if="PlansForm">
                           <b-row>
-                            <ejs-richtexteditor ref="rte_Plans" id="rte_Plans" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedPlan" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                            <ejs-richtexteditor ref="rte_Plans" id="rte_Plans" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedPlan" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                           <b-row id="PlansAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearplan', '', '')">Clear Contents</b-button>
@@ -560,7 +560,7 @@
                               </b-row>
                               <b-form v-if="AssumptionsForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_Assumptions" id="rte_Assumptions" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAssumption" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                                  <ejs-richtexteditor ref="rte_Assumptions" id="rte_Assumptions" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAssumption" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                                 <b-row id="AssumptionsAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearassumption', '', '')">Clear Contents</b-button>
@@ -700,7 +700,7 @@
                               </b-row>
                               <b-form v-if="RisksForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_Risks" id="rte_Risks" height="600" class="rtesection" v-model="SelectedRisk" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                                  <ejs-richtexteditor ref="rte_Risks" id="rte_Risks" height="600" class="rtesection" @change="onRTEChanged" v-model="SelectedRisk" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                                 <b-row id="RisksAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearrisk', '', '')">Clear Contents</b-button>
@@ -840,7 +840,7 @@
                               </b-row>
                               <b-form v-if="OpportunitiesForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_Opportunities" id="rte_Opportunities" height="600" class="rtesection" v-model="SelectedOpportunity" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                                  <ejs-richtexteditor ref="rte_Opportunities" id="rte_Opportunities" height="600" @change="onRTEChanged" class="rtesection" v-model="SelectedOpportunity" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                                 <b-row id="OpportunitiesAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearopportunity', '', '')">Clear Contents</b-button>
@@ -989,7 +989,7 @@
                         </b-row>
                         <b-form v-if="DeliverablesForm">
                           <b-row>
-                            <ejs-richtexteditor ref="rte_Deliverables" id="rte_Deliverables" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedDeliverable" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                            <ejs-richtexteditor ref="rte_Deliverables" id="rte_Deliverables" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedDeliverable" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                           <b-row id="DeliverablesAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('cleardeliverable', '', '')">Clear Contents</b-button>
@@ -1126,7 +1126,7 @@
                         </b-row>
                         <b-form v-if="DistributionForm">
                           <b-row>
-                            <ejs-richtexteditor ref="rte_Distribution" id="rte_Distribution" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Distribution" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
+                            <ejs-richtexteditor ref="rte_Distribution" id="rte_Distribution" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Distribution" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                           <b-row id="DistributionAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
@@ -2776,6 +2776,7 @@ export default {
           if (console) {
             console.log('EDIT ACCOMPLISHMENT FOR: ' + field + ', ' + form)
           }
+          this.ActiveSection = field
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.AccomplishmentsForm = true
@@ -2840,6 +2841,21 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
+          }
           await this.checkAccomplishment()
           let payload = {}
           payload.field = field
@@ -2865,6 +2881,21 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
+          }
           // update the existing HTML for the index and then save entire array
           await this.checkAccomplishment()
           let payload = {}
@@ -2892,6 +2923,7 @@ export default {
         case 'editplan': {
           clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
+          this.ActiveSection = field
           this.isEditing = true
           this.PlansForm = true
           for (let i = 0; i < this.Plans.length; i++) {
@@ -2952,6 +2984,23 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            //let content = String(this.SelectedPlan)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedPlan = this.SelectedPlan.replace(blob, imageurl)
+            //this.Plans[this.SelectedIndex].HTML = content
+          }
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -2975,6 +3024,23 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            //let content = String(this.SelectedPlan)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedPlan = this.SelectedPlan.replace(blob, imageurl)
+            //this.Plans[this.SelectedIndex].HTML = content
+          }
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -2998,6 +3064,7 @@ export default {
         case 'editassumption': {
           clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
+          this.ActiveSection = field
           this.isEditing = true
           this.AssumptionsForm = true
           for (let i = 0; i < this.Assumptions.length; i++) {
@@ -3058,6 +3125,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedAssumption = this.SelectedAssumption.replace(blob, imageurl)
+          }
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3081,6 +3163,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedAssumption = this.SelectedAssumption.replace(blob, imageurl)
+          }
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3104,6 +3201,7 @@ export default {
         case 'editrisk': {
           clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
+          this.ActiveSection = field
           this.isEditing = true
           this.RisksForm = true
           for (let i = 0; i < this.Risks.length; i++) {
@@ -3164,6 +3262,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedRisk = this.SelectedRisk.replace(blob, imageurl)
+          }
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3187,6 +3300,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedRisk = this.SelectedRisk.replace(blob, imageurl)
+          }
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3210,6 +3338,7 @@ export default {
         case 'editopportunity': {
           clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
+          this.ActiveSection = field
           this.isEditing = true
           this.OpportunitiesForm = true
           for (let i = 0; i < this.Opportunities.length; i++) {
@@ -3270,6 +3399,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedOpportunity = this.SelectedOpportunity.replace(blob, imageurl)
+          }
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3293,6 +3437,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedOpportunity = this.SelectedOpportunity.replace(blob, imageurl)
+          }
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3315,6 +3474,7 @@ export default {
         case 'editdeliverable': {
           clearInterval(this.timerid)
           let index = form // more readable. form in this case contains the index of the array item
+          this.ActiveSection = field
           this.isEditing = true
           this.DeliverablesForm = true
           for (let i = 0; i < this.Deliverables.length; i++) {
@@ -3375,6 +3535,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedDeliverable = this.SelectedDeliverable.replace(blob, imageurl)
+          }
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3398,6 +3573,21 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          if (this.hasImage) {
+            let response = await this.getFormDigest()
+            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+            let blob = await axios({
+              url: this.fileBlob,
+              method: 'get',
+              responseType: 'blob'
+            })
+            this.fileBuffer = await this.getFileBuffer(blob.data)
+            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+            console.log('FILE UPLOADED: ' + response)
+            blob = String(this.fileBlob)
+            let imageurl = server + '/MSRImages/' + this.fileName
+            this.SelectedDeliverable = this.SelectedDeliverable.replace(blob, imageurl)
+          }
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3443,13 +3633,14 @@ export default {
     onRTEChanged: function(args) {
       console.log('RTECHANGED: ' + args)
       let content = String(args.value)
-      vm.fileName = vm.ActiveSection + '_' + vm.WorkplanNumber + '_' + vm.msr.Month + '_' + vm.msr.Year + '.png'
       console.log('CONTENT CHANGED: ' + content)
       vm.fileContent = content
       if (content.indexOf('blob') > 0) {
         vm.fileType = vm.ActiveSection
         let parts = content.split('blob:')
-        let url = parts[1].substring(0, 62) // 62 is the length of the full url 63 in O365
+        console.log('PARTS: ' + parts)
+        vm.fileName = vm.ActiveSection + '-' + vm.WorkplanNumber + '-' + vm.msr.Month + '-' + vm.msr.Year + '-' + parts[parts.length - 1].substring(26, 62) + '.png'
+        let url = parts[parts.length - 1].substring(0, 62) // 62 is the length of the full url 63 in O365
         url = 'blob:' + url
         if (console) {
           console.log('BLOB URL: ' + url)
