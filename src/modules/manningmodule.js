@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Vue from 'vue'
 import Manning from '@/models/Manning'
 import ManningService from '@/services/ManningService.js'
 import moment from 'moment'
@@ -65,7 +66,7 @@ function formatManning(j) {
       Id: j[i]['Id'],
       Title: j[i]['Title'],
       Number: j[i]['Number'],
-      Last: j[i]['Last'], // This is the Title column in SharePoint
+      Last: j[i]['Last'],
       First: j[i]['First'],
       Middle: j[i]['Middle'],
       MasterEffort: j[i]['MasterEffort'],
@@ -83,6 +84,7 @@ function formatManning(j) {
       uri: j[i]['__metadata']['uri']
     })
   }
+  p = Vue._.orderBy(p, 'Last', 'asc')
   return p
 }
 

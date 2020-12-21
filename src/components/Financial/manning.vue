@@ -79,10 +79,8 @@
               :enablePersistence="false"
               :dataSource="filtereddata"
               :allowPaging="true"
-              :allowReordering="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
-              :filterSettings="filterSettings"
               :toolbar="toolbar"
               :allowExcelExport="true"
               :toolbarClick="toolbarClick"
@@ -93,7 +91,7 @@
               width="100%"
             >
               <e-columns>
-                <!-- <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column> -->
+                <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                 <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
                 <e-column field="Number" headerText="Number" width="100"></e-column>
                 <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
@@ -114,14 +112,14 @@
               </e-columns>
             </ejs-grid>
           </b-row>
-          <b-row no-gutters class="bg-warning buttonrow">
+          <!-- <b-row no-gutters class="bg-warning buttonrow">
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center"></b-col>
             <b-col cols="4" class="p-0 mt-2 text-right">
               <b-button variant="danger" ref="btnCancel" class="mr-1" @click="FormCancel">Cancel</b-button>
               <b-button variant="success" ref="btnSave" class="mr-2" @click="FormSave">Save</b-button>
             </b-col>
-          </b-row>
+          </b-row> -->
         </b-container>
       </b-col>
     </b-row>
@@ -314,25 +312,16 @@ export default {
         { text: 'Equal', value: 'E' }
       ],
       pageSettings: { pageSize: 30 },
-      editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Normal' },
-      filterSettings: { type: 'Menu' },
-      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
+      editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true, newRowPosition: 'Bottom', mode: 'Normal' },
+      // toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
       ActionsTemplate: function() {
         return {
           template: Vue.component('actionsTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton" @click="edit(data)" title="Edit Travel">
-                <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
-                <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
-                <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
-                <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
+              <b-button v-if="isPCA || isAdmin" variant="success" class="actionbutton" @click="add(data)" title="Add From this User">
+                <font-awesome-icon far icon="plus-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
             data: function() {
@@ -347,17 +336,41 @@ export default {
               isAdmin() {
                 return User.getters('isAdmin')
               },
-              isWPManager() {
-                return User.getters('isWPManager')
+              isPCA() {
+                return User.getters('isPCA')
               },
               isAFRL() {
                 return User.getters('isAFRL')
               }
             },
             methods: {
-              edit: function(data) {
+              add: function(data) {
                 // vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
                 console.log(data)
+                let itemprops = {
+                  __metadata: { type: 'SP.Data.ManningListItem' },
+                  Title: '',
+                  Number: '',
+                  Last: data.Last != '' ? data.Last : '',
+                  First: data.First != '' ? data.First : '',
+                  Middle: data.Middle != '' ? data.Middle : '',
+                  MasterEffort: '',
+                  SubEffort: '',
+                  Location: data.Location != '' ? data.Location : '',
+                  Email: data.Email != '' ? data.Email : '',
+                  PercentSupport: '',
+                  Company: data.Company != '' ? data.Company : '',
+                  FunctionalManager: data.FunctionalManager != '' ? data.FunctionalManager : '',
+                  StartDate: data.StartDate != '' ? data.StartDate : null,
+                  EndDate: data.EndDate != '' ? data.EndDate : null,
+                  FullBurdenedCost: data.FullBurdenedCost != '' ? data.FullBurdenedCost : null,
+                }
+                let payload = {}
+                payload.itemprops = itemprops
+                Manning.dispatch('addManningItem', payload).then(function(){
+                  // refresh.
+                  vm.$router.push({ name: 'Refresh', params: { action: 'manning' } })
+                })
               },
               report: function(data) {
                 console.log(data)
@@ -451,7 +464,8 @@ export default {
       if (this.manning && this.manning.length > 0) {
         clearInterval(this.$options.interval)
         this.data = this.manning
-        this.filtereddata = this.manning
+        let p = Vue._.orderBy(this.manning, 'Last', 'asc')
+        this.filtereddata = p
         // this.fields[8]['Options'] = this.companies
         this.$bvToast.hide('busy-toast')
         // load any saved filters
@@ -477,8 +491,25 @@ export default {
       switch (args.requestType) {
         case 'add':
           args.cancel = true
-          // this.$router.push({ name: 'New Travel', params: { back: 'Travel Tracker' } })
           break
+
+        case 'save':
+          // build payload to pass to update function
+          let itemprops = {
+            __metadata: { type: 'SP.Data.ManningListItem' },
+            Title: args.data.Title,
+            Number: args.data.Number,
+            MasterEffort: args.data.MasterEffort,
+            SubEffort: args.data.SubEffort,
+            PercentSupport: args.data.PercentSupport,
+            FullBurdenedCost: args.data.FullBurdenedCost
+          }
+          let payload = {}
+          payload.uri = args.data.uri
+          payload.itemprops = itemprops
+          Manning.dispatch('editManningItem', payload).then(function(){
+            // The grid will be updated with the values already so no need to do anything here.
+          })
       }
     },
     actionComplete(args) {

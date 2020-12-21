@@ -1,6 +1,5 @@
 /* eslint-disable no-case-declarations */
 import axios from 'axios'
-import moment from 'moment'
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -49,57 +48,15 @@ export default {
       Accept: 'application/json;odata=verbose',
       'X-RequestDigest': digest,
       'X-HTTP-Method': 'MERGE',
-      'If-Match': payload.etag
+      'If-Match': '*'
     }
     let config = {
       headers: headers
     }
 
-    let itemprops = {
-      __metadata: { type: 'SP.Data.ManningListItem' },
-      Title: payload.Title,
-      Number: payload.Number,
-      First: payload.First,
-      Middle: payload.Middle,
-      Last: payload.Last,
-      Position: payload.Position,
-      Location: payload.Location,
-      Email: payload.Email,
-      MasterEffort: payload.MasterEffort,
-      SubEffort: payload.SubEffort,
-      Company: payload.Company,
-      PercentSupport: payload.PercentSupport,
-      EmployeeID: payload.EmployeeID,
-      StartDate: moment(payload.StartDate).isValid()
-        ? String(
-            moment(payload.StartDate)
-              .add(6, 'hours')
-              .format('YYYY-MM-DD[T]HH:MM:[00Z]')
-          )
-        : null,
-      EndDate: moment(payload.EndDate).isValid()
-        ? String(
-            moment(payload.EndDate)
-              .add(6, 'hours')
-              .format('YYYY-MM-DD[T]HH:MM:[00Z]')
-          )
-        : null,
-      FunctionalManager: payload.FunctionalManager,
-      FullBurdenedCost: payload.FullBurdenedCost
-    }
-
     try {
-      await axios.post(url, itemprops, config)
-      // go get the data for the saved item to return back to the user
-      return axios
-        .get(url, {
-          headers: {
-            accept: 'application/json;odata=verbose'
-          }
-        })
-        .then(function(response) {
-          return response
-        })
+      let response = await axios.post(url, payload.itemprops, config)
+      return response
     } catch (error) {
       console.log('ManningService Error Updating Manning: ' + error)
     }
@@ -115,41 +72,8 @@ export default {
       headers: headers
     }
 
-    let itemprops = {
-      __metadata: { type: 'SP.Data.ManningListItem' },
-      Title: payload.Title,
-      Number: payload.Number,
-      First: payload.First,
-      Middle: payload.Middle,
-      Last: payload.Last,
-      Position: payload.Position,
-      Location: payload.Location,
-      Email: payload.Email,
-      MasterEffort: payload.MasterEffort,
-      SubEffort: payload.SubEffort,
-      Company: payload.Company,
-      PercentSupport: payload.PercentSupport,
-      EmployeeID: payload.EmployeeID,
-      StartDate: moment(payload.StartDate).isValid()
-        ? String(
-            moment(payload.StartDate)
-              .add(6, 'hours')
-              .format('YYYY-MM-DD[T]HH:MM:[00Z]')
-          )
-        : null,
-      EndDate: moment(payload.EndDate).isValid()
-        ? String(
-            moment(payload.EndDate)
-              .add(6, 'hours')
-              .format('YYYY-MM-DD[T]HH:MM:[00Z]')
-          )
-        : null,
-      FunctionalManager: payload.FunctionalManager,
-      FullBurdenedCost: payload.FullBurdenedCost
-    }
-
     try {
-      await axios.post(url, itemprops, config)
+      await axios.post(url, payload.itemprops, config)
       // go get the data for the saved item to return back to the user
       return axios
         .get(url, {
@@ -161,7 +85,7 @@ export default {
           return response
         })
     } catch (error) {
-      console.log('ManningService Error Updating Manning: ' + error)
+      console.log('ManningService Error Adding Manning Item: ' + error)
     }
   }
 }
