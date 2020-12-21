@@ -92,6 +92,10 @@ function formatForms(j) {
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
+      CACValid: j[i]['CACValid'],
+      CACIssuedBy: j[i]['CACIssuedBy'],
+      CACExpirationDate: j[i]['CACExpirationDate'],
+      CACStatus: j[i]['CACStatus'],
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
@@ -119,6 +123,10 @@ function formatForm(j) {
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
+    CACValid: j[0]['CACValid'],
+    CACIssuedBy: j[0]['CACIssuedBy'],
+    CACExpirationDate: j[0]['CACExpirationDate'],
+    CACStatus: j[0]['CACStatus'],
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],

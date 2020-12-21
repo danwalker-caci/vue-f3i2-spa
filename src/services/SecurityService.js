@@ -132,6 +132,9 @@ export default {
     }
     if (payload.CAC) {
       itemprops.CAC = payload.CAC
+      itemprops.CACValid = payload.CACValid
+      itemprops.CACExpirationDate = payload.CACExpirationDate
+      itemprops.CACIssuedBy = payload.CACIssuedBy
     }
     return axios
       .post(endpoint, itemprops, config)
@@ -166,6 +169,10 @@ export default {
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
       Company: payload.Company,
+      CACValid: payload.CACValid,
+      CACIssuedBy: payload.CACIssuedBy,
+      CACExpirationDate: payload.CACExpirationDate,
+      CACStatus: payload.CACStatus,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,

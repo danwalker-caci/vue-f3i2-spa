@@ -138,6 +138,37 @@
             </div>
           </b-col>
         </b-form-row>
+        <b-form-row v-if="formCAC">
+          <!-- list a series of questions for the user to fill out -->
+          <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
+            <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'Yes'">
+          <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
+            <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'Yes'">
+          <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
+            <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'No'">
+          <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+            <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACEver === 'Yes'">
+          <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
+            <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACEver === 'Yes'">
+          <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
+            <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+          </b-form-group>
+        </b-form-row>
         <b-form-row>
           <b-col>
             <b-form-group>
@@ -167,6 +198,7 @@ import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
+
 export default {
   name: 'SecurityForms',
   props: {
@@ -208,6 +240,10 @@ export default {
       accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
       form: {
+        CACValid: '',
+        CACIssuedBy: '',
+        CACExpirationDate: '',
+        CACStatus: '',
         Company: '',
         Type: null,
         PersonnelID: null,
@@ -229,7 +265,15 @@ export default {
       formTitle: '',
       taskUserId: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
-      url: ''
+      url: '',
+      cacvalid: [
+        { text: 'No', value: 'No' },
+        { text: 'Yes', value: 'Yes' }
+      ],
+      cacever: [
+        { text: 'No', value: 'No' },
+        { text: 'Yes', value: 'Yes' }
+      ]
     }
   },
   mounted: async function() {
@@ -264,6 +308,7 @@ export default {
             // Pulled from personnel list
             if (vm.formSCI && result && result[0].SCIFormStatus) {
               vm.form.SCIStatus = result[0].SCIFormStatus
+              vm.form.CACStatus = result[0].CACStatus
             }
           })
         })
@@ -445,15 +490,24 @@ export default {
               etag: form.data.d.__metadata.etag,
               uri: form.data.d.__metadata.uri
             })
-            payload.SCIIndoc = vm.$moment(vm.form.SCIIndocDate).format('YYYY-MM-DD[T]HH:MM:[00Z]')
-            payload.SCIStatus = vm.form.SCIStatus
+            payload.SCIIndoc = vm.form.SCIIndocDate
+            payload.SCIStatus = 'CACI Review'
             //
           }
           if (vm.formCAC) {
             cacs.push({
               id: formId,
-              library: library
+              library: library,
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
             })
+            payload.CACValid = vm.form.CACValid
+            payload.CACIssuedBy = vm.form.CACIssuedBy
+            payload.CACExpirationDate = vm.form.CACExpirationDate
+            payload.CACStatus = vm.form.CACStatus
           }
           let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
           if (securityForm && securityForm.length == 0) {

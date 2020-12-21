@@ -8,12 +8,52 @@
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <ejs-grid id="FormsGrid" ref="FormsGrid" :dataSource="securityforms" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
+      <ejs-grid
+        id="FormsGrid"
+        ref="FormsGrid"
+        :dataSource="securityforms"
+        :allowPaging="true"
+        :allowReordering="false"
+        :pageSettings="pageSettings"
+        :editSettings="editSettings"
+        :filterSettings="filterSettings"
+        :toolbar="toolbar"
+        :allowExcelExport="true"
+        :toolbarClick="toolbarClick"
+        :detailTemplate="detailTemplate"
+        rowHeight="20"
+        height="100%"
+        width="100%"
+      >
         <e-columns>
+          <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
           <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
-          <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-          <!-- Add a hidden column that is showable using the Types entries. Need to format the Types entries and add conditional logical buttons for each. -->
+
+          <!-- Add all of the extra fields that are hidden -->
+          <e-column field="SCIStatus" headerText="SCI Status" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACValid" headerText="Is CAC Valid" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACStatus" headerText="CAC Status" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACRequestDate" headerText="CAC Request Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+          <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
+          <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
+          <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
+          <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
           <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
         </e-columns>
@@ -30,7 +70,7 @@ import Personnel from '@/models/Personnel'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
-import { Page, VirtualScroll, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport } from '@syncfusion/ej2-vue-grids'
 
 export default {
   name: 'SecurityForms',
@@ -77,7 +117,8 @@ export default {
         mode: 'Dialog'
       },
       filterSettings: { type: 'Menu' },
-      toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
+      //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['ExcelExport'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
@@ -145,7 +186,7 @@ export default {
                         <b-tbody>
                           <b-tr>
                             <b-td>
-                              <ejs-datepicker id="formSCIIndocDate" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
+                              <ejs-datepicker id="formSCIIndocDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
                             </b-td>
                             <b-td>
                               <ejs-datepicker id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
@@ -173,7 +214,43 @@ export default {
                       </b-table-simple>
                   </b-col>
                   <b-col v-if="data.CAC" cols="12">
-                    CAC Form Info.
+                    <b-table-simple small responsive>
+                        <b-thead head-variant="dark">
+                          <b-tr>
+                            <b-th>Valid CAC</b-th>
+                            <b-th>CAC Status</b-th>
+                            <b-th>CAC Issued By</b-th>
+                            <b-th>CAC Expiration Date</b-th>
+                            <b-th>Submitted Form</b-th>
+                            <b-th></b-th>
+                          </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                          <b-tr>
+                            <b-td>
+                              <b-form-input type="text" id="formCACValid" v-model="data.CACValid" disabled></b-form-input>
+                            </b-td>
+                            <b-td>
+                              <ejs-dropdownlist v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                            </b-td>
+                            <b-td>
+                              <b-form-input type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy" disabled></b-form-input>
+                            </b-td>
+                            <b-td>
+                              <ejs-datepicker id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                            </b-td>
+                            <b-td>
+                              <span v-for="cac in data.CAC" :key="cac.Id">
+                                <a class="ellipses" :href="cac.href" target="_blank">View {{ cac.name }}</a>
+                              </span>
+                            </b-td>
+                            <b-td>
+                              <!-- Update Button -->
+                              <b-button ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                            </b-td>
+                          </b-tr>
+                        </b-tbody>
+                      </b-table-simple>
                   </b-col>
                 </b-row>
               </b-container>`,
@@ -190,10 +267,25 @@ export default {
                   { text: 'Debrief Notification Submitted', value: 'Debrief Notification Submitted' },
                   { text: 'Disposition-Transfer', value: 'Disposition-Transfer' },
                   { text: 'Disposition-Debriefed', value: 'Disposition-Debriefed' }
+                ],
+                cacstatus: [
+                  { text: 'Not Required', value: 'Not Required' },
+                  { text: 'Pending Info', value: 'Pending Info' },
+                  { text: 'CACI Review', value: 'CACI Review' },
+                  { text: 'Requested', value: 'Requested' },
+                  { text: 'Issued', value: 'Issued' },
+                  { text: 'Return Pending', value: 'Return Pending' },
+                  { text: 'Disposition-Returned', value: 'Disposition-Returned' },
+                  { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
+                  { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' }
                 ]
               }
             },
             methods: {
+              AssistDateChange(data) {
+                console.log(data.SCIStatus)
+                data.SCIStatus = 'SSO Processed'
+              },
               async NotifyGov(data, e) {
                 let id = parseInt(e.currentTarget.dataset.id)
                 let taskId, account
@@ -289,18 +381,31 @@ export default {
                 if (payload.CAC) {
                   payload.CAC = JSON.stringify(payload.CAC)
                 }
-                payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? this.$moment(d.SCIIndocAssistDate).format('YYYY-MM-DD[T]HH:MM:[00Z]') : ''
-                payload.SCIPR = d.SCIPR ? this.$moment(d.SCIPR).format('YYYY-MM-DD[T]HH:MM:[00Z]') : ''
-                payload.SCICE = d.SCICE ? this.$moment(d.SCICE).toISOString() : ''
-                payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('YYYY-MM-DD[T]HH:MM:[00Z]') : ''
+                /*payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? this.$moment(d.SCIIndocAssistDate).format('MM-DD-YYYY') : ''
+                payload.SCIPR = d.SCIPR ? this.$moment(d.SCIPR).format('MM-DD-YYYY') : ''
+                payload.SCICE = d.SCICE ? this.$moment(d.SCICE).format('MM-DD-YYYY') : ''
+                payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('MM-DD-YYYY') : ''*/
+                payload.CACValid = d.CACValid
+                payload.CACExpirationDate = d.CACExpirationDate
+                payload.CACIssuedBy = d.CACIssuedBy
+                payload.SCIIndocAssistDate = d.SCIIndocAssistDate
+                payload.SCIPR = d.SCIPR
+                payload.SCICE = d.SCICE
+                payload.SCIAccessCheckDate = d.SCIAccessCheckDate
                 payload.SCIStatus = d.SCIStatus
                 await Security.dispatch('updateSecurityForm', payload).then(function(result) {
-                  console.log(result)
                   // grab a fresh etag for the record
                   d.etag = result.headers.etag
                   /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
+                  const notification = {
+                    type: 'success',
+                    title: 'Succesfully Updated Security Form',
+                    message: 'Updated Security form for ' + d.PersonName + ' in ' + d.Company,
+                    push: true
+                  }
+                  vm.$store.dispatch('notification/add', notification, { root: true })
                 })
                 if (tId) {
                   Todo.dispatch('getTodoById', tId).then(async function(task) {
@@ -337,21 +442,6 @@ export default {
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
   methods: {
-    /*checkType: async function() {
-      switch (this.formType) {
-        case 'accounts': 
-
-        case 'CAC':
-          this.library = 'CACForms'
-          this.libraryUrl = this.CACForms
-          break
-        case 'SCI':
-          this.library = 'SCIForms'
-          this.libraryUrl = this.SCIForms
-          break
-      }
-    },*/
-
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
@@ -373,10 +463,78 @@ export default {
         company: this.form.Company
       }
       await Personnel.dispatch('getPersonnelByCompany', payload)
+    },
+    toolbarClick: function(args) {
+      if (args.item.id === 'FormsGrid_excelexport') {
+        // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
+        // prolly need to loop through the security forms and format the data into strings
+        let data = []
+        this.securityforms.forEach(sf => {
+          let CurrentData = {
+            Id: sf.Id,
+            PersonName: sf.PersonName,
+            Company: sf.Company,
+            SCIStatus: sf.SCIStatus,
+            SCIIndocAssistDate: sf.SCIIndocAssistDate,
+            SCIPR: sf.SCIPR,
+            SCICE: sf.SCICE,
+            SCIIndocDate: sf.SCIIndoc,
+            SCIAccessCheckDate: sf.SCIAccessCheckDate,
+            IsCACValid: sf.CACValid,
+            CACStatus: sf.CACStatus,
+            CACRequestDate: sf.CACRequestDate,
+            CACExpirationDate: sf.CACExpirationDate,
+            CACIssuedBy: sf.CACIssuedBy,
+            NIPRAccount: '',
+            NIPRGovSentDate: '',
+            NIPRGovCompleteDate: '',
+            SIPRAccount: '',
+            SIPRGovSentDate: '',
+            SIPRGovCompleteDate: '',
+            DRENAccount: '',
+            DRENGovSentDate: '',
+            DRENGovCompleteDate: '',
+            JWICAccount: '',
+            JWICGovSentDate: '',
+            JWICGovCompleteDate: ''
+          }
+          sf.Accounts.forEach(a => {
+            switch (a.account) {
+              case 'NIPR':
+                CurrentData['NIPRAccount'] = 'Yes'
+                CurrentData['NIPRGovSentDate'] = a.GovSentDate
+                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate
+                break
+              case 'SIPR':
+                CurrentData['SIPRAccount'] = 'Yes'
+                CurrentData['SIPRGovSentDate'] = a.GovSentDate
+                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate
+                break
+              case 'DREN':
+                CurrentData['DRENAccount'] = 'Yes'
+                CurrentData['DRENGovSentDate'] = a.GovSentDate
+                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate
+                break
+              case 'JWIC':
+                CurrentData['JWICAccount'] = 'Yes'
+                CurrentData['JWICGovSentDate'] = a.GovSentDate
+                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate
+                break
+            }
+          })
+          data.push(CurrentData)
+        })
+        let excelExportProperties = {
+          fileName: 'Security.xlsx',
+          dataSource: data,
+          includeHiddenColumn: true
+        }
+        this.$refs.FormsGrid.excelExport(excelExportProperties)
+      }
     }
   },
   provide: {
-    grid: [Page, DetailRow, VirtualScroll]
+    grid: [Page, DetailRow, VirtualScroll, Toolbar, ExcelExport]
   }
   /*actionBegin(args) {
     switch (args.requestType) {
