@@ -35,7 +35,8 @@
                     </b-row>
                     <b-row v-if="field.Control == 'DropdownBox'" class="mb-1">
                       <div v-if="field.DataType == 'Choice'" class="full">
-                        <ejs-dropdownlist v-model="field.Selected" :dataSource="field.Options" :fields="ddfields"></ejs-dropdownlist>
+                        <ejs-dropdownlist v-if="field.DropdownSource === 'status'" v-model="field.Selected" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                        <!--<ejs-dropdownlist v-model="field.Selected" :dataSource="field.Options" :fields="ddfields"></ejs-dropdownlist>-->
                       </div>
                     </b-row>
                     <b-row v-if="field.Control != 'DropdownBox'" class="mb-1">
@@ -95,6 +96,7 @@
               <e-columns>
                 <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                 <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                <e-column field="Status" headerText="Status" width="125"></e-column>
                 <e-column field="Number" headerText="Number" width="100"></e-column>
                 <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
                 <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
@@ -118,6 +120,7 @@
                       <th>Revision</th>
                       <th>POP Start</th>
                       <th>POP End</th>
+                      <th>Status</th>
                       <th>Manager</th>
                       <th>Date Approved</th>
                     </tr>
@@ -127,7 +130,8 @@
                       <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
                       <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
-                      <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.Manager" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
+                      <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.ManagerId" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
                   </tbody>
@@ -145,6 +149,7 @@
                       <th>Revision</th>
                       <th>POP Start</th>
                       <th>POP End</th>
+                      <th>Status</th>
                       <th>Manager</th>
                       <th>Date Approved</th>
                     </tr>
@@ -154,6 +159,7 @@
                       <td><input class="e-input" type="text" v-model="newData.Revision" /></td>
                       <td><ejs-datepicker v-model="newData.POPStart"></ejs-datepicker></td>
                       <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
+                      <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
                       <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
                       <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
                     </tr>
@@ -224,6 +230,19 @@ export default {
         {
           FieldName: 'Version',
           Value: null
+        },
+        {
+          FieldName: 'Status',
+          Visible: true,
+          DisplayName: 'Status',
+          Filter: false,
+          Control: 'DropdownBox',
+          DataType: 'Choice',
+          DropdownSource: 'status',
+          Selected: 'S',
+          Predicate: 'E',
+          FilterValue: '',
+          Sort: ''
         },
         {
           FieldName: 'Title',
@@ -336,6 +355,14 @@ export default {
         mode: 'Dialog'
       },
       filterSettings: { type: 'Menu' },
+      status: [
+        //In Progress, Submitted, Approved, PM Review
+        { text: 'Select...', value: 'S' },
+        { text: 'In Progress', value: 'In Progress' },
+        { text: 'Submitted', value: 'Submitted' },
+        { text: 'Approved', value: 'Approved' },
+        { text: 'PM Review', value: 'PM Review' }
+      ],
       toolbar: this.isSubcontractor ? ['Search'] : ['Add', 'Edit', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
       newData: {
@@ -484,9 +511,11 @@ export default {
     },
     EditManagerSelected: function() {
       this.manager = document.getElementById('ddManagerEdit').ej2_instances[0].text
+      this.rowData.Manager = this.manager
     },
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
+      this.newData.ManagerId = document.getElementById('ddManagerNew').ej2_instances[0].value
     },
     editRow: function(data) {
       this.rowData = data
@@ -497,7 +526,15 @@ export default {
       Workplan.dispatch('editWorkplan', this.rowData).then(function(response) {
         let j = response.data.d
         vm.rowData.etag = j['__metadata']['etag']
-        vm.rowData.Manager = vm.manager
+        if (vm.manager === undefined || vm.manager === null) {
+          let currentManager = vm.managers.filter(obj => {
+            return obj.value === vm.rowData.ManagerId
+          })
+          vm.rowData.Manager = currentManager[0].text
+        } else {
+          vm.rowData.Manager = vm.manager
+        }
+        //vm.rowData.Manager = vm.manager
         vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
         vm.$bvModal.hide('EditModal')
         vm.$refs.WorkplanGrid.refresh()
