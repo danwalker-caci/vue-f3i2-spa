@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="contentHeight">
-    <b-row class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
       <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
@@ -66,75 +66,104 @@
         </div>
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
+        <b-container fluid class="contentHeight m-0 p-0">
+          <!-- <b-row no-gutters class="buttonrow">
             <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
               Toggle Filters
             </b-button>
-          </div>
-          <div class="col-12 tableHeight">
+          </b-row> -->
+          <b-row no-gutters class="gridrow">
             <ejs-grid
               id="ManningGrid"
               ref="ManningGrid"
               :enablePersistence="false"
               :dataSource="filtereddata"
               :allowPaging="true"
-              :allowReordering="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
-              :filterSettings="filterSettings"
-              :toolbar="manningtoolbar"
+              :toolbar="toolbar"
               :allowExcelExport="true"
-              :toolbarClick="manningtoolbarClick"
+              :toolbarClick="toolbarClick"
+              :actionBegin="actionBegin"
               :actionComplete="actionComplete"
               rowHeight="20"
               height="100%"
               width="100%"
             >
               <e-columns>
-                <e-column field="WorkplanTitle" headerText="Title" textAlign="Left" width="300"></e-column>
-                <e-column field="WorkplanNumber" headerText="Number" width="100"></e-column>
-                <e-column field="LastName" headerText="Last" textAlign="Left" width="100"></e-column>
-                <e-column field="FirstName" headerText="First" width="100"></e-column>
-                <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
-                <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
-                <e-column field="Email" headerText="Email" textAlign="Left" width="200"></e-column>
-                <e-column field="Company" headerText="Company" textAlign="Left" width="180"></e-column>
-                <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150"></e-column>
+                <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
+                <e-column field="Number" headerText="Number" width="100"></e-column>
+                <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
+                <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
+                <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
+                <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
+                <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
+                <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
+                <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
+                <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
+                <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
+                <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
+                <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
+                <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
+                <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
               </e-columns>
             </ejs-grid>
-          </div>
-        </b-row>
+          </b-row>
+          <!-- <b-row no-gutters class="bg-warning buttonrow">
+            <b-col cols="4" class="p-0 text-left"></b-col>
+            <b-col cols="4" class="p-0 text-center"></b-col>
+            <b-col cols="4" class="p-0 mt-2 text-right">
+              <b-button variant="danger" ref="btnCancel" class="mr-1" @click="FormCancel">Cancel</b-button>
+              <b-button variant="success" ref="btnSave" class="mr-2" @click="FormSave">Save</b-button>
+            </b-col>
+          </b-row> -->
+        </b-container>
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
+/* eslint-disable */
 import Vue from 'vue'
-import { isNullOrUndefined } from 'util'
 import Company from '@/models/Company'
 import User from '@/models/User'
-import Workplan from '@/models/WorkPlan'
-import Personnel from '@/models/Personnel'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+// import Workplan from '@/models/WorkPlan'
+import Manning from '@/models/Manning'
+import { DropDownList } from '@syncfusion/ej2-vue-dropdowns'
+import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
+let me = null
+let meObj = null
+let se = null
+let seObj = null
+let ps = null
+let psObj = null
 let vm = null
 
 export default {
   name: 'manning',
   computed: {
-    workplans() {
-      return Workplan.getters('allWorkplans')
+    manning() {
+      return Manning.getters('allManning')
     },
     loaded() {
-      return Workplan.getters('Loaded')
+      return Manning.getters('Loaded')
     },
-    managers() {
-      return Workplan.getters('Managers')
+    percentsupport() {
+      return Manning.getters('PercentSupport')
     },
-    personnel() {
-      return Personnel.getters('allPersonnel')
+    mastereffort() {
+      return Manning.getters('MasterEffort')
+    },
+    subeffort() {
+      return Manning.getters('SubEffort')
+    },
+    ddfields() {
+      return Manning.getters('DDFields')
     },
     appversion() {
       return User.getters('AppVersion')
@@ -164,7 +193,7 @@ export default {
           Value: null
         },
         {
-          FieldName: 'WorkplanTitle',
+          FieldName: 'Title',
           Visible: true,
           DisplayName: 'Title',
           Filter: false,
@@ -175,7 +204,7 @@ export default {
           Sort: ''
         },
         {
-          FieldName: 'WorkplanNumber',
+          FieldName: 'Number',
           Visible: true,
           DisplayName: 'Number',
           Filter: false,
@@ -186,7 +215,7 @@ export default {
           Sort: ''
         },
         {
-          FieldName: 'LastName',
+          FieldName: 'Last',
           Visible: true,
           DisplayName: 'Last',
           Filter: false,
@@ -197,7 +226,7 @@ export default {
           Sort: ''
         },
         {
-          FieldName: 'FirstName',
+          FieldName: 'First',
           Visible: true,
           DisplayName: 'First',
           Filter: false,
@@ -265,17 +294,9 @@ export default {
           Predicate: 'E',
           FilterValue: '',
           Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: '100%', value: 1 },
-            { text: '75%', value: 0.75 },
-            { text: '50%', value: 0.5 },
-            { text: '25%', value: 0.25 },
-            { text: '0%', value: 0 }
-          ]
+          Options: []
         }
       ],
-      ddfields: { text: 'text', value: 'value', index: 'index' },
       textpredicate: [
         { text: 'Select...', value: 'S' },
         { text: 'Starts With', value: 'SW' },
@@ -291,62 +312,170 @@ export default {
         { text: 'Equal', value: 'E' }
       ],
       pageSettings: { pageSize: 30 },
-      editSettings: { allowEditing: true, allowAdding: true, allowDeleting: false, mode: 'Dialog' },
-      filterSettings: { type: 'Menu' },
-      manningtoolbar: ['Print', 'Search', 'ExcelExport']
+      editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true, newRowPosition: 'Bottom', mode: 'Normal' },
+      // toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
+      ActionsTemplate: function() {
+        return {
+          template: Vue.component('actionsTemplate', {
+            template: `
+            <div>
+              <b-button v-if="isPCA || isAdmin" variant="success" class="actionbutton" @click="add(data)" title="Add From this User">
+                <font-awesome-icon far icon="plus-circle" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>`,
+            data: function() {
+              return {
+                data: {}
+              }
+            },
+            computed: {
+              isPM() {
+                return User.getters('isPM')
+              },
+              isAdmin() {
+                return User.getters('isAdmin')
+              },
+              isPCA() {
+                return User.getters('isPCA')
+              },
+              isAFRL() {
+                return User.getters('isAFRL')
+              }
+            },
+            methods: {
+              add: function(data) {
+                // vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
+                console.log(data)
+                let itemprops = {
+                  __metadata: { type: 'SP.Data.ManningListItem' },
+                  Title: '',
+                  Number: '',
+                  Last: data.Last != '' ? data.Last : '',
+                  First: data.First != '' ? data.First : '',
+                  Middle: data.Middle != '' ? data.Middle : '',
+                  MasterEffort: '',
+                  SubEffort: '',
+                  Location: data.Location != '' ? data.Location : '',
+                  Email: data.Email != '' ? data.Email : '',
+                  PercentSupport: '',
+                  Company: data.Company != '' ? data.Company : '',
+                  FunctionalManager: data.FunctionalManager != '' ? data.FunctionalManager : '',
+                  StartDate: data.StartDate != '' ? data.StartDate : null,
+                  EndDate: data.EndDate != '' ? data.EndDate : null,
+                  FullBurdenedCost: data.FullBurdenedCost != '' ? data.FullBurdenedCost : null,
+                }
+                let payload = {}
+                payload.itemprops = itemprops
+                Manning.dispatch('addManningItem', payload).then(function(){
+                  // refresh.
+                  vm.$router.push({ name: 'Refresh', params: { action: 'manning' } })
+                })
+              },
+              report: function(data) {
+                console.log(data)
+              },
+              postpone: async function(data) {
+                console.log(data)
+              },
+              cancel: async function(data) {
+                console.log(data)
+              }
+            }
+          })
+        }
+      },
+      MEParams: {
+        create: function() {
+          me = document.createElement('input')
+          return me
+        },
+        read: () => {
+          return meObj.value
+        },
+        destroy: () => {
+          meObj.destroy()
+        },
+        write: (args) => {
+          meObj = new DropDownList({
+            dataSource: this.mastereffort,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
+          })
+          meObj.appendTo(me)
+        }
+      },
+      SEParams: {
+        create: function() {
+          se = document.createElement('input')
+          return se
+        },
+        read: () => {
+          return seObj.value
+        },
+        destroy: () => {
+          seObj.destroy()
+        },
+        write: (args) => {
+          seObj = new DropDownList({
+            dataSource: this.subeffort,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
+          })
+          seObj.appendTo(se)
+        }
+      },
+      PSParams: {
+        create: function() {
+          ps = document.createElement('input')
+          return ps
+        },
+        read: () => {
+          return psObj.value
+        },
+        destroy: () => {
+          psObj.destroy()
+        },
+        write: (args) => {
+          psObj = new DropDownList({
+            dataSource: this.percentsupport,
+            fields: this.ddfields,
+            value: args.rowData[args.column.field]
+          })
+          psObj.appendTo(ps)
+        }
+      }
     }
   },
   mounted: function() {
     vm = this
+    /* flds = this.ddfields
+    me = this.mastereffort */
     this.$bvToast.show('busy-toast')
-    Workplan.dispatch('getDigest')
+    Manning.dispatch('getDigest')
     Company.dispatch('getCompanies').then(function() {
-      Personnel.dispatch('getPersonnel').then(function() {
-        vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+      Manning.dispatch('getManning').then(function() {
+        vm.$options.interval = setInterval(vm.waitForManning, 1000)
       })
     })
   },
   methods: {
-    waitForPlans: function() {
-      if (this.workplans && this.workplans.length > 0) {
+    waitForManning: function() {
+      if (this.manning && this.manning.length > 0) {
         clearInterval(this.$options.interval)
-        this.data = this.workplans
-        for (let i = 0; i < this.personnel.length; i++) {
-          let test = String(this.personnel[i]['WPData'])
-          // console.log('WPDATA TEST POINT A: ' + test + ', ' + test.length)
-          if (test.length > 5) {
-            let j = JSON.parse(this.personnel[i]['WPData'])
-            if (j && j.length > 0) {
-              for (let z = 0; z < j.length; z++) {
-                if (!isNullOrUndefined(j[z]['WorkplanNumber']) && String(j[z]['WorkplanNumber']).length > 4) {
-                  this.WorkplanData.push({
-                    WorkplanNumber: j[z]['WorkplanNumber'],
-                    WorkplanTitle: j[z]['WorkplanTitle'],
-                    LastName: this.personnel[i]['LastName'],
-                    FirstName: this.personnel[i]['FirstName'],
-                    Middle: this.personnel[i]['Middle'],
-                    Location: this.personnel[i]['Location'],
-                    Email: this.personnel[i]['Email'],
-                    Company: this.personnel[i]['Company'],
-                    PercentSupport: j[z]['PercentSupport'] * 100
-                  })
-                }
-              }
-            }
-          }
-        }
-        this.filtereddata = this.WorkplanData
-        this.fields[8]['Options'] = this.companies
-        // document.getElementById('PageTitle').innerHTML = ' -  Manning Report'
+        this.data = this.manning
+        let p = Vue._.orderBy(this.manning, 'Last', 'asc')
+        this.filtereddata = p
+        // this.fields[8]['Options'] = this.companies
         this.$bvToast.hide('busy-toast')
         // load any saved filters
-        this.loadfilters()
+        // this.loadfilters()
       }
     },
     getRef: function(text, idx) {
       return text + '_' + idx
     },
-    manningtoolbarClick: function(args) {
+    toolbarClick: function(args) {
       switch (args.item.id) {
         case 'ManningGrid_excelexport':
           this.$refs['ManningGrid'].excelExport()
@@ -357,8 +486,34 @@ export default {
           break
       }
     },
+    actionBegin(args) {
+      console.log('ACTION BEGIN: ' + args.requestType)
+      switch (args.requestType) {
+        case 'add':
+          args.cancel = true
+          break
+
+        case 'save':
+          // build payload to pass to update function
+          let itemprops = {
+            __metadata: { type: 'SP.Data.ManningListItem' },
+            Title: args.data.Title,
+            Number: args.data.Number,
+            MasterEffort: args.data.MasterEffort,
+            SubEffort: args.data.SubEffort,
+            PercentSupport: args.data.PercentSupport,
+            FullBurdenedCost: args.data.FullBurdenedCost
+          }
+          let payload = {}
+          payload.uri = args.data.uri
+          payload.itemprops = itemprops
+          Manning.dispatch('editManningItem', payload).then(function(){
+            // The grid will be updated with the values already so no need to do anything here.
+          })
+      }
+    },
     actionComplete(args) {
-      // console.log('ACTION COMPLETE: ' + args.requestType)
+      console.log('ACTION COMPLETE: ' + args.requestType)
       if (args.requestType == 'columnstate') {
         this.$refs['ManningGrid'].autoFitColumns()
       }
@@ -645,8 +800,11 @@ export default {
 </script>
 
 <style lang="scss">
-.modal-body {
-  padding: 0.5rem !important;
+.buttonrow {
+  height: 50px;
+}
+.gridrow {
+  height: calc(100vh - 150px);
 }
 
 .sorted {

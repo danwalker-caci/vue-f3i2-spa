@@ -310,20 +310,20 @@ export default {
       Todo.dispatch('getDigest')
       this.userdisplayname = this.profiledata.DisplayName
       document.getElementById('LoadingBars').style.display = 'none'
-      /* if (!vm.userloaded) {
+      if (!vm.userloaded) {
         User.dispatch('getUserId').then(function() {
           User.dispatch('getUserProfile').then(function() {
             vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
           })
         })
-      } */
+      }
     })
   },
   methods: {
     toggleMenu() {
       this.isClosed = !this.isClosed
     },
-    /* updateUserInfo() {
+    updateUserInfo() {
       clearInterval(this.$options.interval)
       this.userdisplayname = this.profiledata.DisplayName
       User.dispatch('getUserGroups').then(function() {
@@ -331,7 +331,7 @@ export default {
           console.log('USERMENU MOUNT COMPLETED')
         })
       })
-    }, */
+    },
     OpenTodos: function() {
       this.$bvModal.show('Todos')
     },
