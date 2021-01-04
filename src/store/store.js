@@ -15,6 +15,8 @@ import Personnel from '@/models/Personnel'
 import personnelmodule from '@/modules/personnelmodule'
 import WorkPlan from '@/models/WorkPlan'
 import workplanmodule from '@/modules/workplanmodule'
+import Manning from '@/models/Manning'
+import manningmodule from '@/modules/manningmodule'
 import Feature from '@/models/Feature'
 import featuremodule from '@/modules/featuremodule'
 import Bug from '@/models/Bug'
@@ -36,6 +38,7 @@ database.register(Event, eventmodule)
 database.register(Travel, travelmodule)
 database.register(Personnel, personnelmodule)
 database.register(WorkPlan, workplanmodule)
+database.register(Manning, manningmodule)
 database.register(Feature, featuremodule)
 database.register(Bug, bugmodule)
 database.register(Company, companymodule)
