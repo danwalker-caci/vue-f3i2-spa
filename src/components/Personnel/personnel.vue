@@ -592,6 +592,7 @@ export default {
         { text: 'Pending Info', value: 'Pending Info' },
         { text: 'CACI Review', value: 'CACI Review' },
         { text: 'Submitted', value: 'Submitted' },
+        { text: 'Indoc Assist Sent', value: 'Indoc Assist Sent' },
         { text: 'SSO Processed', value: 'SSO Processed' },
         { text: 'Debrief Notification Submitted', value: 'Debrief Notification Submitted' },
         { text: 'Disposition-Transfer', value: 'Disposition-Transfer' },
