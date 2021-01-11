@@ -95,12 +95,12 @@ const actions = {
   },
   async getUserProfile() {
     UserService.getUserProfile()
-      .then(response => {
+      .then(async (response) => {
         if (console) {
           console.log('PROFILE INFORMATION: ' + response)
         }
         let profile = {}
-        let userid = User.getters('CurrentUserId')
+        let userid = await User.getters('CurrentUserId')
         let properties = response.data.d.UserProfileProperties.results
         profile.id = String(userid)
         profile.Account = response.data.d.AccountName

@@ -610,14 +610,42 @@ export default {
   },
   mounted: function() {
     console.log('EditTravel Mounted')
-    Travel.dispatch('getDigest')
+    try {
+      Travel.dispatch('getDigest')
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
     this.company = this.currentuser[0].Company
     vm = this
-    let payload = {}
-    payload.id = vm.TripId
-    Travel.dispatch('getTripById', payload).then(function() {
-      vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-    })
+    try {
+      let payload = {}
+      payload.id = vm.TripId
+      Travel.dispatch('getTripById', payload).then(function() {
+        vm.$options.interval = setInterval(vm.waitForTrip, 1000)
+      })
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   data: function() {
     return {
@@ -844,19 +872,47 @@ export default {
         let payload = {}
         payload.company = this.company
         if (this.isSubcontractor == true) {
-          Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-            Workplan.dispatch('getWorkplans').then(function() {
-              vm.$options.interval = setInterval(vm.setPersonnel, 1000)
-            })
-          })
-        } else {
-          Personnel.dispatch('getPersonnel').then(function() {
-            Workplan.dispatch('getWorkplans').then(function() {
-              Company.dispatch('getCompanies').then(function() {
+          try {
+            Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+              Workplan.dispatch('getWorkplans').then(function() {
                 vm.$options.interval = setInterval(vm.setPersonnel, 1000)
               })
             })
-          })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          }
+        } else {
+          try {
+            Personnel.dispatch('getPersonnel').then(function() {
+              Workplan.dispatch('getWorkplans').then(function() {
+                Company.dispatch('getCompanies').then(function() {
+                  vm.$options.interval = setInterval(vm.setPersonnel, 1000)
+                })
+              })
+            })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          }
         }
       }
     },
@@ -1241,7 +1297,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.review = 'Travel Approval'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (this.travelmodel.InternalData.ATPRequested == 'Yes') {
         status = 'AFRLReview'
@@ -1250,7 +1320,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.review = 'OCONUS Travel Authorization To Proceed'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (this.travelmodel.InternalData.ATP == 'Granted') {
         status = 'WPMReview'
@@ -1259,7 +1343,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.comments = 'OCONUS Travel Authorization To Proceed Granted'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (this.travelmodel.InternalData.ATP == 'Denied') {
         status = 'Denied'
@@ -1269,7 +1367,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.comments = 'OCONUS Travel Authorization To Proceed Denied'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (this.travelmodel.InternalData.Approval == 'Approved') {
         status = 'Approved'
@@ -1284,7 +1396,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.comments = 'Travel Approved'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (this.travelmodel.InternalData.Approval == 'Denied') {
         status = 'Denied'
@@ -1295,7 +1421,21 @@ export default {
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
         payload.comments = 'Travel Denied'
-        Travel.dispatch('EditTripEmail', payload)
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       this.travelmodel.InternalData.date = this.$moment().format('MM/DD/YYYY')
 
@@ -1330,13 +1470,27 @@ export default {
         etag: this.travelmodel.etag,
         uri: this.travelmodel.uri
       })
-      let response = await Travel.dispatch('editTrip', event)
-      this.$store.dispatch('support/addActivity', '<div class="bg-success">EditTravel - Edit Trip completed</div>')
-      this.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-      if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
-        this.$router.push({ name: this.$router.currentRoute.params.back })
-      } else {
-        this.$router.push({ name: 'Travel Tracker' }) // default
+      try {
+        let response = await Travel.dispatch('editTrip', event)
+        this.$store.dispatch('support/addActivity', '<div class="bg-success">EditTravel - Edit Trip completed</div>')
+        this.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
+        if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
+          this.$router.push({ name: this.$router.currentRoute.params.back })
+        } else {
+          this.$router.push({ name: 'Travel Tracker' }) // default
+        }
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
       }
     }
   }

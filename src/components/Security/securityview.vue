@@ -134,34 +134,48 @@ export default {
         library: this.library,
         id: this.id
       }
-      Security.dispatch('getFormByTypeId', payload)
-        .then(function(results) {
-          vm.company = results.Company
-          vm.name = results.PersonName
-          vm.personId = results.PersonnelID
-          vm.sciType = results.SCIType ? results.SCIType : null
-          vm.creator = results.AuthorId
-          vm.etag = results.__metadata.etag
-          vm.uri = results.__metadata.uri
-          vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
-          vm.taskId = results.TaskID
-          vm.formId = results.Id
-          vm.authorId = results.AuthorId
-          vm.docLibraryType = results.__metadata.type
-          // Format the Created column using moment
-          vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-          // need to check the response for the direct url to the document
-          vm.loaded = true
+      try {
+        Security.dispatch('getFormByTypeId', payload)
+          .then(function(results) {
+            vm.company = results.Company
+            vm.name = results.PersonName
+            vm.personId = results.PersonnelID
+            vm.sciType = results.SCIType ? results.SCIType : null
+            vm.creator = results.AuthorId
+            vm.etag = results.__metadata.etag
+            vm.uri = results.__metadata.uri
+            vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
+            vm.taskId = results.TaskID
+            vm.formId = results.Id
+            vm.authorId = results.AuthorId
+            vm.docLibraryType = results.__metadata.type
+            // Format the Created column using moment
+            vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
+            // need to check the response for the direct url to the document
+            vm.loaded = true
+          })
+          .then(async function() {
+            // Get the SecurityForms entry here
+            let payload = {
+              PersonnelID: vm.personId
+            }
+            vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+            console.log(vm.securityFormTracker)
+          })
+        await Security.dispatch('getFormDigest')
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
         })
-        .then(async function() {
-          // Get the SecurityForms entry here
-          let payload = {
-            PersonnelID: vm.personId
-          }
-          vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-          console.log(vm.securityFormTracker)
-        })
-      await Security.dispatch('getFormDigest')
+        console.log('ERROR: ' + e)
+      }
     },
     checkType: async function() {
       switch (this.form) {
@@ -211,47 +225,61 @@ export default {
         uri: this.uri,
         type: this.docLibraryType
       }
-      await Security.dispatch('ApproveForm', payload)
-      // Complete related task
-      Todo.dispatch('getTodoById', vm.taskId).then(async function(task) {
-        payload = {
-          etag: task.__metadata.etag,
-          uri: task.__metadata.uri,
-          id: task.Id
-        }
-        Todo.dispatch('completeTodo', payload).then(async function() {
-          // add new task for AFRL user
-          // console.log(vm.$store.state.support.AFRLUserID)
+      try {
+        await Security.dispatch('ApproveForm', payload)
+        // Complete related task
+        Todo.dispatch('getTodoById', vm.taskId).then(async function(task) {
           payload = {
-            Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
-            AssignedToId: vm.$store.state.support.AFRLUserID, // need to get Juan
-            Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: vm.form + ' Request',
-            TaskLink: '/security/tracker/accounts'
+            etag: task.__metadata.etag,
+            uri: task.__metadata.uri,
+            id: task.Id
           }
-          let results = await Todo.dispatch('addTodo', payload)
-          let newTaskId = results.data.d.Id
-          vm.securityFormTracker.Types.forEach(type => {
-            if (vm.formId === type.id) {
-              // Set the task id
-              type.GovSentDate = vm.$moment().format('MM/DD/YYYY')
-              type.task = newTaskId
+          Todo.dispatch('completeTodo', payload).then(async function() {
+            // add new task for AFRL user
+            // console.log(vm.$store.state.support.AFRLUserID)
+            payload = {
+              Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
+              AssignedToId: vm.$store.state.support.AFRLUserID, // need to get Juan
+              Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: vm.form + ' Request',
+              TaskLink: '/security/tracker/accounts'
             }
+            let results = await Todo.dispatch('addTodo', payload)
+            let newTaskId = results.data.d.Id
+            vm.securityFormTracker.Types.forEach(type => {
+              if (vm.formId === type.id) {
+                // Set the task id
+                type.GovSentDate = vm.$moment().format('MM/DD/YYYY')
+                type.task = newTaskId
+              }
+            })
+            vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
+            await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
+            const notification = {
+              type: 'success',
+              title: 'Approved Form',
+              message: 'Approved form ' + vm.form + ' for ' + vm.formName,
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
+            vm.$router.push({ path: '/security/tracker/accounts' })
           })
-          vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
-          await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
-          const notification = {
-            type: 'success',
-            title: 'Approved Form',
-            message: 'Approved form ' + vm.form + ' for ' + vm.formName,
-            push: true
-          }
-          vm.$store.dispatch('notification/add', notification, { root: true })
-          vm.$router.push({ path: '/security/tracker/accounts' })
         })
-      })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     rejectForm: async function() {
       // Delete form from doc library
@@ -273,34 +301,48 @@ export default {
         })
         vm.securityFormTracker.Types.splice(index, 1)
         vm.securityFormTracker.Types = JSON.stringify(vm.securityFormTracker.Types)
-        await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
-        await Todo.dispatch('getDispatch')
-        // Add task for whoever created the original form
-        payload = {
-          Title: 'Correct ' + vm.formName,
-          AssignedToId: vm.authorId, // Hardcoding the Security Group
-          Description: 'Correct ' + vm.formName + ' by uploading a form.',
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/' + vm.form
-        }
-        // Complete related task
-        Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+        try {
+          await Security.dispatch('updateSecurityForm', vm.securityFormTracker)
+          await Todo.dispatch('getDispatch')
+          // Add task for whoever created the original form
           payload = {
-            etag: task.__metadata.etag,
-            uri: task.__metadata.uri,
-            id: task.Id
+            Title: 'Correct ' + vm.formName,
+            AssignedToId: vm.authorId, // Hardcoding the Security Group
+            Description: 'Correct ' + vm.formName + ' by uploading a form.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form.Type + ' Request',
+            TaskLink: '/security/' + vm.form
           }
-          Todo.dispatch('completeTodo', payload)
-        })
-        const notification = {
-          type: 'success',
-          title: 'Rejected Form',
-          message: 'Rejected ' + vm.formType + ' form for ' + vm.formName,
-          push: true
+          // Complete related task
+          Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+            payload = {
+              etag: task.__metadata.etag,
+              uri: task.__metadata.uri,
+              id: task.Id
+            }
+            Todo.dispatch('completeTodo', payload)
+          })
+          const notification = {
+            type: 'success',
+            title: 'Rejected Form',
+            message: 'Rejected ' + vm.formType + ' form for ' + vm.formName,
+            push: true
+          }
+          vm.$store.dispatch('notification/add', notification, { root: true })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
         }
-        vm.$store.dispatch('notification/add', notification, { root: true })
       })
     }
   }

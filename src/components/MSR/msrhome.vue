@@ -234,16 +234,44 @@ export default {
   },
   mounted: function() {
     vm = this
-    MSR.dispatch('getDigest')
-    this.$store.dispatch('support/setLegendItems', [])
-    const notification = {
-      type: 'success',
-      title: 'Getting MSRs',
-      message: 'Please Wait...',
-      push: false
+    try {
+      MSR.dispatch('getDigest')
+      this.$store.dispatch('support/setLegendItems', [])
+      const notification = {
+        type: 'success',
+        title: 'Getting MSRs',
+        message: 'Please Wait...',
+        push: false
+      }
+      this.$store.dispatch('notification/add', notification, { root: true })
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
     }
-    this.$store.dispatch('notification/add', notification, { root: true })
-    this.getData()
+    try {
+      this.getData()
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
@@ -259,40 +287,54 @@ export default {
     },
     displayMSRs: function() {
       if (this.loaded) {
-        if (vm.isSubcontractor) {
-          vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 1 isSubcontractor: ' + vm.$moment().format() + '</div>')
-          let hasWorkplans = false
-          if (vm.user[0].WPData && vm.user[0].WPData.length > 2) {
-            let wpdata = JSON.parse(vm.user[0].WPData)
-            for (let i = 0; i < wpdata.length; i++) {
-              let ps = Number(wpdata[i]['PercentSupport'])
-              vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 2 WPDATA Loop Percent Support: ' + ps + '</div>')
-              if (ps > 0) {
-                hasWorkplans = true
-                let wpn = wpdata[i]['WorkplanNumber']
-                // loop through msrs and assign based on wp
-                vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 3 Checking all msrs for match: ' + vm.$moment().format() + '</div>')
-                for (let j = 0; j < vm.allmsrs.length; j++) {
-                  if (vm.allmsrs[j]['WorkplanNumber'] === wpn) {
-                    vm.msrs.push(vm.allmsrs[j])
+        try {
+          if (vm.isSubcontractor) {
+            vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 1 isSubcontractor: ' + vm.$moment().format() + '</div>')
+            let hasWorkplans = false
+            if (vm.user[0].WPData && vm.user[0].WPData.length > 2) {
+              let wpdata = JSON.parse(vm.user[0].WPData)
+              for (let i = 0; i < wpdata.length; i++) {
+                let ps = Number(wpdata[i]['PercentSupport'])
+                vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 2 WPDATA Loop Percent Support: ' + ps + '</div>')
+                if (ps > 0) {
+                  hasWorkplans = true
+                  let wpn = wpdata[i]['WorkplanNumber']
+                  // loop through msrs and assign based on wp
+                  vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 3 Checking all msrs for match: ' + vm.$moment().format() + '</div>')
+                  for (let j = 0; j < vm.allmsrs.length; j++) {
+                    if (vm.allmsrs[j]['WorkplanNumber'] === wpn) {
+                      vm.msrs.push(vm.allmsrs[j])
+                    }
                   }
                 }
               }
             }
-          }
-          if (hasWorkplans === false) {
-            const notification = {
-              type: 'danger',
-              title: 'Error in MSR Home',
-              message: 'You are not assigned any MSRs',
-              push: true
+            if (hasWorkplans === false) {
+              const notification = {
+                type: 'danger',
+                title: 'Error in MSR Home',
+                message: 'You are not assigned any MSRs',
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, { root: true })
             }
-            this.$store.dispatch('notification/add', notification, { root: true })
+          } else {
+            vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 4: ' + vm.$moment().format() + '</div>')
+            // User is something other than Subcontractor
+            vm.msrs = Vue._.orderBy(vm.allmsrs, 'WorkplanNumber', 'asc')
           }
-        } else {
-          vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 4: ' + vm.$moment().format() + '</div>')
-          // User is something other than Subcontractor
-          vm.msrs = Vue._.orderBy(vm.allmsrs, 'WorkplanNumber', 'asc')
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
         }
         // setup timer to keep reloading after 60 seconds
         // this.timer = setInterval(this.getData, 60000)
@@ -335,10 +377,24 @@ export default {
       this.$bvModal.show('DistributionModal')
     },
     newDistribution: function() {
-      MSR.dispatch('sendDistributionRequest', this.distribution).then(function() {
-        vm.$bvModal.hide('DistributionModal')
-        vm.$bvToast.hide('busy-toast')
-      })
+      try {
+        MSR.dispatch('sendDistributionRequest', this.distribution).then(function() {
+          vm.$bvModal.hide('DistributionModal')
+          vm.$bvToast.hide('busy-toast')
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     actionComplete(args) {
       if (args.requestType == 'columnstate') {

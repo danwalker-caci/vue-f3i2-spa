@@ -440,12 +440,26 @@ export default {
   mounted: function() {
     vm = this
     this.$bvToast.show('busy-toast')
-    Workplan.dispatch('getDigest')
-    Workplan.dispatch('getManagers').then(function() {
-      Workplan.dispatch('getWorkplans').then(function() {
-        vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+    try {
+      Workplan.dispatch('getDigest')
+      Workplan.dispatch('getManagers').then(function() {
+        Workplan.dispatch('getWorkplans').then(function() {
+          vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+        })
       })
-    })
+    } catch (e) {
+      // include a notification to the user of an error and log that error for developers
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   methods: {
     waitForPlans: function() {
@@ -523,22 +537,36 @@ export default {
     },
     editOk: function(bvEvent) {
       bvEvent.preventDefault()
-      Workplan.dispatch('editWorkplan', this.rowData).then(function(response) {
-        let j = response.data.d
-        vm.rowData.etag = j['__metadata']['etag']
-        if (vm.manager === undefined || vm.manager === null) {
-          let currentManager = vm.managers.filter(obj => {
-            return obj.value === vm.rowData.ManagerId
-          })
-          vm.rowData.Manager = currentManager[0].text
-        } else {
-          vm.rowData.Manager = vm.manager
+      try {
+        Workplan.dispatch('editWorkplan', this.rowData).then(function(response) {
+          let j = response.data.d
+          vm.rowData.etag = j['__metadata']['etag']
+          if (vm.manager === undefined || vm.manager === null) {
+            let currentManager = vm.managers.filter(obj => {
+              return obj.value === vm.rowData.ManagerId
+            })
+            vm.rowData.Manager = currentManager[0].text
+          } else {
+            vm.rowData.Manager = vm.manager
+          }
+          //vm.rowData.Manager = vm.manager
+          vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
+          vm.$bvModal.hide('EditModal')
+          vm.$refs.WorkplanGrid.refresh()
+        })
+      } catch (e) {
+        // include a notification to the user of an error and log that error for developers
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
         }
-        //vm.rowData.Manager = vm.manager
-        vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
-        vm.$bvModal.hide('EditModal')
-        vm.$refs.WorkplanGrid.refresh()
-      })
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     newOk: function() {
       Workplan.dispatch('addWorkplan', this.newData).then(function() {

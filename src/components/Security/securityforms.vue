@@ -229,13 +229,27 @@ export default {
   mounted: async function() {
     vm = this
     // First get current user informaiton
-    await Security.dispatch('getDigest')
-    this.checkType()
-    this.getUserIDs()
-    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    Company.dispatch('getCompanies').then(function() {
-      vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
-    })
+    try {
+      await Security.dispatch('getDigest')
+      this.checkType()
+      this.getUserIDs()
+      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+      Company.dispatch('getCompanies').then(function() {
+        vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
+      })
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   methods: {
     getUserIDs: async function() {
@@ -369,98 +383,112 @@ export default {
         payload.file = this.fileSelected
         payload.name = name
         payload.buffer = this.fileBuffer
-        let item = await Security.dispatch('uploadForm', payload)
-        let itemlink = item.data.d.ListItemAllFields.__deferred.uri
-        let form = await Security.dispatch('getForm', itemlink)
-        console.log('TASK USER ID: ' + this.taskUserId)
-        payload = {
-          Title: 'Approve ' + name,
-          //AssignedToId: vm.userid, // Hardcoding the Security Group
-          AssignedToId: this.taskUserId,
-          Description: 'Approve or reject ' + name,
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
-        }
-        let results = await Todo.dispatch('addTodo', payload)
-        let formId = form.data.d.Id
-        payload = form.data.d.__metadata
-        payload.file = this.fileSelected
-        payload.name = pdfName
-        // spayload.IndexNumber = this.IndexNumber
-        payload.Company = this.form.Company
-        payload.PersonnelID = this.form.PersonnelID
-        payload.PersonName = this.form.Name
-        payload.TaskID = results.data.d.Id
-        if (vm.form.Type === 'SCI') {
-          payload.SCIType = this.form.SCIType
-        }
-        await Security.dispatch('updateForm', payload).then(async function() {
-          // First check to see if there is an entry for the PersonnelID in the Security Form List
-          let payload = {
-            Title: vm.form.PersonnelID + '-' + vm.form.Name,
-            PersonnelID: vm.form.PersonnelID,
-            PersonName: vm.form.Name,
-            Company: vm.form.Company,
-            Types: ''
+        try {
+          let item = await Security.dispatch('uploadForm', payload)
+          let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+          let form = await Security.dispatch('getForm', itemlink)
+          console.log('TASK USER ID: ' + this.taskUserId)
+          payload = {
+            Title: 'Approve ' + name,
+            //AssignedToId: vm.userid, // Hardcoding the Security Group
+            AssignedToId: this.taskUserId,
+            Description: 'Approve or reject ' + name,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form.Type + ' Request',
+            TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
           }
-          let types = [
-            {
-              account: vm.form.Type,
-              id: formId,
-              library: library,
-              GovSentDate: '',
-              GovCompleteDate: '',
-              name: pdfName,
-              task: results.data.d.Id,
-              href: libraryUrl + pdfName,
-              etag: form.data.d.__metadata.etag,
-              uri: form.data.d.__metadata.uri
+          let results = await Todo.dispatch('addTodo', payload)
+          let formId = form.data.d.Id
+          payload = form.data.d.__metadata
+          payload.file = this.fileSelected
+          payload.name = pdfName
+          // spayload.IndexNumber = this.IndexNumber
+          payload.Company = this.form.Company
+          payload.PersonnelID = this.form.PersonnelID
+          payload.PersonName = this.form.Name
+          payload.TaskID = results.data.d.Id
+          if (vm.form.Type === 'SCI') {
+            payload.SCIType = this.form.SCIType
+          }
+          await Security.dispatch('updateForm', payload).then(async function() {
+            // First check to see if there is an entry for the PersonnelID in the Security Form List
+            let payload = {
+              Title: vm.form.PersonnelID + '-' + vm.form.Name,
+              PersonnelID: vm.form.PersonnelID,
+              PersonName: vm.form.Name,
+              Company: vm.form.Company,
+              Types: ''
             }
-          ]
-          let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-          if (securityForm && securityForm.length == 0) {
-            payload.Types = JSON.stringify(types)
-            await Security.dispatch('addSecurityForm', payload)
-          } else {
-            securityForm.Types.forEach(type => {
-              types.push(type)
+            let types = [
+              {
+                account: vm.form.Type,
+                id: formId,
+                library: library,
+                GovSentDate: '',
+                GovCompleteDate: '',
+                name: pdfName,
+                task: results.data.d.Id,
+                href: libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              }
+            ]
+            let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+            if (securityForm && securityForm.length == 0) {
+              payload.Types = JSON.stringify(types)
+              await Security.dispatch('addSecurityForm', payload)
+            } else {
+              securityForm.Types.forEach(type => {
+                types.push(type)
+              })
+              payload.Types = JSON.stringify(types)
+              payload.etag = securityForm.etag
+              payload.uri = securityForm.uri
+              await Security.dispatch('updateSecurityForm', payload)
+            }
+            // Run conditional on the results of the security form to either add or update security form
+            //await Security.dispatch('')
+            // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
+            const notification = {
+              type: 'success',
+              title: 'Succesfully Uploaded Form',
+              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
+
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+            let event = []
+            event.push({
+              name: vm.fileName,
+              Status: 'SecurityReview',
+              Form: library + vm.fileSelected,
+              etag: vm.form.etag,
+              uri: vm.form.uri
             })
-            payload.Types = JSON.stringify(types)
-            payload.etag = securityForm.etag
-            payload.uri = securityForm.uri
-            await Security.dispatch('updateSecurityForm', payload)
-          }
-          // Run conditional on the results of the security form to either add or update security form
-          //await Security.dispatch('')
-          // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
+            // Clear form after submission
+
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+            vm.fileSelected = null
+            vm.fileBuffer = null
+          })
+        } catch (e) {
+          // Add user notification and system logging
           const notification = {
-            type: 'success',
-            title: 'Succesfully Uploaded Form',
-            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
             push: true
           }
-          vm.$store.dispatch('notification/add', notification, { root: true })
-
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-          let event = []
-          event.push({
-            name: vm.fileName,
-            Status: 'SecurityReview',
-            Form: library + vm.fileSelected,
-            etag: vm.form.etag,
-            uri: vm.form.uri
+          this.$store.dispatch('notification/add', notification, {
+            root: true
           })
-          // Clear form after submission
-
-          if (vm.formType === 'account') {
-            vm.form.Type = vm.accountOptions[0]
-          }
-          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-          vm.fileSelected = null
-          vm.fileBuffer = null
-        })
+          console.log('ERROR: ' + e)
+        }
       }
     },
     async onFileSelect(args) {

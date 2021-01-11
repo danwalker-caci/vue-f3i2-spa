@@ -82,10 +82,24 @@ export default {
     vm = this
     let payload = {}
     payload.id = vm.TripId
-    Todo.dispatch('getDigest')
-    Travel.dispatch('getTripById', payload).then(function() {
-      vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-    })
+    try {
+      Todo.dispatch('getDigest')
+      Travel.dispatch('getTripById', payload).then(function() {
+        vm.$options.interval = setInterval(vm.waitForTrip, 1000)
+      })
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   data: function() {
     return {
@@ -129,59 +143,73 @@ export default {
     },
     async onModalSave() {
       // perform upload and refresh the page
-      let response = await Travel.dispatch('getDigest')
-      let digest = response.data.d.GetContextWebInformation.FormDigestValue
-      let name = this.fileSelected.split('.')[0]
-      this.fileName = name
-      let payload = {}
-      payload.file = this.fileSelected
-      payload.name = name
-      payload.id = this.TripId
-      payload.buffer = this.fileBuffer
-      payload.digest = digest
-      let item = await Travel.dispatch('uploadTripReport', payload)
-      let itemlink = item.data.d.ListItemAllFields.__deferred.uri
-      let report = await Travel.dispatch('getReportItem', itemlink)
-      payload = report.data.d.__metadata
-      payload.file = this.fileSelected
-      payload.name = name
-      payload.IndexNumber = this.travelmodel.IndexNumber
-      Travel.dispatch('updateReportItem', payload).then(function() {
-        // Refresh trip with trip report data
-        vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
-        let event = []
-        event.push({
-          name: vm.fileName,
-          Status: 'TripReportReview',
-          TripReport: library + vm.fileSelected,
-          etag: vm.travelmodel.etag,
-          uri: vm.travelmodel.uri
-        })
-        Travel.dispatch('editTripReport', event).then(function() {
-          // Reload tracker
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
-          // Create task for WP Manager to approve reject trip report
-          let taskdata = {
-            Type: 'Travel Data',
-            TravelID: vm.TripId,
-            IndexNumber: vm.travelmodel.IndexNumber,
-            CreatedByEmail: vm.travelmodel.CreatedByEmail
-          }
-          payload = {
-            Title: 'Approve/Reject Trip Report',
-            AssignedToId: vm.ManagerID,
-            Description: 'Approve or Reject Trip Report',
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: 'Trip Report Review',
-            TaskLink: library + vm.fileSelected,
-            TaskData: taskdata
-          }
-          Todo.dispatch('addTodo', payload).then(function() {
-            vm.$router.push({ name: 'Travel Tracker' })
+      try {
+        let response = await Travel.dispatch('getDigest')
+        let digest = response.data.d.GetContextWebInformation.FormDigestValue
+        let name = this.fileSelected.split('.')[0]
+        this.fileName = name
+        let payload = {}
+        payload.file = this.fileSelected
+        payload.name = name
+        payload.id = this.TripId
+        payload.buffer = this.fileBuffer
+        payload.digest = digest
+        let item = await Travel.dispatch('uploadTripReport', payload)
+        let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+        let report = await Travel.dispatch('getReportItem', itemlink)
+        payload = report.data.d.__metadata
+        payload.file = this.fileSelected
+        payload.name = name
+        payload.IndexNumber = this.travelmodel.IndexNumber
+        Travel.dispatch('updateReportItem', payload).then(function() {
+          // Refresh trip with trip report data
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
+          let event = []
+          event.push({
+            name: vm.fileName,
+            Status: 'TripReportReview',
+            TripReport: library + vm.fileSelected,
+            etag: vm.travelmodel.etag,
+            uri: vm.travelmodel.uri
+          })
+          Travel.dispatch('editTripReport', event).then(function() {
+            // Reload tracker
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
+            // Create task for WP Manager to approve reject trip report
+            let taskdata = {
+              Type: 'Travel Data',
+              TravelID: vm.TripId,
+              IndexNumber: vm.travelmodel.IndexNumber,
+              CreatedByEmail: vm.travelmodel.CreatedByEmail
+            }
+            payload = {
+              Title: 'Approve/Reject Trip Report',
+              AssignedToId: vm.ManagerID,
+              Description: 'Approve or Reject Trip Report',
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: 'Trip Report Review',
+              TaskLink: library + vm.fileSelected,
+              TaskData: taskdata
+            }
+            Todo.dispatch('addTodo', payload).then(function() {
+              vm.$router.push({ name: 'Travel Tracker' })
+            })
           })
         })
-      })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     async onFileSelect(args) {
       vm.fileSelected = args.filesData[0].name

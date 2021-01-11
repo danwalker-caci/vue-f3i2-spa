@@ -157,14 +157,28 @@ export default {
                   TaskType: account + ' Request',
                   TaskLink: '/security/tracker/accounts'
                 }
-                let results = await Todo.dispatch('addTodo', payload)
-                // Update the task to the new one for AFRL
-                data.Types.forEach(type => {
-                  if (id === type.id) {
-                    type.task = results.data.d.Id
+                try {
+                  let results = await Todo.dispatch('addTodo', payload)
+                  // Update the task to the new one for AFRL
+                  data.Types.forEach(type => {
+                    if (id === type.id) {
+                      type.task = results.data.d.Id
+                    }
+                  })
+                  this.updateForm(data, taskId)
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
                   }
-                })
-                this.updateForm(data, taskId)
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
+                }
                 // Add a task for the designated government employee for review
               },
               CompleteGov(data, e) {
@@ -177,7 +191,21 @@ export default {
                     taskId = type.task
                   }
                 })
-                this.updateForm(data, taskId)
+                try {
+                  this.updateForm(data, taskId)
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
+                }
                 // Remove the button and display current Date
               },
               async RejectGov(data, e) {
@@ -204,41 +232,69 @@ export default {
                 console.log('TASK USER ID: ' + taskUserId)
                 original = data.Types[index]
                 data.Types.splice(index, 1)
-                this.updateForm(data, taskId)
-                Security.dispatch('DeleteForm', original)
-                // Notify Monica via task list
-                let payload = {
-                  Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
-                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                  AssignedToId: taskUserId,
-                  Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
-                  IsMilestone: false,
-                  PercentComplete: 0,
-                  TaskType: account + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                try {
+                  this.updateForm(data, taskId)
+                  Security.dispatch('DeleteForm', original)
+                  // Notify Monica via task list
+                  let payload = {
+                    Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
+                    //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                    AssignedToId: taskUserId,
+                    Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
+                    IsMilestone: false,
+                    PercentComplete: 0,
+                    TaskType: account + ' Request',
+                    TaskLink: '/security/tracker/accounts'
+                  }
+                  await Todo.dispatch('addTodo', payload)
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
                 }
-                await Todo.dispatch('addTodo', payload)
               },
               async updateForm(d, tId) {
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
                 payload.Types = JSON.stringify(payload.Types)
-                await Security.dispatch('updateSecurityForm', payload).then(function(result) {
-                  console.log(result)
-                  // grab a fresh etag for the record
-                  d.etag = result.headers.etag
-                  /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
-                    d.etag = response.etag
-                  })*/
-                })
-                Todo.dispatch('getTodoById', tId).then(async function(task) {
-                  let payload = {
-                    etag: task.__metadata.etag,
-                    uri: task.__metadata.uri,
-                    id: task.Id
+                try {
+                  await Security.dispatch('updateSecurityForm', payload).then(function(result) {
+                    console.log(result)
+                    // grab a fresh etag for the record
+                    d.etag = result.headers.etag
+                    /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
+                      d.etag = response.etag
+                    })*/
+                  })
+                  Todo.dispatch('getTodoById', tId).then(async function(task) {
+                    let payload = {
+                      etag: task.__metadata.etag,
+                      uri: task.__metadata.uri,
+                      id: task.Id
+                    }
+                    Todo.dispatch('completeTodo', payload)
+                  })
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
                   }
-                  Todo.dispatch('completeTodo', payload)
-                })
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
+                }
               }
             }
           })
@@ -292,8 +348,22 @@ export default {
         this.company = this.currentuser[0].Company ? this.currentuser[0].Company : this.companies[0]
         let payload = {}
         payload.company = this.company
-        await Personnel.dispatch('getPersonnelByCompany', payload)
-        await Security.dispatch('getSecurityFormsByCompany', payload)
+        try {
+          await Personnel.dispatch('getPersonnelByCompany', payload)
+          await Security.dispatch('getSecurityFormsByCompany', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
         clearInterval(vm.$options.interval)
       }
     },
@@ -301,7 +371,21 @@ export default {
       let payload = {
         company: this.form.Company
       }
-      await Personnel.dispatch('getPersonnelByCompany', payload)
+      try {
+        await Personnel.dispatch('getPersonnelByCompany', payload)
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     }
   },
   provide: {

@@ -685,7 +685,21 @@ export default {
     vm = this
     this.$nextTick(function() {
       if (vm.companies.length === 0) {
-        Company.dispatch('getCompanies')
+        try {
+          Company.dispatch('getCompanies')
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
       if (vm.userloaded) {
         vm.company = vm.user[0].Company
@@ -696,40 +710,68 @@ export default {
           push: false
         }
         vm.$store.dispatch('notification/add', notification, { root: true })
-        Personnel.dispatch('getDigest')
-        Workplan.dispatch('getWorkplans').then(function() {
-          if (vm.isSubcontractor) {
-            let payload = {}
-            payload.company = vm.company
-            Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
-          } else {
-            Personnel.dispatch('getPersonnel').then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
+        try {
+          Personnel.dispatch('getDigest')
+          Workplan.dispatch('getWorkplans').then(function() {
+            if (vm.isSubcontractor) {
+              let payload = {}
+              payload.company = vm.company
+              Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+            } else {
+              Personnel.dispatch('getPersonnel').then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+            }
+          })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
           }
-        })
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
         if (vm.mode === 'edit') {
           // Don't show all of the records until after the form is submitted
           vm.approvalOnly = true
           vm.PersonnelId = this.id
-          Workplan.dispatch('getWorkplans').then(function() {
-            Personnel.dispatch('getPersonnelAllValuesById', vm.id).then(async person => {
-              let modData = {}
-              if (person[0].Modification && person[0].Modification.length > 0) {
-                modData = JSON.parse(person[0].Modification)
-                modData.uri = person[0].uri
-                modData.etag = person[0].etag
-                modData.Id = person[0].Id
-                vm.oldData = person[0]
-                vm.showOldData = true
-              } else {
-                modData = person[0]
-              }
-              vm.editRow(modData)
+          try {
+            Workplan.dispatch('getWorkplans').then(function() {
+              Personnel.dispatch('getPersonnelAllValuesById', vm.id).then(async person => {
+                let modData = {}
+                if (person[0].Modification && person[0].Modification.length > 0) {
+                  modData = JSON.parse(person[0].Modification)
+                  modData.uri = person[0].uri
+                  modData.etag = person[0].etag
+                  modData.Id = person[0].Id
+                  vm.oldData = person[0]
+                  vm.showOldData = true
+                } else {
+                  modData = person[0]
+                }
+                vm.editRow(modData)
+              })
             })
-          })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          }
         }
       }
     })
@@ -825,31 +867,59 @@ export default {
           etag: this.rowData.etag,
           Id: this.rowData.Id
         }
-        Personnel.dispatch('editPerson', data).then(async function() {
-          let managerEmails = []
-          vm.user[0].WPData.length.foreach(async function(wp) {
-            let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
-            console.log(`Manager: ${JSON.stringify(manager)}`)
-            if (manager[0]) {
-              managerEmails.push(manager[0]['Manager']['EMail'])
-            }
+        try {
+          Personnel.dispatch('editPerson', data).then(async function() {
+            let managerEmails = []
+            vm.user[0].WPData.length.foreach(async function(wp) {
+              let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
+              console.log(`Manager: ${JSON.stringify(manager)}`)
+              if (manager[0]) {
+                managerEmails.push(manager[0]['Manager']['EMail'])
+              }
+            })
+            data.WPManagerEmails = managerEmails
+            await Personnel.dispatch('editSubEmail', data, 'edit').then(function() {
+              const notification = {
+                type: 'info',
+                title: 'Information',
+                message: 'A Workplan Manager will review your submission.',
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, { root: true })
+              vm.hideme('EditModal', 'refresh')
+            })
           })
-          data.WPManagerEmails = managerEmails
-          await Personnel.dispatch('editSubEmail', data, 'edit').then(function() {
-            const notification = {
-              type: 'info',
-              title: 'Information',
-              message: 'A Workplan Manager will review your submission.',
-              push: true
-            }
-            this.$store.dispatch('notification/add', notification, { root: true })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      } else {
+        try {
+          Personnel.dispatch('editPerson', this.rowData).then(function() {
             vm.hideme('EditModal', 'refresh')
           })
-        })
-      } else {
-        Personnel.dispatch('editPerson', this.rowData).then(function() {
-          vm.hideme('EditModal', 'refresh')
-        })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
     },
     editClose: function() {
@@ -860,30 +930,58 @@ export default {
         let data = {
           Modification: JSON.stringify(this.newData)
         }
-        let results = Personnel.dispatch('addSub', data)
-        let managerEmails = []
-        vm.user[0].WPData.foreach(async wp => {
-          let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
-          console.log(`Manager: ${JSON.stringify(manager)}`)
-          if (manager[0]) {
-            managerEmails.push(manager[0]['Manager']['EMail'])
-          }
-        })
-        results.WPManagerEmails = managerEmails
-        Personnel.dispatch('newSubEmail', results).then(function() {
-          vm.hideme('NewModal')
+        try {
+          let results = Personnel.dispatch('addSub', data)
+          let managerEmails = []
+          vm.user[0].WPData.foreach(async wp => {
+            let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
+            console.log(`Manager: ${JSON.stringify(manager)}`)
+            if (manager[0]) {
+              managerEmails.push(manager[0]['Manager']['EMail'])
+            }
+          })
+          results.WPManagerEmails = managerEmails
+          Personnel.dispatch('newSubEmail', results).then(function() {
+            vm.hideme('NewModal')
+            const notification = {
+              type: 'info',
+              title: 'Information',
+              message: 'A Workplan Manager will review your submission.',
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
+          }) //sendemail with results id
+        } catch (e) {
+          // Add user notification and system logging
           const notification = {
-            type: 'info',
-            title: 'Information',
-            message: 'A Workplan Manager will review your submission.',
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
             push: true
           }
-          vm.$store.dispatch('notification/add', notification, { root: true })
-        }) //sendemail with results id
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       } else {
-        Personnel.dispatch('addPerson', this.newData).then(function() {
-          vm.hideme('NewModal', 'refresh')
-        })
+        try {
+          Personnel.dispatch('addPerson', this.newData).then(function() {
+            vm.hideme('NewModal', 'refresh')
+          })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
     },
     btnAddClick: function() {
@@ -898,10 +996,24 @@ export default {
     btnApproveClick: function() {
       vm.rowData.ModDeniedReason = ''
       vm.rowData.Modification = '' // Remove previous Modification Data
-      Personnel.dispatch('editPerson', vm.rowData).then(function() {
-        vm.approvalOnly = false
-        vm.hideme('EditModal', 'refresh')
-      })
+      try {
+        Personnel.dispatch('editPerson', vm.rowData).then(function() {
+          vm.approvalOnly = false
+          vm.hideme('EditModal', 'refresh')
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     btnDenyClick: function() {
       // TO DO: Post Reason to ModDeniedReason
@@ -912,10 +1024,24 @@ export default {
         uri: vm.oldData.uri,
         etag: vm.oldData.etag
       }
-      Personnel.dispatch('editPerson', denyData).then(function() {
-        vm.approvalOnly = false
-        vm.hideme('EditModal', 'refresh')
-      })
+      try {
+        Personnel.dispatch('editPerson', denyData).then(function() {
+          vm.approvalOnly = false
+          vm.hideme('EditModal', 'refresh')
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     changewp: function(e) {
       var id = String(e.element.id)
@@ -1209,9 +1335,23 @@ export default {
           this.$bvModal.show('NewModal')
           break
         case 'default':
-          Personnel.dispatch('getPersonnel').then(function() {
-            vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-          })
+          try {
+            Personnel.dispatch('getPersonnel').then(function() {
+              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+            })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          }
           break
       }
     }
