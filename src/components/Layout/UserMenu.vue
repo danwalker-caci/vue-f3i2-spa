@@ -306,16 +306,29 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$nextTick(function() {
-      Todo.dispatch('getDigest')
-      this.userdisplayname = this.profiledata.DisplayName
-      document.getElementById('LoadingBars').style.display = 'none'
-      if (!vm.userloaded) {
-        User.dispatch('getUserId').then(function() {
-          User.dispatch('getUserProfile').then(function() {
-            vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
+    this.$nextTick(async function() {
+      try {
+        Todo.dispatch('getDigest')
+        this.userdisplayname = await this.profiledata.DisplayName
+        document.getElementById('LoadingBars').style.display = 'none'
+        if (!vm.userloaded) {
+          await User.dispatch('getUserId').then(async function() {
+            await User.dispatch('getUserProfile').then(function() {
+              vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
+            })
           })
+        }
+      } catch (e) {
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
         })
+        console.log('ERROR: ' + e)
       }
     })
   },

@@ -23,14 +23,27 @@ export default {
   mounted: function() {
     vm = this
     this.$nextTick(function() {
-      Todo.dispatch('getDigest')
-      Company.dispatch('getDigest')
-      if (!vm.userloaded) {
-        User.dispatch('getUserId').then(function() {
-          User.dispatch('getUserProfile').then(function() {
-            vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
+      try {
+        Todo.dispatch('getDigest')
+        Company.dispatch('getDigest')
+        if (!vm.userloaded) {
+          User.dispatch('getUserId').then(function() {
+            User.dispatch('getUserProfile').then(function() {
+              vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
+            })
           })
+        }
+      } catch (e) {
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
         })
+        console.log('ERROR: ' + e)
       }
     })
   },

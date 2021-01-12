@@ -138,7 +138,7 @@ const actions = {
           }
         }
         // to get the Company and Workplan Data we need to get this from the Personnel list based on the current user id
-        Personnel.dispatch('getPersonnelById', userid).then(function(response) {
+        await Personnel.dispatch('getPersonnelById', userid).then(function(response) {
           if (console) {
             console.log('GetPersonnelById Response: ' + response)
           }

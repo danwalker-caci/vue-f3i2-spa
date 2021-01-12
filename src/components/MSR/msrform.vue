@@ -2333,9 +2333,12 @@ export default {
       clipBoard: null,
       ActiveSection: '',
       changecount: 0,
+      prevForm: null,
+      prevField: null,
+      prevSaveType: null,
       form: null,
       field: null,
-      saveType: 'save',
+      saveType: null,
       dashboardtabs: 0,
       fundingtabs: 0,
       traveltabs: 0,
@@ -2663,13 +2666,23 @@ export default {
     },
     async nextTab() {
       // Need to track what form they are on.
-      this.handleit(this.saveType, this.field, this.form)
       this.dashboardtabs++
+      if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
+        this.prevForm = this.form
+        this.prevField = this.field
+        this.prevSaveType = this.saveType
+        this.handleit(this.saveType, this.field, this.form)
+      }
     },
     async prevTab() {
       // Need to track what form they are on.
-      this.handleit(this.saveType, this.field, this.form)
       this.dashboardtabs--
+      if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
+        this.prevField = this.field
+        this.prevField = this.field
+        this.prevSaveType = this.saveType
+        this.handleit(this.saveType, this.field, this.form)
+      }
     },
     async handleit(action, field, form) {
       if (console) {
@@ -2686,6 +2699,9 @@ export default {
           this.field = field
           this.form = form
           this.saveType = 'save'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           this[form] = true
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -2815,6 +2831,9 @@ export default {
           this.field = 'Accomplishments'
           this.form = 'AccomplishmentsForm'
           this.saveType = 'saveaccomplishment'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.AccomplishmentsForm = true
@@ -2894,6 +2913,7 @@ export default {
             let imageurl = server + '/MSRImages/' + this.fileName
             this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
           }
+          this[form] = false
           await this.checkAccomplishment()
           let payload = {}
           payload.field = field
@@ -2905,7 +2925,6 @@ export default {
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
-          this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
             vm.hasImage = false
@@ -2967,6 +2986,9 @@ export default {
           this.field = 'Plans'
           this.form = 'PlansForm'
           this.saveType = 'saveplan'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Plans.length; i++) {
             if (this.Plans[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3111,6 +3133,9 @@ export default {
           this.field = 'Assumptions'
           this.form = 'AssumptionsForm'
           this.saveType = 'saveassumption'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Assumptions.length; i++) {
             if (this.Assumptions[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3251,6 +3276,9 @@ export default {
           this.field = 'Risks'
           this.form = 'RisksForm'
           this.saveType = 'saverisk'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Risks.length; i++) {
             if (this.Risks[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3391,6 +3419,9 @@ export default {
           this.field = 'Opportunities'
           this.form = 'OpportunitiesForm'
           this.saveType = 'saveopportunity'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Opportunities.length; i++) {
             if (this.Opportunities[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3530,6 +3561,9 @@ export default {
           this.field = 'Deliverables'
           this.form = 'DeliverablesForm'
           this.saveType = 'savedeliverable'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Deliverables.length; i++) {
             if (this.Deliverables[i]['Index'] == index) {
               this.SelectedIndex = i
