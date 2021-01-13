@@ -76,6 +76,7 @@ const actions = {
           // if (console) { console.log('USER ID: ' + response.data.d.Id) }
           state.userid = response.data.d.Id
         })
+        return response.data.d
       })
       .catch(error => {
         console.log('There was an error getting User Id: ', error.response)
@@ -162,8 +163,9 @@ const actions = {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  getUserGroups({ state }) {
-    UserService.getUserGroups(state.userid)
+  getUserGroups({ state }, id) {
+    let userid = (state.userid) ? state.userid : id
+    UserService.getUserGroups(userid)
       .then(response => {
         User.commit(state => {
           state.usergroups = response.data.d.results
