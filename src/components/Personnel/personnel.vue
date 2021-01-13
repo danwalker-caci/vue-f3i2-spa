@@ -682,102 +682,92 @@ export default {
       }
     }
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
-    this.$nextTick(function() {
-      if (vm.companies.length === 0) {
-        try {
-          Company.dispatch('getCompanies')
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-      }
-      if (vm.userloaded) {
-        vm.company = vm.user[0].Company
-        const notification = {
-          type: 'info',
-          title: 'Getting Data',
-          message: 'Getting Workplans and Personnel. Please wait...',
-          push: false
-        }
-        vm.$store.dispatch('notification/add', notification, { root: true })
-        try {
-          Personnel.dispatch('getDigest')
-          Workplan.dispatch('getWorkplans').then(function() {
-            if (vm.isSubcontractor) {
-              let payload = {}
-              payload.company = vm.company
-              Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-              })
-            } else {
-              Personnel.dispatch('getPersonnel').then(function() {
-                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-              })
-            }
-          })
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-        if (vm.mode === 'edit') {
-          // Don't show all of the records until after the form is submitted
-          vm.approvalOnly = true
-          vm.PersonnelId = this.id
-          try {
-            Workplan.dispatch('getWorkplans').then(function() {
-              Personnel.dispatch('getPersonnelAllValuesById', vm.id).then(async person => {
-                let modData = {}
-                if (person[0].Modification && person[0].Modification.length > 0) {
-                  modData = JSON.parse(person[0].Modification)
-                  modData.uri = person[0].uri
-                  modData.etag = person[0].etag
-                  modData.Id = person[0].Id
-                  vm.oldData = person[0]
-                  vm.showOldData = true
-                } else {
-                  modData = person[0]
-                }
-                vm.editRow(modData)
-              })
-            })
-          } catch (e) {
-            // Add user notification and system logging
-            const notification = {
-              type: 'danger',
-              title: 'Portal Error',
-              message: e,
-              push: true
-            }
-            this.$store.dispatch('notification/add', notification, {
-              root: true
-            })
-            console.log('ERROR: ' + e)
-          }
-        }
-      }
+    Company.dispatch('getCompanies').catch(e => {
+      // Add user notification and system logging
+      vm.handleError(e)
     })
+    if (this.userloaded) {
+      this.company = this.user[0].Company
+    }
+    const notification = {
+      type: 'info',
+      title: 'Getting Data',
+      message: 'Getting Workplans and Personnel. Please wait...',
+      push: false
+    }
+    this.$store.dispatch('notification/add', notification, { root: true })
+    Personnel.dispatch('getDigest')
+    Workplan.dispatch('getWorkplans')
+      .then(function() {
+        if (vm.isSubcontractor && vm.company) {
+          let payload = {}
+          payload.company = vm.company
+          Personnel.dispatch('getPersonnelByCompany', payload)
+            .then(function() {
+              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+            })
+            .catch(e => {
+              vm.handleError(e)
+            })
+        } else {
+          Personnel.dispatch('getPersonnel')
+            .then(function() {
+              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+            })
+            .catch(e => {
+              vm.handleError(e)
+            })
+        }
+      })
+      .catch(e => {
+        // Add user notification and system logging
+        vm.handleError(e)
+      })
+    if (vm.mode === 'edit') {
+      // Don't show all of the records until after the form is submitted
+      vm.approvalOnly = true
+      vm.PersonnelId = this.id
+      Workplan.dispatch('getWorkplans')
+        .then(function() {
+          Personnel.dispatch('getPersonnelAllValuesById', vm.id)
+            .then(person => {
+              let modData = {}
+              if (person[0].Modification && person[0].Modification.length > 0) {
+                modData = JSON.parse(person[0].Modification)
+                modData.uri = person[0].uri
+                modData.etag = person[0].etag
+                modData.Id = person[0].Id
+                vm.oldData = person[0]
+                vm.showOldData = true
+              } else {
+                modData = person[0]
+              }
+              vm.editRow(modData)
+            })
+            .catch(e => {
+              vm.handleError(e)
+            })
+        })
+        .catch(e => {
+          vm.handleError(e)
+        })
+    }
   },
   methods: {
+    handleError: function(e) {
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    },
     waitForPeople: function() {
       if (this.personnel && this.personnel.length > 0) {
         clearInterval(this.$options.interval)
@@ -855,7 +845,8 @@ export default {
       this.$bvModal.show('EditModal')
       this.rowData = data
     },
-    editOk: function() {
+    editOk: async function() {
+      await Personnel.dispatch('getDigest')
       console.log('LENGTH: ' + this.WPData[0].Workplan.length)
       if (this.WPData[0].Workplan.length > 3) {
         this.rowData.WPData = JSON.stringify(this.WPData)
@@ -926,7 +917,8 @@ export default {
     editClose: function() {
       vm.hideme('EditModal', 'refresh')
     },
-    newOk: function() {
+    newOk: async function() {
+      await Personnel.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
