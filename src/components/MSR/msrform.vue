@@ -2212,6 +2212,7 @@ import axios from 'axios'
 import Workplan from '@/models/WorkPlan' // used to get sub data
 import MSR from '@/models/MSR'
 import User from '@/models/User'
+import Todo from '@/models/Todo'
 import { Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table as RTETable } from '@syncfusion/ej2-vue-richtexteditor'
 
 let SPCI = null
@@ -2463,13 +2464,18 @@ export default {
       etag: null
     }
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
     this.$bvToast.show('form-toast')
     this.WorkplanTitle = this.msrdata.WorkplanTitle
     this.WorkplanNumber = this.msrdata.WorkplanNumber
-    this.Email = this.user[0].Email
-    this.Company = this.user[0].Company
+    if (this.user) {
+      this.Email = this.user[0].Email
+      this.Company = this.user[0].Company
+    } else {
+      this.getUserInfo()
+    }
+    // Otherwise go and get all that information.
     let m = this.$moment().get('month')
     this.Month = months[m]
     this.Year = String(this.$moment().year())
@@ -2510,6 +2516,34 @@ export default {
     next()
   }, */
   methods: {
+    async getUserInfo() {
+      await User.dispatch('getUserId').catch(error => {
+        console.log('ERROR: ' + error)
+      })
+      await User.dispatch('getUserProfile')
+        .then(() => {
+          vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+        })
+        .catch(error => {
+          console.log('ERROR: ' + error)
+        })
+    },
+    async updateUserInfo() {
+      if (this.user) {
+        clearInterval(this.$options.interval)
+        //this.userdisplayname = this.user[0].DisplayName
+        this.Email = this.user[0].Email
+        this.Company = this.user[0].Company
+        await User.dispatch('getUserGroups').catch(error => {
+          console.log('ERROR: ' + error)
+        })
+        await Todo.dispatch('getTodosByUser', this.UserId).catch(error => {
+          console.log('ERROR: ' + error)
+        })
+      } else {
+        this.getUserInfo()
+      }
+    },
     getFormDigest() {
       return axios.request({
         url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
@@ -4535,8 +4569,10 @@ export default {
         this.$bvToast.show('form-toast')
         this.WorkplanTitle = this.msrdata.WorkplanTitle
         this.WorkplanNumber = this.msrdata.WorkplanNumber
-        this.Email = this.user[0].Email
-        this.Company = this.user[0].Company
+        if (this.user) {
+          this.Email = this.user[0].Email
+          this.Company = this.user[0].Company
+        }
         let m = this.$moment().get('month')
         this.Month = months[m]
         this.Year = String(this.$moment().year())
