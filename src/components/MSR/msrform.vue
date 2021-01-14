@@ -2208,6 +2208,7 @@
 <script>
 import { BorderStyle, Packer, Paragraph, Table, TableCell, TableRow, VerticalAlign, WidthType, AlignmentType, PageNumber, TextRun, CreateDocFromHtml } from 'caci-docx/lib'
 // import fileSaver from 'file-saver'
+import { EventBus } from '../../main'
 import axios from 'axios'
 import Workplan from '@/models/WorkPlan' // used to get sub data
 import MSR from '@/models/MSR'
@@ -2299,6 +2300,11 @@ export default {
     rect() {
       return this.$store.state.support.contentrect
     }
+  },
+  created: function() {
+    EventBus.$on('Unloading', () => {
+      this.onFormClose()
+    })
   },
   errorCaptured(err, vm, info) {
     const notification = {
@@ -2463,6 +2469,30 @@ export default {
       etag: null
     }
   },
+  beforeRouteLeave: function(to, from, next) {
+    if (this.isDirty == true) {
+      /* let result = window.confirm('You have not closed the form to unlock it. Do you really want to leave?')
+      if (result == true) {
+        next()
+      } else {
+        // user can close the form
+        next(false)
+      } */
+      let payload = {}
+      payload.field = 'Locked'
+      payload.value = 'No'
+      payload.uri = this.uri
+      payload.etag = this.etag
+      MSR.dispatch('updateMSRData', payload).then(function() {
+        next()
+      })
+    } else {
+      next()
+    }
+  },
+  beforeDestroy: function() {
+    console.log('BEFORE DESTROY MSR FORM')
+  },
   mounted: function() {
     vm = this
     this.$bvToast.show('form-toast')
@@ -2474,13 +2504,7 @@ export default {
     this.Month = months[m]
     this.Year = String(this.$moment().year())
     this.headerText = 'Edit Data For MSR ' + this.msrdata.WorkplanNumber + ' ' + this.msrdata.WorkplanTitle
-    /* let formbody = document.getElementById('Tabs')
-    let h = this.rect.height - 100
-    formbody.style.height = h + 'px' */
-    /* this.dashboardtabs = this.dashboardtab
-    this.fundingtabs = this.fundingtab
-    this.traveltabs = this.traveltab
-    this.arotabs = this.arotab */
+    this.isDirty = true // dirty because it is locked
     try {
       MSR.dispatch('getDigest')
       Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
@@ -2501,14 +2525,7 @@ export default {
       console.log('ERROR: ' + e)
     }
   },
-  /* beforeDestroy() {
-    this.$store.dispatch('support/setLegendItems', [])
-    this.onFormClose()
-  }, */
-  /* beforeRouteLeave(to, from, next) {
-    vm.onFormClose()
-    next()
-  }, */
+
   methods: {
     getFormDigest() {
       return axios.request({
@@ -2563,7 +2580,6 @@ export default {
         this.Risks = this.formatData2('Risks', this.msr.Risks)
         this.Opportunities = this.formatData2('Opportunities', this.msr.Opportunities)
         this.Deliverables = this.formatData2('Deliverables', this.msr.Deliverables)
-        this.isDirty = false
         this.isSaving = false
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         // set the localStorage for the Accomplishments here
@@ -2610,6 +2626,7 @@ export default {
     },
     onFormClose: function() {
       clearInterval(this.timerid)
+      this.isDirty = false
       let payload = {}
       payload.field = 'Locked'
       payload.value = 'No'
