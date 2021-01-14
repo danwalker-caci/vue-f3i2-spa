@@ -2374,7 +2374,7 @@ export default {
         allowedStyleProps: ['color', 'margin', 'font-size']
       },
       toolbarSettings: {
-        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontName', 'FontSize', 'FontColor', 'BackgroundColor', 'LowerCase', 'UpperCase', '|', 'Formats', 'Alignments', 'UnorderedList', 'Outdent', 'Indent', '|', 'CreateTable', 'CreateLink', '|', 'ClearFormat', 'Print', '|', 'Undo', 'Redo']
+        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontName', 'FontSize', 'FontColor', 'BackgroundColor', 'LowerCase', 'UpperCase', '|', 'Formats', 'Alignments', 'UnorderedList', 'Outdent', 'Indent', '|', 'CreateTable', 'CreateLink', '|', 'ClearFormat', 'Print', '|', 'Undo', 'Redo', '|', 'SourceCode']
       },
       FundingForm: false /* ---------------------------------- used for showing/hiding the form based on the current user permission   */,
       StaffingForm: false /* --------------------------------- used for showing/hiding the form based on the current user permission   */,
