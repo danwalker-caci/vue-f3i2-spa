@@ -2800,9 +2800,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2840,9 +2840,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2949,9 +2949,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2989,9 +2989,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3098,9 +3098,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3138,9 +3138,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3245,9 +3245,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3283,9 +3283,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3388,9 +3388,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3426,9 +3426,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3531,9 +3531,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3569,9 +3569,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3673,9 +3673,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3711,9 +3711,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
