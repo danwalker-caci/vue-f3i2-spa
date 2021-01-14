@@ -37,6 +37,9 @@ export default {
         })
         .catch(error => {
           console.log('ERROR: ' + error)
+          User.dispatch('getUserProfile').then(() => {
+            vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+          })
         })
     },
     async updateUserInfo() {

@@ -143,11 +143,13 @@ const actions = {
           if (console) {
             console.log('GetPersonnelById Response: ' + response)
           }
-          if (response && response[0].Company) {
-            profile.Company = response[0].Company
-          }
-          if (response && response[0].WPData) {
-            profile.WPData = JSON.parse(response[0].WPData)
+          if (response && response.length > 0) {
+            if (response[0].Company) {
+              profile.Company = response[0].Company
+            }
+            if (response[0].WPData) {
+              profile.WPData = JSON.parse(response[0].WPData)
+            }
           }
           User.insert({ data: profile })
         })
