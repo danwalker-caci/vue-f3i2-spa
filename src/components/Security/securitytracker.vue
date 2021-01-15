@@ -329,7 +329,21 @@ export default {
                     taskId = type.task
                   }
                 })
-                this.updateForm(data, taskId)
+                try {
+                  this.updateForm(data, taskId)
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
+                }
                 // Remove the button and display current Date
               },
               async RejectGov(data, e) {
@@ -353,22 +367,37 @@ export default {
                 } else {
                   taskUserId = vm.$store.state.support.CACSCIUserId
                 }
-                original = data.Accounts[index]
-                data.Accounts.splice(index, 1)
-                this.updateForm(data, taskId)
-                Security.dispatch('DeleteForm', original)
-                // Notify Monica via task list
-                let payload = {
-                  Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
-                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                  AssignedToId: taskUserId,
-                  Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
-                  IsMilestone: false,
-                  PercentComplete: 0,
-                  TaskType: account + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                console.log('TASK USER ID: ' + taskUserId)
+                original = data.Types[index]
+                data.Types.splice(index, 1)
+                try {
+                  this.updateForm(data, taskId)
+                  Security.dispatch('DeleteForm', original)
+                  // Notify Monica via task list
+                  let payload = {
+                    Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
+                    //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                    AssignedToId: taskUserId,
+                    Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
+                    IsMilestone: false,
+                    PercentComplete: 0,
+                    TaskType: account + ' Request',
+                    TaskLink: '/security/tracker/accounts'
+                  }
+                  await Todo.dispatch('addTodo', payload)
+                } catch (e) {
+                  // Add user notification and system logging
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: e,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + e)
                 }
-                await Todo.dispatch('addTodo', payload)
               },
               async updateForm(d, tId) {
                 // Hackiness to make the data immutable...not nice!
@@ -394,20 +423,34 @@ export default {
                 payload.SCICE = d.SCICE
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate
                 payload.SCIStatus = d.SCIStatus
-                await Security.dispatch('updateSecurityForm', payload).then(function(result) {
-                  // grab a fresh etag for the record
-                  d.etag = result.headers.etag
-                  /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
+                await Security.dispatch('updateSecurityForm', payload)
+                  .then(function(result) {
+                    // grab a fresh etag for the record
+                    d.etag = result.headers.etag
+                    /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
-                  const notification = {
-                    type: 'success',
-                    title: 'Succesfully Updated Security Form',
-                    message: 'Updated Security form for ' + d.PersonName + ' in ' + d.Company,
-                    push: true
-                  }
-                  vm.$store.dispatch('notification/add', notification, { root: true })
-                })
+                    const notification = {
+                      type: 'success',
+                      title: 'Succesfully Updated Security Form',
+                      message: 'Updated Security form for ' + d.PersonName + ' in ' + d.Company,
+                      push: true
+                    }
+                    vm.$store.dispatch('notification/add', notification, { root: true })
+                  })
+                  .catch(e => {
+                    // Add user notification and system logging
+                    const notification = {
+                      type: 'danger',
+                      title: 'Portal Error',
+                      message: e,
+                      push: true
+                    }
+                    this.$store.dispatch('notification/add', notification, {
+                      root: true
+                    })
+                    console.log('ERROR: ' + e)
+                  })
                 if (tId) {
                   Todo.dispatch('getTodoById', tId).then(async function(task) {
                     let payload = {
@@ -454,8 +497,22 @@ export default {
         this.company = this.currentuser[0].Company ? this.currentuser[0].Company : this.companies[0]
         let payload = {}
         payload.company = this.company
-        await Personnel.dispatch('getPersonnelByCompany', payload)
-        await Security.dispatch('getSecurityFormsByCompany', payload)
+        try {
+          await Personnel.dispatch('getPersonnelByCompany', payload)
+          await Security.dispatch('getSecurityFormsByCompany', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
         clearInterval(vm.$options.interval)
       }
     },
@@ -463,7 +520,19 @@ export default {
       let payload = {
         company: this.form.Company
       }
-      await Personnel.dispatch('getPersonnelByCompany', payload)
+      await Personnel.dispatch('getPersonnelByCompany', payload).catch(e => {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      })
     },
     toolbarClick: function(args) {
       if (args.item.id === 'FormsGrid_excelexport') {

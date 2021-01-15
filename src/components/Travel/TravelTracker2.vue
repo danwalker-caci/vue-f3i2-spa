@@ -781,9 +781,23 @@ export default {
   },
   mounted: function() {
     vm = this
-    Travel.dispatch('getDigest')
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
-    this.$options.interval = setInterval(this.waitForUser, 500)
+    try {
+      Travel.dispatch('getDigest')
+      this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
+      this.$options.interval = setInterval(this.waitForUser, 500)
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
@@ -810,10 +824,24 @@ export default {
             // TODO: LET THE USER KNOW?
           }
         } else {
-          Travel.dispatch('getTRIPS').then(function() {
-            vm.$bvToast.hide('busy-toast')
-            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-          })
+          try {
+            Travel.dispatch('getTRIPS').then(function() {
+              vm.$bvToast.hide('busy-toast')
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          }
         }
       }
     },

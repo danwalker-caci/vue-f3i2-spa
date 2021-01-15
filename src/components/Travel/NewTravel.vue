@@ -458,21 +458,35 @@ export default {
     this.company = this.currentuser[0].Company
     let payload = {}
     payload.company = this.company
-    if (this.isSubcontractor == true) {
-      this.travelmodel.Company = this.currentuser[0].Company
-      Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-        Workplan.dispatch('getWorkplans').then(function() {
-          vm.$options.interval = setInterval(vm.setPersonnel, 1000)
-        })
-      })
-    } else {
-      Personnel.dispatch('getPersonnel').then(function() {
-        Workplan.dispatch('getWorkplans').then(function() {
-          Company.dispatch('getCompanies').then(function() {
+    try {
+      if (this.isSubcontractor == true) {
+        this.travelmodel.Company = this.currentuser[0].Company
+        Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
+          Workplan.dispatch('getWorkplans').then(function() {
             vm.$options.interval = setInterval(vm.setPersonnel, 1000)
           })
         })
+      } else {
+        Personnel.dispatch('getPersonnel').then(function() {
+          Workplan.dispatch('getWorkplans').then(function() {
+            Company.dispatch('getCompanies').then(function() {
+              vm.$options.interval = setInterval(vm.setPersonnel, 1000)
+            })
+          })
+        })
+      }
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
       })
+      console.log('ERROR: ' + e)
     }
   },
   data: function() {
@@ -869,10 +883,24 @@ export default {
       this.travelmodel.WorkPlan = t[0].data
       this.travelmodel.WorkPlanText = wp[1]
       this.travelmodel.IndexNumber = wp[0] + '-' + this.newindex
-      let manager = await Workplan.dispatch('getManagerByWPNumber', wp[0])
-      console.log(manager)
-      this.ManagerEmail = manager[0]['Manager']['EMail']
-      this.travelmodel.InternalData.ManagerEmail = manager[0]['Manager']['EMail']
+      try {
+        let manager = await Workplan.dispatch('getManagerByWPNumber', wp[0])
+        console.log(manager)
+        this.ManagerEmail = manager[0]['Manager']['EMail']
+        this.travelmodel.InternalData.ManagerEmail = manager[0]['Manager']['EMail']
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     onCompanySelected: function() {
       // TODO: Validate if this should drive the selection of workplans and personnel
@@ -952,40 +980,54 @@ export default {
         etag: this.travelmodel.etag,
         uri: this.travelmodel.uri
       })
-      let response = await Travel.dispatch('addTrip', event)
-      let id = response.data.d.Id
-      let payload = {}
-      payload.uri = this.wpuri
-      payload.etag = this.wpetag
-      payload.index = this.newindex
-      Workplan.dispatch('updateIndex', payload)
-      if (this.emailRequired) {
-        Travel.dispatch('sendEmail', id).then(function() {
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent Security Email</div>')
-          let payload = {}
-          payload.id = id
-          payload.email = vm.ManagerEmail
-          Travel.dispatch('NewTripEmail', payload).then(function() {
-            vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
-            if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
-              vm.$router.push({ name: vm.$router.currentRoute.params.back })
-            } else {
-              vm.$router.push({ name: 'Travel Tracker' }) // default
-            }
+      try {
+        let response = await Travel.dispatch('addTrip', event)
+        let id = response.data.d.Id
+        let payload = {}
+        payload.uri = this.wpuri
+        payload.etag = this.wpetag
+        payload.index = this.newindex
+        Workplan.dispatch('updateIndex', payload)
+        if (this.emailRequired) {
+          Travel.dispatch('sendEmail', id).then(function() {
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent Security Email</div>')
+            let payload = {}
+            payload.id = id
+            payload.email = vm.ManagerEmail
+            Travel.dispatch('NewTripEmail', payload).then(function() {
+              vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
+              if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
+                vm.$router.push({ name: vm.$router.currentRoute.params.back })
+              } else {
+                vm.$router.push({ name: 'Travel Tracker' }) // default
+              }
+            })
           })
-        })
-      }
-      payload = {}
-      payload.id = id
-      payload.email = this.ManagerEmail
-      Travel.dispatch('NewTripEmail', payload).then(function() {
-        vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
-        if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
-          vm.$router.push({ name: vm.$router.currentRoute.params.back })
-        } else {
-          vm.$router.push({ name: 'Travel Tracker' }) // default
         }
-      })
+        payload = {}
+        payload.id = id
+        payload.email = this.ManagerEmail
+        Travel.dispatch('NewTripEmail', payload).then(function() {
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
+          if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
+            vm.$router.push({ name: vm.$router.currentRoute.params.back })
+          } else {
+            vm.$router.push({ name: 'Travel Tracker' }) // default
+          }
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     }
   }
 }

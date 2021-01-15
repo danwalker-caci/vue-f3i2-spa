@@ -396,11 +396,25 @@ export default {
     }
   },
   mounted: function() {
-    this.$nextTick(function() {
-      console.log('Getting Navigation')
+    //this.$nextTick(function() {
+    console.log('Getting Navigation')
+    try {
       this.$store.dispatch('support/getUserProfile')
       // this.$store.dispatch('navbar/getSiteActions')
-    })
+    } catch (e) {
+      // include a notification to the user of an error and log that error for developers
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
+    //})
   },
   methods: {
     searchme: function() {

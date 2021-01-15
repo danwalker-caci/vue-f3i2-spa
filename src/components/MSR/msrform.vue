@@ -44,12 +44,12 @@
                               </b-row>
                               <b-form v-if="FundingForm">
                                 <b-row>
-                                  <ejs-richtexteditor ref="rte_Funding" id="rte_Funding" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Funding" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
-                                <b-row>
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelFunding" ref="btn_CancelFunding" class="formbutton" variant="info" @click="handleit('cancel', 'Funding', 'FundingForm')">Cancel</b-button>
                                   <b-button id="btn_SaveFunding" ref="btn_SaveFunding" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Funding', 'FundingForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_Funding" id="rte_Funding" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Funding" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else class="e-rte-content" id="FundingHtml" v-html="Funding"></div>
@@ -63,13 +63,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_Staffing" ref="btn_Staffing" variant="outline-danger" @click="handleit('edit', 'Staffing', 'StaffingForm')">Add/Edit Engineering Effort/Staffing</b-button>
                               </b-row>
                               <b-form v-if="StaffingForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_Staffing" id="rte_Staffing" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Staffing" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="StaffingAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelStaffing" ref="btn_CancelStaffing" class="formbutton" variant="info" @click="handleit('cancel', 'Staffing', 'StaffingForm')">Cancel</b-button>
                                   <b-button id="btn_SaveStaffing" ref="btn_SaveStaffing" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Staffing', 'StaffingForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_Staffing" id="rte_Staffing" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Staffing" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="StaffingHtml" v-html="Staffing"></div>
@@ -83,13 +83,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_CostReport" ref="btn_CostReport" variant="outline-danger" @click="handleit('edit', 'CostReport', 'CostReportForm')">Add/Edit Cost Report</b-button>
                               </b-row>
                               <b-form v-if="CostReportForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_CostReport" id="rte_CostReport" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="CostReport" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="CostReportAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelCostReport" ref="btn_CancelCostReport" class="formbutton" variant="info" @click="handleit('cancel', 'CostReport', 'CostReportForm')">Cancel</b-button>
                                   <b-button id="btn_SaveCostReport" ref="btn_SaveCostReport" class="formbutton ml-auto" variant="success" @click="handleit('save', 'CostReport', 'CostReportForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_CostReport" id="rte_CostReport" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="CostReport" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="CostReportHtml" v-html="CostReport"></div>
@@ -119,13 +119,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_TravelAccomplished" ref="btn_TravelAccomplished" variant="outline-danger" @click="handleit('edit', 'TravelAccomplished', 'TravelAccomplishedForm')">Add/Edit Travel Accomplished</b-button>
                               </b-row>
                               <b-form v-if="TravelAccomplishedForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_TravelAccomplished" id="rte_TravelAccomplished" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="TravelAccomplishedAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelAccomplished" ref="btn_CancelTravelAccomplished" class="formbutton" variant="info" @click="handleit('cancel', 'TravelAccomplished', 'TravelAccomplishedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelAccomplished" ref="btn_SaveTravelAccomplished" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelAccomplished', 'TravelAccomplishedForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_TravelAccomplished" id="rte_TravelAccomplished" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="TravelAccomplishedHtml" v-html="TravelAccomplished"></div>
@@ -139,13 +139,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_TravelPlanned" ref="btn_TravelPlanned" variant="outline-danger" @click="handleit('edit', 'TravelPlanned', 'TravelPlannedForm')">Add/Edit Travel Planned</b-button>
                               </b-row>
                               <b-form v-if="TravelPlannedForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_TravelPlanned" id="rte_TravelPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelPlanned" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="TravelPlannedAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelPlanned" ref="btn_CancelTravelPlanned" class="formbutton" variant="info" @click="handleit('cancel', 'TravelPlanned', 'TravelPlannedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelPlanned" ref="btn_SaveTravelPlanned" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelPlanned', 'TravelPlannedForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_TravelPlanned" id="rte_TravelPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelPlanned" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="TravelPlannedHtml" v-html="TravelPlanned"></div>
@@ -159,13 +159,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_TravelCosts" ref="btn_TravelCosts" variant="outline-danger" @click="handleit('edit', 'TravelCosts', 'TravelCostsForm')">Add/Edit Travel Costs to Date</b-button>
                               </b-row>
                               <b-form v-if="TravelCostsForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_TravelCosts" id="rte_TravelCosts" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelCosts" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="TravelCostsAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelCosts" ref="btn_CancelTravelCosts" class="formbutton" variant="info" @click="handleit('cancel', 'TravelCosts', 'TravelCostsForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelCosts" ref="btn_SaveTravelCosts" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelCosts', 'TravelCostsForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_TravelCosts" id="rte_TravelCosts" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="TravelCosts" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="TravelCostsHtml" v-html="TravelCosts"></div>
@@ -179,13 +179,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_ODCAccomplished" ref="btn_ODCAccomplished" variant="outline-danger" @click="handleit('edit', 'ODCAccomplished', 'ODCAccomplishedForm')">Add/Edit ODC Accomplished</b-button>
                               </b-row>
                               <b-form v-if="ODCAccomplishedForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_ODCAccomplished" id="rte_ODCAccomplished" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="ODCAccomplishedAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCAccomplished" ref="btn_CancelODCAccomplished" class="formbutton" variant="info" @click="handleit('cancel', 'ODCAccomplished', 'ODCAccomplishedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCAccomplished" ref="btn_SaveODCAccomplished" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCAccomplished', 'ODCAccomplishedForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_ODCAccomplished" id="rte_ODCAccomplished" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCAccomplished" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="ODCAccomplishedHtml" v-html="ODCAccomplished"></div>
@@ -199,13 +199,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_ODCPlanned" ref="btn_ODCPlanned" variant="outline-danger" @click="handleit('edit', 'ODCPlanned', 'ODCPlannedForm')">Add/Edit ODC Planned</b-button>
                               </b-row>
                               <b-form v-if="ODCPlannedForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_ODCPlanned" id="rte_ODCPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCPlanned" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="ODCPlannedAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCPlanned" ref="btn_CancelODCPlanned" class="formbutton" variant="info" @click="handleit('cancel', 'ODCPlanned', 'ODCPlannedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCPlanned" ref="btn_SaveODCPlanned" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCPlanned', 'ODCPlannedForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_ODCPlanned" id="rte_ODCPlanned" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCPlanned" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="ODCPlannedHtml" v-html="ODCPlanned"></div>
@@ -219,13 +219,13 @@
                                 <b-button :disabled="isEditing" class="formbutton" id="btn_ODCCosts" ref="btn_ODCCosts" variant="outline-danger" @click="handleit('edit', 'ODCCosts', 'ODCCostsForm')">Add/Edit ODC Costs to Date</b-button>
                               </b-row>
                               <b-form v-if="ODCCostsForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_ODCCosts" id="rte_ODCCosts" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCCosts" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="ODCCostsAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCCosts" ref="btn_CancelODCCosts" class="formbutton" variant="info" @click="handleit('cancel', 'ODCCosts', 'ODCCostsForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCCosts" ref="btn_SaveODCCosts" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCCosts', 'ODCCostsForm')" title="Inputs are complete for this section.">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_ODCCosts" id="rte_ODCCosts" height="600" :fontFamily="fontFamily" :cssClass="cssClass" v-model="ODCCosts" @change="onRTEChanged" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="ODCCostsHtml" v-html="ODCCosts"></div>
@@ -259,15 +259,15 @@
                           </div>
                         </b-row>
                         <b-form v-if="AccomplishmentsForm">
-                          <b-row>
-                            <ejs-richtexteditor ref="rte_Accomplishments" id="rte_Accomplishments" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAccomplishment" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                          </b-row>
                           <b-row id="AccomplishmentsAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelAccomplishments" ref="btn_CancelAccomplishments" class="formbutton" variant="info" @click="handleit('cancelaccomplishment', '', '')">Cancel</b-button>
                             <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivateAccomplishment" ref="btn_PrivateAccomplishment" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateaccomplishment', '', '')">Make Private</b-button>
                             <b-button id="btn_CompleteAccomplishment" ref="btn_CompleteAccomplishment" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeaccomplishment', '', '')">Complete</b-button>
+                          </b-row>
+                          <b-row>
+                            <ejs-richtexteditor ref="rte_Accomplishments" id="rte_Accomplishments" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAccomplishment" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                         </b-form>
                         <div v-else id="Accomplishments">
@@ -406,15 +406,15 @@
                           </div>
                         </b-row>
                         <b-form v-if="PlansForm">
-                          <b-row>
-                            <ejs-richtexteditor ref="rte_Plans" id="rte_Plans" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedPlan" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                          </b-row>
                           <b-row id="PlansAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearplan', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelPlans" ref="btn_CancelPlans" class="formbutton" variant="info" @click="handleit('cancelplan', '', '')">Cancel</b-button>
                             <b-button id="btn_SavePlans" ref="btn_SavePlans" class="formbutton" variant="success" @click="handleit('saveplan', 'Plans', 'PlansForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivatePlan" ref="btn_PrivatePlan" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateplan', '', '')">Make Private</b-button>
                             <b-button id="btn_CompletePlan" ref="btn_CompletePlan" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeplan', '', '')">Complete</b-button>
+                          </b-row>
+                          <b-row>
+                            <ejs-richtexteditor ref="rte_Plans" id="rte_Plans" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedPlan" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                         </b-form>
                         <div v-else id="Plans">
@@ -559,15 +559,15 @@
                                 </div>
                               </b-row>
                               <b-form v-if="AssumptionsForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_Assumptions" id="rte_Assumptions" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAssumption" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="AssumptionsAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearassumption', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelAssumptions" ref="btn_CancelAssumptions" class="formbutton" variant="info" @click="handleit('cancelassumption', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveAssumptions" ref="btn_SaveAssumptions" class="formbutton" variant="success" @click="handleit('saveassumption', 'Assumptions', 'AssumptionsForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateAssumption" ref="btn_PrivateAssumption" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateassumption', '', '')">Make Private</b-button>
                                   <b-button id="btn_CompleteAssumption" ref="btn_CompleteAssumption" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeassumption', '', '')">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_Assumptions" id="rte_Assumptions" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedAssumption" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="Assumptions">
@@ -699,15 +699,15 @@
                                 </div>
                               </b-row>
                               <b-form v-if="RisksForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_Risks" id="rte_Risks" height="600" class="rtesection" @change="onRTEChanged" v-model="SelectedRisk" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="RisksAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearrisk', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelRisks" ref="btn_CancelRisks" class="formbutton" variant="info" @click="handleit('cancelrisk', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveRisks" ref="btn_SaveRisks" class="formbutton" variant="success" @click="handleit('saverisk', 'Risks', 'RisksForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateRisk" ref="btn_PrivateRisk" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privaterisk', '', '')">Make Private</b-button>
                                   <b-button id="btn_CompleteRisk" ref="btn_CompleteRisk" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completerisk', '', '')">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_Risks" id="rte_Risks" height="600" class="rtesection" @change="onRTEChanged" v-model="SelectedRisk" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="Risks">
@@ -839,15 +839,15 @@
                                 </div>
                               </b-row>
                               <b-form v-if="OpportunitiesForm">
-                                <b-row>
-                                  <ejs-richtexteditor ref="rte_Opportunities" id="rte_Opportunities" height="600" @change="onRTEChanged" class="rtesection" v-model="SelectedOpportunity" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                                </b-row>
                                 <b-row id="OpportunitiesAnchor">
                                   <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearopportunity', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelOpportunitys" ref="btn_CancelOpportunitys" class="formbutton" variant="info" @click="handleit('cancelopportunity', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveOpportunitys" ref="btn_SaveOpportunitys" class="formbutton" variant="success" @click="handleit('saveopportunity', 'Opportunities', 'OpportunitiesForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateOpportunity" ref="btn_PrivateOpportunity" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateopportunity', '', '')">Make Private</b-button>
                                   <b-button id="btn_CompleteOpportunity" ref="btn_CompleteOpportunity" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completeopportunity', '', '')">Complete</b-button>
+                                </b-row>
+                                <b-row>
+                                  <ejs-richtexteditor ref="rte_Opportunities" id="rte_Opportunities" height="600" @change="onRTEChanged" class="rtesection" v-model="SelectedOpportunity" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                                 </b-row>
                               </b-form>
                               <div v-else id="Opportunities">
@@ -988,15 +988,15 @@
                           </div>
                         </b-row>
                         <b-form v-if="DeliverablesForm">
-                          <b-row>
-                            <ejs-richtexteditor ref="rte_Deliverables" id="rte_Deliverables" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedDeliverable" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                          </b-row>
                           <b-row id="DeliverablesAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('cleardeliverable', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelDeliverables" ref="btn_CancelDeliverables" class="formbutton" variant="info" @click="handleit('canceldeliverable', '', '')">Cancel</b-button>
                             <b-button id="btn_SaveDeliverables" ref="btn_SaveDeliverables" class="formbutton" variant="success" @click="handleit('savedeliverable', 'Deliverables', 'DeliverablesForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivateDeliverable" ref="btn_PrivateDeliverable" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privatedeliverable', '', '')">Make Private</b-button>
                             <b-button id="btn_CompleteDeliverable" ref="btn_CompleteDeliverable" class="formbutton ml-auto" variant="success" title="Inputs are complete for this section." @click="handleit('completedeliverable', '', '')">Complete</b-button>
+                          </b-row>
+                          <b-row>
+                            <ejs-richtexteditor ref="rte_Deliverables" id="rte_Deliverables" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="SelectedDeliverable" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                         </b-form>
                         <div v-else id="Deliverables">
@@ -1125,13 +1125,13 @@
                           <b-button :disabled="isEditing" class="formbutton" id="btn_Distribution" ref="btn_Distribution" variant="outline-danger" @click="handleit('edit', 'Distribution', 'DistributionForm')">Add/Edit Distribution</b-button>
                         </b-row>
                         <b-form v-if="DistributionForm">
-                          <b-row>
-                            <ejs-richtexteditor ref="rte_Distribution" id="rte_Distribution" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Distribution" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                          </b-row>
                           <b-row id="DistributionAnchor">
                             <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelDistribution" ref="btn_CancelDistribution" class="formbutton" variant="info" @click="handleit('cancel', 'Distribution', 'DistributionForm')">Cancel</b-button>
                             <b-button id="btn_SaveDistribution" ref="btn_SaveDistribution" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Distribution', 'DistributionForm')" title="Inputs are complete for this section.">Complete</b-button>
+                          </b-row>
+                          <b-row>
+                            <ejs-richtexteditor ref="rte_Distribution" id="rte_Distribution" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Distribution" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
                           </b-row>
                         </b-form>
                         <div v-else id="Distribution" v-html="Distribution"></div>
@@ -2183,11 +2183,11 @@
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center">
               <b-button-group class="mt-1">
-                <b-button v-if="dashboardtabs > 0" ref="btnPrev" variant="info" @click="dashboardtabs--">
+                <b-button v-if="dashboardtabs > 0" ref="btnPrev" variant="info" @click="prevTab">
                   <font-awesome-icon fas icon="angle-left" class="icon"></font-awesome-icon>
                   Previous
                 </b-button>
-                <b-button v-if="dashboardtabs < 9" ref="btnNext" variant="info" @click="dashboardtabs++"
+                <b-button v-if="dashboardtabs < 9" ref="btnNext" variant="info" @click="nextTab"
                   >Next
                   <font-awesome-icon fas icon="angle-right" class="icon ml-1"></font-awesome-icon>
                 </b-button>
@@ -2208,10 +2208,12 @@
 <script>
 import { BorderStyle, Packer, Paragraph, Table, TableCell, TableRow, VerticalAlign, WidthType, AlignmentType, PageNumber, TextRun, CreateDocFromHtml } from 'caci-docx/lib'
 // import fileSaver from 'file-saver'
+import { EventBus } from '../../main'
 import axios from 'axios'
 import Workplan from '@/models/WorkPlan' // used to get sub data
 import MSR from '@/models/MSR'
 import User from '@/models/User'
+import Todo from '@/models/Todo'
 import { Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table as RTETable } from '@syncfusion/ej2-vue-richtexteditor'
 
 let SPCI = null
@@ -2300,6 +2302,11 @@ export default {
       return this.$store.state.support.contentrect
     }
   },
+  created: function() {
+    EventBus.$on('Unloading', () => {
+      this.onFormClose()
+    })
+  },
   errorCaptured(err, vm, info) {
     const notification = {
       type: 'danger',
@@ -2333,6 +2340,12 @@ export default {
       clipBoard: null,
       ActiveSection: '',
       changecount: 0,
+      prevForm: null,
+      prevField: null,
+      prevSaveType: null,
+      form: null,
+      field: null,
+      saveType: null,
       dashboardtabs: 0,
       fundingtabs: 0,
       traveltabs: 0,
@@ -2354,10 +2367,15 @@ export default {
       },
       cssClass: 'defaultcalibri',
       pasteCleanupSettings: {
-        keepFormat: true
+        prompt: true,
+        plainText: false,
+        keepFormat: false,
+        deniedTags: ['a'],
+        deniedAttrs: ['class', 'title', 'id'],
+        allowedStyleProps: ['color', 'margin', 'font-size']
       },
       toolbarSettings: {
-        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontName', 'FontSize', 'FontColor', 'BackgroundColor', 'LowerCase', 'UpperCase', '|', 'Formats', 'Alignments', 'UnorderedList', 'Outdent', 'Indent', '|', 'CreateTable', 'CreateLink', '|', 'ClearFormat', 'Print', '|', 'Undo', 'Redo']
+        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontName', 'FontSize', 'FontColor', 'BackgroundColor', 'LowerCase', 'UpperCase', '|', 'Formats', 'Alignments', 'UnorderedList', 'Outdent', 'Indent', '|', 'CreateTable', 'CreateLink', '|', 'ClearFormat', 'Print', '|', 'Undo', 'Redo', '|', 'SourceCode']
       },
       FundingForm: false /* ---------------------------------- used for showing/hiding the form based on the current user permission   */,
       StaffingForm: false /* --------------------------------- used for showing/hiding the form based on the current user permission   */,
@@ -2452,39 +2470,97 @@ export default {
       etag: null
     }
   },
+  beforeRouteLeave: function(to, from, next) {
+    if (this.isDirty == true) {
+      /* let result = window.confirm('You have not closed the form to unlock it. Do you really want to leave?')
+      if (result == true) {
+        next()
+      } else {
+        // user can close the form
+        next(false)
+      } */
+      let payload = {}
+      payload.field = 'Locked'
+      payload.value = 'No'
+      payload.uri = this.uri
+      payload.etag = this.etag
+      MSR.dispatch('updateMSRData', payload).then(function() {
+        next()
+      })
+    } else {
+      next()
+    }
+  },
+  beforeDestroy: function() {
+    console.log('BEFORE DESTROY MSR FORM')
+  },
   mounted: function() {
     vm = this
     this.$bvToast.show('form-toast')
     this.WorkplanTitle = this.msrdata.WorkplanTitle
     this.WorkplanNumber = this.msrdata.WorkplanNumber
-    this.Email = this.user[0].Email
-    this.Company = this.user[0].Company
+    if (this.user) {
+      this.Email = this.user[0].Email
+      this.Company = this.user[0].Company
+    } else {
+      this.getUserInfo()
+    }
+    // Otherwise go and get all that information.
     let m = this.$moment().get('month')
     this.Month = months[m]
     this.Year = String(this.$moment().year())
     this.headerText = 'Edit Data For MSR ' + this.msrdata.WorkplanNumber + ' ' + this.msrdata.WorkplanTitle
-    /* let formbody = document.getElementById('Tabs')
-    let h = this.rect.height - 100
-    formbody.style.height = h + 'px' */
-    /* this.dashboardtabs = this.dashboardtab
-    this.fundingtabs = this.fundingtab
-    this.traveltabs = this.traveltab
-    this.arotabs = this.arotab */
-    MSR.dispatch('getDigest')
-    Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
-      vm.setupTimers()
-      vm.getData()
-    })
+    this.isDirty = true // dirty because it is locked
+    try {
+      MSR.dispatch('getDigest')
+      Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
+        vm.setupTimers()
+        vm.getData()
+      })
+    } catch (e) {
+      // Add notification to user and logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
-  /* beforeDestroy() {
-    this.$store.dispatch('support/setLegendItems', [])
-    this.onFormClose()
-  }, */
-  /* beforeRouteLeave(to, from, next) {
-    vm.onFormClose()
-    next()
-  }, */
+
   methods: {
+    async getUserInfo() {
+      await User.dispatch('getUserId').catch(error => {
+        console.log('ERROR: ' + error)
+      })
+      await User.dispatch('getUserProfile')
+        .then(() => {
+          vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+        })
+        .catch(error => {
+          console.log('ERROR: ' + error)
+        })
+    },
+    async updateUserInfo() {
+      if (this.user) {
+        clearInterval(this.$options.interval)
+        //this.userdisplayname = this.user[0].DisplayName
+        this.Email = this.user[0].Email
+        this.Company = this.user[0].Company
+        await User.dispatch('getUserGroups').catch(error => {
+          console.log('ERROR: ' + error)
+        })
+        await Todo.dispatch('getTodosByUser', this.UserId).catch(error => {
+          console.log('ERROR: ' + error)
+        })
+      } else {
+        this.getUserInfo()
+      }
+    },
     getFormDigest() {
       return axios.request({
         url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
@@ -2538,7 +2614,6 @@ export default {
         this.Risks = this.formatData2('Risks', this.msr.Risks)
         this.Opportunities = this.formatData2('Opportunities', this.msr.Opportunities)
         this.Deliverables = this.formatData2('Deliverables', this.msr.Deliverables)
-        this.isDirty = false
         this.isSaving = false
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         // set the localStorage for the Accomplishments here
@@ -2585,6 +2660,7 @@ export default {
     },
     onFormClose: function() {
       clearInterval(this.timerid)
+      this.isDirty = false
       let payload = {}
       payload.field = 'Locked'
       payload.value = 'No'
@@ -2639,6 +2715,26 @@ export default {
         vm.$router.push({ path: '/msr/home' })
       })
     },
+    async nextTab() {
+      // Need to track what form they are on.
+      this.dashboardtabs++
+      if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
+        this.prevForm = this.form
+        this.prevField = this.field
+        this.prevSaveType = this.saveType
+        this.handleit(this.saveType, this.field, this.form)
+      }
+    },
+    async prevTab() {
+      // Need to track what form they are on.
+      this.dashboardtabs--
+      if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
+        this.prevField = this.field
+        this.prevField = this.field
+        this.prevSaveType = this.saveType
+        this.handleit(this.saveType, this.field, this.form)
+      }
+    },
     async handleit(action, field, form) {
       if (console) {
         console.log('HANDLEIT CALLED: ' + action + ', ' + field + ', ' + form)
@@ -2651,6 +2747,12 @@ export default {
           this.isEditing = true
           this.ActiveSection = field
           this.clipBoard = this[field]
+          this.field = field
+          this.form = form
+          this.saveType = 'save'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           this[form] = true
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -2698,9 +2800,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2738,9 +2840,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2777,6 +2879,12 @@ export default {
             console.log('EDIT ACCOMPLISHMENT FOR: ' + field + ', ' + form)
           }
           this.ActiveSection = field
+          this.field = 'Accomplishments'
+          this.form = 'AccomplishmentsForm'
+          this.saveType = 'saveaccomplishment'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
           this.AccomplishmentsForm = true
@@ -2841,9 +2949,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2856,6 +2964,7 @@ export default {
             let imageurl = server + '/MSRImages/' + this.fileName
             this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
           }
+          this[form] = false
           await this.checkAccomplishment()
           let payload = {}
           payload.field = field
@@ -2867,7 +2976,6 @@ export default {
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
-          this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
             vm.hasImage = false
@@ -2881,9 +2989,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -2926,6 +3034,12 @@ export default {
           this.ActiveSection = field
           this.isEditing = true
           this.PlansForm = true
+          this.field = 'Plans'
+          this.form = 'PlansForm'
+          this.saveType = 'saveplan'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Plans.length; i++) {
             if (this.Plans[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -2984,9 +3098,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3024,9 +3138,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3067,6 +3181,12 @@ export default {
           this.ActiveSection = field
           this.isEditing = true
           this.AssumptionsForm = true
+          this.field = 'Assumptions'
+          this.form = 'AssumptionsForm'
+          this.saveType = 'saveassumption'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Assumptions.length; i++) {
             if (this.Assumptions[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3125,9 +3245,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3163,9 +3283,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3204,6 +3324,12 @@ export default {
           this.ActiveSection = field
           this.isEditing = true
           this.RisksForm = true
+          this.field = 'Risks'
+          this.form = 'RisksForm'
+          this.saveType = 'saverisk'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Risks.length; i++) {
             if (this.Risks[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3262,9 +3388,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3300,9 +3426,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3341,6 +3467,12 @@ export default {
           this.ActiveSection = field
           this.isEditing = true
           this.OpportunitiesForm = true
+          this.field = 'Opportunities'
+          this.form = 'OpportunitiesForm'
+          this.saveType = 'saveopportunity'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Opportunities.length; i++) {
             if (this.Opportunities[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3399,9 +3531,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3437,9 +3569,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3477,6 +3609,12 @@ export default {
           this.ActiveSection = field
           this.isEditing = true
           this.DeliverablesForm = true
+          this.field = 'Deliverables'
+          this.form = 'DeliverablesForm'
+          this.saveType = 'savedeliverable'
+          this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
+          this.prevField = this.prevField === this.field ? null : this.prevField
+          this.prevForm = this.prevForm === this.form ? null : this.prevForm
           for (let i = 0; i < this.Deliverables.length; i++) {
             if (this.Deliverables[i]['Index'] == index) {
               this.SelectedIndex = i
@@ -3535,9 +3673,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -3573,9 +3711,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          let response = await this.getFormDigest()
+          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
           if (this.hasImage) {
-            let response = await this.getFormDigest()
-            this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             let blob = await axios({
               url: this.fileBlob,
               method: 'get',
@@ -4448,8 +4586,10 @@ export default {
         this.$bvToast.show('form-toast')
         this.WorkplanTitle = this.msrdata.WorkplanTitle
         this.WorkplanNumber = this.msrdata.WorkplanNumber
-        this.Email = this.user[0].Email
-        this.Company = this.user[0].Company
+        if (this.user) {
+          this.Email = this.user[0].Email
+          this.Company = this.user[0].Company
+        }
         let m = this.$moment().get('month')
         this.Month = months[m]
         this.Year = String(this.$moment().year())

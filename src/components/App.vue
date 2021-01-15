@@ -20,28 +20,44 @@ export default {
       return User.getters('CurrentUserId')
     }
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
-    this.$nextTick(function() {
-      Todo.dispatch('getDigest')
-      Company.dispatch('getDigest')
-      if (!vm.userloaded) {
-        User.dispatch('getUserId').then(function() {
-          User.dispatch('getUserProfile').then(function() {
-            vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
-          })
-        })
-      }
-    })
+    Todo.dispatch('getDigest')
+    Company.dispatch('getDigest')
+    this.getUserInfo()
   },
   methods: {
-    updateUserInfo() {
-      clearInterval(this.$options.interval)
-      User.dispatch('getUserGroups').then(function() {
-        Todo.dispatch('getTodosByUser', vm.UserId).then(function() {
-          console.log('APP MOUNT COMPLETED')
-        })
+    async getUserInfo() {
+      await User.dispatch('getUserId').catch(error => {
+        console.log('ERROR: ' + error)
       })
+      await User.dispatch('getUserProfile')
+        .then(() => {
+          vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+        })
+        .catch(error => {
+          console.log('ERROR: ' + error)
+          User.dispatch('getUserProfile').then(() => {
+            vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+          })
+        })
+    },
+    async updateUserInfo() {
+      clearInterval(this.$options.interval)
+      if (this.UserId) {
+        await User.dispatch('getUserGroups').catch(error => {
+          console.log('ERROR: ' + error)
+        })
+        await Todo.dispatch('getTodosByUser', this.UserId)
+          .then(() => {
+            console.log('APP MOUNT COMPLETED')
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error)
+          })
+      } else {
+        this.getUserInfo()
+      }
     }
   }
 }

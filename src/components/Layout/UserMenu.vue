@@ -306,16 +306,26 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$nextTick(function() {
-      Todo.dispatch('getDigest')
-      this.userdisplayname = this.profiledata.DisplayName
-      document.getElementById('LoadingBars').style.display = 'none'
-      if (!vm.userloaded) {
-        User.dispatch('getUserId').then(function() {
-          User.dispatch('getUserProfile').then(function() {
-            vm.$options.interval = setInterval(vm.updateUserInfo, 1000)
-          })
+    this.$nextTick(async function() {
+      try {
+        Todo.dispatch('getDigest')
+        document.getElementById('LoadingBars').style.display = 'none'
+        if (!vm.userloaded || !vm.profiledata) {
+          vm.getUserInfo()
+        } else {
+          vm.userdisplayname = vm.profiledata.DisplayName
+        }
+      } catch (e) {
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
         })
+        console.log('ERROR: ' + e)
       }
     })
   },
@@ -323,14 +333,35 @@ export default {
     toggleMenu() {
       this.isClosed = !this.isClosed
     },
-    updateUserInfo() {
-      clearInterval(this.$options.interval)
-      this.userdisplayname = this.profiledata.DisplayName
-      User.dispatch('getUserGroups').then(function() {
-        Todo.dispatch('getTodosByUser', vm.UserId).then(function() {
-          console.log('USERMENU MOUNT COMPLETED')
-        })
+    async getUserInfo() {
+      await User.dispatch('getUserId').catch(error => {
+        console.log('ERROR: ' + error)
       })
+      await User.dispatch('getUserProfile')
+        .then(() => {
+          vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+        })
+        .catch(error => {
+          console.log('ERROR: ' + error)
+        })
+    },
+    async updateUserInfo() {
+      if (this.profiledata) {
+        clearInterval(this.$options.interval)
+        this.userdisplayname = this.profiledata.DisplayName
+        await User.dispatch('getUserGroups').catch(error => {
+          console.log('ERROR: ' + error)
+        })
+        await Todo.dispatch('getTodosByUser', this.UserId)
+          .then(() => {
+            console.log('APP MOUNT COMPLETED')
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error)
+          })
+      } else {
+        this.getUserInfo()
+      }
     },
     OpenTodos: function() {
       this.$bvModal.show('Todos')

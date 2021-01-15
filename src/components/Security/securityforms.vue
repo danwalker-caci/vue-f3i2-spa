@@ -279,13 +279,27 @@ export default {
   mounted: async function() {
     vm = this
     // First get current user informaiton
-    await Security.dispatch('getDigest')
-    this.checkType()
-    this.getUserIDs()
-    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    Company.dispatch('getCompanies').then(function() {
-      vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
-    })
+    try {
+      await Security.dispatch('getDigest')
+      this.checkType()
+      this.getUserIDs()
+      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+      Company.dispatch('getCompanies').then(function() {
+        vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
+      })
+    } catch (e) {
+      // Add user notification and system logging
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: e,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + e)
+    }
   },
   methods: {
     getUserIDs: async function() {
@@ -550,31 +564,32 @@ export default {
           // await Security.dispatch('')
           // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
           const notification = {
-            type: 'success',
-            title: 'Succesfully Uploaded Form',
-            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-            push: true
-          }
-          vm.$store.dispatch('notification/add', notification, { root: true })
+              type: 'success',
+              title: 'Succesfully Uploaded Form',
+              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
 
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-          let event = []
-          event.push({
-            name: vm.fileName,
-            Status: 'SecurityReview',
-            Form: library + vm.fileSelected,
-            etag: vm.form.etag,
-            uri: vm.form.uri
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+            let event = []
+            event.push({
+              name: vm.fileName,
+              Status: 'SecurityReview',
+              Form: library + vm.fileSelected,
+              etag: vm.form.etag,
+              uri: vm.form.uri
+            })
+            // Clear form after submission
+
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+            vm.fileSelected = null
+            vm.fileBuffer = null
           })
-          // Clear form after submission
-
-          if (vm.formType === 'account') {
-            vm.form.Type = vm.accountOptions[0]
-          }
-          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-          vm.fileSelected = null
-          vm.fileBuffer = null
-        })
+        }
       }
     },
     async onFileSelect(args) {

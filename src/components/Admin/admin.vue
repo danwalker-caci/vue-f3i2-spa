@@ -208,9 +208,9 @@ export default {
     }
     this.$store.dispatch('notification/add', notification, { root: true })
     Workplan.dispatch('getWorkplans').then(function() {
-      /* MSR.dispatch('getMSRs').then(function() {
+      MSR.dispatch('getMSRs').then(function() {
         vm.$options.interval = setInterval(vm.waitForMSRs, 1000)
-      }) */
+      })
     })
   },
   beforeDestroy() {

@@ -76,6 +76,7 @@ const actions = {
           // if (console) { console.log('USER ID: ' + response.data.d.Id) }
           state.userid = response.data.d.Id
         })
+        return response.data.d
       })
       .catch(error => {
         console.log('There was an error getting User Id: ', error.response)
@@ -95,12 +96,12 @@ const actions = {
   },
   async getUserProfile() {
     UserService.getUserProfile()
-      .then(response => {
+      .then(async (response) => {
         if (console) {
           console.log('PROFILE INFORMATION: ' + response)
         }
         let profile = {}
-        let userid = User.getters('CurrentUserId')
+        let userid = await User.getters('CurrentUserId')
         let properties = response.data.d.UserProfileProperties.results
         profile.id = String(userid)
         profile.Account = response.data.d.AccountName
@@ -138,15 +139,17 @@ const actions = {
           }
         }
         // to get the Company and Workplan Data we need to get this from the Personnel list based on the current user id
-        Personnel.dispatch('getPersonnelById', userid).then(function(response) {
+        await Personnel.dispatch('getPersonnelById', userid).then(function(response) {
           if (console) {
             console.log('GetPersonnelById Response: ' + response)
           }
-          if (response && response[0].Company) {
-            profile.Company = response[0].Company
-          }
-          if (response && response[0].WPData) {
-            profile.WPData = JSON.parse(response[0].WPData)
+          if (response && response.length > 0) {
+            if (response[0].Company) {
+              profile.Company = response[0].Company
+            }
+            if (response[0].WPData) {
+              profile.WPData = JSON.parse(response[0].WPData)
+            }
           }
           User.insert({ data: profile })
         })
@@ -162,8 +165,9 @@ const actions = {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  getUserGroups({ state }) {
-    UserService.getUserGroups(state.userid)
+  getUserGroups({ state }, id) {
+    let userid = (state.userid) ? state.userid : id
+    UserService.getUserGroups(userid)
       .then(response => {
         User.commit(state => {
           state.usergroups = response.data.d.results
