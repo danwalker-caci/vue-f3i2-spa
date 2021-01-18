@@ -2307,8 +2307,8 @@ export default {
       this.onFormClose()
     })
   },
-  errorCaptured(err, vm, info) {
-    const notification = {
+  errorCaptured() {
+    /* const notification = {
       type: 'danger',
       title: 'Error in MSR Form ' + err,
       message: info,
@@ -2316,7 +2316,8 @@ export default {
     }
     this.$store.dispatch('notification/add', notification, {
       root: true
-    })
+    }) */
+    this.onFormClose()
   },
   data: function() {
     return {
@@ -2472,13 +2473,6 @@ export default {
   },
   beforeRouteLeave: function(to, from, next) {
     if (this.isDirty == true) {
-      /* let result = window.confirm('You have not closed the form to unlock it. Do you really want to leave?')
-      if (result == true) {
-        next()
-      } else {
-        // user can close the form
-        next(false)
-      } */
       let payload = {}
       payload.field = 'Locked'
       payload.value = 'No'

@@ -246,6 +246,7 @@
 </asp:Content>
 
 <asp:Content contentplaceholderid="PlaceHolderMain" runat="server">
+	<div id="LogSpace" style="display: none;"></div>
 	<div id="LoadingBars">
 		<div class="blockG" id="rotateG_01"></div>
 		<div class="blockG" id="rotateG_02"></div>
