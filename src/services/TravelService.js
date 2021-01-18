@@ -26,7 +26,7 @@ let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items
 geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
 // let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
-let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=EndDate le datetime'" + b + "'" // Filter based on STATUS as well. All Cancelled trips should not be included.
+let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
 /* #endregion */
 
 export default {

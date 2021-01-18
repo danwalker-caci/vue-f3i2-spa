@@ -34,7 +34,7 @@
         <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
           <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
           <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item>
+          <!-- <sidebar-item :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item> -->
         </sidebar-item>
         <!-- Add Security Menu Links -->
         <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">

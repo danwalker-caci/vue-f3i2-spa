@@ -262,23 +262,29 @@ export default {
         if (this.testtrips.length > 0) {
           this.tripcount = this.testtrips.length
           for (let i = 0; i < this.testtrips.length; i++) {
-            if (this.testtrips[i].TripReport == 'NULL') {
-              // is it due or late?
-              if (this.$moment(this.testtrips[i].EndTime).isBefore(this.$moment().subtract(7, 'days'))) {
-                // late. Update Status and then check for needed emails
-                let payload = {}
-                payload.uri = this.testtrips[i].uri
-                payload.etag = this.testtrips[i].etag
-                payload.status = 'ReportLate'
-                Travel.dispatch('updateTravelStatus', payload)
-                this.sendTREmails(this.testtrips[i])
-              } else {
-                // due
-                let payload = {}
-                payload.uri = this.testtrips[i].uri
-                payload.etag = this.testtrips[i].etag
-                payload.status = 'ReportDue'
-                Travel.dispatch('updateTravelStatus', payload)
+            console.log('STATUS: ' + this.testtrips[i].Status)
+            if (this.testtrips[i].Status == 'Cancelled' || this.testtrips[i].Status == 'Postponed') {
+              // do nothing
+              console.log('POSTPONED OR CANCELLED')
+            } else {
+              if (this.testtrips[i].TripReport == 'NULL') {
+                // is it due or late?
+                if (this.$moment(this.testtrips[i].EndTime).isBefore(this.$moment().subtract(7, 'days'))) {
+                  // late. Update Status and then check for needed emails
+                  let payload = {}
+                  payload.uri = this.testtrips[i].uri
+                  payload.etag = this.testtrips[i].etag
+                  payload.status = 'ReportLate'
+                  Travel.dispatch('updateTravelStatus', payload)
+                  this.sendTREmails(this.testtrips[i])
+                } else {
+                  // due
+                  let payload = {}
+                  payload.uri = this.testtrips[i].uri
+                  payload.etag = this.testtrips[i].etag
+                  payload.status = 'ReportDue'
+                  Travel.dispatch('updateTravelStatus', payload)
+                }
               }
             }
           }
@@ -321,9 +327,9 @@ export default {
       payload.To = AllEmails
       payload.Subject = 'Late TripReport'
       payload.Body = body
-      User.dispatch('SendEmail', payload).then(function() {
+      /* User.dispatch('SendEmail', payload).then(function() {
         console.log('SendEmail Called')
-      })
+      }) */
     },
     waitForMSRs: function() {
       if (this.loaded && this.workplansloaded) {
