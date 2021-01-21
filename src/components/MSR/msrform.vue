@@ -10,10 +10,6 @@
         </template>
         <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
       </b-toast>
-      <b-modal id="accomplishmentModal" @ok="restoreAccomplishment" @cancel="overwriteAccomplishment">
-        <p>Detected an empty value for Accomplishment {{ SelectedAccomplishmentCompany }}!</p>
-        <p>Would you like to restore the previous version of this Accomplishment before Saving?</p>
-      </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="bg-warning text-black formheader">
@@ -273,12 +269,9 @@
                         <div v-else id="Accomplishments">
                           <div v-for="accomplishment in Accomplishments" :key="accomplishment" class="text-left mb-2">
                             <div v-if="accomplishment.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="accomplishment.Completed == 'Yes'">
-                                <!-- PRIVATE AND COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -304,11 +297,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -322,7 +314,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- Workplan Manager ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -337,9 +328,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="accomplishment.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND COMPLETED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -351,7 +340,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -366,7 +354,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- Workplan Manager ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -420,12 +407,9 @@
                         <div v-else id="Plans">
                           <div v-for="plan in Plans" :key="plan" class="text-left mb-2">
                             <div v-if="plan.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="plan.Completed == 'Yes'">
-                                <!-- PRIVATE AND COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -451,11 +435,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -469,7 +452,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -484,9 +466,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="plan.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND COMPLETED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -498,7 +478,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -573,12 +552,9 @@
                               <div v-else id="Assumptions">
                                 <div v-for="assumption in Assumptions" :key="assumption" class="text-left mb-2">
                                   <div v-if="assumption.Private == 'Yes'">
-                                    <!-- PRIVATE -->
                                     <div v-if="assumption.Completed == 'Yes'">
-                                      <!-- PRIVATE AND COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="success" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -604,11 +580,10 @@
                                         </b-card>
                                       </div>
                                     </div>
-                                    <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="warning" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -622,7 +597,6 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                         <b-card border-variant="warning" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
@@ -637,9 +611,7 @@
                                     </div>
                                   </div>
                                   <div v-else>
-                                    <!-- NOT PRIVATE -->
                                     <div v-if="assumption.Completed == 'Yes'">
-                                      <!-- NOT PRIVATE AND COMPLETED -->
                                       <b-card border-variant="success" text-variant="dark">
                                         <template v-slot:header>
                                           <h3 class="mb-0">
@@ -651,7 +623,6 @@
                                       </b-card>
                                     </div>
                                     <div v-else>
-                                      <!-- NOT PRIVATE AND NOT COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
                                           <b-card border-variant="warning" text-variant="dark">
@@ -713,12 +684,9 @@
                               <div v-else id="Risks">
                                 <div v-for="risk in Risks" :key="risk" class="text-left mb-2">
                                   <div v-if="risk.Private == 'Yes'">
-                                    <!-- PRIVATE -->
                                     <div v-if="risk.Completed == 'Yes'">
-                                      <!-- PRIVATE AND COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="risk.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="success" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -744,11 +712,10 @@
                                         </b-card>
                                       </div>
                                     </div>
-                                    <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="risk.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="warning" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -762,7 +729,6 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                         <b-card border-variant="warning" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
@@ -777,9 +743,7 @@
                                     </div>
                                   </div>
                                   <div v-else>
-                                    <!-- NOT PRIVATE -->
                                     <div v-if="risk.Completed == 'Yes'">
-                                      <!-- NOT PRIVATE AND COMPLETED -->
                                       <b-card border-variant="success" text-variant="dark">
                                         <template v-slot:header>
                                           <h3 class="mb-0">
@@ -791,7 +755,6 @@
                                       </b-card>
                                     </div>
                                     <div v-else>
-                                      <!-- NOT PRIVATE AND NOT COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="risk.Company == Company">
                                           <b-card border-variant="warning" text-variant="dark">
@@ -853,12 +816,9 @@
                               <div v-else id="Opportunities">
                                 <div v-for="opportunity in Opportunities" :key="opportunity" class="text-left mb-2">
                                   <div v-if="opportunity.Private == 'Yes'">
-                                    <!-- PRIVATE -->
                                     <div v-if="opportunity.Completed == 'Yes'">
-                                      <!-- PRIVATE AND COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="opportunity.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="success" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -884,11 +844,10 @@
                                         </b-card>
                                       </div>
                                     </div>
-                                    <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="opportunity.Company == Company">
-                                          <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                           <b-card border-variant="warning" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
@@ -902,7 +861,6 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                         <b-card border-variant="warning" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
@@ -917,9 +875,7 @@
                                     </div>
                                   </div>
                                   <div v-else>
-                                    <!-- NOT PRIVATE -->
                                     <div v-if="opportunity.Completed == 'Yes'">
-                                      <!-- NOT PRIVATE AND COMPLETED -->
                                       <b-card border-variant="success" text-variant="dark">
                                         <template v-slot:header>
                                           <h3 class="mb-0">
@@ -931,7 +887,6 @@
                                       </b-card>
                                     </div>
                                     <div v-else>
-                                      <!-- NOT PRIVATE AND NOT COMPLETED -->
                                       <div v-if="isSubcontractor">
                                         <div v-if="opportunity.Company == Company">
                                           <b-card border-variant="warning" text-variant="dark">
@@ -1002,12 +957,9 @@
                         <div v-else id="Deliverables">
                           <div v-for="deliverable in Deliverables" :key="deliverable" class="text-left mb-2">
                             <div v-if="deliverable.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="deliverable.Completed == 'Yes'">
-                                <!-- PRIVATE AND COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1033,11 +985,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT COMPLETED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1051,7 +1002,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1066,9 +1016,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="deliverable.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND COMPLETED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1080,7 +1028,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT COMPLETED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1112,32 +1059,6 @@
                       </div>
                     </b-col>
                   </b-row>
-                </b-tab>
-                <b-tab :disabled="isSubcontractor" class="mtab Section7">
-                  <template slot="title">
-                    <font-awesome-icon fas icon="thumbs-up" class="icon"></font-awesome-icon>
-                    Distribution
-                  </template>
-                  <div class="row">
-                    <b-col cols="12">
-                      <div id="Section7Main" class="rtesection">
-                        <b-row class="m-1">
-                          <b-button :disabled="isEditing" class="formbutton" id="btn_Distribution" ref="btn_Distribution" variant="outline-danger" @click="handleit('edit', 'Distribution', 'DistributionForm')">Add/Edit Distribution</b-button>
-                        </b-row>
-                        <b-form v-if="DistributionForm">
-                          <b-row id="DistributionAnchor">
-                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
-                            <b-button id="btn_CancelDistribution" ref="btn_CancelDistribution" class="formbutton" variant="info" @click="handleit('cancel', 'Distribution', 'DistributionForm')">Cancel</b-button>
-                            <b-button id="btn_SaveDistribution" ref="btn_SaveDistribution" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Distribution', 'DistributionForm')" title="Inputs are complete for this section.">Complete</b-button>
-                          </b-row>
-                          <b-row>
-                            <ejs-richtexteditor ref="rte_Distribution" id="rte_Distribution" height="600" @change="onRTEChanged" :fontFamily="fontFamily" :cssClass="cssClass" v-model="Distribution" :pasteCleanupSettings="pasteCleanupSettings" :toolbarSettings="toolbarSettings"></ejs-richtexteditor>
-                          </b-row>
-                        </b-form>
-                        <div v-else id="Distribution" v-html="Distribution"></div>
-                      </div>
-                    </b-col>
-                  </div>
                 </b-tab>
                 <b-tab class="mtab Summary">
                   <template slot="title">
@@ -1233,12 +1154,9 @@
                         <div id="Accomplishments">
                           <div v-for="accomplishment in Accomplishments" :key="accomplishment" class="text-left mb-2">
                             <div v-if="accomplishment.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="accomplishment.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1264,11 +1182,9 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1282,7 +1198,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1297,9 +1212,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="accomplishment.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1311,7 +1224,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1353,12 +1265,9 @@
                         <div id="Plans">
                           <div v-for="plan in Plans" :key="plan" class="text-left mb-2">
                             <div v-if="plan.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="plan.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1384,11 +1293,9 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1402,7 +1309,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1417,9 +1323,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="plan.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1431,7 +1335,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1477,12 +1380,9 @@
                         <div id="Assumptions">
                           <div v-for="assumption in Assumptions" :key="assumption" class="text-left mb-2">
                             <div v-if="assumption.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="assumption.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="assumption.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1508,11 +1408,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="assumption.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1526,7 +1425,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1541,9 +1439,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="assumption.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1555,7 +1451,7 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
+                                >
                                 <div v-if="isSubcontractor">
                                   <div v-if="assumption.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1592,12 +1488,9 @@
                         <div id="Risks">
                           <div v-for="risk in Risks" :key="risk" class="text-left mb-2">
                             <div v-if="risk.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="risk.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="risk.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1623,11 +1516,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="risk.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1641,7 +1533,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1656,9 +1547,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="risk.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1670,7 +1559,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="risk.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1707,12 +1595,9 @@
                         <div id="Opportunities">
                           <div v-for="opportunity in Opportunities" :key="opportunity" class="text-left mb-2">
                             <div v-if="opportunity.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="opportunity.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="opportunity.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1738,11 +1623,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="opportunity.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1756,7 +1640,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1771,9 +1654,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="opportunity.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1785,7 +1666,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="opportunity.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1827,12 +1707,9 @@
                         <div id="Deliverables">
                           <div v-for="deliverable in Deliverables" :key="deliverable" class="text-left mb-2">
                             <div v-if="deliverable.Private == 'Yes'">
-                              <!-- PRIVATE -->
                               <div v-if="deliverable.Completed == 'Yes'">
-                                <!-- PRIVATE AND PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="success" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1858,11 +1735,10 @@
                                   </b-card>
                                 </div>
                               </div>
-                              <!-- PRIVATE BUT NOT PUBLISHED (DENOTED BY 'WARNING COLOR) -->
+
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <!-- SUBCONTRACTOR OF COMPANY CAN SEE THE ITEM WHILE OTHER SUBCONTRACTORS CAN NOT. -->
                                     <b-card border-variant="warning" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
@@ -1876,7 +1752,6 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <!-- OTHER USERS ABLE TO SEE ITEM. -->
                                   <b-card border-variant="warning" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
@@ -1891,9 +1766,7 @@
                               </div>
                             </div>
                             <div v-else>
-                              <!-- NOT PRIVATE -->
                               <div v-if="deliverable.Completed == 'Yes'">
-                                <!-- NOT PRIVATE AND PUBLISHED -->
                                 <b-card border-variant="success" text-variant="dark">
                                   <template v-slot:header>
                                     <h3 class="mb-0">
@@ -1905,7 +1778,6 @@
                                 </b-card>
                               </div>
                               <div v-else>
-                                <!-- NOT PRIVATE AND NOT PUBLISHED -->
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
                                     <b-card border-variant="warning" text-variant="dark">
@@ -1934,17 +1806,6 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </b-col>
-                  </b-row>
-                  <b-row>
-                    <b-col cols="12">
-                      <div id="Section7Main" class="rtesection">
-                        <h1>
-                          7.0 Distribution
-                        </h1>
-                        <br />
-                        <div id="Distribution" v-html="Distribution"></div>
                       </div>
                     </b-col>
                   </b-row>
@@ -2159,17 +2020,6 @@
                           </div>
                         </b-col>
                       </b-row>
-                      <b-row>
-                        <b-col cols="12">
-                          <div>
-                            <h2>
-                              7.0 Distribution
-                            </h2>
-                            <br />
-                            <div id="PublishDistribution" v-html="Distribution"></div>
-                          </div>
-                        </b-col>
-                      </b-row>
                     </div>
                   </b-row>
                   <b-row class="buttonrow">
@@ -2207,14 +2057,14 @@
 
 <script>
 import { BorderStyle, Packer, Paragraph, Table, TableCell, TableRow, VerticalAlign, WidthType, AlignmentType, PageNumber, TextRun, CreateDocFromHtml } from 'caci-docx/lib'
-// import fileSaver from 'file-saver'
 import { EventBus } from '../../main'
 import axios from 'axios'
+import { logger } from '../../applogger'
 import Workplan from '@/models/WorkPlan' // used to get sub data
 import MSR from '@/models/MSR'
 import User from '@/models/User'
 import Todo from '@/models/Todo'
-import { Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table as RTETable } from '@syncfusion/ej2-vue-richtexteditor'
+import { Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, Table as RTETable } from '@syncfusion/ej2-vue-richtexteditor'
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -2307,16 +2157,8 @@ export default {
       this.onFormClose()
     })
   },
-  errorCaptured() {
-    /* const notification = {
-      type: 'danger',
-      title: 'Error in MSR Form ' + err,
-      message: info,
-      push: true
-    }
-    this.$store.dispatch('notification/add', notification, {
-      root: true
-    }) */
+  errorCaptured(err, vm, info) {
+    logger.logToServer({ err, vm, info })
     this.onFormClose()
   },
   data: function() {
@@ -2368,12 +2210,12 @@ export default {
       },
       cssClass: 'defaultcalibri',
       pasteCleanupSettings: {
-        prompt: true,
+        prompt: false,
         plainText: false,
-        keepFormat: false,
+        keepFormat: true,
         deniedTags: ['a'],
         deniedAttrs: ['class', 'title', 'id'],
-        allowedStyleProps: ['color', 'margin', 'font-size']
+        allowedStyleProps: ['background', 'background-color', 'border', 'border-bottom', 'border-left', 'border-right', 'border-top', 'border-width', 'clear', 'color', 'margin', 'font-size', 'width']
       },
       toolbarSettings: {
         items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontName', 'FontSize', 'FontColor', 'BackgroundColor', 'LowerCase', 'UpperCase', '|', 'Formats', 'Alignments', 'UnorderedList', 'Outdent', 'Indent', '|', 'CreateTable', 'CreateLink', '|', 'ClearFormat', 'Print', '|', 'Undo', 'Redo', '|', 'SourceCode']
@@ -2393,7 +2235,6 @@ export default {
       RisksForm: false /* ------------------------------------ used for showing/hiding the form based on the current user permission   */,
       OpportunitiesForm: false /* ---------------------------- used for showing/hiding the form based on the current user permission   */,
       DeliverablesForm: false /* ----------------------------- used for showing/hiding the form based on the current user permission   */,
-      DistributionForm: false /* ----------------------------- used for showing/hiding the form based on the current user permission   */,
       message: '',
       messagevariant: 'success',
       MSRId: '',
@@ -2427,7 +2268,6 @@ export default {
       SelectedOpportunity: '',
       Deliverables: [],
       SelectedDeliverable: '',
-      Distribution: '',
       SelectedIndex: 0,
       acompanies: [],
       pcompanies: [],
@@ -2516,13 +2356,13 @@ export default {
       const notification = {
         type: 'danger',
         title: 'Portal Error',
-        message: e,
+        message: e.message,
         push: true
       }
       this.$store.dispatch('notification/add', notification, {
         root: true
       })
-      console.log('ERROR: ' + e)
+      logger.logToServer(e)
     }
   },
 
@@ -2599,7 +2439,6 @@ export default {
         this.ODCAccomplished = this.msr.ODCAccomplished
         this.ODCPlanned = this.msr.ODCPlanned
         this.ODCCosts = this.msr.ODCCosts
-        this.Distribution = this.msr.Distribution
         this.uri = this.msr.uri
         this.etag = this.msr.etag
         this.Accomplishments = this.formatData2('Accomplishments', this.msr.Accomplishments)
@@ -2611,7 +2450,7 @@ export default {
         this.isSaving = false
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         // set the localStorage for the Accomplishments here
-        window.localStorage.setItem('accomplishment-' + this.MSRId, JSON.stringify(this.Accomplishments))
+        // window.localStorage.setItem('accomplishment-' + this.MSRId, JSON.stringify(this.Accomplishments))
         if (this.publishedMSR) {
           this.publishedMSR = false
         } else {
@@ -2620,11 +2459,6 @@ export default {
       } else {
         this.waitForMSR()
       }
-    },
-    toastWait: function() {
-      return setInterval(function() {
-        vm.$bvToast.hide('form-toast')
-      }, 5000)
     },
     setupTimers: function() {
       document.addEventListener('mousemove', vm.resetTimer, false)
@@ -2639,9 +2473,6 @@ export default {
       this.$cron.start('doInactive')
     },
     resetTimer: function() {
-      /* if (console) {
-        console.log('RESET TIMER')
-      } */
       this.$cron.restart('doInactive')
     },
     doInactive: function() {
@@ -2959,14 +2790,13 @@ export default {
             this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
           }
           this[form] = false
-          await this.checkAccomplishment()
+          this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
           let payload = {}
           payload.field = field
           // value is entire array of json objects that need to be stringified to store
           for (let i = 0; i < this.Accomplishments.length; i++) {
             this.Accomplishments[i].HTML = encodeURIComponent(this.Accomplishments[i].HTML)
           }
-          window.localStorage.removeItem('accomplishment-' + this.MSRId)
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
@@ -2999,7 +2829,7 @@ export default {
             this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
           }
           // update the existing HTML for the index and then save entire array
-          await this.checkAccomplishment()
+          this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
           let payload = {}
           payload.field = field
 
@@ -3007,7 +2837,6 @@ export default {
           for (let i = 0; i < this.Accomplishments.length; i++) {
             this.Accomplishments[i].HTML = encodeURIComponent(this.Accomplishments[i].HTML)
           }
-          window.localStorage.removeItem('accomplishment-' + this.MSRId)
           payload.value = JSON.stringify(this.Accomplishments)
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
@@ -3738,34 +3567,10 @@ export default {
         /* #endregion */
       }
     },
-    async checkAccomplishment() {
-      let lsAccomplishments = JSON.parse(localStorage.getItem('accomplishment-' + this.MSRId))
-      // check if HTML is an empty string and localStorage accomplishment.HTML is not empty
-      if (!this.Accomplishments[this.SelectedIndex].HTML && lsAccomplishments[this.SelectedIndex].HTML) {
-        // throw a confirm box explaining that there is something in cache that can overwrite this empty Accomplishment
-        // If yes - use from localStorage
-        // If No - delete entry from localStorage
-        // TODO: Convert to confirm box
-        this.$bvModal.show('accomplishmentModal')
-      } else {
-        this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
-        return true
-        // this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
-      }
-    },
-    async restoreAccomplishment() {
-      let lsAccomplishments = JSON.parse(localStorage.getItem('accomplishment-' + this.MSRId))
-      this.SelectedAccomplishment = lsAccomplishments[this.SelectedIndex].HTML
-      this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
-    },
-    async overwriteAccomplishment() {
-      this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
-      this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
-    },
     onRTEChanged: function(args) {
-      console.log('RTECHANGED: ' + args)
+      // console.log('RTECHANGED: ' + args) // DO NOT DO THIS
       let content = String(args.value)
-      console.log('CONTENT CHANGED: ' + content)
+      // console.log('CONTENT CHANGED: ' + content)  // DO NOT DO THIS
       vm.fileContent = content
       if (content.indexOf('blob') > 0) {
         vm.fileType = vm.ActiveSection
@@ -3844,7 +3649,7 @@ export default {
           r[i].HTML = decodeURIComponent(r[i].HTML)
         }
         exists = true
-        console.log('PARSED DATA: ' + r)
+        // console.log('PARSED DATA: ' + r)
       } catch (e) {
         // No real need to do anything here
       }
@@ -4531,7 +4336,6 @@ export default {
       documentCreator.loadImages().then(baboon => {
         const doc = documentCreator.create()
         Packer.toBlob(doc).then(blob => {
-          // saveAs(blob, "example.docx");
           vm.getFileBuffer(blob).then(function(b) {
             vm.fileBuffer = b
             vm.uploadMSR(vm.fileName, vm.fileBuffer, vm.fileDigest).then(function(response) {
@@ -4540,8 +4344,6 @@ export default {
               let uri = response.data.d.ListItemAllFields.__deferred.uri
               MSR.dispatch('getMSRDocument', uri).then(function(response) {
                 let payload = response.data.d.__metadata
-                payload.WorkplanNumber0 = vm.WorkplanNumber
-                payload.WorkplanTitle0 = vm.WorkplanTitle
                 payload.Month = months[m]
                 payload.Year = y
                 MSR.dispatch('updateMSRDocument', payload).then(function() {
@@ -4550,11 +4352,9 @@ export default {
                   payload.uri = vm.msr.uri
                   payload.etag = vm.msr.etag
                   MSR.dispatch('publishMSR', payload).then(function() {
-                    vm.publishedMSR = true
-                    vm.getData()
+                    vm.$bvToast.hide('form-toast')
+                    vm.$router.push({ path: '/msr/home' }) // go to MSR home page
                   })
-                  vm.$bvToast.hide('form-toast')
-                  vm.$emit('close')
                 })
               })
             })
@@ -4572,7 +4372,7 @@ export default {
     }
   ],
   provide: {
-    richtexteditor: [Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, RTETable]
+    richtexteditor: [Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, RTETable]
   },
   watch: {
     Show: function() {

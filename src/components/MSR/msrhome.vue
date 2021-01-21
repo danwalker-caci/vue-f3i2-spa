@@ -1,30 +1,5 @@
 <template>
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <b-modal id="DistributionModal" ref="DistributionModal" size="xl" centered @ok="newDistribution">
-      <template v-slot:modal-title>Add Distribution</template>
-      <div class="container-fluid">
-        <table id="NewTable" class="personneltable">
-          <tbody>
-            <tr class="bg-warning text-white">
-              <th>Title</th>
-              <th>Name</th>
-              <th>Organization</th>
-              <th>Phone</th>
-              <th>Location</th>
-              <th>Email</th>
-            </tr>
-            <tr>
-              <td><input class="e-input" type="text" v-model="distribution.Title" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Name" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Organization" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Phone" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Location" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Email" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </b-modal>
     <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
@@ -36,9 +11,9 @@
     </b-toast>
     <b-row ref="MainRow" class="contentHeight">
       <b-col cols="12">
-        <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete" v-on:request-distribution="onRequestDistributionA">
-          <e-columns v-on:request-distribution="onRequestDistributionB">
-            <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate" v-on:request-distribution="onRequestDistributionC"></e-column>
+        <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete">
+          <e-columns>
+            <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
             <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
             <e-column field="QAReview" headerText="QA Review" textAlign width="100"></e-column>
             <e-column field="PCAReview" headerText="PCA Review" textAlign width="100"></e-column>
@@ -185,9 +160,6 @@ export default {
               <b-button v-else disabled class="actionbutton" title="Locked For Editing">
                 <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
               </b-button>
-              <b-button class="actionbutton ml-1" @click="distribution(data)" title="Request Distribution">
-                <font-awesome-icon far icon="mail-bulk" class="icon"></font-awesome-icon> Request Distribution
-              </b-button>
             </div>`,
             data: function() {
               return {
@@ -222,9 +194,6 @@ export default {
                 MSR.dispatch('updateMSRData', payload).then(function(response) {
                   vm.$router.push({ name: 'MSRForm', params: { id: response.Id, msrdata: response } })
                 })
-              },
-              distribution: function(data) {
-                vm.onRequestDistribution(data)
               }
             }
           })
@@ -351,50 +320,6 @@ export default {
     },
     setClosed: function() {
       this.showForm = false
-    },
-    onRequestDistribution: function(data) {
-      // if (console) { console.log('DISTRIBUTION REQUEST A: ' + data) }
-      // let user know we are sending the request
-      this.busyValue = 0
-      this.busyMax = this.allworkplans.length
-      this.busyTitle = 'Sending Distribution Request'
-      this.$bvToast.show('busy-toast')
-      let wpn = data.WorkplanNumber
-      if (console) {
-        console.log('WPN OF DIST REQ: ' + wpn)
-      }
-      for (let i = 0; i < this.allworkplans.length; i++) {
-        this.busyValue = i
-        if (this.allworkplans[i]['Number'] == wpn) {
-          this.ManagerEmail = this.allworkplans[i]['ManagerEmail']
-        }
-      }
-      // construct payload to send email
-      this.distribution.WorkplanNumber = wpn
-      this.distribution.From = this.Email
-      this.distribution.To = this.ManagerEmail
-      this.distribution.Id = data.Id
-      this.$bvModal.show('DistributionModal')
-    },
-    newDistribution: function() {
-      try {
-        MSR.dispatch('sendDistributionRequest', this.distribution).then(function() {
-          vm.$bvModal.hide('DistributionModal')
-          vm.$bvToast.hide('busy-toast')
-        })
-      } catch (e) {
-        // Add user notification and system logging
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + e)
-      }
     },
     actionComplete(args) {
       if (args.requestType == 'columnstate') {
