@@ -2335,6 +2335,7 @@ export default {
       fileType: '',
       fileContent: null,
       fileName: null,
+      uploadedImages: [],
       hasImage: false,
       isEditing: false,
       clipBoard: null,
@@ -2739,6 +2740,8 @@ export default {
       if (console) {
         console.log('HANDLEIT CALLED: ' + action + ', ' + field + ', ' + form)
       }
+      var regex = new RegExp('<img .*?src="(.*?)"', 'gi'),
+        result
       switch (action) {
         /* #region BASE */
 
@@ -2754,6 +2757,10 @@ export default {
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
           this[form] = true
+          this.uploadedImages = []
+          while ((result = regex.exec(this[field]))) {
+            this.uploadedImages.push(result[1])
+          }
           this.timerid = setInterval(function() {
             // setup overlay and save
             vm.handleit('autosave', field, form)
@@ -2800,23 +2807,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this[field])
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            let content = String(this.fileContent)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            content = content.replace(blob, imageurl)
-            this[this.ActiveSection] = content
-          }
           let payload = {}
           payload.field = field
           payload.value = this[field]
@@ -2826,7 +2819,7 @@ export default {
           MSR.dispatch('updateMSRData', payload).then(function() {
             // close the toast notification and wait for the changes
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.ActiveSection = null
             vm.clipBoard = ''
             vm.$bvToast.hide('form-toast')
@@ -2840,23 +2833,10 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          console.log('FIELD: ' + JSON.stringify(this[field]))
+          await this.trackMSRImage(this[field])
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            let content = String(this.fileContent)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            content = content.replace(blob, imageurl)
-            this[this.ActiveSection] = content
-          }
           let payload = {}
           payload.field = field
           payload.value = this[field]
@@ -2895,6 +2875,10 @@ export default {
               this.SelectedAccomplishmentCompany = this.Accomplishments[i].Company
               this.clipBoard = this.Accomplishments[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedAccomplishment))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -2949,21 +2933,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedAccomplishment)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
-          }
           this[form] = false
           await this.checkAccomplishment()
           let payload = {}
@@ -2978,7 +2950,7 @@ export default {
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -2989,21 +2961,9 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedAccomplishment)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
-          }
           // update the existing HTML for the index and then save entire array
           await this.checkAccomplishment()
           let payload = {}
@@ -3018,7 +2978,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3046,6 +3005,10 @@ export default {
               this.SelectedPlan = this.Plans[i].HTML
               this.clipBoard = this.Plans[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedPlan))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -3098,23 +3061,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedPlan)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            //let content = String(this.SelectedPlan)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedPlan = this.SelectedPlan.replace(blob, imageurl)
-            //this.Plans[this.SelectedIndex].HTML = content
-          }
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -3127,7 +3076,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3138,23 +3087,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedPlan)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            //let content = String(this.SelectedPlan)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedPlan = this.SelectedPlan.replace(blob, imageurl)
-            //this.Plans[this.SelectedIndex].HTML = content
-          }
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -3165,7 +3100,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3193,6 +3127,10 @@ export default {
               this.SelectedAssumption = this.Assumptions[i].HTML
               this.clipBoard = this.Assumptions[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedAssumptions))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -3245,21 +3183,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedAssumption)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedAssumption = this.SelectedAssumption.replace(blob, imageurl)
-          }
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3272,7 +3198,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3283,21 +3209,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedAssumption)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedAssumption = this.SelectedAssumption.replace(blob, imageurl)
-          }
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3308,7 +3222,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3336,6 +3249,10 @@ export default {
               this.SelectedRisk = this.Risks[i].HTML
               this.clipBoard = this.Risks[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedRisk))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -3388,21 +3305,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedRisk)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedRisk = this.SelectedRisk.replace(blob, imageurl)
-          }
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3415,7 +3320,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3426,21 +3331,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedRisk)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedRisk = this.SelectedRisk.replace(blob, imageurl)
-          }
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3451,7 +3344,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3479,6 +3371,10 @@ export default {
               this.SelectedOpportunity = this.Opportunities[i].HTML
               this.clipBoard = this.Opportunities[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedOpportunity))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -3531,21 +3427,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedOpportunity)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedOpportunity = this.SelectedOpportunity.replace(blob, imageurl)
-          }
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3558,7 +3442,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3569,21 +3453,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedOpportunity)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedOpportunity = this.SelectedOpportunity.replace(blob, imageurl)
-          }
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3594,7 +3466,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3621,6 +3492,10 @@ export default {
               this.SelectedDeliverable = this.Deliverables[i].HTML
               this.clipBoard = this.Deliverables[i].HTML
             }
+          }
+          this.uploadedImages = []
+          while ((result = regex.exec(this.SelectedDeliverable))) {
+            this.uploadedImages.push(result[1])
           }
           this.timerid = setInterval(function() {
             // setup overlay and save
@@ -3673,21 +3548,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedDeliverable)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedDeliverable = this.SelectedDeliverable.replace(blob, imageurl)
-          }
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3700,7 +3563,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.hasImage = false
+
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3711,21 +3574,9 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
+          await this.trackMSRImage(this.SelectedDeliverable)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
-          if (this.hasImage) {
-            let blob = await axios({
-              url: this.fileBlob,
-              method: 'get',
-              responseType: 'blob'
-            })
-            this.fileBuffer = await this.getFileBuffer(blob.data)
-            response = await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
-            console.log('FILE UPLOADED: ' + response)
-            blob = String(this.fileBlob)
-            let imageurl = server + '/MSRImages/' + this.fileName
-            this.SelectedDeliverable = this.SelectedDeliverable.replace(blob, imageurl)
-          }
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3736,7 +3587,6 @@ export default {
           payload.uri = this.msr.uri
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
-            vm.hasImage = false
             vm.getData()
           })
           break
@@ -3768,12 +3618,19 @@ export default {
       this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
       this.handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')
     },
-    onRTEChanged: function(args) {
+    onRTEChanged: async function(args) {
       console.log('RTECHANGED: ' + args)
       let content = String(args.value)
       console.log('CONTENT CHANGED: ' + content)
       vm.fileContent = content
+      // Getting all the current Images
+      this.trackMSRImage(content)
+    },
+    async trackMSRImage(content) {
+      // get the total number of blobs and assign to a property
       if (content.indexOf('blob') > 0) {
+        let response = await this.getFormDigest()
+        this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
         vm.fileType = vm.ActiveSection
         let parts = content.split('blob:')
         console.log('PARTS: ' + parts)
@@ -3783,9 +3640,107 @@ export default {
         if (console) {
           console.log('BLOB URL: ' + url)
         }
-        vm.fileBlob = url
-        vm.hasImage = true
+        // Need to upload the image to the server and add to a tracking array.
+        let blob = await axios({
+          url: url,
+          method: 'get',
+          responseType: 'blob'
+        })
+        this.fileBuffer = await this.getFileBuffer(blob.data)
+        await this.uploadMSRImage(this.fileName, this.fileBuffer, this.fileDigest)
+        //console.log('FILE UPLOADED: ' + response)
+        blob = String(url)
+        let imageurl = server + '/MSRImages/' + this.fileName
+        this.uploadedImages.push(imageurl)
+        // replace the blob with the uploaded image link - switch container for each section - maybe use the args function?
+        content = content.replace(blob, imageurl)
+        switch (this.field) {
+          case 'Accomplishments':
+            this.SelectedAccomplishment = this.SelectedAccomplishment.replace(blob, imageurl)
+            break
+          case 'Plans':
+            this.SelectedPlan = this.SelectedPlan.replace(blob, imageurl)
+            break
+          case 'Assumptions':
+            this.SelectedAssumption = this.SelectedAssumption.replace(blob, imageurl)
+            break
+          case 'Risks':
+            this.SelectedRisk = this.SelectedRisk.replace(blob, imageurl)
+            break
+          case 'Opportunities':
+            this.SelectedOpportunity = this.SelectedOpportunity.replace(blob, imageurl)
+            break
+          case 'Deliverables':
+            this.SelectedDeliverable = this.SelectedDeliverable.replace(blob, imageurl)
+            break
+          case 'Funding':
+            this.Funding = this.Funding.replace(blob, imageurl)
+            break
+          case 'Staffing':
+            this.Staffing = this.Staffing.replace(blob, imageurl)
+            break
+          case 'CostReport':
+            this.CostReport = this.CostReport.replace(blob, imageurl)
+            break
+          case 'TravelAccomplished':
+            this.TravelAccomplished = this.TravelAccomplished.replace(blob, imageurl)
+            break
+          case 'TravelPlanned':
+            this.TravelPlanned = this.TravelPlanned.replace(blob, imageurl)
+            break
+          case 'TravelCosts':
+            this.TravelCosts = this.TravelCosts.replace(blob, imageurl)
+            break
+          case 'ODCAccomplished':
+            this.ODCsAccomplished = this.ODCsAccomplished.replace(blob, imageurl)
+            break
+          case 'ODCPlanned':
+            this.ODCPlanned = this.ODCPlanned.replace(blob, imageurl)
+            break
+          case 'ODCCosts':
+            this.ODCCosts = this.ODCCosts.replace(blob, imageurl)
+            break
+          default:
+            console.log('DEFAULT: ' + blob + ' ' + imageurl)
+            this[this.field] = this[this.field].replace(blob, imageurl)
+            break
+        }
+        this.deleteOldImages(content)
+      } else {
+        this.deleteOldImages(content)
       }
+    },
+    async deleteOldImages(content) {
+      // if the number of images in the text editor is less than the tracking array loop through the images and see if it is not in the array
+      // get a count of all img tags in content
+      // compare to previous array of images
+      // send a delete request for the one not in array
+      // for the one that is not in the array that needs to be deleted.
+      var currentImg = []
+      var regex = new RegExp('<img .*?src="(.*?)"', 'gi'),
+        result
+      while ((result = regex.exec(content))) {
+        currentImg.push(result[1])
+      }
+      // if the number of images is less than the uploaded images length or there is no image compared to the uploadedImages
+      //if (currentImg.length < this.uploadedImages.length || (content.indexOf('img') <= 0 && this.uploadedImages.length > 0)) {
+      this.uploadedImages.forEach(img => {
+        if (currentImg.indexOf(img) === -1) {
+          // run the delete function
+          console.log('DELETING IMAGE: ' + img)
+          this.getFormDigest()
+            .then(response => {
+              vm.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+              vm.deleteMSRImage(img, vm.fileDigest)
+            })
+            .catch(e => {
+              console.log('ERROR GETTING DIGEST: ' + e.message)
+            })
+          // remove the entry from uploadedImages
+          vm.uploadedImages.splice(vm.uploadedImages.indexOf(img), 1)
+        }
+      })
+      //}
     },
     async uploadMSRImage(name, buffer, digest) {
       let endpoint = String.format("{0}/_api/lists/getbytitle('{1}')/RootFolder/Files/Add(url='{2}',overwrite=true)", server, library, name)
@@ -3800,6 +3755,23 @@ export default {
           method: 'POST',
           data: data,
           processData: false,
+          headers: headers
+        })
+        return response
+      } catch (error) {
+        console.log('MSRService Error Uploading Image: ' + error)
+      }
+    },
+    async deleteMSRImage(endpoint, digest) {
+      let headers = {
+        Accept: 'application/json;odata=verbose',
+        'IF-MATCH': '*',
+        'X-RequestDigest': digest
+      }
+      try {
+        const response = await axios({
+          url: endpoint,
+          method: 'DELETE',
           headers: headers
         })
         return response
