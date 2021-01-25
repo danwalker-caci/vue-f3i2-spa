@@ -23,9 +23,10 @@
           </b-row>
           <b-row id="Tabs" class="tabrow formbody m-0">
             <b-card no-body>
+              <b-alert v-model="isEditing" variant="danger">Please review save your current section before editing another section.</b-alert>
               <b-tabs class="tabArea" card v-model="dashboardtabs">
                 <!-- Add click event for every mtab, onclick toggle previous active tab to inactive, set click target to be active -->
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section1" active>
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" class="mtab Section1" active>
                   <template slot="title">
                     <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                     Funding and Staffing Summary
@@ -35,7 +36,7 @@
                       <div id="Section1" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="fundingtabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" class="mtab" active>
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab" active>
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.1 Funding
@@ -55,7 +56,7 @@
                               </b-form>
                               <div v-else class="e-rte-content" id="FundingHtml" v-html="Funding"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.2 Engineering Effort/Staffing
@@ -75,7 +76,7 @@
                               </b-form>
                               <div v-else id="StaffingHtml" v-html="Staffing"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.3 Cost Report
@@ -101,17 +102,18 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section2">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" class="mtab Section2">
                   <template slot="title">
                     <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
-                    Travel &amp; ODC
+                    <!-- use :title="someFunction" with the words Please review changes before navigating to another section for a tooltip -->
+                    <span>Travel &amp; ODC</span>
                   </template>
                   <b-row>
                     <b-col cols="12">
                       <div id="Section2" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="traveltabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.1 Travel Accomplished
@@ -131,7 +133,7 @@
                               </b-form>
                               <div v-else id="TravelAccomplishedHtml" v-html="TravelAccomplished"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.2 Travel Planned
@@ -151,7 +153,7 @@
                               </b-form>
                               <div v-else id="TravelPlannedHtml" v-html="TravelPlanned"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.3 Travel Costs To Date
@@ -171,7 +173,7 @@
                               </b-form>
                               <div v-else id="TravelCostsHtml" v-html="TravelCosts"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.1 ODCs Accomplished
@@ -191,7 +193,7 @@
                               </b-form>
                               <div v-else id="ODCAccomplishedHtml" v-html="ODCAccomplished"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.2 ODCs Planned
@@ -211,7 +213,7 @@
                               </b-form>
                               <div v-else id="ODCPlannedHtml" v-html="ODCPlanned"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.3 ODC Costs To Date
@@ -237,7 +239,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab title-item-class="tabLock" class="mtab Section3">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab Section3">
                   <template slot="title">
                     <font-awesome-icon fas icon="tasks" class="icon"></font-awesome-icon>
                     Accomplishments
@@ -386,7 +388,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab title-item-class="tabLock" class="mtab Section4">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab Section4">
                   <template slot="title">
                     <font-awesome-icon fas icon="ruler-combined" class="icon"></font-awesome-icon>
                     Plans
@@ -532,7 +534,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab title-item-class="tabLock" class="mtab Section5">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab Section5">
                   <template slot="title">
                     <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                     Assumptions, Risks, Opportunities
@@ -542,7 +544,7 @@
                       <div id="Section5Main" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="arotabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Assumptions and Dependencies
@@ -682,7 +684,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Risks and Mitigation
@@ -822,7 +824,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Opportunities
@@ -968,7 +970,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab title-item-class="tabLock" class="mtab Section6">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab Section6">
                   <template slot="title">
                     <font-awesome-icon fas icon="truck" class="icon"></font-awesome-icon>
                     Deliverables
@@ -1114,7 +1116,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section7">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" class="mtab Section7">
                   <template slot="title">
                     <font-awesome-icon fas icon="thumbs-up" class="icon"></font-awesome-icon>
                     Distribution
@@ -1140,7 +1142,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab title-item-class="tabLock" class="mtab Summary">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" class="mtab Summary">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Summary
@@ -1950,7 +1952,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Review
@@ -1969,7 +1971,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="!isPM" title-item-class="tabLock" class="mtab">
+                <b-tab :disabled="!isPM" title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
                     Publish
@@ -2740,17 +2742,23 @@ export default {
     async lockTabs() {
       document.querySelectorAll('.tabLock').forEach(tab => {
         console.log(tab)
-        if (!tab.classList.contains('active')) {
+        if (!tab.children[0].classList.contains('active')) {
           tab.disabled = true
           tab.classList.toggle('disabledTab')
+          tab.children[0].classList.toggle('disabledLink')
+          tab.children[0].disabled = true
         }
       })
     },
     async unlockTabs() {
       document.querySelectorAll('.tabLock').forEach(tab => {
         console.log(tab)
-        tab.disabled = false
-        tab.classList.toggle('disabledTab')
+        if (!tab.children[0].classList.contains('active')) {
+          tab.disabled = false
+          tab.classList.toggle('disabledTab')
+          tab.children[0].classList.toggle('disabledLink')
+          tab.children[0].disabled = false
+        }
       })
     },
     // All edits should lock the tabs, all saves should unlock tabs
@@ -4612,6 +4620,10 @@ export default {
 <style lang="scss">
 .disabledTab {
   pointer-events: none;
+}
+.disabledLink {
+  color: grey !important;
+  background-color: darkgrey !important;
 }
 .formheader,
 .formfooter {
