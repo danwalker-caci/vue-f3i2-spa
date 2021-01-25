@@ -24,7 +24,8 @@
           <b-row id="Tabs" class="tabrow formbody m-0">
             <b-card no-body>
               <b-tabs class="tabArea" card v-model="dashboardtabs">
-                <b-tab :disabled="isSubcontractor" class="mtab Section1" active>
+                <!-- Add click event for every mtab, onclick toggle previous active tab to inactive, set click target to be active -->
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section1" active>
                   <template slot="title">
                     <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                     Funding and Staffing Summary
@@ -34,7 +35,7 @@
                       <div id="Section1" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="fundingtabs" class="tabArea" card>
-                            <b-tab class="mtab" active>
+                            <b-tab title-item-class="tabLock" class="mtab" active>
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.1 Funding
@@ -54,7 +55,7 @@
                               </b-form>
                               <div v-else class="e-rte-content" id="FundingHtml" v-html="Funding"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.2 Engineering Effort/Staffing
@@ -74,7 +75,7 @@
                               </b-form>
                               <div v-else id="StaffingHtml" v-html="Staffing"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.3 Cost Report
@@ -100,7 +101,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" class="mtab Section2">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section2">
                   <template slot="title">
                     <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                     Travel &amp; ODC
@@ -110,7 +111,7 @@
                       <div id="Section2" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="traveltabs" class="tabArea" card>
-                            <b-tab class="mtab" active>
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.1 Travel Accomplished
@@ -130,7 +131,7 @@
                               </b-form>
                               <div v-else id="TravelAccomplishedHtml" v-html="TravelAccomplished"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.2 Travel Planned
@@ -150,7 +151,7 @@
                               </b-form>
                               <div v-else id="TravelPlannedHtml" v-html="TravelPlanned"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.3 Travel Costs To Date
@@ -170,7 +171,7 @@
                               </b-form>
                               <div v-else id="TravelCostsHtml" v-html="TravelCosts"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.1 ODCs Accomplished
@@ -190,7 +191,7 @@
                               </b-form>
                               <div v-else id="ODCAccomplishedHtml" v-html="ODCAccomplished"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.2 ODCs Planned
@@ -210,7 +211,7 @@
                               </b-form>
                               <div v-else id="ODCPlannedHtml" v-html="ODCPlanned"></div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.3 ODC Costs To Date
@@ -236,7 +237,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab class="mtab Section3">
+                <b-tab title-item-class="tabLock" class="mtab Section3">
                   <template slot="title">
                     <font-awesome-icon fas icon="tasks" class="icon"></font-awesome-icon>
                     Accomplishments
@@ -385,7 +386,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab class="mtab Section4">
+                <b-tab title-item-class="tabLock" class="mtab Section4">
                   <template slot="title">
                     <font-awesome-icon fas icon="ruler-combined" class="icon"></font-awesome-icon>
                     Plans
@@ -531,7 +532,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab class="mtab Section5">
+                <b-tab title-item-class="tabLock" class="mtab Section5">
                   <template slot="title">
                     <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                     Assumptions, Risks, Opportunities
@@ -541,7 +542,7 @@
                       <div id="Section5Main" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="arotabs" class="tabArea" card>
-                            <b-tab class="mtab" active>
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Assumptions and Dependencies
@@ -681,7 +682,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Risks and Mitigation
@@ -821,7 +822,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab class="mtab">
+                            <b-tab title-item-class="tabLock" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Opportunities
@@ -967,7 +968,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab class="mtab Section6">
+                <b-tab title-item-class="tabLock" class="mtab Section6">
                   <template slot="title">
                     <font-awesome-icon fas icon="truck" class="icon"></font-awesome-icon>
                     Deliverables
@@ -1113,7 +1114,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" class="mtab Section7">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab Section7">
                   <template slot="title">
                     <font-awesome-icon fas icon="thumbs-up" class="icon"></font-awesome-icon>
                     Distribution
@@ -1139,7 +1140,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab class="mtab Summary">
+                <b-tab title-item-class="tabLock" class="mtab Summary">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Summary
@@ -1949,7 +1950,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" class="mtab">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Review
@@ -1968,7 +1969,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="!isPM" class="mtab">
+                <b-tab :disabled="!isPM" title-item-class="tabLock" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
                     Publish
@@ -2717,7 +2718,7 @@ export default {
       })
     },
     async nextTab() {
-      // Need to track what form they are on.
+      // Need to track what form they are on. Remove the previous active tab and then add the active tab to current one
       this.dashboardtabs++
       if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
         this.prevForm = this.form
@@ -2727,7 +2728,7 @@ export default {
       }
     },
     async prevTab() {
-      // Need to track what form they are on.
+      // Need to track what form they are on. Remove the previous active tab and then add the active tab to current one
       this.dashboardtabs--
       if (this.prevForm !== this.form && this.prevField !== this.field && this.prevSaveType !== this.saveType) {
         this.prevField = this.field
@@ -2736,6 +2737,23 @@ export default {
         this.handleit(this.saveType, this.field, this.form)
       }
     },
+    async lockTabs() {
+      document.querySelectorAll('.tabLock').forEach(tab => {
+        console.log(tab)
+        if (!tab.classList.contains('active')) {
+          tab.disabled = true
+          tab.classList.toggle('disabledTab')
+        }
+      })
+    },
+    async unlockTabs() {
+      document.querySelectorAll('.tabLock').forEach(tab => {
+        console.log(tab)
+        tab.disabled = false
+        tab.classList.toggle('disabledTab')
+      })
+    },
+    // All edits should lock the tabs, all saves should unlock tabs
     async handleit(action, field, form) {
       if (console) {
         console.log('HANDLEIT CALLED: ' + action + ', ' + field + ', ' + form)
@@ -2756,6 +2774,7 @@ export default {
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
+          this.lockTabs()
           this[form] = true
           this.uploadedImages = []
           while ((result = regex.exec(this[field]))) {
@@ -2771,6 +2790,7 @@ export default {
         case 'cancel': {
           this.hasImage = false
           this.isEditing = false
+          this.unlockTabs()
           this[form] = false
           this[this.ActiveSection] = this.clipBoard
           break
@@ -2819,7 +2839,7 @@ export default {
           MSR.dispatch('updateMSRData', payload).then(function() {
             // close the toast notification and wait for the changes
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.ActiveSection = null
             vm.clipBoard = ''
             vm.$bvToast.hide('form-toast')
@@ -2867,6 +2887,7 @@ export default {
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
+          this.lockTabs()
           this.AccomplishmentsForm = true
           for (let i = 0; i < this.Accomplishments.length; i++) {
             if (this.Accomplishments[i]['Index'] == index) {
@@ -2890,6 +2911,7 @@ export default {
         case 'cancelaccomplishment': {
           // TODO: Validate that this function is needed/ does what it should do
           this.isEditing = false
+          this.unlockTabs()
           this.AccomplishmentsForm = false
           this.SelectedAccomplishment = this.clipBoard
           this.Accomplishments[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -2950,7 +2972,7 @@ export default {
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -2992,6 +3014,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
+          this.lockTabs()
           this.PlansForm = true
           this.field = 'Plans'
           this.form = 'PlansForm'
@@ -3019,6 +3042,7 @@ export default {
 
         case 'cancelplan': {
           this.isEditing = false
+          this.unlockTabs()
           this.PlansForm = false
           this.SelectedPlan = this.clipBoard
           this.Plans[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3076,7 +3100,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3114,6 +3138,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
+          this.lockTabs()
           this.AssumptionsForm = true
           this.field = 'Assumptions'
           this.form = 'AssumptionsForm'
@@ -3141,6 +3166,7 @@ export default {
 
         case 'cancelassumption': {
           this.isEditing = false
+          this.unlockTabs()
           this.AssumptionsForm = false
           this.SelectedAssumption = this.clipBoard
           this.Assumptions[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3198,7 +3224,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3236,6 +3262,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
+          this.lockTabs()
           this.RisksForm = true
           this.field = 'Risks'
           this.form = 'RisksForm'
@@ -3263,6 +3290,7 @@ export default {
 
         case 'cancelrisk': {
           this.isEditing = false
+          this.unlockTabs()
           this.RisksForm = false
           this.SelectedRisk = this.clipBoard
           this.Risks[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3320,7 +3348,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3358,6 +3386,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
+          this.lockTabs()
           this.OpportunitiesForm = true
           this.field = 'Opportunities'
           this.form = 'OpportunitiesForm'
@@ -3385,6 +3414,7 @@ export default {
 
         case 'cancelopportunity': {
           this.isEditing = false
+          this.unlockTabs()
           this.OpportunitiesForm = false
           this.SelectedOpportunity = this.clipBoard
           this.Opportunities[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3442,7 +3472,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3479,6 +3509,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
+          this.lockTabs()
           this.DeliverablesForm = true
           this.field = 'Deliverables'
           this.form = 'DeliverablesForm'
@@ -3506,6 +3537,7 @@ export default {
 
         case 'canceldeliverable': {
           this.isEditing = false
+          this.unlockTabs()
           this.DeliverablesForm = false
           this.SelectedDeliverable = this.clipBoard
           this.Deliverables[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3563,7 +3595,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-
+            vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -4578,6 +4610,9 @@ export default {
 </script>
 
 <style lang="scss">
+.disabledTab {
+  pointer-events: none;
+}
 .formheader,
 .formfooter {
   height: 50px !important;
