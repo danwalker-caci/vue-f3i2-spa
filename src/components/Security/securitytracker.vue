@@ -545,15 +545,15 @@ export default {
             PersonName: sf.PersonName,
             Company: sf.Company,
             SCIStatus: sf.SCIStatus,
-            SCIIndocAssistDate: sf.SCIIndocAssistDate,
-            SCIPR: sf.SCIPR,
-            SCICE: sf.SCICE,
-            SCIIndocDate: sf.SCIIndoc,
-            SCIAccessCheckDate: sf.SCIAccessCheckDate,
+            SCIIndocAssistDate: sf.SCIIndocAssistDate.$moment().format('MM/DD/YYYY'),
+            SCIPR: sf.SCIPR.$moment().format('MM/DD/YYYY'),
+            SCICE: sf.SCICE.$moment().format('MM/DD/YYYY'),
+            SCIIndocDate: sf.SCIIndoc.$moment().format('MM/DD/YYYY'),
+            SCIAccessCheckDate: sf.SCIAccessCheckDate.$moment().format('MM/DD/YYYY'),
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,
-            CACRequestDate: sf.CACRequestDate,
-            CACExpirationDate: sf.CACExpirationDate,
+            CACRequestDate: sf.CACRequestDate.$moment().format('MM/DD/YYYY'),
+            CACExpirationDate: sf.CACExpirationDate.$moment().format('MM/DD/YYYY'),
             CACIssuedBy: sf.CACIssuedBy,
             NIPRAccount: '',
             NIPRGovSentDate: '',
@@ -572,23 +572,23 @@ export default {
             switch (a.account) {
               case 'NIPR':
                 CurrentData['NIPRAccount'] = 'Yes'
-                CurrentData['NIPRGovSentDate'] = a.GovSentDate
-                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate
+                CurrentData['NIPRGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
+                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
                 break
               case 'SIPR':
                 CurrentData['SIPRAccount'] = 'Yes'
-                CurrentData['SIPRGovSentDate'] = a.GovSentDate
-                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate
+                CurrentData['SIPRGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
+                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
                 break
               case 'DREN':
                 CurrentData['DRENAccount'] = 'Yes'
-                CurrentData['DRENGovSentDate'] = a.GovSentDate
-                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate
+                CurrentData['DRENGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
+                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
                 break
               case 'JWIC':
                 CurrentData['JWICAccount'] = 'Yes'
-                CurrentData['JWICGovSentDate'] = a.GovSentDate
-                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate
+                CurrentData['JWICGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
+                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
                 break
             }
           })
