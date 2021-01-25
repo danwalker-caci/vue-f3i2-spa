@@ -154,12 +154,34 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <b-button v-if="data.Locked !== 'Yes'" variant="success" class="actionbutton" @click="edit(data)" title="Edit">
-                <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
-              </b-button>
-              <b-button v-else disabled class="actionbutton" title="Locked For Editing">
-                <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
-              </b-button>
+              <div v-if="data.Locked === 'Yes'">
+                <b-button disabled class="actionbutton" title="Locked For Editing">
+                  <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
+                </b-button>
+                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                  <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
+                </b-button>
+                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                  <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
+                </b-button>
+                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                  <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
+                </b-button>
+              </div>
+              <div v-else>
+                <b-button variant="success" class="actionbutton" @click="edit(data)" title="Edit">
+                  <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
+                </b-button>
+                <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                  <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
+                </b-button>
+                <b-button v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                  <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
+                </b-button>
+                <b-button v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                  <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
+                </b-button>
+              </div>
             </div>`,
             data: function() {
               return {
@@ -175,6 +197,12 @@ export default {
               },
               isWPManager() {
                 return User.getters('isWPManager')
+              },
+              isPCA() {
+                return User.getters('isPCA')
+              },
+              isQA() {
+                return User.getters('isQA')
               },
               isSubcontractor() {
                 return User.getters('isSubcontractor')
@@ -193,6 +221,125 @@ export default {
                 payload.etag = data.etag
                 MSR.dispatch('updateMSRData', payload).then(function(response) {
                   vm.$router.push({ name: 'MSRForm', params: { id: response.Id, msrdata: response } })
+                })
+              },
+              tooltipme: function(s, data) {
+                let tooltip = 'Toggle '
+                switch (s) {
+                  case 'WPMReview':
+                    tooltip += ' WPM Review '
+                    switch (data.WPMReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+
+                  case 'PCAReview':
+                    tooltip += ' PCA Review '
+                    switch (data.PCAReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+
+                  case 'QAReview':
+                    tooltip += ' QA Review '
+                    switch (data.QAReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+                }
+                return tooltip
+              },
+              wpmreview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling WPM Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'WPMReview'
+                switch (data.WPMReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+                })
+              },
+              pcareview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling PCA Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'PCAReview'
+                switch (data.PCAReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+                })
+              },
+              qareview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling QA Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'QAReview'
+                switch (data.QAReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
                 })
               }
             }

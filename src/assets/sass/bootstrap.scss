@@ -40,13 +40,22 @@ $tbar-hover-bg: $black;
 $tbar-popup-hover-bg: $black;
 $tbar-default-icon-color: $white;
 $tbar-default-font: $white;
+$ribbon-content-bg-color: $warning;
 
 $input-box-border-color: $black; // override syncfusion input border color
+
+$modal-xxxl:                        1580px !default;
+$modal-xxl:                         1420px !default;
+$modal-xl:                          1140px !default;
+$modal-lg:                          800px !default;
+$modal-md:                          500px !default;
+$modal-sm:                          300px !default;
 
 /* override the default vars with the values we set above */
 @import 'spa/bootstrap';
 @import 'node_modules/bootstrap-vue/src/index.scss';
 @import 'node_modules/@syncfusion/ej2-base/styles/bootstrap4.scss';
+@import 'node_modules/@syncfusion/ej2-icons/styles/bootstrap4.scss';
 @import 'node_modules/@syncfusion/ej2-buttons/styles/bootstrap4.scss';
 @import 'node_modules/@syncfusion/ej2-calendars/styles/bootstrap4.scss';
 @import 'node_modules/@syncfusion/ej2-inputs/styles/bootstrap4.scss';

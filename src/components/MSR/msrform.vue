@@ -1,5 +1,27 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0" id="MainContainer">
+    <b-modal id="InsertTableModal" ref="InsertTableModal" v-model="ModalShow" scrollable size="xxxl" centered hide-header hide-footer @shown="onModalShown">
+      <b-container fluid class="m-0 p-0">
+        <b-row no-gutters class="bg-warning text-white formheader">
+          <b-col cols="4" class="p-0 text-left"></b-col>
+          <b-col cols="4" class="p-0 text-center">Insert Table</b-col>
+          <b-col cols="4" class="p-0 text-right"></b-col>
+        </b-row>
+        <b-row no-gutters>
+          <ejs-spreadsheet ref="ModalSpreadSheet" :created="onSpreadSheetCreate" height="700"></ejs-spreadsheet>
+        </b-row>
+        <b-row no-gutters class="bg-warning buttonrow formfooter">
+          <b-col cols="4" class="p-0 text-left"></b-col>
+          <b-col cols="4" class="p-0 text-center"></b-col>
+          <b-col cols="4" class="p-0 text-right">
+            <b-button-group class="mt-1">
+              <b-button variant="danger" ref="btnCancelInsert" class="mr-2" @click="onCancelInsert">Cancel</b-button>
+              <b-button variant="success" ref="btnInsertTable" @click="onTableInsert">Insert</b-button>
+            </b-button-group>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-modal>
     <b-row no-gutters class="contentHeight">
       <b-toast id="form-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
@@ -1810,7 +1832,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" class="mtab">
+                <!-- <b-tab :disabled="isSubcontractor" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Review
@@ -1828,7 +1850,7 @@
                       </b-form-checkbox>
                     </b-col>
                   </b-row>
-                </b-tab>
+                </b-tab> -->
                 <b-tab :disabled="!isPM" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
@@ -2056,6 +2078,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { BorderStyle, Packer, Paragraph, Table, TableCell, TableRow, VerticalAlign, WidthType, AlignmentType, PageNumber, TextRun, CreateDocFromHtml } from 'caci-docx/lib'
 import { EventBus } from '../../main'
 import axios from 'axios'
@@ -2065,6 +2088,9 @@ import MSR from '@/models/MSR'
 import User from '@/models/User'
 import Todo from '@/models/Todo'
 import { Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, Table as RTETable } from '@syncfusion/ej2-vue-richtexteditor'
+import { SpreadsheetPlugin } from '@syncfusion/ej2-vue-spreadsheet'
+
+Vue.use(SpreadsheetPlugin)
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -2166,10 +2192,11 @@ export default {
       busyTitle: 'Getting Data. Please Wait.',
       isDirty: false,
       isSaving: false,
+      ModalShow: false,
       timeoutId: null,
       publishedTimeout: null,
       timerid: null,
-      timeout: 120000,
+      timeout: 900000, // set to 15 minutes for now
       headerText: '',
       WordDocument: null,
       fileDigest: null,
@@ -2312,6 +2339,7 @@ export default {
     }
   },
   beforeRouteLeave: function(to, from, next) {
+    console.log('BEFOREROUTELEAVE: ' + to)
     if (this.isDirty == true) {
       let payload = {}
       payload.field = 'Locked'
@@ -2365,7 +2393,6 @@ export default {
       logger.logToServer(e)
     }
   },
-
   methods: {
     async getUserInfo() {
       await User.dispatch('getUserId').catch(error => {
@@ -2495,50 +2522,27 @@ export default {
         vm.$router.push({ path: '/msr/home' })
       })
     },
-    WPMReviewClicked: function(checked) {
-      vm.isSaving = true
-      vm.busyTitle = 'Saving To SharePoint'
-      vm.$bvToast.show('form-toast')
-      let payload = {}
-      payload.field = 'WPMReview'
-      payload.locked = 'No'
-      payload.value = checked ? 'Complete' : 'Pending'
-      payload.uri = this.msr.uri
-      payload.etag = this.msr.etag
-      MSR.dispatch('updateMSRData', payload).then(function() {
-        vm.$bvToast.hide('form-toast')
-        vm.$router.push({ path: '/msr/home' })
-      })
+    onClick: function() {
+      console.log('SHOWING INSERT TABLE MODAL')
+      // this.$bvModal.show('InsertTableModal')
+      this.ModalShow = true
     },
-    QAReviewClicked: function(checked) {
-      vm.isSaving = true
-      vm.busyTitle = 'Saving To SharePoint'
-      vm.$bvToast.show('form-toast')
-      let payload = {}
-      payload.field = 'QAReview'
-      payload.locked = 'No'
-      payload.value = checked ? 'Complete' : 'Pending'
-      payload.uri = this.msr.uri
-      payload.etag = this.msr.etag
-      MSR.dispatch('updateMSRData', payload).then(function() {
-        vm.$bvToast.hide('form-toast')
-        vm.$router.push({ path: '/msr/home' })
-      })
+    onCancelInsert: function() {
+      this.$bvModal.hide('InsertTableModal')
     },
-    PCAReviewClicked: function(checked) {
-      vm.isSaving = true
-      vm.busyTitle = 'Saving To SharePoint'
-      vm.$bvToast.show('form-toast')
-      let payload = {}
-      payload.field = 'PCAReview'
-      payload.locked = 'No'
-      payload.value = checked ? 'Complete' : 'Pending'
-      payload.uri = this.msr.uri
-      payload.etag = this.msr.etag
-      MSR.dispatch('updateMSRData', payload).then(function() {
-        vm.$bvToast.hide('form-toast')
-        vm.$router.push({ path: '/msr/home' })
-      })
+    onModalShown: function() {
+      EventBus.$emit('RefreshSpreadSheet')
+    },
+    onSpreadSheetCreate: function() {
+      EventBus.$on('RefreshSpreadSheet', this.onRefreshSpreadSheet)
+    },
+    onRefreshSpreadSheet: function() {
+      console.log('REFRESHING SPREADSHEET')
+      this.$refs.ModalSpreadSheet.refresh()
+    },
+    onTableInsert: function() {
+      console.log('INSERTING TABLE HTML: ' + this.$refs['ModalSpreadSheet'])
+      // INSERT THE HTML AND CLOSE IT
     },
     async nextTab() {
       // Need to track what form they are on.
@@ -4373,7 +4377,7 @@ export default {
   ],
   provide: {
     richtexteditor: [Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, RTETable]
-  },
+  } /* ,
   watch: {
     Show: function() {
       if (this.Show == true) {
@@ -4391,15 +4395,16 @@ export default {
         Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
           vm.$options.interval = setInterval(vm.getData, 1000)
         })
-      } else {
-        // TODO: Do we need to clean up here? Or do some other action
       }
     }
-  }
+  } */
 }
 </script>
 
 <style lang="scss">
+.e-grid:before {
+  content: '\e763';
+}
 .formheader,
 .formfooter {
   height: 50px !important;
