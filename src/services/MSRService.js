@@ -66,7 +66,7 @@ export default {
       Accept: 'application/json;odata=verbose',
       'X-RequestDigest': digest,
       'X-HTTP-Method': 'MERGE',
-      'If-Match': payload.etag
+      'If-Match': '*'
     }
     let config = {
       headers: headers
@@ -75,6 +75,7 @@ export default {
       __metadata: { type: 'SP.Data.MSRsListItem' }
     }
     itemprops.Status = 'Published'
+    itemprops.Locked = 'No'
     try {
       await axios.post(furl, itemprops, config)
       // go get the data for the saved item to return back to the user and use it to update the current MSR
@@ -88,7 +89,7 @@ export default {
           return response.data.d
         })
     } catch (error) {
-      console.log('MSRService Error Updating MSR: ' + error)
+      console.log('MSRService Error Publishing MSR: ' + error)
     }
   },
   async createMSR(payload, digest) {
@@ -232,8 +233,8 @@ export default {
       .catch(function(error) {
         const notification = {
           type: 'danger',
-          title: 'Travel Service Error: ' + error,
-          message: 'Error Updating Trip Report Data',
+          title: 'MSR Service Error: ' + error,
+          message: 'Error Updating MSR Document',
           push: true
         }
         store.dispatch('notification/add', notification, { root: true })
