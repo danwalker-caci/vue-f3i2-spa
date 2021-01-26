@@ -293,7 +293,7 @@ export default {
       Security.dispatch('DeleteForm', payload).then(async function() {
         // Need to update the SecurityForms Types with the deleted ID
         let index = 0
-        vm.securityFormTracker.Types.forEach((type, i) => {
+        vm.securityFormTracker.Accounts.forEach((type, i) => {
           if (vm.formId === type.id) {
             index = i
             // Pop it off the freaking Types
