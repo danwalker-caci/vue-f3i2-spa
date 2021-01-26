@@ -564,81 +564,80 @@ export default {
           // await Security.dispatch('')
           // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
           const notification = {
-              type: 'success',
-              title: 'Succesfully Uploaded Form',
-              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-              push: true
-            }
-            vm.$store.dispatch('notification/add', notification, { root: true })
+            type: 'success',
+            title: 'Succesfully Uploaded Form',
+            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+            push: true
+          }
+          vm.$store.dispatch('notification/add', notification, { root: true })
 
-            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-            let event = []
-            event.push({
-              name: vm.fileName,
-              Status: 'SecurityReview',
-              Form: library + vm.fileSelected,
-              etag: vm.form.etag,
-              uri: vm.form.uri
-            })
-            // Clear form after submission
-
-            if (vm.formType === 'account') {
-              vm.form.Type = vm.accountOptions[0]
-            }
-            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-            vm.fileSelected = null
-            vm.fileBuffer = null
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+          let event = []
+          event.push({
+            name: vm.fileName,
+            Status: 'SecurityReview',
+            Form: library + vm.fileSelected,
+            etag: vm.form.etag,
+            uri: vm.form.uri
           })
-        }
+          // Clear form after submission
+
+          if (vm.formType === 'account') {
+            vm.form.Type = vm.accountOptions[0]
+          }
+          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+          vm.fileSelected = null
+          vm.fileBuffer = null
+        })
       }
-    },
-    async onFileSelect(args) {
-      vm.fileSelected = args.filesData[0].name
-      let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
-      buffer.then(function(buff) {
-        vm.fileBuffer = buff
-      })
-    },
-    getFileBuffer(file) {
-      let p = new Promise(function(resolve, reject) {
-        var reader = new FileReader()
-        reader.onloadend = function(e) {
-          resolve(e.target.result)
-        }
-        reader.onerror = function(e) {
-          reject(e.target.error)
-        }
-        reader.readAsArrayBuffer(file)
-      })
-      return p
-    },
-    // Removing Validation because it doesn't work for on load and there isn't any free text.
-    ValidateMe: function(input) {
-      let ret = false
-      switch (input) {
-        case 'Company':
-          if (this.form.Company !== '') {
-            ret = true
-          }
-          break
-        case 'Person':
-          if (this.form.PersonnelID !== '') {
-            ret = true
-          }
-          break
-        case 'Type':
-          if (this.form.Type !== 'Select...') {
-            ret = true
-          }
-          break
-        case 'SCIType':
-          if (this.form.SCIType !== '') {
-            ret = true
-          }
-          break
-      }
-      return ret
     }
+  },
+  async onFileSelect(args) {
+    vm.fileSelected = args.filesData[0].name
+    let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
+    buffer.then(function(buff) {
+      vm.fileBuffer = buff
+    })
+  },
+  getFileBuffer(file) {
+    let p = new Promise(function(resolve, reject) {
+      var reader = new FileReader()
+      reader.onloadend = function(e) {
+        resolve(e.target.result)
+      }
+      reader.onerror = function(e) {
+        reject(e.target.error)
+      }
+      reader.readAsArrayBuffer(file)
+    })
+    return p
+  },
+  // Removing Validation because it doesn't work for on load and there isn't any free text.
+  ValidateMe: function(input) {
+    let ret = false
+    switch (input) {
+      case 'Company':
+        if (this.form.Company !== '') {
+          ret = true
+        }
+        break
+      case 'Person':
+        if (this.form.PersonnelID !== '') {
+          ret = true
+        }
+        break
+      case 'Type':
+        if (this.form.Type !== 'Select...') {
+          ret = true
+        }
+        break
+      case 'SCIType':
+        if (this.form.SCIType !== '') {
+          ret = true
+        }
+        break
+    }
+    return ret
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
