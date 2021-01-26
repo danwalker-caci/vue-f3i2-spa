@@ -50,10 +50,7 @@
                 </b-form-invalid-feedback>
               </div>
               <div v-if="formCAC || formSCI">
-                <b-form-input id="formType" v-model="form.Type" disabled></b-form-input>
-                <b-form-invalid-feedback>
-                  Please use the provided Type.
-                </b-form-invalid-feedback>
+                <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
               </div>
               <div v-if="formSCI">
                 <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
@@ -108,6 +105,13 @@
             </div>
           </b-col>
         </b-form-row>
+        <b-form-row v-if="formSCI">
+          <b-col cols="6">
+            <b-form-group label="Scheduled Indoctrination Date: " label-for="formSCIIndocDate">
+              <ejs-datepicker id="formSCIIndocDate" v-model="form.SCIIndocDate"></ejs-datepicker>
+            </b-form-group>
+          </b-col>
+        </b-form-row>
         <b-form-row>
           <b-col cols="6">
             <b-form-group>
@@ -133,6 +137,37 @@
               </b-form-group>
             </div>
           </b-col>
+        </b-form-row>
+        <b-form-row v-if="formCAC">
+          <!-- list a series of questions for the user to fill out -->
+          <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
+            <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'Yes'">
+          <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
+            <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'Yes'">
+          <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
+            <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACValid === 'No'">
+          <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+            <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACEver === 'Yes'">
+          <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
+            <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
+          </b-form-group>
+        </b-form-row>
+        <b-form-row v-if="form.CACEver === 'Yes'">
+          <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
+            <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+          </b-form-group>
         </b-form-row>
         <b-form-row>
           <b-col>
@@ -163,6 +198,7 @@ import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
+
 export default {
   name: 'SecurityForms',
   props: {
@@ -204,6 +240,10 @@ export default {
       accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
       form: {
+        CACValid: '',
+        CACIssuedBy: '',
+        CACExpirationDate: '',
+        CACStatus: '',
         Company: '',
         Type: null,
         PersonnelID: null,
@@ -212,7 +252,9 @@ export default {
         GovSentDate: null,
         etag: '',
         uri: '',
-        SCIType: ''
+        SCIType: '',
+        SCIIndocDate: '',
+        SCIStatus: ''
       },
       formAccount: false,
       formCAC: false,
@@ -223,7 +265,15 @@ export default {
       formTitle: '',
       taskUserId: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
-      url: ''
+      url: '',
+      cacvalid: [
+        { text: 'No', value: 'No' },
+        { text: 'Yes', value: 'Yes' }
+      ],
+      cacever: [
+        { text: 'No', value: 'No' },
+        { text: 'Yes', value: 'Yes' }
+      ]
     }
   },
   mounted: async function() {
@@ -269,6 +319,11 @@ export default {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+            // Pulled from personnel list
+            if (vm.formSCI && result && result[0].SCIFormStatus) {
+              vm.form.SCIStatus = result[0].SCIFormStatus
+              vm.form.CACStatus = result[0].CACStatus
+            }
           })
         })
         clearInterval(vm.$options.interval)
@@ -288,6 +343,7 @@ export default {
       this.personnel.forEach(person => {
         if (person.value === vm.form.PersonnelID) {
           vm.form.Name = person.text
+          vm.form.PersonnelID = person.value
         }
       })
     },
@@ -319,6 +375,7 @@ export default {
           this.form.Type = 'SCI'
           // Set the correct document library to post to
           // Load SCI Form
+          // Run a function to get the original SCI information from the personnel module.
           break
       }
     },
@@ -383,161 +440,204 @@ export default {
         payload.file = this.fileSelected
         payload.name = name
         payload.buffer = this.fileBuffer
-        try {
-          let item = await Security.dispatch('uploadForm', payload)
-          let itemlink = item.data.d.ListItemAllFields.__deferred.uri
-          let form = await Security.dispatch('getForm', itemlink)
-          console.log('TASK USER ID: ' + this.taskUserId)
-          payload = {
-            Title: 'Approve ' + name,
-            //AssignedToId: vm.userid, // Hardcoding the Security Group
-            AssignedToId: this.taskUserId,
-            Description: 'Approve or reject ' + name,
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: vm.form.Type + ' Request',
-            TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
+        let item = await Security.dispatch('uploadForm', payload)
+        let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+        let form = await Security.dispatch('getForm', itemlink)
+        payload = {
+          Title: 'Approve ' + name,
+          //AssignedToId: vm.userid, // Hardcoding the Security Group
+          AssignedToId: this.taskUserId,
+          Description: 'Approve or reject ' + name,
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: vm.form.Type + ' Request',
+          TaskLink: '/security/view/' + this.form.Type + '/' + form.data.d.Id
+        }
+        let results = await Todo.dispatch('addTodo', payload)
+        let formId = form.data.d.Id
+        payload = form.data.d.__metadata
+        payload.file = this.fileSelected
+        payload.name = pdfName
+        // spayload.IndexNumber = this.IndexNumber
+        payload.Company = this.form.Company
+        payload.PersonnelID = this.form.PersonnelID
+        payload.PersonName = this.form.Name
+        payload.TaskID = results.data.d.Id
+        if (vm.form.Type === 'SCI') {
+          payload.SCIType = this.form.SCIType
+        }
+        await Security.dispatch('updateForm', payload).then(async function() {
+          // First check to see if there is an entry for the PersonnelID in the Security Form List
+          let payload = {
+            Title: vm.form.PersonnelID + '-' + vm.form.Name,
+            PersonnelID: vm.form.PersonnelID,
+            PersonName: vm.form.Name,
+            Company: vm.form.Company,
+            Accounts: '',
+            SCI: '',
+            CAC: ''
           }
-          let results = await Todo.dispatch('addTodo', payload)
-          let formId = form.data.d.Id
-          payload = form.data.d.__metadata
-          payload.file = this.fileSelected
-          payload.name = pdfName
-          // spayload.IndexNumber = this.IndexNumber
-          payload.Company = this.form.Company
-          payload.PersonnelID = this.form.PersonnelID
-          payload.PersonName = this.form.Name
-          payload.TaskID = results.data.d.Id
-          if (vm.form.Type === 'SCI') {
-            payload.SCIType = this.form.SCIType
+          let types = [],
+            scis = [],
+            cacs = []
+          if (vm.formAccount) {
+            types.push({
+              account: vm.form.Type,
+              id: formId,
+              library: library,
+              GovSentDate: '',
+              GovCompleteDate: '',
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
+            })
           }
-          await Security.dispatch('updateForm', payload).then(async function() {
-            // First check to see if there is an entry for the PersonnelID in the Security Form List
-            let payload = {
-              Title: vm.form.PersonnelID + '-' + vm.form.Name,
-              PersonnelID: vm.form.PersonnelID,
-              PersonName: vm.form.Name,
-              Company: vm.form.Company,
-              Types: ''
-            }
-            let types = [
-              {
-                account: vm.form.Type,
-                id: formId,
-                library: library,
-                GovSentDate: '',
-                GovCompleteDate: '',
-                name: pdfName,
-                task: results.data.d.Id,
-                href: libraryUrl + pdfName,
-                etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
-              }
-            ]
-            let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-            if (securityForm && securityForm.length == 0) {
-              payload.Types = JSON.stringify(types)
-              await Security.dispatch('addSecurityForm', payload)
-            } else {
-              securityForm.Types.forEach(type => {
+          if (vm.formSCI) {
+            scis.push({
+              id: formId,
+              library: library,
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
+            })
+            payload.SCIIndoc = vm.form.SCIIndocDate
+            payload.SCIStatus = 'CACI Review'
+            //
+          }
+          if (vm.formCAC) {
+            cacs.push({
+              id: formId,
+              library: library,
+              name: pdfName,
+              task: results.data.d.Id,
+              href: libraryUrl + pdfName,
+              etag: form.data.d.__metadata.etag,
+              uri: form.data.d.__metadata.uri
+            })
+            payload.CACValid = vm.form.CACValid
+            payload.CACIssuedBy = vm.form.CACIssuedBy
+            payload.CACExpirationDate = vm.form.CACExpirationDate
+            payload.CACStatus = vm.form.CACStatus
+          }
+          let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+          if (securityForm && securityForm.length == 0) {
+            payload.Accounts = JSON.stringify(types)
+            payload.SCI = JSON.stringify(scis)
+            payload.CAC = JSON.stringify(cacs)
+            await Security.dispatch('addSecurityForm', payload)
+          } else {
+            if (securityForm.Account && securityForm.Account.length > 0) {
+              securityForm.Accounts.forEach(type => {
                 types.push(type)
               })
-              payload.Types = JSON.stringify(types)
-              payload.etag = securityForm.etag
-              payload.uri = securityForm.uri
-              await Security.dispatch('updateSecurityForm', payload)
             }
-            // Run conditional on the results of the security form to either add or update security form
-            //await Security.dispatch('')
-            // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
-            const notification = {
-              type: 'success',
-              title: 'Succesfully Uploaded Form',
-              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-              push: true
+            // Don't overwrite SCI
+            if (securityForm.SCI && securityForm.SCI.length > 0) {
+              securityForm.SCI.forEach(sci => {
+                scis.push(sci)
+              })
             }
-            vm.$store.dispatch('notification/add', notification, { root: true })
-
-            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-            let event = []
-            event.push({
-              name: vm.fileName,
-              Status: 'SecurityReview',
-              Form: library + vm.fileSelected,
-              etag: vm.form.etag,
-              uri: vm.form.uri
-            })
-            // Clear form after submission
-
-            if (vm.formType === 'account') {
-              vm.form.Type = vm.accountOptions[0]
+            // Don't overwrite CAC
+            if (securityForm.CAC && securityForm.CAC.length > 0) {
+              securityForm.SCI.forEach(cac => {
+                cacs.push(cac)
+              })
             }
-            document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-            vm.fileSelected = null
-            vm.fileBuffer = null
-          })
-        } catch (e) {
-          // Add user notification and system logging
+            if (types.length > 0) {
+              payload.Accounts = JSON.stringify(types)
+            }
+            if (scis.length > 0) {
+              payload.SCI = JSON.stringify(scis)
+            }
+            if (cacs.length > 0) {
+              payload.CAC = JSON.stringify(cacs)
+            }
+            payload.etag = securityForm.etag
+            payload.uri = securityForm.uri
+            await Security.dispatch('updateSecurityForm', payload)
+          }
+          // Run conditional on the results of the security form to either add or update security form
+          // await Security.dispatch('')
+          // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
           const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
+            type: 'success',
+            title: 'Succesfully Uploaded Form',
+            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
             push: true
           }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
+          vm.$store.dispatch('notification/add', notification, { root: true })
+
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+          let event = []
+          event.push({
+            name: vm.fileName,
+            Status: 'SecurityReview',
+            Form: library + vm.fileSelected,
+            etag: vm.form.etag,
+            uri: vm.form.uri
           })
-          console.log('ERROR: ' + e)
-        }
+          // Clear form after submission
+
+          if (vm.formType === 'account') {
+            vm.form.Type = vm.accountOptions[0]
+          }
+          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
+          vm.fileSelected = null
+          vm.fileBuffer = null
+        })
       }
-    },
-    async onFileSelect(args) {
-      vm.fileSelected = args.filesData[0].name
-      let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
-      buffer.then(function(buff) {
-        vm.fileBuffer = buff
-      })
-    },
-    getFileBuffer(file) {
-      let p = new Promise(function(resolve, reject) {
-        var reader = new FileReader()
-        reader.onloadend = function(e) {
-          resolve(e.target.result)
-        }
-        reader.onerror = function(e) {
-          reject(e.target.error)
-        }
-        reader.readAsArrayBuffer(file)
-      })
-      return p
-    },
-    // Removing Validation because it doesn't work for on load and there isn't any free text.
-    ValidateMe: function(input) {
-      let ret = false
-      switch (input) {
-        case 'Company':
-          if (this.form.Company !== '') {
-            ret = true
-          }
-          break
-        case 'Person':
-          if (this.form.PersonnelID !== '') {
-            ret = true
-          }
-          break
-        case 'Type':
-          if (this.form.Type !== 'Select...') {
-            ret = true
-          }
-          break
-        case 'SCIType':
-          if (this.form.SCIType !== '') {
-            ret = true
-          }
-          break
-      }
-      return ret
     }
+  },
+  async onFileSelect(args) {
+    vm.fileSelected = args.filesData[0].name
+    let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
+    buffer.then(function(buff) {
+      vm.fileBuffer = buff
+    })
+  },
+  getFileBuffer(file) {
+    let p = new Promise(function(resolve, reject) {
+      var reader = new FileReader()
+      reader.onloadend = function(e) {
+        resolve(e.target.result)
+      }
+      reader.onerror = function(e) {
+        reject(e.target.error)
+      }
+      reader.readAsArrayBuffer(file)
+    })
+    return p
+  },
+  // Removing Validation because it doesn't work for on load and there isn't any free text.
+  ValidateMe: function(input) {
+    let ret = false
+    switch (input) {
+      case 'Company':
+        if (this.form.Company !== '') {
+          ret = true
+        }
+        break
+      case 'Person':
+        if (this.form.PersonnelID !== '') {
+          ret = true
+        }
+        break
+      case 'Type':
+        if (this.form.Type !== 'Select...') {
+          ret = true
+        }
+        break
+      case 'SCIType':
+        if (this.form.SCIType !== '') {
+          ret = true
+        }
+        break
+    }
+    return ret
   },
   watch: {
     // eslint-disable-next-line no-unused-vars

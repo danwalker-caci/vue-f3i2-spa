@@ -394,12 +394,19 @@ export default {
   },
   methods: {
     getData: function() {
-      MSR.dispatch('getMSRs').then(function() {
-        vm.displayMSRs()
-      })
+      MSR.dispatch('getMSRs')
+        .then(function() {
+          vm.displayMSRs()
+        })
+        .then(() => {
+          // Reload the page after 15 minutes
+          vm.$options.interval = setInterval(vm.reloadPage, 900000)
+        })
     },
     reloadPage: function() {
-      this.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+      clearInterval(this.$options.interval)
+      //this.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+      window.location.reload()
     },
     displayMSRs: function() {
       if (this.loaded) {
