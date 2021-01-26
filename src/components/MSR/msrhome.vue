@@ -1,30 +1,5 @@
 <template>
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <b-modal id="DistributionModal" ref="DistributionModal" size="xl" centered @ok="newDistribution">
-      <template v-slot:modal-title>Add Distribution</template>
-      <div class="container-fluid">
-        <table id="NewTable" class="personneltable">
-          <tbody>
-            <tr class="bg-warning text-white">
-              <th>Title</th>
-              <th>Name</th>
-              <th>Organization</th>
-              <th>Phone</th>
-              <th>Location</th>
-              <th>Email</th>
-            </tr>
-            <tr>
-              <td><input class="e-input" type="text" v-model="distribution.Title" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Name" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Organization" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Phone" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Location" /></td>
-              <td><input class="e-input" type="text" v-model="distribution.Email" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </b-modal>
     <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
@@ -36,9 +11,9 @@
     </b-toast>
     <b-row ref="MainRow" class="contentHeight">
       <b-col cols="12">
-        <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete" v-on:request-distribution="onRequestDistributionA">
-          <e-columns v-on:request-distribution="onRequestDistributionB">
-            <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate" v-on:request-distribution="onRequestDistributionC"></e-column>
+        <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete">
+          <e-columns>
+            <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
             <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
             <e-column field="QAReview" headerText="QA Review" textAlign width="100"></e-column>
             <e-column field="PCAReview" headerText="PCA Review" textAlign width="100"></e-column>
@@ -179,15 +154,34 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <b-button v-if="data.Locked !== 'Yes'" variant="success" class="actionbutton" @click="edit(data)" title="Edit">
-                <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
-              </b-button>
-              <b-button v-else disabled class="actionbutton" title="Locked For Editing">
-                <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
-              </b-button>
-              <b-button class="actionbutton ml-1" @click="distribution(data)" title="Request Distribution">
-                <font-awesome-icon far icon="mail-bulk" class="icon"></font-awesome-icon> Request Distribution
-              </b-button>
+              <div v-if="data.Locked === 'Yes'">
+                <b-button disabled class="actionbutton" title="Locked For Editing">
+                  <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
+                </b-button>
+                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                  <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
+                </b-button>
+                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                  <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
+                </b-button>
+                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                  <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
+                </b-button>
+              </div>
+              <div v-else>
+                <b-button variant="success" class="actionbutton" @click="edit(data)" title="Edit">
+                  <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
+                </b-button>
+                <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                  <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
+                </b-button>
+                <b-button v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                  <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
+                </b-button>
+                <b-button v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                  <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
+                </b-button>
+              </div>
             </div>`,
             data: function() {
               return {
@@ -203,6 +197,12 @@ export default {
               },
               isWPManager() {
                 return User.getters('isWPManager')
+              },
+              isPCA() {
+                return User.getters('isPCA')
+              },
+              isQA() {
+                return User.getters('isQA')
               },
               isSubcontractor() {
                 return User.getters('isSubcontractor')
@@ -223,8 +223,124 @@ export default {
                   vm.$router.push({ name: 'MSRForm', params: { id: response.Id, msrdata: response } })
                 })
               },
-              distribution: function(data) {
-                vm.onRequestDistribution(data)
+              tooltipme: function(s, data) {
+                let tooltip = 'Toggle '
+                switch (s) {
+                  case 'WPMReview':
+                    tooltip += ' WPM Review '
+                    switch (data.WPMReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+
+                  case 'PCAReview':
+                    tooltip += ' PCA Review '
+                    switch (data.PCAReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+
+                  case 'QAReview':
+                    tooltip += ' QA Review '
+                    switch (data.QAReview) {
+                      case 'Complete':
+                        tooltip += 'Pending'
+                        break
+
+                      case 'Pending':
+                        tooltip += 'Complete'
+                        break
+                    }
+                    break
+                }
+                return tooltip
+              },
+              wpmreview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling WPM Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'WPMReview'
+                switch (data.WPMReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+                })
+              },
+              pcareview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling PCA Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'PCAReview'
+                switch (data.PCAReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+                })
+              },
+              qareview: function(data) {
+                const notification = {
+                  type: 'danger',
+                  title: 'Toggling QA Review',
+                  message: 'Please wait...',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true })
+                let payload = {}
+                payload.field = 'QAReview'
+                switch (data.QAReview) {
+                  case 'Complete':
+                    payload.value = 'Pending'
+                    break
+
+                  case 'Pending':
+                    payload.value = 'Complete'
+                    break
+                }
+                payload.uri = data.uri
+                payload.etag = data.etag
+                MSR.dispatch('updateMSRData', payload).then(function() {
+                  vm.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
+                })
               }
             }
           })
@@ -358,50 +474,6 @@ export default {
     },
     setClosed: function() {
       this.showForm = false
-    },
-    onRequestDistribution: function(data) {
-      // if (console) { console.log('DISTRIBUTION REQUEST A: ' + data) }
-      // let user know we are sending the request
-      this.busyValue = 0
-      this.busyMax = this.allworkplans.length
-      this.busyTitle = 'Sending Distribution Request'
-      this.$bvToast.show('busy-toast')
-      let wpn = data.WorkplanNumber
-      if (console) {
-        console.log('WPN OF DIST REQ: ' + wpn)
-      }
-      for (let i = 0; i < this.allworkplans.length; i++) {
-        this.busyValue = i
-        if (this.allworkplans[i]['Number'] == wpn) {
-          this.ManagerEmail = this.allworkplans[i]['ManagerEmail']
-        }
-      }
-      // construct payload to send email
-      this.distribution.WorkplanNumber = wpn
-      this.distribution.From = this.Email
-      this.distribution.To = this.ManagerEmail
-      this.distribution.Id = data.Id
-      this.$bvModal.show('DistributionModal')
-    },
-    newDistribution: function() {
-      try {
-        MSR.dispatch('sendDistributionRequest', this.distribution).then(function() {
-          vm.$bvModal.hide('DistributionModal')
-          vm.$bvToast.hide('busy-toast')
-        })
-      } catch (e) {
-        // Add user notification and system logging
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + e)
-      }
     },
     actionComplete(args) {
       if (args.requestType == 'columnstate') {

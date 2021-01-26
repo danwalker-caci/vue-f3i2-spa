@@ -29,8 +29,8 @@ async function logToSharePoint(err) {
     itemprops.Message = err.message
     itemprops.Stack = err.error.stack
     itemprops.Component = err.source
-    itemprops.Line = err.lineno
-    itemprops.Column = err.colno
+    itemprops.Line = String(err.lineno)
+    itemprops.Column = String(err.colno)
   }
 
   let headers = {
@@ -47,7 +47,7 @@ async function logToSharePoint(err) {
     const response = await axios.post(url, itemprops, config)
     return response
   } catch (error) {
-    console.log('TravelService Error Adding Travel: ' + error)
+    console.log('Unable to log Error: ' + error + ', Actual error object: ' + err)
   }
 }
 

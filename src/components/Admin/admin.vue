@@ -291,6 +291,16 @@ export default {
         }
       }
     },
+    fileMenuBeforeOpen: function() {
+      var spreadsheet = this.$refs.ss_Test
+      // Because the file menu items are created dynamically, you need to perform the hide or show and enable/disable operations
+      // under filemenu before open event.
+      // Hiding the `Save As` and `Open` item.
+      spreadsheet.hideFileMenuItems(['Save As', 'Open'])
+      // Set disable state to `New` item. You can perform any file menu items customization by specifying the item id,
+      // if it has more than one same item text. Set the last argument `isUniqueId` as true for using the item id.
+      spreadsheet.enableFileMenuItems([`${spreadsheet.ej2Instances.element.id}_New`], false, true)
+    },
     async sendTREmails(item) {
       // calculate the need to send an email based on the lateness of the report
       // let AllEmails = ['mogaard@caci.com', 'sheila.jackson@caci.com']
