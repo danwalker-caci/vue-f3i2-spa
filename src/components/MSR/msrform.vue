@@ -23,7 +23,7 @@
           </b-row>
           <b-row id="Tabs" class="tabrow formbody m-0">
             <b-card no-body>
-              <b-alert v-model="isEditing" variant="danger">Please review save your current section before editing another section.</b-alert>
+              <!--<b-alert v-model="isEditing" variant="danger">Please review save your current section before editing another section.</b-alert>-->
               <b-tabs class="tabArea" card v-model="dashboardtabs">
                 <!-- Add click event for every mtab, onclick toggle previous active tab to inactive, set click target to be active -->
                 <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" class="mtab Section1" active>
@@ -2782,7 +2782,7 @@ export default {
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
-          this.lockTabs()
+          // this.lockTabs()
           this[form] = true
           this.uploadedImages = []
           while ((result = regex.exec(this[field]))) {
@@ -2798,7 +2798,7 @@ export default {
         case 'cancel': {
           this.hasImage = false
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this[form] = false
           this[this.ActiveSection] = this.clipBoard
           break
@@ -2847,7 +2847,7 @@ export default {
           MSR.dispatch('updateMSRData', payload).then(function() {
             // close the toast notification and wait for the changes
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.ActiveSection = null
             vm.clipBoard = ''
             vm.$bvToast.hide('form-toast')
@@ -2895,7 +2895,7 @@ export default {
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
           let index = form // more readable. form in this case contains the index of the array item
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.AccomplishmentsForm = true
           for (let i = 0; i < this.Accomplishments.length; i++) {
             if (this.Accomplishments[i]['Index'] == index) {
@@ -2919,7 +2919,7 @@ export default {
         case 'cancelaccomplishment': {
           // TODO: Validate that this function is needed/ does what it should do
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.AccomplishmentsForm = false
           this.SelectedAccomplishment = this.clipBoard
           this.Accomplishments[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -2980,7 +2980,7 @@ export default {
           payload.etag = this.msr.etag
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3022,7 +3022,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.PlansForm = true
           this.field = 'Plans'
           this.form = 'PlansForm'
@@ -3050,7 +3050,7 @@ export default {
 
         case 'cancelplan': {
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.PlansForm = false
           this.SelectedPlan = this.clipBoard
           this.Plans[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3108,7 +3108,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3146,7 +3146,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.AssumptionsForm = true
           this.field = 'Assumptions'
           this.form = 'AssumptionsForm'
@@ -3174,7 +3174,7 @@ export default {
 
         case 'cancelassumption': {
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.AssumptionsForm = false
           this.SelectedAssumption = this.clipBoard
           this.Assumptions[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3232,7 +3232,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3270,7 +3270,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.RisksForm = true
           this.field = 'Risks'
           this.form = 'RisksForm'
@@ -3298,7 +3298,7 @@ export default {
 
         case 'cancelrisk': {
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.RisksForm = false
           this.SelectedRisk = this.clipBoard
           this.Risks[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3356,7 +3356,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3394,7 +3394,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.OpportunitiesForm = true
           this.field = 'Opportunities'
           this.form = 'OpportunitiesForm'
@@ -3422,7 +3422,7 @@ export default {
 
         case 'cancelopportunity': {
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.OpportunitiesForm = false
           this.SelectedOpportunity = this.clipBoard
           this.Opportunities[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3480,7 +3480,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
@@ -3517,7 +3517,7 @@ export default {
           let index = form // more readable. form in this case contains the index of the array item
           this.ActiveSection = field
           this.isEditing = true
-          this.lockTabs()
+          // this.lockTabs()
           this.DeliverablesForm = true
           this.field = 'Deliverables'
           this.form = 'DeliverablesForm'
@@ -3545,7 +3545,7 @@ export default {
 
         case 'canceldeliverable': {
           this.isEditing = false
-          this.unlockTabs()
+          // this.unlockTabs()
           this.DeliverablesForm = false
           this.SelectedDeliverable = this.clipBoard
           this.Deliverables[this.SelectedIndex]['HTML'] = this.clipBoard
@@ -3603,7 +3603,7 @@ export default {
           this[form] = false
           MSR.dispatch('updateMSRData', payload).then(function() {
             vm.isEditing = false
-            vm.unlockTabs()
+            // vm.unlockTabs()
             vm.clipBoard = ''
             vm.getData()
           })
