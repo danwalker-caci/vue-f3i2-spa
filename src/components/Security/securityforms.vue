@@ -590,54 +590,54 @@ export default {
           vm.fileBuffer = null
         })
       }
-    }
-  },
-  async onFileSelect(args) {
-    vm.fileSelected = args.filesData[0].name
-    let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
-    buffer.then(function(buff) {
-      vm.fileBuffer = buff
-    })
-  },
-  getFileBuffer(file) {
-    let p = new Promise(function(resolve, reject) {
-      var reader = new FileReader()
-      reader.onloadend = function(e) {
-        resolve(e.target.result)
+    },
+    async onFileSelect(args) {
+      vm.fileSelected = args.filesData[0].name
+      let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
+      buffer.then(function(buff) {
+        vm.fileBuffer = buff
+      })
+    },
+    getFileBuffer(file) {
+      let p = new Promise(function(resolve, reject) {
+        var reader = new FileReader()
+        reader.onloadend = function(e) {
+          resolve(e.target.result)
+        }
+        reader.onerror = function(e) {
+          reject(e.target.error)
+        }
+        reader.readAsArrayBuffer(file)
+      })
+      return p
+    },
+    // Removing Validation because it doesn't work for on load and there isn't any free text.
+    ValidateMe: function(input) {
+      let ret = false
+      switch (input) {
+        case 'Company':
+          if (this.form.Company !== '') {
+            ret = true
+          }
+          break
+        case 'Person':
+          if (this.form.PersonnelID !== '') {
+            ret = true
+          }
+          break
+        case 'Type':
+          if (this.form.Type !== 'Select...') {
+            ret = true
+          }
+          break
+        case 'SCIType':
+          if (this.form.SCIType !== '') {
+            ret = true
+          }
+          break
       }
-      reader.onerror = function(e) {
-        reject(e.target.error)
-      }
-      reader.readAsArrayBuffer(file)
-    })
-    return p
-  },
-  // Removing Validation because it doesn't work for on load and there isn't any free text.
-  ValidateMe: function(input) {
-    let ret = false
-    switch (input) {
-      case 'Company':
-        if (this.form.Company !== '') {
-          ret = true
-        }
-        break
-      case 'Person':
-        if (this.form.PersonnelID !== '') {
-          ret = true
-        }
-        break
-      case 'Type':
-        if (this.form.Type !== 'Select...') {
-          ret = true
-        }
-        break
-      case 'SCIType':
-        if (this.form.SCIType !== '') {
-          ret = true
-        }
-        break
+      return ret
     }
-    return ret
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
