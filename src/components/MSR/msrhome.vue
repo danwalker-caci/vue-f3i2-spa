@@ -224,7 +224,7 @@ export default {
                 })
               },
               tooltipme: function(s, data) {
-                let tooltip = 'Toggle '
+                let tooltip = 'Mark as '
                 switch (s) {
                   case 'WPMReview':
                     tooltip += ' WPM Review '
