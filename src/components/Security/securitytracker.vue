@@ -18,7 +18,7 @@
         :editSettings="editSettings"
         :filterSettings="filterSettings"
         :toolbar="toolbar"
-        :allowExcelExport="true"
+        :allowExcelExport="false"
         :toolbarClick="toolbarClick"
         :detailTemplate="detailTemplate"
         rowHeight="20"
@@ -206,7 +206,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button v-if="isSecurity" ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
+                              <b-button ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
@@ -245,7 +245,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button v-if="isSecurity" q ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                              <b-button ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
