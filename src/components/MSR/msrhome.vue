@@ -158,13 +158,13 @@ export default {
                 <b-button disabled class="actionbutton" title="Locked For Editing">
                   <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
                 </b-button>
-                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="Locked For Editing">
                   <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="Locked For Editing">
                   <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="Locked For Editing">
                   <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
                 </b-button>
               </div>
