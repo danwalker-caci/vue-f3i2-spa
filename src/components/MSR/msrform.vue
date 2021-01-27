@@ -2526,28 +2526,6 @@ export default {
         vm.$router.push({ path: '/msr/home' })
       })
     },
-    onClick: function() {
-      console.log('SHOWING INSERT TABLE MODAL')
-      // this.$bvModal.show('InsertTableModal')
-      this.ModalShow = true
-    },
-    onCancelInsert: function() {
-      this.$bvModal.hide('InsertTableModal')
-    },
-    onModalShown: function() {
-      EventBus.$emit('RefreshSpreadSheet')
-    },
-    onSpreadSheetCreate: function() {
-      EventBus.$on('RefreshSpreadSheet', this.onRefreshSpreadSheet)
-    },
-    onRefreshSpreadSheet: function() {
-      console.log('REFRESHING SPREADSHEET')
-      this.$refs.ModalSpreadSheet.refresh()
-    },
-    onTableInsert: function() {
-      console.log('INSERTING TABLE HTML: ' + this.$refs['ModalSpreadSheet'])
-      // INSERT THE HTML AND CLOSE IT
-    },
     async nextTab() {
       // Need to track what form they are on. Remove the previous active tab and then add the active tab to current one
       this.dashboardtabs++
@@ -4429,10 +4407,12 @@ export default {
                 payload.Year = y
                 MSR.dispatch('updateMSRDocument', payload).then(function() {
                   // Set MSR Status to Published
+                  console.log('SETTING MSR TO PUBLISHED')
                   payload = {}
-                  payload.uri = vm.msr.uri
-                  payload.etag = vm.msr.etag
+                  payload.uri = vm.uri
+                  payload.etag = vm.etag
                   MSR.dispatch('publishMSR', payload).then(function() {
+                    vm.isDirty = false
                     vm.$bvToast.hide('form-toast')
                     vm.$router.push({ path: '/msr/home' }) // go to MSR home page
                   })

@@ -26,10 +26,8 @@
         width="100%"
       >
         <e-columns>
-          <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
           <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
-
           <!-- Add all of the extra fields that are hidden -->
           <e-column field="SCIStatus" headerText="SCI Status" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
@@ -56,6 +54,7 @@
           <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
           <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+          <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
         </e-columns>
       </ejs-grid>
     </div>
@@ -207,7 +206,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
+                              <b-button v-if="isSecurity" ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
@@ -246,7 +245,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                              <b-button v-if="isSecurity" q ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
@@ -541,19 +540,19 @@ export default {
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
-            Id: sf.Id,
+            //Id: sf.Id,
             PersonName: sf.PersonName,
             Company: sf.Company,
             SCIStatus: sf.SCIStatus,
-            SCIIndocAssistDate: sf.SCIIndocAssistDate.$moment().format('MM/DD/YYYY'),
-            SCIPR: sf.SCIPR.$moment().format('MM/DD/YYYY'),
-            SCICE: sf.SCICE.$moment().format('MM/DD/YYYY'),
-            SCIIndocDate: sf.SCIIndoc.$moment().format('MM/DD/YYYY'),
-            SCIAccessCheckDate: sf.SCIAccessCheckDate.$moment().format('MM/DD/YYYY'),
+            SCIIndocAssistDate: sf.SCIIndocAssistDate ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
+            SCIPR: sf.SCIPR ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
+            SCICE: sf.SCICE ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
+            SCIIndocDate: sf.SCIIndoc ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
+            SCIAccessCheckDate: sf.SCIAccessCheckDate ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,
-            CACRequestDate: sf.CACRequestDate.$moment().format('MM/DD/YYYY'),
-            CACExpirationDate: sf.CACExpirationDate.$moment().format('MM/DD/YYYY'),
+            CACRequestDate: sf.CACRequestDate ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
+            CACExpirationDate: sf.CACExpirationDate ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
             CACIssuedBy: sf.CACIssuedBy,
             NIPRAccount: '',
             NIPRGovSentDate: '',
@@ -572,23 +571,23 @@ export default {
             switch (a.account) {
               case 'NIPR':
                 CurrentData['NIPRAccount'] = 'Yes'
-                CurrentData['NIPRGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
-                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
+                CurrentData['NIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                 break
               case 'SIPR':
                 CurrentData['SIPRAccount'] = 'Yes'
-                CurrentData['SIPRGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
-                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
+                CurrentData['SIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                 break
               case 'DREN':
                 CurrentData['DRENAccount'] = 'Yes'
-                CurrentData['DRENGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
-                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
+                CurrentData['DRENGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                 break
               case 'JWIC':
                 CurrentData['JWICAccount'] = 'Yes'
-                CurrentData['JWICGovSentDate'] = a.GovSentDate.$moment().format('MM/DD/YYYY')
-                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate.$moment().format('MM/DD/YYYY')
+                CurrentData['JWICGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                 break
             }
           })
