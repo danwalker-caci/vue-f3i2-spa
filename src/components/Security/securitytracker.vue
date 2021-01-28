@@ -18,7 +18,7 @@
         :editSettings="editSettings"
         :filterSettings="filterSettings"
         :toolbar="toolbar"
-        :allowExcelExport="true"
+        :allowExcelExport="false"
         :toolbarClick="toolbarClick"
         :detailTemplate="detailTemplate"
         rowHeight="20"
@@ -117,7 +117,7 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['ExcelExport'],
+      //toolbar: ['ExcelExport'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
@@ -206,7 +206,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button v-if="isSecurity" ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
+                              <b-button ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
@@ -245,7 +245,7 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button v-if="isSecurity" q ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                              <b-button ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
