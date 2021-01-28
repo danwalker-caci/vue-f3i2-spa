@@ -138,37 +138,39 @@
             </div>
           </b-col>
         </b-form-row>
-        <b-form-row v-if="formCAC">
-          <!-- list a series of questions for the user to fill out -->
-          <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
-            <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row v-if="form.CACValid === 'Yes'">
-          <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
-            <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row v-if="form.CACValid === 'Yes'">
-          <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
-            <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row v-if="form.CACValid === 'No'">
-          <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
-            <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row v-if="form.CACEver === 'Yes'">
-          <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
-            <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
-          </b-form-group>
-        </b-form-row>
-        <b-form-row v-if="form.CACEver === 'Yes'">
-          <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-            <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-          </b-form-group>
-        </b-form-row>
+        <div v-if="formCAC">
+          <b-form-row v-if="formCAC">
+            <!-- list a series of questions for the user to fill out -->
+            <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
+              <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACValid === 'Yes'">
+            <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
+              <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACValid === 'Yes'">
+            <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
+              <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACValid === 'No'">
+            <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+              <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+            <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
+              <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+            <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
+              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+            </b-form-group>
+          </b-form-row>
+        </div>
         <b-form-row>
           <b-col>
             <b-form-group>
