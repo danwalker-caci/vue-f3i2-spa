@@ -117,7 +117,7 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['ExcelExport'],
+      //toolbar: ['ExcelExport'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
