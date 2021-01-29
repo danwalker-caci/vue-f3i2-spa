@@ -651,13 +651,15 @@ export default {
           id: 6,
           type: 'alert',
           name: 'TripReportReview',
-          variant: 'teal'
+          variant: 'teal',
+          classes: 'text-dark'
         },
         {
           id: 7,
           type: 'alert',
           name: 'Postponed',
-          variant: 'azure'
+          variant: 'azure',
+          classes: 'text-dark'
         },
         {
           id: 8,
@@ -911,7 +913,7 @@ export default {
       let c = String(args.data['Status'])
       switch (c) {
         case 'Approved': {
-          args.row.classList.add('bg-orange', 'text-dark')
+          args.row.classList.add('bg-orange', 'text-white')
           break
         }
 
@@ -926,7 +928,7 @@ export default {
         }
 
         case 'ReportDue': {
-          args.row.classList.add('bg-yellow', 'text-white')
+          args.row.classList.add('bg-yellow', 'text-dark')
           break
         }
 
@@ -941,12 +943,12 @@ export default {
         }
 
         case 'TripReportReview': {
-          args.row.classList.add('bg-teal', 'text-white')
+          args.row.classList.add('bg-teal', 'text-dark')
           break
         }
 
         case 'Postponed': {
-          args.row.classList.add('bg-azure', 'text-white')
+          args.row.classList.add('bg-azure', 'text-dark')
           break
         }
 
@@ -964,7 +966,7 @@ export default {
         let c = String(args.data['Status'])
         switch (c) {
           case 'Approved': {
-            args.cell.classList.add('bg-orange', 'text-dark')
+            args.cell.classList.add('bg-orange', 'text-white')
             break
           }
 
@@ -979,7 +981,7 @@ export default {
           }
 
           case 'ReportDue': {
-            args.cell.classList.add('bg-yellow', 'text-white')
+            args.cell.classList.add('bg-yellow', 'text-dark')
             break
           }
 
@@ -994,12 +996,12 @@ export default {
           }
 
           case 'TripReportReview': {
-            args.cell.classList.add('bg-teal', 'text-white')
+            args.cell.classList.add('bg-teal', 'text-dark')
             break
           }
 
           case 'Postponed': {
-            args.cell.classList.add('bg-azure', 'text-white')
+            args.cell.classList.add('bg-azure', 'text-dark')
             break
           }
 
