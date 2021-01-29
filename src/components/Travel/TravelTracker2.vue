@@ -627,8 +627,7 @@ export default {
           id: 2,
           type: 'alert',
           name: 'Approved',
-          variant: 'orange',
-          classes: 'text-dark'
+          variant: 'orange'
         },
         {
           id: 3,
@@ -917,42 +916,42 @@ export default {
         }
 
         case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-light')
+          args.row.classList.add('bg-blue', 'text-white')
           break
         }
 
         case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-light')
+          args.row.classList.add('bg-cyan', 'text-white')
           break
         }
 
         case 'ReportDue': {
-          args.row.classList.add('bg-yellow', 'text-dark')
+          args.row.classList.add('bg-yellow', 'text-white')
           break
         }
 
         case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-light')
+          args.row.classList.add('bg-red', 'text-white')
           break
         }
 
         case 'Completed': {
-          args.row.classList.add('bg-green', 'text-light')
+          args.row.classList.add('bg-green', 'text-white')
           break
         }
 
         case 'TripReportReview': {
-          args.row.classList.add('bg-teal', 'text-light')
+          args.row.classList.add('bg-teal', 'text-white')
           break
         }
 
         case 'Postponed': {
-          args.row.classList.add('bg-azure', 'text-dark')
+          args.row.classList.add('bg-azure', 'text-white')
           break
         }
 
         case 'Cancelled': {
-          args.row.classList.add('bg-purple', 'text-light')
+          args.row.classList.add('bg-purple', 'text-white')
           break
         }
       }
@@ -961,6 +960,54 @@ export default {
     formatCell: function(args) {
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
+      } else {
+        let c = String(args.data['Status'])
+        switch (c) {
+          case 'Approved': {
+            args.cell.classList.add('bg-orange', 'text-dark')
+            break
+          }
+
+          case 'WPMReview': {
+            args.cell.classList.add('bg-blue', 'text-white')
+            break
+          }
+
+          case 'AFRLReview': {
+            args.cell.classList.add('bg-cyan', 'text-white')
+            break
+          }
+
+          case 'ReportDue': {
+            args.cell.classList.add('bg-yellow', 'text-white')
+            break
+          }
+
+          case 'ReportLate': {
+            args.cell.classList.add('bg-red', 'text-white')
+            break
+          }
+
+          case 'Completed': {
+            args.cell.classList.add('bg-green', 'text-white')
+            break
+          }
+
+          case 'TripReportReview': {
+            args.cell.classList.add('bg-teal', 'text-white')
+            break
+          }
+
+          case 'Postponed': {
+            args.cell.classList.add('bg-azure', 'text-white')
+            break
+          }
+
+          case 'Cancelled': {
+            args.cell.classList.add('bg-purple', 'text-white')
+            break
+          }
+        }
       }
     },
     formatExcelCell: function(args) {
