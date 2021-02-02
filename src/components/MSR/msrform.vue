@@ -44,7 +44,7 @@
               <!--<b-alert v-model="isEditing" variant="danger">Please review save your current section before editing another section.</b-alert>-->
               <b-tabs class="tabArea" card v-model="dashboardtabs">
                 <!-- Add click event for every mtab, onclick toggle previous active tab to inactive, set click target to be active -->
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section1" active>
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section1" active>
                   <template slot="title">
                     <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                     Funding and Staffing Summary
@@ -54,7 +54,7 @@
                       <div id="Section1" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="fundingtabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab" active>
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab" active>
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.1 Funding
@@ -74,7 +74,7 @@
                               </b-form>
                               <div v-else class="e-rte-content" id="FundingHtml" v-html="Funding"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.2 Engineering Effort/Staffing
@@ -94,7 +94,7 @@
                               </b-form>
                               <div v-else id="StaffingHtml" v-html="Staffing"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="search-dollar" class="icon"></font-awesome-icon>
                                 1.3 Cost Report
@@ -120,7 +120,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section2">
+                <b-tab :disabled="isSubcontractor" title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section2">
                   <template slot="title">
                     <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                     <!-- use :title="someFunction" with the words Please review changes before navigating to another section for a tooltip -->
@@ -131,7 +131,7 @@
                       <div id="Section2" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="traveltabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.1 Travel Accomplished
@@ -151,7 +151,7 @@
                               </b-form>
                               <div v-else id="TravelAccomplishedHtml" v-html="TravelAccomplished"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.2 Travel Planned
@@ -171,7 +171,7 @@
                               </b-form>
                               <div v-else id="TravelPlannedHtml" v-html="TravelPlanned"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.1.3 Travel Costs To Date
@@ -191,7 +191,7 @@
                               </b-form>
                               <div v-else id="TravelCostsHtml" v-html="TravelCosts"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.1 ODCs Accomplished
@@ -211,7 +211,7 @@
                               </b-form>
                               <div v-else id="ODCAccomplishedHtml" v-html="ODCAccomplished"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.2 ODCs Planned
@@ -231,7 +231,7 @@
                               </b-form>
                               <div v-else id="ODCPlannedHtml" v-html="ODCPlanned"></div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="bus-alt" class="icon"></font-awesome-icon>
                                 2.2.3 ODC Costs To Date
@@ -257,7 +257,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section3">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section3">
                   <template slot="title">
                     <font-awesome-icon fas icon="tasks" class="icon"></font-awesome-icon>
                     Accomplishments
@@ -397,7 +397,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section4">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section4">
                   <template slot="title">
                     <font-awesome-icon fas icon="ruler-combined" class="icon"></font-awesome-icon>
                     Plans
@@ -535,7 +535,7 @@
                     </b-col>
                   </div>
                 </b-tab>
-                <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section5">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section5">
                   <template slot="title">
                     <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                     Assumptions, Risks, Opportunities
@@ -545,7 +545,7 @@
                       <div id="Section5Main" class="rtesection">
                         <b-card no-body>
                           <b-tabs v-model="arotabs" class="tabArea" card>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Assumptions and Dependencies
@@ -677,7 +677,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Risks and Mitigation
@@ -809,7 +809,7 @@
                                 </div>
                               </div>
                             </b-tab>
-                            <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                            <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                               <template slot="title">
                                 <font-awesome-icon fas icon="microscope" class="icon"></font-awesome-icon>
                                 Opportunities
@@ -947,7 +947,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab Section6">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Section6">
                   <template slot="title">
                     <font-awesome-icon fas icon="truck" class="icon"></font-awesome-icon>
                     Deliverables
@@ -1085,7 +1085,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab class="mtab Summary">
+                <b-tab title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab Summary">
                   <template slot="title">
                     <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
                     Summary
@@ -1835,26 +1835,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <!-- <b-tab :disabled="isSubcontractor" class="mtab">
-                  <template slot="title">
-                    <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
-                    Review
-                  </template>
-                  <b-row class="buttonrow">
-                    <b-col cols="4" class="p-0 text-left">
-                      <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending" @change="WPMReviewClicked">
-                        WPM Review
-                      </b-form-checkbox>
-                      <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending" @change="QAReviewClicked">
-                        QA Review
-                      </b-form-checkbox>
-                      <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending" @change="PCAReviewClicked">
-                        PCA Review
-                      </b-form-checkbox>
-                    </b-col>
-                  </b-row>
-                </b-tab> -->
-                <b-tab :disabled="!isPM" title-item-class="tabLock" title-link-class="tabLink" @click="checkTabs" class="mtab">
+                <b-tab :disabled="!isPM" title-item-class="tabLock" title-link-class="tabLink" v-on:click.stop="checkTabs" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
                     Publish
@@ -2220,6 +2201,8 @@ export default {
       form: null,
       field: null,
       saveType: null,
+      cancelType: null,
+      currenttabs: [],
       dashboardtabs: 0,
       fundingtabs: 0,
       traveltabs: 0,
@@ -2241,10 +2224,10 @@ export default {
       },
       cssClass: 'defaultcalibri',
       pasteCleanupSettings: {
-        prompt: false,
-        plainText: false,
+        prompt: true,
+        plainText: true,
         keepFormat: true,
-        deniedTags: ['a'],
+        deniedTags: ['a', 'br'],
         deniedAttrs: ['class', 'title', 'id'],
         allowedStyleProps: ['background', 'background-color', 'border', 'border-bottom', 'border-left', 'border-right', 'border-top', 'border-width', 'clear', 'color', 'margin', 'font-size', 'width']
       },
@@ -2548,34 +2531,39 @@ export default {
     },
     async lockTabs() {
       document.querySelectorAll('.tabLock').forEach(tab => {
-        console.log(tab)
         if (!tab.children[0].classList.contains('active')) {
-          tab.disabled = true
+          //tab.disabled = true
           tab.children[0].classList.toggle('disabledLink')
           tab.children[0].disabled = true
+          /*} else {
+          vm.currenttabs.push(tab.children[0].id)
+        }*/
         }
       })
     },
     async unlockTabs() {
       document.querySelectorAll('.tabLock').forEach(tab => {
-        console.log(tab)
-        if (!tab.children[0].classList.contains('active')) {
-          tab.disabled = false
+        if (tab.children[0].classList.contains('disabledLink')) {
+          //tab.disabled = false
           tab.children[0].classList.toggle('disabledLink')
           tab.children[0].disabled = false
         }
       })
+      /*this.currenttabs.forEach(tab => {
+        console.log(`TAB ID: ${tab.children[0].id}`)
+        document.getElementById(tab).classList.toggle('disabledLink')
+        this.currenttabs.pop(tab)
+      })*/
     },
-    async checkTabs(event) {
+    async checkTabs() {
       // get target tab
-      let target = event.target
-      console.log(target)
+      // let target = event.target
       if (this.isEditing) {
         // throw pop up
-        this.$bvEvent.preventDefault()
+        // target.$bvEvent.preventDefault()
         this.$bvModal
-          .msgBoxConfirm('Would you like to save your current section before going to the next?', {
-            title: 'Please Confirm',
+          .msgBoxConfirm('Would you like to save your current section before going to the next? You will be unable to recover any changes made.', {
+            title: 'Save Section',
             size: 'sm',
             buttonSize: 'sm',
             okVariant: 'success',
@@ -2583,16 +2571,15 @@ export default {
             cancelVariant: 'danger',
             cancelTitle: 'NO',
             footerClass: 'p-2',
-            hideHeaderClose: false,
+            hideHeaderClose: true,
             centered: true
           })
-          .then(value => {
-            console.log(value)
+          .then(async value => {
             if (value) {
-              vm.handleit(vm.saveType, vm.field, vm.form)
-              // using target tab.activate()
-              vm.unlockTabs()
-              // unlockTabs()
+              //await vm.unlockTabs()
+              await vm.handleit(vm.saveType, vm.field, vm.form)
+            } else {
+              await vm.handleit(vm.cancelType, vm.field, vm.form)
             }
           })
           .catch(err => {
@@ -2619,6 +2606,7 @@ export default {
           this.field = field
           this.form = form
           this.saveType = 'save'
+          this.cancelType = 'cancel'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -2732,6 +2720,7 @@ export default {
           this.field = 'Accomplishments'
           this.form = 'AccomplishmentsForm'
           this.saveType = 'saveaccomplishment'
+          this.cancelType = 'cancelaccomplishment'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -2869,6 +2858,7 @@ export default {
           this.field = 'Plans'
           this.form = 'PlansForm'
           this.saveType = 'saveplan'
+          this.cancelType = 'cancelplan'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -2995,6 +2985,7 @@ export default {
           this.field = 'Assumptions'
           this.form = 'AssumptionsForm'
           this.saveType = 'saveassumption'
+          this.cancelType = 'cancelassumption'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -3121,6 +3112,7 @@ export default {
           this.field = 'Risks'
           this.form = 'RisksForm'
           this.saveType = 'saverisk'
+          this.cancelType = 'cancelrisk'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -3247,6 +3239,7 @@ export default {
           this.field = 'Opportunities'
           this.form = 'OpportunitiesForm'
           this.saveType = 'saveopportunity'
+          this.cancelType = 'cancelopportunity'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
@@ -3372,6 +3365,7 @@ export default {
           this.field = 'Deliverables'
           this.form = 'DeliverablesForm'
           this.saveType = 'savedeliverable'
+          this.cancelType = 'canceldeliverable'
           this.prevSaveType = this.prevSaveType === this.saveType ? null : this.prevSaveType
           this.prevField = this.prevField === this.field ? null : this.prevField
           this.prevForm = this.prevForm === this.form ? null : this.prevForm
