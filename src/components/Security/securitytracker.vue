@@ -18,7 +18,7 @@
         :editSettings="editSettings"
         :filterSettings="filterSettings"
         :toolbar="toolbar"
-        :allowExcelExport="false"
+        :allowExcelExport="true"
         :toolbarClick="toolbarClick"
         :detailTemplate="detailTemplate"
         rowHeight="20"
@@ -28,7 +28,6 @@
         <e-columns>
           <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
-          <!-- Add all of the extra fields that are hidden -->
           <e-column field="SCIStatus" headerText="SCI Status" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
@@ -117,32 +116,24 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      //toolbar: ['ExcelExport'],
+      toolbar: ['ExcelExport'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
         return {
           template: Vue.component('accountDetailTemplate', {
-            props: {
-              isSecurity: {
-                type: Boolean
-              },
-              isAFRL: {
-                type: Boolean
-              }
-            },
             template: `
               <b-container fluid>
                 <b-row>
                   <!-- Account Template -->
-                  <b-col cols="12" v-if="data.Accounts">
+                  <b-col cols="12" v-if="data.Accounts.length > 0">
                     <div class="detailDiv">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
                             <b-th>Account</b-th>
                             <b-th>Government Sent Date</b-th>
-                            <b-th>Government Completion Date</b-th>
+                            <b-th>Government Review</b-th>
                             <b-th>Submitted Form</b-th>
                           </b-tr>
                         </b-thead>
@@ -153,23 +144,27 @@ export default {
                               <span v-if="t.GovSentDate !== ''">{{ t.GovSentDate }}</span>
                               <span v-if="t.GovSentDate == ''">
                                 <!-- Should only show if in Security Group -->
-                                <b-button ref="NotifyGov" variant="success" :data-id="t.id" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-id="t.id" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                <span v-if="!isSecurity">Processing</span>
                               </span>
                             </b-td>
                             <b-td>
                               <span v-if="t.GovCompleteDate !== ''">{{ t.GovCompleteDate }}</span>
-                              <span v-if="t.GovCompleteDate == ''"><!-- add a check if user is in AFRL -->
-                                <b-button ref="CompleteGov" variant="primary" :data-id="t.id" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                <b-button ref="RejectGov" variant="danger" :data-id="t.id" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                              <span v-if="t.GovRejectDate !== ''">{{ t.GovRejectDate }}</span>
+                              <span v-if="t.GovCompleteDate == '' && t.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                <!-- REMOVE DEVELOPER OPTION -->  
+                                <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-id="t.id" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-id="t.id" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                <span v-if="!isAFRL && t.GovSentDate !== ''">Processing</span>
                               </span>
                             </b-td>
-                            <b-td><a :href="t.href" target="_blank">View Form</a></b-td>
+                            <b-td><a v-if="t.href !== ''" :href="t.href" target="_blank">View Form</a></b-td>
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
                     </div>
                   </b-col>
-                  <b-col v-if="data.SCI" cols="12">
+                  <b-col v-if="data.SCI.length > 0" cols="12">
                    <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -185,19 +180,19 @@ export default {
                         <b-tbody>
                           <b-tr>
                             <b-td>
-                              <ejs-datepicker id="formSCIIndocDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
                             </b-td>
                             <b-td>
-                              <ejs-dropdownlist v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                              <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker id="formPR" v-model="data.SCIPR"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.SCIPR"></ejs-datepicker>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker id="formCE" v-model="data.SCICE"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.SCICE"></ejs-datepicker>
                             </b-td>
                             <b-td>
                               <span v-for="sci in data.SCI" :key="sci.Id">
@@ -206,14 +201,15 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
+                              <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
                   </b-col>
-                  <b-col v-if="data.CAC" cols="12">
-                    <b-table-simple small responsive>
+                  <b-col v-if="data.CAC.length > 0" cols="12">
+                    <div v-if="data.CACValid === 'Yes'">
+                      <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
                             <b-th>Valid CAC</b-th>
@@ -227,16 +223,16 @@ export default {
                         <b-tbody>
                           <b-tr>
                             <b-td>
-                              <b-form-input type="text" id="formCACValid" v-model="data.CACValid" disabled></b-form-input>
+                              <b-form-input :disable="!isSecurity" type="text" id="formCACValid" v-model="data.CACValid" disabled></b-form-input>
                             </b-td>
                             <b-td>
-                              <ejs-dropdownlist v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                              <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
                             </b-td>
                             <b-td>
-                              <b-form-input type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy" disabled></b-form-input>
+                              <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
                             </b-td>
                             <b-td>
                               <span v-for="cac in data.CAC" :key="cac.Id">
@@ -245,17 +241,75 @@ export default {
                             </b-td>
                             <b-td>
                               <!-- Update Button -->
-                              <b-button ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                              <!-- REMOVE DEVELOPER OPTION -->
+                              <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
+                    </div>
+                    <div v-if="data.CACValid === 'No'">
+                      <b-table-simple small responsive>
+                        <b-thead head-variant="dark">
+                          <b-tr>
+                            <b-th>Valid CAC</b-th>
+                            <b-th>CAC Status</b-th>
+                            <b-th>CAC Issued By</b-th>
+                            <b-th>CAC Expired On</b-th>
+                            <b-th>Submitted Form</b-th>
+                            <b-th></b-th>
+                          </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                          <b-tr>
+                            <b-td>
+                              <b-form-input :disable="!isSecurity" type="text" id="formCACValid" v-model="data.CACValid" disabled></b-form-input>
+                            </b-td>
+                            <b-td>
+                              <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                            </b-td>
+                            <b-td>
+                              <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy" disabled></b-form-input>
+                            </b-td>
+                            <b-td>
+                              <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                            </b-td>
+                            <b-td>
+                              <span v-for="cac in data.CAC" :key="cac.Id">
+                                <a class="ellipses" :href="cac.href" target="_blank">View {{ cac.name }}</a>
+                              </span>
+                            </b-td>
+                            <b-td>
+                              <!-- Update Button -->
+                              <!-- REMOVE DEVELOPER OPTION -->
+                              <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                            </b-td>
+                          </b-tr>
+                        </b-tbody>
+                      </b-table-simple>
+                    </div>
                   </b-col>
                 </b-row>
               </b-container>`,
+            computed: {
+              isSecurity() {
+                return User.getters('isSecurity')
+              },
+              isAFRL() {
+                return User.getters('isAFRL')
+              },
+              isSubcontractor() {
+                return User.getters('isSubcontractor')
+              },
+              isDeveloper() {
+                return User.getters('isDeveloper')
+              }
+            },
             data: function() {
               return {
-                data: {},
+                data: {
+                  GovernmentDate: ''
+                },
                 ddfields: { text: 'text', value: 'value' },
                 status: [
                   { text: 'Not Required', value: 'Not Required' },
@@ -318,19 +372,18 @@ export default {
                 this.updateForm(data, taskId)
                 // Add a task for the designated government employee for review
               },
-              CompleteGov(data, e) {
-                let id = parseInt(e.currentTarget.dataset.id)
+              async CompleteGov(data, event) {
+                await Security.dispatch('getDigest')
+                let id = parseInt(event.currentTarget.dataset.id)
                 let taskId
                 // get the current item data
                 data.Accounts.forEach(type => {
                   if (id === type.id) {
-                    type.GovCompleteDate = this.$moment().format('MM/DD/YYYY')
+                    type.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                     taskId = type.task
                   }
                 })
-                try {
-                  this.updateForm(data, taskId)
-                } catch (e) {
+                await this.updateForm(data, taskId).catch(e => {
                   // Add user notification and system logging
                   const notification = {
                     type: 'danger',
@@ -341,19 +394,21 @@ export default {
                   this.$store.dispatch('notification/add', notification, {
                     root: true
                   })
-                  console.log('ERROR: ' + e)
-                }
+                  console.log('ERROR: ' + e.message)
+                })
                 // Remove the button and display current Date
               },
-              async RejectGov(data, e) {
-                let id = parseInt(e.currentTarget.dataset.id)
+              async RejectGov(data, event) {
+                await Security.dispatch('getDigest')
+                let id = parseInt(event.currentTarget.dataset.id)
                 // get the current item data
                 let index = 0
                 let original = {}
                 let taskId, account
                 data.Accounts.forEach((type, i) => {
                   if (id === type.id) {
-                    // type.GovSentDate = this.$moment().format('MM/DD/YYYY')
+                    type.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    type.href = ''
                     // pop the index
                     index = i
                     taskId = type.task
@@ -366,37 +421,55 @@ export default {
                 } else {
                   taskUserId = vm.$store.state.support.CACSCIUserId
                 }
-                console.log('TASK USER ID: ' + taskUserId)
-                original = data.Types[index]
-                data.Types.splice(index, 1)
-                try {
-                  this.updateForm(data, taskId)
-                  Security.dispatch('DeleteForm', original)
-                  // Notify Monica via task list
-                  let payload = {
-                    Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
-                    //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                    AssignedToId: taskUserId,
-                    Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
-                    IsMilestone: false,
-                    PercentComplete: 0,
-                    TaskType: account + ' Request',
-                    TaskLink: '/security/tracker/accounts'
-                  }
-                  await Todo.dispatch('addTodo', payload)
-                } catch (e) {
-                  // Add user notification and system logging
+                original = data.Accounts[index]
+                data.Accounts.splice(index, 1)
+                await this.updateForm(data, taskId).catch(error => {
                   const notification = {
                     type: 'danger',
                     title: 'Portal Error',
-                    message: e,
+                    message: error.message,
                     push: true
                   }
                   this.$store.dispatch('notification/add', notification, {
                     root: true
                   })
-                  console.log('ERROR: ' + e)
+                  console.log('ERROR: ' + error.message)
+                })
+                await Security.dispatch('DeleteForm', original).catch(error => {
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: error,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + error.message)
+                })
+                // Notify Monica via task list
+                let payload = {
+                  Title: 'AFRL Reject ' + data.PersonName + ' ' + account + ' Request',
+                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                  AssignedToId: taskUserId,
+                  Description: 'AFRL reject ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
+                  IsMilestone: false,
+                  PercentComplete: 0,
+                  TaskType: account + ' Request',
+                  TaskLink: '/security/tracker/accounts'
                 }
+                await Todo.dispatch('addTodo', payload).catch(error => {
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: error.message,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + error.message)
+                })
               },
               async updateForm(d, tId) {
                 // Hackiness to make the data immutable...not nice!
@@ -496,22 +569,30 @@ export default {
         this.company = this.currentuser[0].Company ? this.currentuser[0].Company : this.companies[0]
         let payload = {}
         payload.company = this.company
-        try {
-          await Personnel.dispatch('getPersonnelByCompany', payload)
-          await Security.dispatch('getSecurityFormsByCompany', payload)
-        } catch (e) {
-          // Add user notification and system logging
+        await Personnel.dispatch('getPersonnelByCompany', payload).catch(error => {
           const notification = {
             type: 'danger',
             title: 'Portal Error',
-            message: e,
+            message: error.message,
             push: true
           }
           this.$store.dispatch('notification/add', notification, {
             root: true
           })
-          console.log('ERROR: ' + e)
-        }
+          console.log('ERROR: ' + error.message)
+        })
+        await Security.dispatch('getSecurityFormsByCompany', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
         clearInterval(vm.$options.interval)
       }
     },
@@ -519,24 +600,50 @@ export default {
       let payload = {
         company: this.form.Company
       }
-      await Personnel.dispatch('getPersonnelByCompany', payload).catch(e => {
+      await Personnel.dispatch('getPersonnelByCompany', payload).catch(error => {
         // Add user notification and system logging
         const notification = {
           type: 'danger',
           title: 'Portal Error',
-          message: e,
+          message: error.message,
           push: true
         }
         this.$store.dispatch('notification/add', notification, {
           root: true
         })
-        console.log('ERROR: ' + e)
+        console.log('ERROR: ' + error.message)
       })
     },
     toolbarClick: function(args) {
       if (args.item.id === 'FormsGrid_excelexport') {
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
+        this.$refs.FormsGrid.getColumns()[2].visible = true
+        this.$refs.FormsGrid.getColumns()[3].visible = true
+        this.$refs.FormsGrid.getColumns()[4].visible = true
+        this.$refs.FormsGrid.getColumns()[5].visible = true
+        this.$refs.FormsGrid.getColumns()[6].visible = true
+        this.$refs.FormsGrid.getColumns()[7].visible = true
+        this.$refs.FormsGrid.getColumns()[8].visible = true
+        this.$refs.FormsGrid.getColumns()[9].visible = true
+        this.$refs.FormsGrid.getColumns()[10].visible = true
+        this.$refs.FormsGrid.getColumns()[11].visible = true
+        this.$refs.FormsGrid.getColumns()[12].visible = true
+        this.$refs.FormsGrid.getColumns()[13].visible = true
+        this.$refs.FormsGrid.getColumns()[14].visible = true
+        this.$refs.FormsGrid.getColumns()[15].visible = true
+        this.$refs.FormsGrid.getColumns()[16].visible = true
+        this.$refs.FormsGrid.getColumns()[17].visible = true
+        this.$refs.FormsGrid.getColumns()[18].visible = true
+        this.$refs.FormsGrid.getColumns()[19].visible = true
+        this.$refs.FormsGrid.getColumns()[20].visible = true
+        this.$refs.FormsGrid.getColumns()[21].visible = true
+        this.$refs.FormsGrid.getColumns()[22].visible = true
+        this.$refs.FormsGrid.getColumns()[23].visible = true
+        this.$refs.FormsGrid.getColumns()[24].visible = true
+        this.$refs.FormsGrid.getColumns()[25].visible = false
+        this.$refs.FormsGrid.getColumns()[26].visible = false
+        this.$refs.FormsGrid.getColumns()[27].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -596,7 +703,7 @@ export default {
         let excelExportProperties = {
           fileName: 'Security.xlsx',
           dataSource: data,
-          includeHiddenColumn: true
+          includeHiddenColumn: false
         }
         this.$refs.FormsGrid.excelExport(excelExportProperties)
       }

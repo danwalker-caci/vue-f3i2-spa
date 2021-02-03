@@ -14,8 +14,8 @@ async function logToSharePoint(err) {
     headers: { Accept: 'application/json; odata=verbose' }
   })
   const digest = response.data.d.GetContextWebInformation.FormDigestValue
-  console.log('DIGEST: ' + digest)
-  console.log('ERROR: ' + err)
+  console.log(`DIGEST: ${digest}`)
+  console.log(`ERROR: ${err}`)
   let itemprops = {
     __metadata: { type: 'SP.Data.ErrorLogListItem' }
   }
@@ -23,7 +23,7 @@ async function logToSharePoint(err) {
     console.log('VUE ERROR')
     itemprops.Message = err.err.message
     itemprops.Stack = err.err.stack
-    itemprops.Component = err.vm.$vnode.tag
+    itemprops.Component = err.vm.$vnode ? err.vm.$vnode.tag : ''
   } else {
     console.log('WINDOW ERROR')
     itemprops.Message = err.message

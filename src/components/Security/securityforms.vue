@@ -489,6 +489,7 @@ export default {
               library: library,
               GovSentDate: '',
               GovCompleteDate: '',
+              GovRejectDate: '',
               name: pdfName,
               task: results.data.d.Id,
               href: libraryUrl + pdfName,
@@ -526,13 +527,15 @@ export default {
             payload.CACStatus = vm.form.CACStatus
           }
           let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+          console.log(`Security Form: ${securityForm}`)
           if (securityForm && securityForm.length == 0) {
             payload.Accounts = JSON.stringify(types)
             payload.SCI = JSON.stringify(scis)
             payload.CAC = JSON.stringify(cacs)
             await Security.dispatch('addSecurityForm', payload)
           } else {
-            if (securityForm.Account && securityForm.Account.length > 0) {
+            console.log(`Accounts: ${securityForm.Accounts}`)
+            if (securityForm.Accounts && securityForm.Accounts.length > 0) {
               securityForm.Accounts.forEach(type => {
                 types.push(type)
               })

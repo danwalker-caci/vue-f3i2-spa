@@ -182,7 +182,7 @@ const actions = {
                 state.isApprover = true
                 break
 
-              case 'Security Officers':
+              case 'SecurityOfficers':
                 state.isSecurity = true
                 break
 

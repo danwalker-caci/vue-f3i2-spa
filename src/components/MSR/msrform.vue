@@ -2390,7 +2390,7 @@ export default {
           vm.$options.interval = setInterval(vm.updateUserInfo, 500)
         })
         .catch(error => {
-          console.log('ERROR: ' + error)
+          console.log('ERROR: ' + error.message)
         })
     },
     async updateUserInfo() {
