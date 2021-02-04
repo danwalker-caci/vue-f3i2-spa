@@ -1,27 +1,5 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0" id="MainContainer">
-    <b-modal id="InsertTableModal" ref="InsertTableModal" v-model="ModalShow" scrollable size="xxxl" centered hide-header hide-footer @shown="onModalShown">
-      <b-container fluid class="m-0 p-0">
-        <b-row no-gutters class="bg-warning text-white formheader">
-          <b-col cols="4" class="p-0 text-left"></b-col>
-          <b-col cols="4" class="p-0 text-center">Insert Table</b-col>
-          <b-col cols="4" class="p-0 text-right"></b-col>
-        </b-row>
-        <b-row no-gutters>
-          <ejs-spreadsheet ref="ModalSpreadSheet" :created="onSpreadSheetCreate" height="700"></ejs-spreadsheet>
-        </b-row>
-        <b-row no-gutters class="bg-warning buttonrow formfooter">
-          <b-col cols="4" class="p-0 text-left"></b-col>
-          <b-col cols="4" class="p-0 text-center"></b-col>
-          <b-col cols="4" class="p-0 text-right">
-            <b-button-group class="mt-1">
-              <b-button variant="danger" ref="btnCancelInsert" class="mr-2" @click="onCancelInsert">Cancel</b-button>
-              <b-button variant="success" ref="btnInsertTable" @click="onTableInsert">Insert</b-button>
-            </b-button-group>
-          </b-col>
-        </b-row>
-      </b-container>
-    </b-modal>
     <b-row no-gutters class="contentHeight">
       <b-toast id="form-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
@@ -322,7 +300,6 @@
                                   </b-card>
                                 </div>
                               </div>
-
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
@@ -605,7 +582,6 @@
                                         </b-card>
                                       </div>
                                     </div>
-
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
@@ -1835,25 +1811,6 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <!-- <b-tab :disabled="isSubcontractor" class="mtab">
-                  <template slot="title">
-                    <font-awesome-icon fas icon="traffic-light" class="icon"></font-awesome-icon>
-                    Review
-                  </template>
-                  <b-row class="buttonrow">
-                    <b-col cols="4" class="p-0 text-left">
-                      <b-form-checkbox v-if="isWPManager || isDeveloper" title="Checking this box will denote that you have completed your review." id="WPMReview" ref="WPMReview" v-model="WPMReview" name="WPMReview" value="Complete" unchecked-value="Pending" @change="WPMReviewClicked">
-                        WPM Review
-                      </b-form-checkbox>
-                      <b-form-checkbox v-if="isQA || isDeveloper" title="Checking this box will denote that you have completed your review." id="QAReview" ref="QAReview" v-model="QAReview" name="QAReview" value="Complete" unchecked-value="Pending" @change="QAReviewClicked">
-                        QA Review
-                      </b-form-checkbox>
-                      <b-form-checkbox v-if="isPCA || isDeveloper" title="Checking this box will denote that you have completed your review." id="PCAReview" ref="PCAReview" v-model="PCAReview" name="PCAReview" value="Complete" unchecked-value="Pending" @change="PCAReviewClicked">
-                        PCA Review
-                      </b-form-checkbox>
-                    </b-col>
-                  </b-row>
-                </b-tab> -->
                 <b-tab :disabled="!isPM" title-item-class="tabLock" title-link-class="tabLink" class="mtab">
                   <template slot="title">
                     <font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>
@@ -1864,6 +1821,9 @@
                   </b-row>
                   <b-row>
                     <div id="Publish">
+                      <div id="CUICover" style="display: none;">
+                        <img src="https://infoplus.caci.com/sites/f3i2/SiteCollectionImages/MSRCUICOVER.png" alt="CUI COVER" />
+                      </div>
                       <b-row>
                         <b-col cols="12">
                           <div>
@@ -2244,7 +2204,7 @@ export default {
         prompt: false,
         plainText: false,
         keepFormat: true,
-        deniedTags: ['a'],
+        deniedTags: ['a', 'br'],
         deniedAttrs: ['class', 'title', 'id'],
         allowedStyleProps: ['background', 'background-color', 'border', 'border-bottom', 'border-left', 'border-right', 'border-top', 'border-width', 'clear', 'color', 'margin', 'font-size', 'width']
       },
@@ -4369,27 +4329,7 @@ export default {
   ],
   provide: {
     richtexteditor: [Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, RTETable]
-  } /* ,
-  watch: {
-    Show: function() {
-      if (this.Show == true) {
-        this.$bvToast.show('form-toast')
-        this.WorkplanTitle = this.msrdata.WorkplanTitle
-        this.WorkplanNumber = this.msrdata.WorkplanNumber
-        if (this.user) {
-          this.Email = this.user[0].Email
-          this.Company = this.user[0].Company
-        }
-        let m = this.$moment().get('month')
-        this.Month = months[m]
-        this.Year = String(this.$moment().year())
-        MSR.dispatch('getDigest')
-        Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
-          vm.$options.interval = setInterval(vm.getData, 1000)
-        })
-      }
-    }
-  } */
+  }
 }
 </script>
 
@@ -4458,10 +4398,9 @@ export default {
   width: 100%;
 }
 
-.e-richtexteditor .e-rte-content .e-content,
+/* .e-richtexteditor .e-rte-content .e-content,
 .e-richtexteditor .e-source-content .e-content {
   padding: 10px !important;
-  /* min-height: calc(100vh - 350px) !important; */
 }
 
 .e-rte-content p {
@@ -4679,5 +4618,5 @@ export default {
 
 .e-rte-content .e-rte-table th {
   background-color: #e0e0e0 !important;
-}
+} */
 </style>
