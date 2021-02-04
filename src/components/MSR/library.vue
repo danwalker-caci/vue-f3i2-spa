@@ -2,13 +2,13 @@
   <b-container fluid class="contentHeight p-0">
     <b-row class="m-1">
       <b-dropdown :text="month ? month : 'Month'" class="filterSelection" v-if="monthValues.length > 0" variant="secondary">
-        <b-dropdown-item v-for="monthValue in monthValues" :key="monthValue.value" :value="monthValue.value" @click="month = monthValue.value">{{ monthValue.text }}</b-dropdown-item>
+        <b-dropdown-item v-for="monthValue in monthValues" :key="monthValue.value" :value="monthValue.value" @click="internalMonth = monthValue.value">{{ monthValue.text }}</b-dropdown-item>
       </b-dropdown>
       <b-dropdown :text="year ? year : 'Year'" class="filterSelection" v-if="yearValues.length > 0" variant="secondary">
-        <b-dropdown-item v-for="yearValue in yearValues" :key="yearValue.value" :value="yearValue.value" @click="year = yearValue.value">{{ yearValue.text }}</b-dropdown-item>
+        <b-dropdown-item v-for="yearValue in yearValues" :key="yearValue.value" :value="yearValue.value" @click="internalYear = yearValue.value">{{ yearValue.text }}</b-dropdown-item>
       </b-dropdown>
       <b-dropdown id="workplans" :text="workplan ? workplan : 'Workplan'" class="filterSelection" v-if="workplans.length > 0" variant="secondary">
-        <b-dropdown-item v-for="workplanValue in workplans" :key="workplanValue" :value="workplanValue.value" @click="workplan = workplanValue.value">{{ workplanValue.value }}</b-dropdown-item>
+        <b-dropdown-item v-for="workplanValue in workplans" :key="workplanValue" :value="workplanValue.value" @click="internalWP = workplanValue.value">{{ workplanValue.value }}</b-dropdown-item>
       </b-dropdown>
       <b-button variant="danger" class="filterSelection" @click="clearFilters()">Clear</b-button>
       <b-button variant="success" class="filterSelection" @click="filterLibrary()">Filter</b-button>
@@ -49,6 +49,10 @@ export default {
         src: originalUrl,
         loaded: false
       },
+      // adding internal mutable stuff
+      internalMonth: '',
+      internalYear: '',
+      internalWP: '',
       filterArray: [],
       // Get these converted over to objects like above
       monthValues: [
@@ -78,13 +82,16 @@ export default {
   mounted: function() {
     vm = this
     this.filterLibrary()
+    this.internalMonth = this.month
+    this.internalYear = this.year
+    this.internalWP = this.workplan
   },
   methods: {
     clearFilters: function() {
       console.log(`CLEARING FILTER: ${this.url}`)
-      this.month = null
-      this.year = null
-      this.workplan = null
+      this.internalMonth = null
+      this.internalYear = null
+      this.internalWP = null
       this.filterArray.forEach(function(fa) {
         vm.filterArray.pop(fa)
       })
@@ -92,14 +99,14 @@ export default {
     },
     copyFilter: function() {
       let link = window.location.href
-      if (this.month) {
-        link += '/month/' + this.month
+      if (this.internalMonth) {
+        link += '/month/' + this.internalMonth
       }
-      if (this.year) {
-        link += '/year/' + this.year
+      if (this.internalYear) {
+        link += '/year/' + this.internalYear
       }
-      if (this.workplan) {
-        link += '/workplan/' + this.workplan
+      if (this.internalWP) {
+        link += '/workplan/' + this.internalWP
       }
       let filterText = document.createElement('textarea')
       filterText.value = link
@@ -113,29 +120,29 @@ export default {
     },
     filterLibrary: function() {
       this.url = originalUrl
-      if (this.clin) {
+      /*if (this.clin) {
         if (console) {
           console.log(`CLIN: ${this.clin}`)
         }
         this.filterArray.push({ type: 'CLIN', value: this.clin })
-      }
-      if (this.month) {
+      }*/
+      if (this.internalMonth) {
         if (console) {
-          console.log(`Month: ${this.month}`)
+          console.log(`Month: ${this.internalMonth}`)
         }
-        this.filterArray.push({ type: 'Month', value: this.month })
+        this.filterArray.push({ type: 'Month', value: this.internalMonth })
       }
-      if (this.year) {
+      if (this.internalYear) {
         if (console) {
-          console.log(`Year: ${this.year}`)
+          console.log(`Year: ${this.internalYear}`)
         }
-        this.filterArray.push({ type: 'Year', value: this.year })
+        this.filterArray.push({ type: 'Year', value: this.internalYear })
       }
-      if (this.workplan) {
+      if (this.internalWP) {
         if (console) {
-          console.log(`Workplan: ${this.workplan}`)
+          console.log(`Workplan: ${this.internalWP}`)
         }
-        this.filterArray.push({ type: 'WorkplanNumber0', value: this.workplan })
+        this.filterArray.push({ type: 'WorkplanNumber0', value: this.internalWP })
       }
       if (this.filterArray.length > 0) {
         try {

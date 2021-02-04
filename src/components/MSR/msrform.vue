@@ -2663,7 +2663,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this[field] = await this.sanitizeHTML(this[field])
+          //this[field] = await this.sanitizeHTML(this[field])
           await this.trackMSRImage(this[field])
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -2691,7 +2691,7 @@ export default {
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
           console.log('FIELD: ' + JSON.stringify(this[field]))
-          this[field] = await this.sanitizeHTML(this[field])
+          //this[field] = await this.sanitizeHTML(this[field])
           await this.trackMSRImage(this[field])
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -2794,7 +2794,7 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
-          this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
+          //this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
           await this.trackMSRImage(this.SelectedAccomplishment)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -2822,7 +2822,7 @@ export default {
           vm.isSaving = true
           this.busyTitle = 'Saving To SharePoint'
           this.$bvToast.show('form-toast')
-          this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
+          //this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
           await this.trackMSRImage(this.SelectedAccomplishment)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -2925,7 +2925,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
+          //this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
           await this.trackMSRImage(this.SelectedPlan)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -2952,7 +2952,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
+          //this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
           await this.trackMSRImage(this.SelectedPlan)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3052,7 +3052,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
+          //this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
           await this.trackMSRImage(this.SelectedAssumption)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3079,7 +3079,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
+          //this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
           await this.trackMSRImage(this.SelectedAssumption)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3179,7 +3179,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
+          //this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
           await this.trackMSRImage(this.SelectedRisk)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3206,7 +3206,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
+          //this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
           await this.trackMSRImage(this.SelectedRisk)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3306,7 +3306,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
+          //this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
           await this.trackMSRImage(this.SelectedOpportunity)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3333,7 +3333,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
+          //this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
           await this.trackMSRImage(this.SelectedOpportunity)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3432,7 +3432,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
+          //this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
           await this.trackMSRImage(this.SelectedDeliverable)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3459,7 +3459,7 @@ export default {
           vm.isSaving = true
           vm.busyTitle = 'Saving To SharePoint'
           vm.$bvToast.show('form-toast')
-          this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
+          //this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
           await this.trackMSRImage(this.SelectedDeliverable)
           let response = await this.getFormDigest()
           this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
@@ -3483,62 +3483,62 @@ export default {
     onRTEChanged: async function(args) {
       // console.log('RTECHANGED: ' + args) // DO NOT DO THIS
       let content = String(args.value)
-      content = await this.sanitizeHTML(content)
+      // content = await this.sanitizeHTML(content)
       // console.log('CONTENT CHANGED: ' + content)  // DO NOT DO THIS
       vm.fileContent = content
       // Getting all the current Images
       await this.trackMSRImage(content)
     },
-    async sanitizeHTML(str) {
-      var parser = new DOMParser()
-      var htmlInfo = parser.parseFromString(str, 'text/html')
-      console.log({ htmlInfo })
-      str = str.replace(/<o:p>\s*<\/o:p>/g, '')
-      str = str.replace(/<o:p>.*?<\/o:p>/g, '&nbsp;')
-      str = str.replace(/\s*mso-[^:]+:[^;"]+;?/gi, '')
-      str = str.replace(/\s*MARGIN: 0cm 0cm 0pt\s*;/gi, '')
-      str = str.replace(/\s*MARGIN: 0cm 0cm 0pt\s*"/gi, '"')
-      str = str.replace(/\s*TEXT-INDENT: 0cm\s*;/gi, '')
-      str = str.replace(/\s*TEXT-INDENT: 0cm\s*"/gi, '"')
-      str = str.replace(/\s*TEXT-ALIGN: [^\s;]+;?"/gi, '"')
-      str = str.replace(/\s*PAGE-BREAK-BEFORE: [^\s;]+;?"/gi, '"')
-      str = str.replace(/\s*FONT-VARIANT: [^\s;]+;?"/gi, '"')
-      str = str.replace(/\s*tab-stops:[^;"]*;?/gi, '')
-      str = str.replace(/\s*tab-stops:[^"]*/gi, '')
-      str = str.replace(/\s*face="[^"]*"/gi, '')
-      str = str.replace(/\s*face=[^ >]*/gi, '')
-      str = str.replace(/\s*FONT-FAMILY:[^;"]*;?/gi, '')
-      str = str.replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, '<$1$3')
-      str = str.replace(/<(\w[^>]*) style="([^"]*)"([^>]*)/gi, '<$1$3')
-      str = str.replace(/\s*style="\s*"/gi, '')
-      str = str.replace(/<SPAN\s*[^>]*>\s*&nbsp;\s*<\/SPAN>/gi, '&nbsp;')
-      //str = str.replace(/<SPAN\s*[^>]*><\/SPAN>/gi, '')
-      str = str.replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, '<$1$3')
-      str = str.replace(/<SPAN\s*>(.*?)<\/SPAN>/gi, '$1')
-      str = str.replace(/<FONT\s*>(.*?)<\/FONT>/gi, '$1')
-      str = str.replace(/<\\?\?xml[^>]*>/gi, '')
-      str = str.replace(/<\/?\w+:[^>]*>/gi, '')
-      str = str.replace(/<H\d>\s*<\/H\d>/gi, '')
-      str = str.replace(/<H1([^>]*)>/gi, '')
-      str = str.replace(/<H2([^>]*)>/gi, '')
-      str = str.replace(/<H3([^>]*)>/gi, '')
-      str = str.replace(/<H4([^>]*)>/gi, '')
-      str = str.replace(/<H5([^>]*)>/gi, '')
-      str = str.replace(/<H6([^>]*)>/gi, '')
-      str = str.replace(/<\/H\d>/gi, '<br>') //remove this to take out breaks where Heading tags were
-      str = str.replace(/<(U|I|STRIKE)>&nbsp;<\/\1>/g, '&nbsp;')
-      str = str.replace(/<(B|b)>&nbsp;<\/b|B>/g, '&nbsp;')
-      str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
-      str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
-      str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
-      //some RegEx code for the picky browsers
-      var re = new RegExp('(<P)([^>]*>.*?)(</P>)', 'gi')
-      str = str.replace(re, '<div$2</div>')
-      var re2 = new RegExp('(<font|<FONT)([^*>]*>.*?)(</FONT>|</font>)', 'gi')
-      str = str.replace(re2, '<div$2</div>')
-      str = str.replace(/size|SIZE = ([\d]{1})/g, '')
-      return str
-    },
+    //async sanitizeHTML(str) {
+    //  var parser = new DOMParser()
+    //  var htmlInfo = parser.parseFromString(str, 'text/html')
+    //  console.log({ htmlInfo })
+    //  str = str.replace(/<o:p>\s*<\/o:p>/g, '')
+    //  str = str.replace(/<o:p>.*?<\/o:p>/g, '&nbsp;')
+    //  str = str.replace(/\s*mso-[^:]+:[^;"]+;?/gi, '')
+    //  str = str.replace(/\s*MARGIN: 0cm 0cm 0pt\s*;/gi, '')
+    //  str = str.replace(/\s*MARGIN: 0cm 0cm 0pt\s*"/gi, '"')
+    //  str = str.replace(/\s*TEXT-INDENT: 0cm\s*;/gi, '')
+    //  str = str.replace(/\s*TEXT-INDENT: 0cm\s*"/gi, '"')
+    //  str = str.replace(/\s*TEXT-ALIGN: [^\s;]+;?"/gi, '"')
+    //  str = str.replace(/\s*PAGE-BREAK-BEFORE: [^\s;]+;?"/gi, '"')
+    //  str = str.replace(/\s*FONT-VARIANT: [^\s;]+;?"/gi, '"')
+    //  str = str.replace(/\s*tab-stops:[^;"]*;?/gi, '')
+    //  str = str.replace(/\s*tab-stops:[^"]*/gi, '')
+    //  str = str.replace(/\s*face="[^"]*"/gi, '')
+    //  str = str.replace(/\s*face=[^ >]*/gi, '')
+    //  str = str.replace(/\s*FONT-FAMILY:[^;"]*;?/gi, '')
+    //  str = str.replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, '<$1$3')
+    //  str = str.replace(/<(\w[^>]*) style="([^"]*)"([^>]*)/gi, '<$1$3')
+    //  str = str.replace(/\s*style="\s*"/gi, '')
+    //  str = str.replace(/<SPAN\s*[^>]*>\s*&nbsp;\s*<\/SPAN>/gi, '&nbsp;')
+    //  //str = str.replace(/<SPAN\s*[^>]*><\/SPAN>/gi, '')
+    //  str = str.replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, '<$1$3')
+    //  str = str.replace(/<SPAN\s*>(.*?)<\/SPAN>/gi, '$1')
+    //  str = str.replace(/<FONT\s*>(.*?)<\/FONT>/gi, '$1')
+    //  str = str.replace(/<\\?\?xml[^>]*>/gi, '')
+    //  str = str.replace(/<\/?\w+:[^>]*>/gi, '')
+    //  str = str.replace(/<H\d>\s*<\/H\d>/gi, '')
+    //  str = str.replace(/<H1([^>]*)>/gi, '')
+    //  str = str.replace(/<H2([^>]*)>/gi, '')
+    //  str = str.replace(/<H3([^>]*)>/gi, '')
+    //  str = str.replace(/<H4([^>]*)>/gi, '')
+    //  str = str.replace(/<H5([^>]*)>/gi, '')
+    //  str = str.replace(/<H6([^>]*)>/gi, '')
+    //  str = str.replace(/<\/H\d>/gi, '<br>') //remove this to take out breaks where Heading tags were
+    //  str = str.replace(/<(U|I|STRIKE)>&nbsp;<\/\1>/g, '&nbsp;')
+    //  str = str.replace(/<(B|b)>&nbsp;<\/b|B>/g, '&nbsp;')
+    //  str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
+    //  str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
+    //  str = str.replace(/<([^\s>]+)[^>]*>\s*<\/\1>/g, '')
+    //  //some RegEx code for the picky browsers
+    //  var re = new RegExp('(<P)([^>]*>.*?)(</P>)', 'gi')
+    //  str = str.replace(re, '<div$2</div>')
+    //  var re2 = new RegExp('(<font|<FONT)([^*>]*>.*?)(</FONT>|</font>)', 'gi')
+    //  str = str.replace(re2, '<div$2</div>')
+    //  str = str.replace(/size|SIZE = ([\d]{1})/g, '')
+    //  return str
+    //},
     async trackMSRImage(content) {
       // get the total number of blobs and assign to a property
       if (content.indexOf('blob') > 0) {
