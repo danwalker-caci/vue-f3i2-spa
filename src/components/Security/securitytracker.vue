@@ -371,6 +371,28 @@ export default {
                 })
                 this.updateForm(data, taskId)
                 // Add a task for the designated government employee for review
+                payload = {
+                  Title: 'Complete or Reject ' + data.PersonName + ' ' + account + ' Request',
+                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                  AssignedToId: vm.$store.state.support.AFRLUserId,
+                  Description: 'Complete or Reject ' + data.PersonName + ' ' + account + ' Request.',
+                  IsMilestone: false,
+                  PercentComplete: 0,
+                  TaskType: account + ' Request',
+                  TaskLink: '/security/tracker/accounts'
+                }
+                await Todo.dispatch('addTodo', payload).catch(error => {
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: error.message,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + error.message)
+                })
               },
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
