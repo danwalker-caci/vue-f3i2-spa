@@ -31,7 +31,7 @@
     "@syncfusion/ej2-vue-schedule": "18.4.35",
     "@syncfusion/ej2-vue-spreadsheet": "^18.4.35",
     "@vuex-orm/core": "^0.34.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "caci-docx": "^1.1.41",
