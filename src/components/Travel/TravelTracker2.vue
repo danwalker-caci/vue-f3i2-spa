@@ -98,9 +98,9 @@
               width="100%"
             >
               <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="150"></e-column>
-                <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
+                <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="ActionsTemplate"></e-column>
+                <e-column field="Status" :lockColumn="true" headerText="Status" width="150"></e-column>
+                <e-column field="Comments" headerText="Purpose" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
                 <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                 <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                 <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
