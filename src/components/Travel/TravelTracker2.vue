@@ -79,7 +79,9 @@
               :enablePersistence="false"
               :dataSource="filteredtravel"
               :allowPaging="true"
+              :allowReordering="true"
               :allowResizing="true"
+              :frozenColumns="2"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
               :toolbar="toolbar"
@@ -136,7 +138,7 @@
 
 <script>
 import Vue from 'vue'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow, Resize, Reorder, Freeze } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
 
@@ -201,7 +203,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, Freeze, VirtualScroll, ExcelExport]
   },
   data: function() {
     return {
