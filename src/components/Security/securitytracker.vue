@@ -320,7 +320,9 @@ export default {
                   { text: 'SSO Processed', value: 'SSO Processed' },
                   { text: 'Debrief Notification Submitted', value: 'Debrief Notification Submitted' },
                   { text: 'Disposition-Transfer', value: 'Disposition-Transfer' },
-                  { text: 'Disposition-Debriefed', value: 'Disposition-Debriefed' }
+                  { text: 'Disposition-Debriefed', value: 'Disposition-Debriefed' },
+                  { text: 'Transfer Notification Submitted', value: 'Transfer Notification Submitted' },
+                  { text: 'Withdrawn', value: 'Withdrawn' }
                 ],
                 cacstatus: [
                   { text: 'Not Required', value: 'Not Required' },
@@ -331,7 +333,8 @@ export default {
                   { text: 'Return Pending', value: 'Return Pending' },
                   { text: 'Disposition-Returned', value: 'Disposition-Returned' },
                   { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
-                  { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' }
+                  { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
+                  { text: 'Transfer Pending', value: 'Transfer Pending' }
                 ]
               }
             },

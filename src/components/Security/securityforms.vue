@@ -538,7 +538,7 @@ export default {
               etag: form.data.d.__metadata.etag,
               uri: form.data.d.__metadata.uri
             })
-            payload.SCIIndoc = vm.form.SCIIndocDate
+            payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
             payload.SCIStatus = 'CACI Review'
             //
           }
@@ -554,7 +554,7 @@ export default {
             })
             payload.CACValid = vm.form.CACValid
             payload.CACIssuedBy = vm.form.CACIssuedBy
-            payload.CACExpirationDate = vm.form.CACExpirationDate
+            payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
             payload.CACStatus = vm.form.CACStatus
           }
           let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
