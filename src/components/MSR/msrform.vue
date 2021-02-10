@@ -2571,6 +2571,8 @@ export default {
             cancelVariant: 'danger',
             cancelTitle: 'NO',
             footerClass: 'p-2',
+            noCloseOnBackdrop: true,
+            noCloseOnEsc: true,
             hideHeaderClose: true,
             centered: true
           })
