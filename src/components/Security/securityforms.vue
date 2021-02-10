@@ -17,11 +17,38 @@
       </b-row>
       <b-card no-body class="p-3">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
-        <p class="font-weight-bolder">Please complete and submit the forms for each account you require.</p>
-        <p class="font-weight-bolder text-danger">
-          <u>Downloaded Forms <u>must</u> be opened by Acrobat Reader DC.</u>
+        <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
+        <p class="font-weight-bolder h4 text-danger">
+          <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine.</em>
         </p>
-        <p v-if="formAccount" class="font-italic">All forms must be signed by a CAC.</p>
+        <div v-show="formAccount">
+          <p class="h5">***Only for individuals sitting in AFRL***</p>
+          <p class="h5">Please complete the DD2875 Form through Box 12</p>
+          <p class="h5">All forms must be signed by a CAC.</p>
+        </div>
+        <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
+        <div v-show="formSCI">
+          <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted. Before submitting, please ensure personnel clearance eligibility is current in both JPAS and DISS.</p>
+          <p class="h5">Use an SCI nomination form if an individual has a final TS clearance or are SCI eligible but not read in (box 11 requires a valid level 2 or 3 SMO). A pre-screen form is also required. Please complete cells 1,2,4,6,11,12,13,14 and 15 and <strong>DO NOT sign these forms.</strong></p>
+          <p class="h5">
+            Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
+          </p>
+        </div>
+        <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+          <p class="h6">
+            Security has been notified that you will be working on the F3I-2 contract and your position requires you to have a TS clearance and be indoctrinated for SCI accesses. In order to process your clearance and access for this effort the customer has requested a completed SCI pre-screening questionnaire. The SCI pre-screening interview is
+            used to bring a previous investigation up-to-date when there is no current investigative information available.
+          </p>
+          <p class="h6">
+            Page 1: Fill in Last name, First Name, MI, SSN, DOB and POB only. Grade, AFSC, and Unit are not needed.
+          </p>
+          <p class="h6">
+            Page 2: Sign in SCI nominee box and <strong><em>NOT</em></strong> in the <mark><strong>Recertification at time of Indoctrination</strong></mark> section at this time.
+          </p>
+          <p class="h6">
+            Page 3: Be sure to initial and date along the top. Ensure all questions are answered. For questions with yes answers (with the exception of question 5) please provide a full narrative explanation on the next page. Answer no to question 5 if you attended counseling for marital, family, grief, victim of sexual assault, or PTSD.
+          </p>
+        </div>
         <b-form-row>
           <b-col>
             <b-form-group label="Company: " label-for="formCompany">
@@ -59,6 +86,7 @@
                 </b-form-invalid-feedback>
               </div>
             </b-form-group>
+            <p v-show="form.Type == 'JWICS'" class="h5">***For all individuals on F3I-2***</p>
             <div id="masterDocs" v-show="this.form.Type !== 'Select...'">
               <p>Download Form Templates</p>
               <ul>
@@ -73,6 +101,9 @@
                 </li>
                 <li v-show="form.Type == 'SIPR'">
                   <a :href="this.masterDocs + '/SIPREssentialsSign.pdf'">SIPR Essentials</a>
+                </li>
+                <li v-show="form.Type == 'SIPR'">
+                  <a :href="this.masterDocs + '/SIPRTraining.pdf'">SIPR Training</a>
                 </li>
                 <li v-show="form.Type == 'DREN'">
                   <a :href="this.masterDocs + '/DD2875-DREN.pdf'">DD2875</a>
@@ -93,10 +124,10 @@
                   <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
                 </li>
                 <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
-                  <a :href="this.masterDocs + '/SCI-Contract-Transfer-Form-(F3I-to-F3I-2).pdf'">SCI Contract Transfer Form (F3I to F3I 2)</a>
+                  <a :href="this.masterDocs + '/SCIContractTransferForm-BlanktoF3I2.pdf'">SCI Contract Transfer Form</a>
                 </li>
                 <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-                  <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form (F3I to F3I 2)</a>
+                  <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form</a>
                 </li>
                 <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
                   <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
