@@ -28,11 +28,17 @@
         </div>
         <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
         <div v-show="formSCI">
-          <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted. Before submitting, please ensure personnel clearance eligibility is current in both JPAS and DISS.</p>
-          <p class="h5">Use an SCI nomination form if an individual has a final TS clearance or are SCI eligible but not read in (box 11 requires a valid level 2 or 3 SMO). A pre-screen form is also required. Please complete cells 1,2,4,6,11,12,13,14 and 15 and <strong>DO NOT sign these forms.</strong></p>
-          <p class="h5">
-            Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
-          </p>
+          <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted.</p>
+          <ul>
+            <li>
+              <p class="h5">
+                Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
+              </p>
+            </li>
+            <li>
+              <p class="h5">If an individual(s) is not read in to an AFRL contract(s), a nomination form with a prescreen is required. Individual must have a final TS clearance. Complete cells 1,2,4,6,11,12,13, 14 and 15. The SMO listed in box 11 must be a level 2 or 3. <strong>DO NOT sign these forms.</strong></p>
+            </li>
+          </ul>
         </div>
         <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
           <p class="h6">
