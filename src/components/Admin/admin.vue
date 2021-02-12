@@ -66,10 +66,13 @@
             </h3>
           </template>
           <b-card-body>
-            <b-row class="p-0 m-0">
+            <b-row class="p-0 m-1">
               <b-button :disabled="travel.length <= 0" ref="UpdateTravel" variant="success" @click="UpdateTravel">Update Travelers</b-button>
               <b-button ref="InstallSecurity" variant="danger" @click="InstallSecurity" class="ml-1">Install Security</b-button>
               <!-- <b-button ref="btnPlayground" variant="success" @click="btnPlaygroundClick">Playground</b-button> -->
+            </b-row>
+            <b-row class="p-0 m-1">
+              <b-button ref="migrateSecurityInfo" variant="success" @click="migrateSecurityInfo" class="ml-1">Migrate Security Info</b-button>
             </b-row>
             <!-- <b-row class="p-0 m-0">
               <b-form-input id="txtUserId" ref="txtUserId" v-model="UserId" placeholder="User Id"></b-form-input>
@@ -89,6 +92,7 @@ import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
 import Travel from '@/models/Travel'
+import Security from '@/models/Security'
 
 let vm = null
 let SPCI = null
@@ -565,6 +569,56 @@ export default {
         e.push(this.travel[i])
         Travel.dispatch('editTraveler', e)
       }
+    },
+    async migrateSecurityInfo() {
+      // First grab all of the information from the personnel
+      await Security.dispatch('getDigest')
+      if (this.personnelloaded && this.allpersonnel.length > 0) {
+        /*this.allpersonnel.forEach(person => {
+          // get the relevant fields and then addSecurityForm
+          // Relevant fields:
+          // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
+          this.updateSecurityForm({
+            Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
+            PersonnelID: person.Id,
+            PersonName: person.FirstName + ' ' + person.LastName,
+            Company: person.Company,
+            SCIStatus: person.SCIFormStatus,
+            SCIFormType: person.SCIFormType, // Add field in
+            SCIFormSubmitted: person.SCIFormSubmitted, // Add field in
+            CACExpirationDate: person.CACExpirationDate,
+            CACRequestDate: person.CACRequestDate,
+            CACStatus: person.CACStatus
+          })
+        })*/
+        console.log(this.allpersonnel[8])
+        this.updateSecurityForm({
+          Title: this.allpersonnel[8].Id + '-' + this.allpersonnel[8].FirstName + ' ' + this.allpersonnel[8].LastName,
+          PersonnelID: this.allpersonnel[8].Id,
+          PersonName: this.allpersonnel[8].FirstName + ' ' + this.allpersonnel[8].LastName,
+          Company: this.allpersonnel[8].Company,
+          SCIStatus: this.allpersonnel[8].SCIFormStatus ? this.allpersonnel[8].SCIFormStatus : null,
+          SCIFormType: this.allpersonnel[8].SCIFormType, // Add field in
+          SCIFormSubmitted: this.allpersonnel[8].SCIFormSubmitted, // Add field in
+          CACExpirationDate: this.allpersonnel[8].CACExpirationDate,
+          CACRequestDate: this.allpersonnel[8].CACRequestDate,
+          CACStatus: this.allpersonnel[8].CACStatus
+        })
+      } else {
+        console.log('PERSONNEL NOT LOADED...')
+        Personnel.dispatch('getPersonnel').then(() => {
+          vm.migrateSecurityInfo()
+        })
+      }
+    },
+    updateSecurityForm(data) {
+      Security.dispatch('addSecurityForm', data)
+        .then(results => {
+          console.log('Migrate Security: ' + results)
+        })
+        .catch(e => {
+          console.log('ERROR: ' + e)
+        })
     }
   }
 }

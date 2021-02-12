@@ -219,7 +219,7 @@ export default {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: ['michele.dade@caci.com', 'alexie.hazen@caci.com'] },
+        To: { results: ['Michele.Blackburn@caci.com', 'alexie.hazen@caci.com'] },
         Body: body,
         Subject: 'New Travel Request Added To SharePoint'
       }

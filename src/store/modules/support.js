@@ -14,7 +14,7 @@ export const state = {
   AFRLUserId: null,
   AccountUserEmail: 'monica.dennis@caci.com',
   AccountUserId: null,
-  CACSCIUserEmail: 'michele.dade@caci.com',
+  CACSCIUserEmail: 'Michele.Blackburn@caci.com',
   CACSCIUser: null,
   contentrect: {}
 }

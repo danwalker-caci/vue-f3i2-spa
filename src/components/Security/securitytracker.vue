@@ -28,14 +28,15 @@
         <e-columns>
           <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
-          <e-column field="SCIStatus" headerText="SCI Status" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIStatus" headerText="SCI Status" width="150" textAlign="Left"></e-column>
+          <e-column field="SCIFormType" headerText="SCI Status" width="150" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACValid" headerText="Is CAC Valid" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACStatus" headerText="CAC Status" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACStatus" headerText="CAC Status" width="150" textAlign="Left"></e-column>
           <e-column field="CACRequestDate" headerText="CAC Request Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACExpirationDate" headerText="CAC Expiration Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
@@ -577,7 +578,8 @@ export default {
         vm.$options.interval = setInterval(vm.waitForPersonnel, 1500)
       })
     } else {
-      this.getUserIDs()
+      //await this.getUserIDs()
+      console.log('Getting Security Forms')
       await Security.dispatch('getSecurityForms')
     }
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list

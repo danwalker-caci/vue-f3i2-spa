@@ -10,7 +10,8 @@ let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
-let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -117,7 +118,8 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -130,12 +132,16 @@ export default {
       itemprops.SCI = payload.SCI
       itemprops.SCIIndoc = payload.SCIIndoc
     }
-    if (payload.CAC) {
-      itemprops.CAC = payload.CAC
-      itemprops.CACValid = payload.CACValid
-      itemprops.CACExpirationDate = payload.CACExpirationDate
-      itemprops.CACIssuedBy = payload.CACIssuedBy
-    }
+    itemprops.CAC = payload.CAC
+    itemprops.CACValid = payload.CACValid
+    itemprops.CACExpirationDate = payload.CACExpirationDate
+    itemprops.CACIssuedBy = payload.CACIssuedBy
+    itemprops.SCIStatus = payload.SCIFormStatus
+    itemprops.SCIFormType = payload.SCIFormType
+    itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
+    itemprops.CACExpirationDate = payload.CACExpirationDate
+    itemprops.CACRequestDate = payload.CACRequestDate
+    itemprops.CACStatus = payload.CACStatus
     return axios
       .post(endpoint, itemprops, config)
       .then(function(response) {
