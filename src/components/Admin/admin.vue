@@ -200,6 +200,7 @@ export default {
       console.log('sp.js is loaded')
     })
     vm = this
+    Security.dispatch('getDigest')
     User.dispatch('getDigest')
     MSR.dispatch('getDigest')
     Travel.dispatch('getDigest')
@@ -572,9 +573,8 @@ export default {
     },
     async migrateSecurityInfo() {
       // First grab all of the information from the personnel
-      await Security.dispatch('getDigest')
       if (this.personnelloaded && this.allpersonnel.length > 0) {
-        /*this.allpersonnel.forEach(person => {
+        this.asyncForEach(this.allpersonnel, async person => {
           // get the relevant fields and then addSecurityForm
           // Relevant fields:
           // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
@@ -585,13 +585,13 @@ export default {
             Company: person.Company,
             SCIStatus: person.SCIFormStatus,
             SCIFormType: person.SCIFormType, // Add field in
-            SCIFormSubmitted: person.SCIFormSubmitted, // Add field in
-            CACExpirationDate: person.CACExpirationDate,
-            CACRequestDate: person.CACRequestDate,
+            SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in
+            CACExpirationDate: person.CACExpirationDate ? person.CACExpirationDate : null,
+            CACRequestDate: person.CACRequestDate ? person.CACRequestDate : null,
             CACStatus: person.CACStatus
           })
-        })*/
-        console.log(this.allpersonnel[8])
+        })
+        /*console.log(this.allpersonnel[8])
         this.updateSecurityForm({
           Title: this.allpersonnel[8].Id + '-' + this.allpersonnel[8].FirstName + ' ' + this.allpersonnel[8].LastName,
           PersonnelID: this.allpersonnel[8].Id,
@@ -603,7 +603,7 @@ export default {
           CACExpirationDate: this.allpersonnel[8].CACExpirationDate,
           CACRequestDate: this.allpersonnel[8].CACRequestDate,
           CACStatus: this.allpersonnel[8].CACStatus
-        })
+        })*/
       } else {
         console.log('PERSONNEL NOT LOADED...')
         Personnel.dispatch('getPersonnel').then(() => {
@@ -611,7 +611,7 @@ export default {
         })
       }
     },
-    updateSecurityForm(data) {
+    async updateSecurityForm(data) {
       Security.dispatch('addSecurityForm', data)
         .then(results => {
           console.log('Migrate Security: ' + results)

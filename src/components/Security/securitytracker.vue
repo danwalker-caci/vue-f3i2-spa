@@ -30,15 +30,16 @@
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
           <e-column field="SCIStatus" headerText="SCI Status" width="150" textAlign="Left"></e-column>
           <e-column field="SCIFormType" headerText="SCI Status" width="150" textAlign="Left"></e-column>
+          <e-column field="SCIFormSubmitted" headerText="SCI Status" width="100" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACValid" headerText="Is CAC Valid" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACValid" headerText="Is CAC Valid" width="30" textAlign="Left"></e-column>
           <e-column field="CACStatus" headerText="CAC Status" width="150" textAlign="Left"></e-column>
-          <e-column field="CACRequestDate" headerText="CAC Request Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACRequestDate" headerText="CAC Request Date" width="100" textAlign="Left"></e-column>
+          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" width="100" textAlign="Left"></e-column>
           <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
@@ -108,7 +109,7 @@ export default {
   data: function() {
     return {
       company: '',
-      pageSettings: { pageSize: 15 },
+      pageSettings: { pageSize: 30 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,

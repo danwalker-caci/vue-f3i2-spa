@@ -136,7 +136,7 @@ export default {
     itemprops.CACValid = payload.CACValid
     itemprops.CACExpirationDate = payload.CACExpirationDate
     itemprops.CACIssuedBy = payload.CACIssuedBy
-    itemprops.SCIStatus = payload.SCIFormStatus
+    itemprops.SCIStatus = payload.SCIStatus
     itemprops.SCIFormType = payload.SCIFormType
     itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
     itemprops.CACExpirationDate = payload.CACExpirationDate

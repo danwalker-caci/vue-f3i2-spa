@@ -95,19 +95,22 @@ function formatForms(j) {
       CACValid: j[i]['CACValid'],
       CACIssuedBy: j[i]['CACIssuedBy'],
       CACExpirationDate: j[i]['CACExpirationDate'],
+      CACRequestDate: j[i]['CACRequestDate'],
       CACStatus: j[i]['CACStatus'],
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
-      SCI: JSON.parse(j[i]['SCI']), // TODO: sort the SCI forms
+      Accounts: types ? types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)) : '',
+      SCI: j[i]['SCI'] ? JSON.parse(j[i]['SCI']) : '', // TODO: sort the SCI forms
       SCIStatus: j[i]['SCIStatus'],
       SCIIndocAssistDate: j[i]['SCIIndocAssistDate'],
       SCIAccessCheckDate: j[i]['SCIAccessCheckDate'],
       SCIPR: j[i]['SCIPR'],
       SCICE: j[i]['SCICE'],
+      SCIFormType: j[i]['SCIFormType'],
+      SCIFormSubmitted: j[i]['SCIFormSubmitted'],
       SCIIndoc: j[i]['SCIIndoc'],
-      CAC: JSON.parse(j[i]['CAC']), // TODO: sort the CAC forms
+      CAC: j[i]['CAC'] ? JSON.parse(j[i]['CAC']) : '', // TODO: sort the CAC forms
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
