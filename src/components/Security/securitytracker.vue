@@ -60,6 +60,8 @@
   </b-container>
 </template>
 <script>
+// eslint-disable-next-line no-undef
+let url = _spPageContextInfo.webAbsoluteUrl
 let vm = null
 //let url = _spPageContextInfo.webAbsoluteUrl
 import Vue from 'vue'
@@ -400,26 +402,54 @@ export default {
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
                 let id = parseInt(event.currentTarget.dataset.id)
-                let taskId
+                let taskId,
+                  account,
+                  taskUserId = vm.$store.state.support.AccountUserId
                 // get the current item data
                 data.Accounts.forEach(type => {
                   if (id === type.id) {
                     type.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                     taskId = type.task
+                    account = type.account
                   }
                 })
-                await this.updateForm(data, taskId).catch(e => {
-                  // Add user notification and system logging
+                await this.updateForm(data, taskId)
+                  .then(() => {
+                    window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.href, '_blank')
+                  })
+                  .catch(e => {
+                    // Add user notification and system logging
+                    const notification = {
+                      type: 'danger',
+                      title: 'Portal Error',
+                      message: e,
+                      push: true
+                    }
+                    this.$store.dispatch('notification/add', notification, {
+                      root: true
+                    })
+                    console.log('ERROR: ' + e.message)
+                  })
+                let payload = {
+                  Title: 'AFRL Completed ' + data.PersonName + ' ' + account + ' Request',
+                  AssignedToId: taskUserId,
+                  Description: 'AFRL Completed ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
+                  IsMilestone: false,
+                  PercentComplete: 0,
+                  TaskType: account + ' Request',
+                  TaskLink: '/security/tracker/accounts'
+                }
+                await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
                     type: 'danger',
                     title: 'Portal Error',
-                    message: e,
+                    message: error.message,
                     push: true
                   }
                   this.$store.dispatch('notification/add', notification, {
                     root: true
                   })
-                  console.log('ERROR: ' + e.message)
+                  console.log('ERROR: ' + error.message)
                 })
                 // Remove the button and display current Date
               },
