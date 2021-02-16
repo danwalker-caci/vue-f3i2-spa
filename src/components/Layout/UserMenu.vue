@@ -7,11 +7,11 @@
           <e-columns>
             <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
             <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-            <e-column field="Status" headerText="Number" width="100"></e-column>
-            <e-column field="StartDate" headerText="POP Start" textAlign="Left" width="100"></e-column>
-            <e-column field="DueDate" headerText="POP End" textAlign="Left" width="100"></e-column>
+            <e-column field="Status" headerText="Status" width="100"></e-column>
+            <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
+            <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
             <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
-            <e-column headerText="Task Link" textAlign="Left" width="300" :template="LinkTemplate"></e-column>
+            <!-- <e-column headerText="Task Link" textAlign="Left" width="300" :template="LinkTemplate"></e-column> -->
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
             <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -104,7 +104,7 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div v-if="data.TaskType == 'Trip Report Review'">
-              <b-button class="actionbutton" variant="info" @click="reviewme(data)" title="Review Trip Report">
+              <b-button class="actionbutton" variant="info" @click="reviewtr(data)" title="Review Trip Report">
                 <font-awesome-icon far icon="file-invoice" class="icon"></font-awesome-icon>
               </b-button>
               <b-button class="actionbutton" variant="success" @click="approveme(data)" title="Approve">
@@ -115,7 +115,7 @@ export default {
               </b-button>
             </div>
             <div v-else>
-              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Mark Complete">
+              <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -155,8 +155,12 @@ export default {
                     console.log(err)
                   })
               },
-              reviewme: function(data) {
+              reviewtr: function(data) {
                 window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
+              },
+              goto: function(data) {
+                this.$bvModal.hide('Todos')
+                this.$router.push({ path: data.TaskLink })
               },
               approveme: function(data) {
                 Travel.dispatch('getDigest')
