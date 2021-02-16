@@ -29,14 +29,14 @@
           <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
           <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
           <e-column field="SCIStatus" headerText="SCI Status" width="150" textAlign="Left"></e-column>
-          <e-column field="SCIFormType" headerText="SCI Status" width="150" textAlign="Left"></e-column>
-          <e-column field="SCIFormSubmitted" headerText="SCI Status" width="100" textAlign="Left"></e-column>
+          <e-column field="SCIFormType" headerText="SCI Form" width="150" textAlign="Left"></e-column>
+          <e-column field="SCIFormSubmitted" headerText="SCI Submitted" width="100" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACValid" headerText="Is CAC Valid" width="30" textAlign="Left"></e-column>
+          <e-column field="CACValid" headerText="Is CAC Valid" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACStatus" headerText="CAC Status" width="150" textAlign="Left"></e-column>
           <e-column field="CACRequestDate" headerText="CAC Request Date" width="100" textAlign="Left"></e-column>
           <e-column field="CACExpirationDate" headerText="CAC Expiration Date" width="100" textAlign="Left"></e-column>
@@ -310,7 +310,8 @@ export default {
             data: function() {
               return {
                 data: {
-                  GovernmentDate: ''
+                  GovernmentDate: '',
+                  securityforms: []
                 },
                 ddfields: { text: 'text', value: 'value' },
                 status: [
@@ -342,7 +343,6 @@ export default {
             },
             methods: {
               AssistDateChange(data) {
-                console.log(data.SCIStatus)
                 data.SCIStatus = 'SSO Processed'
               },
               async NotifyGov(data, e) {
@@ -581,7 +581,16 @@ export default {
     } else {
       //await this.getUserIDs()
       console.log('Getting Security Forms')
-      await Security.dispatch('getSecurityForms')
+      await Security.dispatch('getSecurityForms').then(() => {
+        this.securityforms.forEach(form => {
+          form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+          form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
+          form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
+          form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+          form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+          form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+        })
+      })
     }
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
@@ -669,9 +678,11 @@ export default {
         this.$refs.FormsGrid.getColumns()[22].visible = true
         this.$refs.FormsGrid.getColumns()[23].visible = true
         this.$refs.FormsGrid.getColumns()[24].visible = true
-        this.$refs.FormsGrid.getColumns()[25].visible = false
-        this.$refs.FormsGrid.getColumns()[26].visible = false
+        this.$refs.FormsGrid.getColumns()[25].visible = true
+        this.$refs.FormsGrid.getColumns()[26].visible = true
         this.$refs.FormsGrid.getColumns()[27].visible = false
+        this.$refs.FormsGrid.getColumns()[28].visible = false
+        this.$refs.FormsGrid.getColumns()[29].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -679,15 +690,17 @@ export default {
             PersonName: sf.PersonName,
             Company: sf.Company,
             SCIStatus: sf.SCIStatus,
-            SCIIndocAssistDate: sf.SCIIndocAssistDate ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
-            SCIPR: sf.SCIPR ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
-            SCICE: sf.SCICE ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
-            SCIIndocDate: sf.SCIIndoc ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
-            SCIAccessCheckDate: sf.SCIAccessCheckDate ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
+            SCIFormType: sf.SCIFormType,
+            SCIFormSubmitted: this.$moment(sf.SCIFormSubmitted).isValid() ? this.$moment(sf.SCIFormSubmitted).format('MM/DD/YYYY') : '',
+            SCIIndocAssistDate: this.$moment(sf.SCIIndocAssistDate).isValid() ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
+            SCIPR: this.$moment(sf.SCIPR).isValid() ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
+            SCICE: this.$moment(sf.SCICE).isValid() ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
+            SCIIndocDate: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
+            SCIAccessCheckDate: this.$moment(sf.SCIAccessCheckDate).isValid() ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,
-            CACRequestDate: sf.CACRequestDate ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
-            CACExpirationDate: sf.CACExpirationDate ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
+            CACRequestDate: this.$moment(sf.CACRequestDate).isValid() ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
+            CACExpirationDate: this.$moment(sf.CACExpirationDate).isValid() ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
             CACIssuedBy: sf.CACIssuedBy,
             NIPRAccount: '',
             NIPRGovSentDate: '',
@@ -702,30 +715,32 @@ export default {
             JWICGovSentDate: '',
             JWICGovCompleteDate: ''
           }
-          sf.Accounts.forEach(a => {
-            switch (a.account) {
-              case 'NIPR':
-                CurrentData['NIPRAccount'] = 'Yes'
-                CurrentData['NIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'SIPR':
-                CurrentData['SIPRAccount'] = 'Yes'
-                CurrentData['SIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'DREN':
-                CurrentData['DRENAccount'] = 'Yes'
-                CurrentData['DRENGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'JWIC':
-                CurrentData['JWICAccount'] = 'Yes'
-                CurrentData['JWICGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-            }
-          })
+          if (sf.Accounts.length > 0) {
+            sf.Accounts.forEach(a => {
+              switch (a.account) {
+                case 'NIPR':
+                  CurrentData['NIPRAccount'] = 'Yes'
+                  CurrentData['NIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['NIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'SIPR':
+                  CurrentData['SIPRAccount'] = 'Yes'
+                  CurrentData['SIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['SIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'DREN':
+                  CurrentData['DRENAccount'] = 'Yes'
+                  CurrentData['DRENGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['DRENGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'JWIC':
+                  CurrentData['JWICAccount'] = 'Yes'
+                  CurrentData['JWICGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['JWICGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+              }
+            })
+          }
           data.push(CurrentData)
         })
         let excelExportProperties = {
