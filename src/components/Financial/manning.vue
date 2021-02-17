@@ -804,7 +804,7 @@ export default {
   height: 50px;
 }
 .gridrow {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 200px);
 }
 
 .sorted {

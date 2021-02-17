@@ -1382,7 +1382,7 @@ h3 {
 }
 
 .tableHeight {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 180px);
 }
 
 #ulFields {

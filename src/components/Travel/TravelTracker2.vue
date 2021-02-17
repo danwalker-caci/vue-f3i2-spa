@@ -76,9 +76,11 @@
             <ejs-grid
               id="TravelGrid"
               ref="TravelGrid"
+              :frozenColumns="2"
               :enablePersistence="false"
               :dataSource="filteredtravel"
               :allowPaging="true"
+              :allowReordering="true"
               :allowResizing="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
@@ -88,17 +90,16 @@
               :dataBound="dataBound"
               :actionBegin="actionBegin"
               :actionComplete="actionComplete"
-              :rowDataBound="rowDataBound"
               :queryCellInfo="formatCell"
               :excelQueryCellInfo="formatExcelCell"
               rowHeight="20"
-              height="100%"
-              width="100%"
+              :height="rect.height - 175"
+              :width="rect.width - 10"
             >
               <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="150"></e-column>
-                <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
+                <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="ActionsTemplate"></e-column>
+                <e-column field="Status" :lockColumn="true" headerText="Status" width="150"></e-column>
+                <e-column field="Comments" headerText="Purpose" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
                 <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                 <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                 <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
@@ -136,7 +137,7 @@
 
 <script>
 import Vue from 'vue'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
 
@@ -198,10 +199,13 @@ export default {
     },
     profiledata() {
       return User.query().first()
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze]
   },
   data: function() {
     return {
@@ -627,8 +631,7 @@ export default {
           id: 2,
           type: 'alert',
           name: 'Approved',
-          variant: 'orange',
-          classes: 'text-dark'
+          variant: 'orange'
         },
         {
           id: 3,
@@ -652,13 +655,15 @@ export default {
           id: 6,
           type: 'alert',
           name: 'TripReportReview',
-          variant: 'teal'
+          variant: 'teal',
+          classes: 'text-dark'
         },
         {
           id: 7,
           type: 'alert',
           name: 'Postponed',
-          variant: 'azure'
+          variant: 'azure',
+          classes: 'text-dark'
         },
         {
           id: 8,
@@ -912,17 +917,17 @@ export default {
       let c = String(args.data['Status'])
       switch (c) {
         case 'Approved': {
-          args.row.classList.add('bg-orange', 'text-dark')
+          args.row.classList.add('bg-orange', 'text-white')
           break
         }
 
         case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-light')
+          args.row.classList.add('bg-blue', 'text-white')
           break
         }
 
         case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-light')
+          args.row.classList.add('bg-cyan', 'text-white')
           break
         }
 
@@ -932,17 +937,17 @@ export default {
         }
 
         case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-light')
+          args.row.classList.add('bg-red', 'text-white')
           break
         }
 
         case 'Completed': {
-          args.row.classList.add('bg-green', 'text-light')
+          args.row.classList.add('bg-green', 'text-white')
           break
         }
 
         case 'TripReportReview': {
-          args.row.classList.add('bg-teal', 'text-light')
+          args.row.classList.add('bg-teal', 'text-dark')
           break
         }
 
@@ -952,7 +957,7 @@ export default {
         }
 
         case 'Cancelled': {
-          args.row.classList.add('bg-purple', 'text-light')
+          args.row.classList.add('bg-purple', 'text-white')
           break
         }
       }
@@ -961,6 +966,56 @@ export default {
     formatCell: function(args) {
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
+      } else {
+        if (args.column.headerText == 'Actions' || args.column.field == 'Status') {
+          let c = String(args.data['Status'])
+          switch (c) {
+            case 'Approved': {
+              args.cell.classList.add('bg-orange', 'text-white')
+              break
+            }
+
+            case 'WPMReview': {
+              args.cell.classList.add('bg-blue', 'text-white')
+              break
+            }
+
+            case 'AFRLReview': {
+              args.cell.classList.add('bg-cyan', 'text-white')
+              break
+            }
+
+            case 'ReportDue': {
+              args.cell.classList.add('bg-yellow', 'text-dark')
+              break
+            }
+
+            case 'ReportLate': {
+              args.cell.classList.add('bg-red', 'text-white')
+              break
+            }
+
+            case 'Completed': {
+              args.cell.classList.add('bg-green', 'text-white')
+              break
+            }
+
+            case 'TripReportReview': {
+              args.cell.classList.add('bg-teal', 'text-dark')
+              break
+            }
+
+            case 'Postponed': {
+              args.cell.classList.add('bg-azure', 'text-dark')
+              break
+            }
+
+            case 'Cancelled': {
+              args.cell.classList.add('bg-purple', 'text-white')
+              break
+            }
+          }
+        }
       }
     },
     formatExcelCell: function(args) {
@@ -1266,7 +1321,7 @@ export default {
   height: 50px;
 }
 .gridrow {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 200px);
 }
 
 .sorted {
@@ -1286,7 +1341,7 @@ export default {
 }
 
 .tableHeight {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 180px);
 }
 
 #ulFields {

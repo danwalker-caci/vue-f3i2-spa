@@ -49,16 +49,14 @@
 
 .sidebar{
   position: fixed;
-  top: 0;
-  bottom: 0;
+  top: 25px;
+  bottom: 25px;
   left: 0;
   width: 300px;
   display: block;
   z-index: 1;
   color: #fff;
   font-weight: 200;
-  /* background-size: cover;
-  background-position: center center; */
 
   .logo-img{
     width: 34px;
@@ -499,22 +497,17 @@
 
 .main-panel{
   /* background: #ffffff; */
-  position: relative;
   float: right;
   width: $sidebar-width;
 
   .content{
     /* padding: 30px 15px; */
-    height: calc(100vh - 100px);
+    height: calc(100vh - 150px);
     background: $BACKGROUNDCOLOR;
     display: flex;
     justify-content: center;
     align-items: center;
   }
-
-  /* .footer{
-    border-top: 1px solid #000000;
-  } */
 
   .navbar{
     margin-bottom: 0;
