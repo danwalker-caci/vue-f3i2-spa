@@ -411,8 +411,6 @@
 </template>
 
 <script>
-/* import Vue from 'vue'
-import axios from 'axios' */
 import User from '@/models/User'
 import Travel from '@/models/Travel'
 import Personnel from '@/models/Personnel'
@@ -422,13 +420,6 @@ import { Toolbar as RTEToolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Ta
 import { Page, Sort, Filter, Edit, Resize, Reorder, ColumnMenu, Toolbar, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
-
-/* let SPCI = null
-if (window._spPageContextInfo) {
-  SPCI = window._spPageContextInfo
-}
-
-let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=IndexNumber&$select=IndexNumber&$filter=(WorkPlanNumber eq '" */
 
 export default {
   name: 'NewTravel',
