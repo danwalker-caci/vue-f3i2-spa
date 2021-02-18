@@ -187,8 +187,8 @@ export default {
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
-      PRDueDate: payload.PRDueDate,
-      CEDate: payload.CEDate,
+      SCIPR: payload.SCIPR,
+      SCICE: payload.SCICE,
       SCIIndoc: payload.SCIIndoc
     }
     if (payload.Accounts) {

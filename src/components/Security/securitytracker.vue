@@ -31,19 +31,19 @@
         <e-columns>
           <e-column field="PersonName" headerText="Person Name" minWidth="250" textAlign="Left"></e-column>
           <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
-          <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIStatus" headerText="SCI Status" minWidth="125" textAlign="Left"></e-column>
-          <e-column field="SCIFormType" headerText="SCI Form" minWidth="100" textAlign="Left"></e-column>
-          <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="100" textAlign="Left"></e-column>
-          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" minWidth="125" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" minWidth="125" textAlign="Left"></e-column>
+          <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACValid" headerText="Valid CAC" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACStatus" headerText="CAC Status" minWidth="125" textAlign="Left"></e-column>
+          <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACStatus" headerText="CAC Status" minWidth="50" textAlign="Left"></e-column>
           <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACIssuedBy" headerText="CAC Issued By" minWidth="50" textAlign="Left"></e-column>
           <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
@@ -194,10 +194,10 @@ export default {
                               <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.SCIPR"></ejs-datepicker>
                             </b-td>
                             <b-td>
-                              <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                              <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.SCICE"></ejs-datepicker>
                             </b-td>
                             <b-td>
                               <span v-for="sci in data.SCI" :key="sci.Id">
@@ -513,12 +513,16 @@ export default {
                 if (payload.CAC) {
                   payload.CAC = JSON.stringify(payload.CAC)
                 }
+                /*payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? this.$moment(d.SCIIndocAssistDate).format('MM-DD-YYYY') : ''
+                payload.SCIPR = d.SCIPR ? this.$moment(d.SCIPR).format('MM-DD-YYYY') : ''
+                payload.SCICE = d.SCICE ? this.$moment(d.SCICE).format('MM-DD-YYYY') : ''
+                payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('MM-DD-YYYY') : ''*/
                 payload.CACValid = d.CACValid
                 payload.CACExpirationDate = d.CACExpirationDate
                 payload.CACIssuedBy = d.CACIssuedBy
                 payload.SCIIndocAssistDate = d.SCIIndocAssistDate
-                payload.PRDueDate = d.PRDueDate
-                payload.CEDate = d.CEDate
+                payload.SCIPR = d.SCIPR
+                payload.SCICE = d.SCICE
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate
                 payload.SCIStatus = d.SCIStatus
                 await Security.dispatch('updateSecurityForm', payload)
@@ -708,8 +712,8 @@ export default {
             SCIFormType: sf.SCIFormType,
             SCIFormSubmitted: this.$moment(sf.SCIFormSubmitted).isValid() ? this.$moment(sf.SCIFormSubmitted).format('MM/DD/YYYY') : '',
             SCIIndocAssistDate: this.$moment(sf.SCIIndocAssistDate).isValid() ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
-            PRDueDate: this.$moment(sf.PRDueDate).isValid() ? this.$moment(sf.PRDueDate).format('MM/DD/YYYY') : '',
-            CEDate: this.$moment(sf.CEDate).isValid() ? this.$moment(sf.CEDate).format('MM/DD/YYYY') : '',
+            SCIPR: this.$moment(sf.SCIPR).isValid() ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
+            SCICE: this.$moment(sf.SCICE).isValid() ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
             SCIIndocDate: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
             SCIAccessCheckDate: this.$moment(sf.SCIAccessCheckDate).isValid() ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,

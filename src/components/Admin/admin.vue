@@ -583,8 +583,8 @@ export default {
             PersonnelID: person.Id,
             PersonName: person.FirstName + ' ' + person.LastName,
             Company: person.Company,
-            PRDueDate: person.PRDueDate ? person.PRDueDate : null,
-            CEDate: person.CEDate ? person.CEDate : null,
+            SCIPR: person.PRDueDate ? person.PRDueDate : null,
+            SCICE: person.CEDate ? person.CEDate : null,
             SCIStatus: person.SCIFormStatus,
             SCIFormType: person.SCIFormType, // Add field in
             SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in
