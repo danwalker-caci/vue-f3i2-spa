@@ -583,27 +583,17 @@ export default {
             PersonnelID: person.Id,
             PersonName: person.FirstName + ' ' + person.LastName,
             Company: person.Company,
+            PRDueDate: person.PRDueDate ? person.PRDueDate : null,
+            CEDate: person.CEDate ? person.CEDate : null,
             SCIStatus: person.SCIFormStatus,
             SCIFormType: person.SCIFormType, // Add field in
             SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in
             CACExpirationDate: person.CACExpirationDate ? person.CACExpirationDate : null,
             CACRequestDate: person.CACRequestDate ? person.CACRequestDate : null,
-            CACStatus: person.CACStatus
+            CACStatus: person.CACStatus,
+            CACValid: person.CACStatus === 'Issued' || person.CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No'
           })
         })
-        /*console.log(this.allpersonnel[8])
-        this.updateSecurityForm({
-          Title: this.allpersonnel[8].Id + '-' + this.allpersonnel[8].FirstName + ' ' + this.allpersonnel[8].LastName,
-          PersonnelID: this.allpersonnel[8].Id,
-          PersonName: this.allpersonnel[8].FirstName + ' ' + this.allpersonnel[8].LastName,
-          Company: this.allpersonnel[8].Company,
-          SCIStatus: this.allpersonnel[8].SCIFormStatus ? this.allpersonnel[8].SCIFormStatus : null,
-          SCIFormType: this.allpersonnel[8].SCIFormType, // Add field in
-          SCIFormSubmitted: this.allpersonnel[8].SCIFormSubmitted, // Add field in
-          CACExpirationDate: this.allpersonnel[8].CACExpirationDate,
-          CACRequestDate: this.allpersonnel[8].CACRequestDate,
-          CACStatus: this.allpersonnel[8].CACStatus
-        })*/
       } else {
         console.log('PERSONNEL NOT LOADED...')
         Personnel.dispatch('getPersonnel').then(() => {

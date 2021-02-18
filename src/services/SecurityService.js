@@ -130,18 +130,22 @@ export default {
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
-      itemprops.SCIIndoc = payload.SCIIndoc
     }
-    itemprops.CAC = payload.CAC
+    if (payload.CAC) {
+      itemprops.CAC = payload.CAC
+    }
     itemprops.CACValid = payload.CACValid
     itemprops.CACExpirationDate = payload.CACExpirationDate
+    itemprops.CACRequestDate = payload.CACRequestDate
     itemprops.CACIssuedBy = payload.CACIssuedBy
+    itemprops.CACStatus = payload.CACStatus
+    itemprops.SCIAccessCheckDate = payload.SCIAccessCheckDate
     itemprops.SCIStatus = payload.SCIStatus
     itemprops.SCIFormType = payload.SCIFormType
     itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
-    itemprops.CACExpirationDate = payload.CACExpirationDate
-    itemprops.CACRequestDate = payload.CACRequestDate
-    itemprops.CACStatus = payload.CACStatus
+    itemprops.SCIPR = payload.SCIPR
+    itemprops.SCICE = payload.SCICE
+    itemprops.SCIIndoc = payload.SCIIndoc
     return axios
       .post(endpoint, itemprops, config)
       .then(function(response) {
@@ -178,12 +182,13 @@ export default {
       CACValid: payload.CACValid,
       CACIssuedBy: payload.CACIssuedBy,
       CACExpirationDate: payload.CACExpirationDate,
+      CACRequestDate: payload.CACRequestDate,
       CACStatus: payload.CACStatus,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
-      SCIPR: payload.SCIPR,
-      SCICE: payload.SCICE,
+      PRDueDate: payload.PRDueDate,
+      CEDate: payload.CEDate,
       SCIIndoc: payload.SCIIndoc
     }
     if (payload.Accounts) {
