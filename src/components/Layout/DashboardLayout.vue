@@ -109,6 +109,7 @@ export default {
     // get the bounds of the content class which represents the main content area.
     let el = document.getElementById('maincontent')
     let rect = el.getBoundingClientRect()
+    console.log('CALCULATED CONTENT AREA: HEIGHT: ' + rect.height + ', WIDTH: ' + rect.width)
     this.$store.dispatch('support/setContentRect', rect)
     this.$store.dispatch('support/addActivity', '<div class="bg-success text-white">DashboardLayout-MOUNTED: ' + rect.top + ', ' + rect.left + ', ' + rect.width + ', ' + rect.height + '</div>')
   },
