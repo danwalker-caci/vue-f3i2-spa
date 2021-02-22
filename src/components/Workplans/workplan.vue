@@ -80,6 +80,7 @@
               :dataSource="filtereddata"
               :allowPaging="true"
               :allowReordering="true"
+              :allowResizing="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
               :filterSettings="filterSettings"
@@ -179,7 +180,7 @@ import Vue from 'vue'
 import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -840,7 +841,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow]
   }
 }
 </script>
