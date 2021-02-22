@@ -71,6 +71,7 @@
               :enablePersistence="false"
               :dataSource="filteredpersonnel"
               :allowPaging="true"
+              :allowReordering="true"
               :allowResizing="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
@@ -270,7 +271,7 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -1316,7 +1317,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow]
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
