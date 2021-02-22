@@ -125,8 +125,17 @@ export default {
       PersonName: payload.PersonName,
       Company: payload.Company
     }
-    if (payload.Accounts) {
-      itemprops.Types = payload.Accounts
+    if (payload.NIPR) {
+      itemprops.NIPR = payload.NIPR
+    }
+    if (payload.SIPR) {
+      itemprops.SIPR = payload.SIPR
+    }
+    if (payload.DREN) {
+      itemprops.DREN = payload.DREN
+    }
+    if (payload.JWICS) {
+      itemprops.JWICS = payload.JWICS
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
@@ -143,8 +152,8 @@ export default {
     itemprops.SCIStatus = payload.SCIStatus
     itemprops.SCIFormType = payload.SCIFormType
     itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
-    itemprops.SCIPR = payload.SCIPR
-    itemprops.SCICE = payload.SCICE
+    itemprops.PRDueDate = payload.PRDueDate
+    itemprops.CEDueDate = payload.CEDueDate
     itemprops.SCIIndoc = payload.SCIIndoc
     return axios
       .post(endpoint, itemprops, config)
@@ -187,12 +196,21 @@ export default {
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
-      SCIPR: payload.SCIPR,
-      SCICE: payload.SCICE,
+      PRDueDate: payload.PRDueDate,
+      CEDate: payload.CEDate,
       SCIIndoc: payload.SCIIndoc
     }
-    if (payload.Accounts) {
-      itemprops.Types = payload.Accounts
+    if (payload.NIPR) {
+      itemprops.NIPR = payload.NIPR
+    }
+    if (payload.SIPR) {
+      itemprops.SIPR = payload.SIPR
+    }
+    if (payload.DREN) {
+      itemprops.DREN = payload.DREN
+    }
+    if (payload.JWICS) {
+      itemprops.JWICS = payload.JWICS
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
@@ -282,6 +300,7 @@ export default {
     })
     return response.data.d.results
   },
+  // TO DO: include type, form id, personnel id and update JSON object
   ApproveForm(payload, digest) {
     let endpoint = payload.uri
     let headers = {

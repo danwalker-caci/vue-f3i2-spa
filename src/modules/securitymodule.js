@@ -89,7 +89,6 @@ function formatForms(j) {
   let p = []
   //extrapulate the forms into a nice array of objects
   for (let i = 0; i < j.length; i++) {
-    var types = JSON.parse(j[i]['Types'])
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
@@ -101,7 +100,10 @@ function formatForms(j) {
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Accounts: types ? types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)) : '',
+      NIPR: j[i]['NIPR'] ? JSON.parse(j[i]['NIPR']) : '',
+      SIPR: j[i]['SIPR'] ? JSON.parse(j[i]['SIPR']) : '',
+      DREN: j[i]['DREN'] ? JSON.parse(j[i]['DREN']) : '',
+      JWICS: j[i]['JWICS'] ? JSON.parse(j[i]['JWICS']) : '',
       SCI: j[i]['SCI'] ? JSON.parse(j[i]['SCI']) : '', // TODO: sort the SCI forms
       SCIStatus: j[i]['SCIStatus'],
       SCIIndocAssistDate: moment(j[i]['SCIIndocAssistDate']).isValid() ? moment(j[i]['SCIIndocAssistDate']) : '',
@@ -123,7 +125,6 @@ function formatForms(j) {
 function formatForm(j) {
   let p = {}
   //extrapulate the forms into a nice array of objects
-  var types = JSON.parse(j[0]['Types'])
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
@@ -135,8 +136,11 @@ function formatForm(j) {
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],
-    Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
-    SCI: JSON.parse(j[0]['SCI']),
+    NIPR: j[0]['NIPR'] ? JSON.parse(j[0]['NIPR']) : '',
+    SIPR: j[0]['SIPR'] ? JSON.parse(j[0]['SIPR']) : '',
+    DREN: j[0]['DREN'] ? JSON.parse(j[0]['DREN']) : '',
+    JWICS: j[0]['JWICS'] ? JSON.parse(j[0]['JWICS']) : '',
+    SCI: j[0]['SCI'] ? JSON.parse(j[0]['SCI']) : '',
     SCIStatus: j[0]['SCIStatus'],
     SCIIndocAssistDate: moment(j[0]['SCIIndocAssistDate']).isValid() ? moment(j[0]['SCIIndocAssistDate']) : '',
     SCIAccessCheckDate: moment(j[0]['SCIAccessCheckDate']).isValid() ? moment(j[0]['SCIAccessCheckDate']) : '',
@@ -145,7 +149,7 @@ function formatForm(j) {
     SCIFormType: j[0]['SCIFormType'],
     SCIFormSubmitted: moment(j[0]['SCIFormSubmitted']).isValid() ? moment(j[0]['SCIFormSubmitted']) : '',
     SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
-    CAC: JSON.parse(j[0]['CAC']),
+    CAC: j[0]['CAC'] ? JSON.parse(j[0]['CAC']) : '',
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']

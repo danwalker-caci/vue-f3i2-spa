@@ -37,6 +37,7 @@
           </b-col>
         </b-form-row>
         <!-- don't load until everything else has come in -->
+        <!-- Loop through the type of account and each of the forms. -->
         <b-form-row v-if="loaded">
           <b-embed type="iframe" :src="submittedurl" allowfullscreen></b-embed>
         </b-form-row>
@@ -49,6 +50,7 @@
             </b-col>
           </b-form-row>
         </b-row-form>
+        <!-- Add a Notify Government button -->
       </b-card>
     </div>
   </b-container>
@@ -134,48 +136,46 @@ export default {
         library: this.library,
         id: this.id
       }
-      try {
-        Security.dispatch('getFormByTypeId', payload)
-          .then(function(results) {
-            vm.company = results.Company
-            vm.name = results.PersonName
-            vm.personId = results.PersonnelID
-            vm.sciType = results.SCIType ? results.SCIType : null
-            vm.creator = results.AuthorId
-            vm.etag = results.__metadata.etag
-            vm.uri = results.__metadata.uri
-            vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
-            vm.taskId = results.TaskID
-            vm.formId = results.Id
-            vm.authorId = results.AuthorId
-            vm.docLibraryType = results.__metadata.type
-            // Format the Created column using moment
-            vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-            // need to check the response for the direct url to the document
-            vm.loaded = true
-          })
-          .then(async function() {
-            // Get the SecurityForms entry here
-            let payload = {
-              PersonnelID: vm.personId
-            }
-            vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-            console.log(vm.securityFormTracker)
-          })
-        await Security.dispatch('getFormDigest')
-      } catch (e) {
-        // Add user notification and system logging
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+      Security.dispatch('getFormByTypeId', payload)
+        .then(function(results) {
+          vm.company = results.Company
+          vm.name = results.PersonName
+          vm.personId = results.PersonnelID
+          vm.sciType = results.SCIType ? results.SCIType : null
+          vm.creator = results.AuthorId
+          vm.etag = results.__metadata.etag
+          vm.uri = results.__metadata.uri
+          vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
+          vm.taskId = results.TaskID
+          vm.formId = results.Id
+          vm.authorId = results.AuthorId
+          vm.docLibraryType = results.__metadata.type
+          // Format the Created column using moment
+          vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
+          // need to check the response for the direct url to the document
+          vm.loaded = true
         })
-        console.log('ERROR: ' + e)
-      }
+        .then(async function() {
+          // Get the SecurityForms entry here
+          let payload = {
+            PersonnelID: vm.personId
+          }
+          vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
+        })
+        .catch(e => {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        })
+      await Security.dispatch('getFormDigest')
     },
     checkType: async function() {
       switch (this.form) {
