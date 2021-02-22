@@ -453,7 +453,7 @@ export default {
       if (this.formType === 'account' && this.form.Type === 'Select...') {
         this.formError = true
       }
-      if (!this.fileSelected) {
+      if (this.files.length <= 0) {
         this.formError = true
       }
       if (!this.formError) {
@@ -538,7 +538,11 @@ export default {
             cacs.push(cac)
           })
         }
-        this.asyncForEach(this.files, async file => {
+        await this.asyncForEach(this.files, async file => {
+          payload.library = vm.library
+          payload.Company = vm.form.Company
+          payload.PersonnelID = vm.form.PersonnelID
+          payload.PersonName = vm.form.Name
           let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
           let name = pdfName.split('.')[0]
           file.fileName = name
@@ -547,207 +551,207 @@ export default {
           payload.buffer = file.fileBuffer
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
-          console.log(`Uploaded Item: ${JSON.stringify(item)}`)
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri
           let form = await Security.dispatch('getForm', itemlink)
           let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
           payload = form.data.d.__metadata
           //payload.file = file.fileSelected
-          //payload.name = pdfName
-          // spayload.IndexNumber = this.IndexNumber
-          if (vm.form.Type === 'SCI') {
-            payload.SCIType = vm.form.SCIType
+          payload.name = pdfName
+          // payload.IndexNumber = this.IndexNumber
+          payload.SecurityFormId = vm.securityForm.Id
+          await Security.dispatch('updateForm', payload)
+          // First check to see if there is an entry for the PersonnelID in the Security Form List
+          switch (this.form.Type) {
+            case 'NIPR':
+              // set the url for the post of file
+              niprs.push({
+                account: vm.form.Type,
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              break
+            case 'SIPR':
+              siprs.push({
+                account: vm.form.Type,
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              break
+            case 'DREN':
+              drens.push({
+                account: vm.form.Type,
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              break
+            case 'JWICS':
+              jwics.push({
+                account: vm.form.Type,
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              break
+            case 'CAC':
+              cacs.push({
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              payload.CACValid = vm.form.CACValid
+              payload.CACIssuedBy = vm.form.CACIssuedBy
+              payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
+              payload.CACStatus = vm.form.CACStatus
+              break
+            case 'SCI':
+              scis.push({
+                id: formId,
+                library: vm.library,
+                name: pdfName,
+                // task: results.data.d.Id,
+                href: vm.libraryUrl + pdfName,
+                etag: form.data.d.__metadata.etag,
+                uri: form.data.d.__metadata.uri
+              })
+              payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
+              payload.SCIStatus = 'CACI Review'
+              break
           }
-          await Security.dispatch('updateForm', payload).then(() => {
-            // First check to see if there is an entry for the PersonnelID in the Security Form List
-            switch (this.form.Type) {
-              case 'NIPR':
-                // set the url for the post of file
-                niprs.push({
-                  account: vm.form.Type,
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                break
-              case 'SIPR':
-                siprs.push({
-                  account: vm.form.Type,
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                break
-              case 'DREN':
-                drens.push({
-                  account: vm.form.Type,
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                break
-              case 'JWICS':
-                jwics.push({
-                  account: vm.form.Type,
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                break
-              case 'CAC':
-                cacs.push({
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                payload.CACValid = vm.form.CACValid
-                payload.CACIssuedBy = vm.form.CACIssuedBy
-                payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-                payload.CACStatus = vm.form.CACStatus
-                break
-              case 'SCI':
-                scis.push({
-                  id: formId,
-                  library: vm.library,
-                  name: pdfName,
-                  // task: results.data.d.Id,
-                  href: vm.libraryUrl + pdfName,
-                  etag: form.data.d.__metadata.etag,
-                  uri: form.data.d.__metadata.uri
-                })
-                payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
-                payload.SCIStatus = 'CACI Review'
-                break
-            }
-          })
-
-          // Notification must be reworked to point to the id of SecurityForms and then the account type.
-          payload = {
-            Title: 'Approve ' + vm.formType + ' Submission for ' + vm.form.Name,
-            //AssignedToId: vm.userid, // Hardcoding the Security Group
-            AssignedToId: this.taskUserId,
-            Description: 'Approve or reject ' + vm.formType + 'request for ' + vm.form.Name,
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: vm.form.Type + ' Request',
-            TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
-          }
-          let results = await Todo.dispatch('addTodo', payload)
-          if (niprs.length > 0) {
-            payload.NIPR = JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : vm.form.Type === 'NIPR' ? results.id : '',
-              forms: niprs
-            })
-          }
-          if (siprs.length > 0) {
-            payload.SIPR = JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : vm.form.Type === 'SIPR' ? results.id : '',
-              forms: siprs
-            })
-          }
-          if (drens.length > 0) {
-            payload.DREN = JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.DREN.task ? vm.securityForm.DREN.task : vm.form.Type === 'DREN' ? results.id : '',
-              forms: drens
-            })
-          }
-          if (jwics.length > 0) {
-            payload.JWICS = JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : vm.form.Type === 'JWICS' ? results.id : '',
-              forms: jwics
-            })
-          }
-          if (scis.length > 0) {
-            payload.SCI = JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.SCI.task ? vm.securityForm.SCI.task : vm.form.Type === 'SCI' ? results.id : '',
-              forms: scis
-            })
-          }
-          if (cacs.length > 0) {
-            JSON.stringify({
-              GovCompleteDate: '',
-              GovSentDate: '',
-              GovRejectDate: '',
-              task: vm.securityForm.CAC.task ? vm.securityForm.CAC.task : vm.form.Type === 'CAC' ? results.id : '',
-              forms: cacs
-            })
-          }
-          payload.etag = this.securityForm.etag
-          payload.uri = this.securityForm.uri
-          await Security.dispatch('updateSecurityForm', payload)
-          // Run conditional on the results of the security form to either add or update security form
-          // await Security.dispatch('')
-          // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
-          const notification = {
-            type: 'success',
-            title: 'Succesfully Uploaded Form',
-            message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-            push: true
-          }
-          vm.$store.dispatch('notification/add', notification, { root: true })
-
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-          let event = []
-          event.push({
-            name: vm.fileName,
-            Status: 'SecurityReview',
-            Form: this.library + vm.fileSelected,
-            etag: vm.form.etag,
-            uri: vm.form.uri
-          })
-          // Clear form after submission
-          if (vm.formType === 'account') {
-            vm.form.Type = vm.accountOptions[0]
-          }
-          // need CAC and SCI clear here as well
-          document.querySelector('.e-upload-files').removeChild(document.querySelector('.e-upload-file-list'))
-          vm.fileSelected = null
-          vm.fileBuffer = null
         })
+        // Notification must be reworked to point to the id of SecurityForms and then the account type.
+        let taskPayload = {
+          Title: 'Approve ' + vm.formType + ' Submission for ' + vm.form.Name,
+          //AssignedToId: vm.userid, // Hardcoding the Security Group
+          AssignedToId: this.taskUserId,
+          Description: 'Approve or reject ' + vm.formType + 'request for ' + vm.form.Name,
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: vm.form.Type + ' Request',
+          TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
+        }
+        let results = await Todo.dispatch('addTodo', taskPayload)
+        if (niprs.length > 0) {
+          payload.NIPR = JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : vm.form.Type === 'NIPR' ? results.id : '',
+            forms: niprs
+          })
+        }
+        if (siprs.length > 0) {
+          payload.SIPR = JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : vm.form.Type === 'SIPR' ? results.id : '',
+            forms: siprs
+          })
+        }
+        if (drens.length > 0) {
+          payload.DREN = JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.DREN.task ? vm.securityForm.DREN.task : vm.form.Type === 'DREN' ? results.id : '',
+            forms: drens
+          })
+        }
+        if (jwics.length > 0) {
+          payload.JWICS = JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : vm.form.Type === 'JWICS' ? results.id : '',
+            forms: jwics
+          })
+        }
+        if (scis.length > 0) {
+          payload.SCI = JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.SCI.task ? vm.securityForm.SCI.task : vm.form.Type === 'SCI' ? results.id : '',
+            forms: scis
+          })
+        }
+        if (cacs.length > 0) {
+          JSON.stringify({
+            GovCompleteDate: '',
+            GovSentDate: '',
+            GovRejectDate: '',
+            task: vm.securityForm.CAC.task ? vm.securityForm.CAC.task : vm.form.Type === 'CAC' ? results.id : '',
+            forms: cacs
+          })
+        }
+        payload.etag = this.securityForm.etag
+        payload.uri = this.securityForm.uri
+        await Security.dispatch('updateSecurityForm', payload)
+        // Run conditional on the results of the security form to either add or update security form
+        // await Security.dispatch('')
+        // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
+        const notification = {
+          type: 'success',
+          title: 'Succesfully Uploaded Form',
+          message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+          push: true
+        }
+        vm.$store.dispatch('notification/add', notification, { root: true })
+
+        vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+        let event = []
+        event.push({
+          name: vm.fileName,
+          Status: 'SecurityReview',
+          Form: this.library + vm.fileSelected,
+          etag: vm.form.etag,
+          uri: vm.form.uri
+        })
+        // Clear form after submission
+        if (vm.formType === 'account') {
+          vm.form.Type = vm.accountOptions[0]
+        }
+        // need CAC and SCI clear here as well
+        document.querySelector('.e-upload-files').children.forEach(child => {
+          child.text = ''
+        })
+        vm.files = []
+        vm.fileSelected = null
+        vm.fileBuffer = null
       }
     },
     async onFileSelect(args) {
-      let file = {}
-      file.fileSelected = args.filesData[0].name
-      let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
-      buffer.then(function(buff) {
-        file.fileBuffer = buff
-        vm.files.push(file)
+      args.filesData.forEach(fileData => {
+        let file = {}
+        file.fileSelected = fileData.name
+        let buffer = vm.getFileBuffer(fileData.rawFile)
+        buffer.then(function(buff) {
+          file.fileBuffer = buff
+          vm.files.push(file)
+        })
       })
     },
     async asyncForEach(array, callback) {

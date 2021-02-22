@@ -183,7 +183,7 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
