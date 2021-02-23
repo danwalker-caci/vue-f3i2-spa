@@ -257,6 +257,25 @@ export default {
     }
     return getAllSecurityForms(null)
   },
+  async getSecurityFormById(payload) {
+    let url = securityformurl + '?$filter=(Id eq ' + payload.Id + ')'
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    }).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Adding Security Form Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response.data.d.results
+  },
   async getSecurityFormsByCompany(payload) {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {

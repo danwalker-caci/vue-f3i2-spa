@@ -75,7 +75,7 @@ let securityMenu = {
       props: true
     },
     {
-      path: '/security/view/:form/:id',
+      path: '/security/view/:id/:form',
       name: 'View',
       component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityview.vue'),
       props: true
@@ -115,43 +115,43 @@ let msrMenu = {
     {
       path: 'library/month/:month',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/year/:year',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/workplan/:workplan',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/month/:month/year/:year',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/month/:month/workplan/:workplan',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/year/:year/workplan/:workplan',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     },
     {
       path: 'library/month/:month/year/:year/workplan/:workplan',
       name: 'MSR Library',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/MSR/library.vue'),
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
       props: true
     }
   ]

@@ -59,6 +59,11 @@ const actions = {
     })
     state.securityforms = formatForms(response)
   },
+  async getSecurityFormById({ state }, payload) {
+    let response = await SecurityService.getSecurityFormById(payload, state.digest)
+    if (response.length == 0) return response
+    return formatForm(response)
+  },
   async getSecurityFormsByCompany({ state }, payload) {
     let response = await SecurityService.getSecurityFormsByCompany(payload)
     Security.create({ data: formatForms(response) })

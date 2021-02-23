@@ -643,22 +643,33 @@ export default {
         })
         // Notification must be reworked to point to the id of SecurityForms and then the account type.
         let taskPayload = {
-          Title: 'Approve ' + vm.formType + ' Submission for ' + vm.form.Name,
+          Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
           //AssignedToId: vm.userid, // Hardcoding the Security Group
           AssignedToId: this.taskUserId,
-          Description: 'Approve or reject ' + vm.formType + 'request for ' + vm.form.Name,
+          Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
           IsMilestone: false,
           PercentComplete: 0,
           TaskType: vm.form.Type + ' Request',
           TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
         }
-        let results = await Todo.dispatch('addTodo', taskPayload)
+        let results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : vm.form.Type === 'NIPR' ? results.id : '',
+            task: vm.form.Type === 'NIPR' ? results.data.d.Id : vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : '',
             forms: niprs
           })
         }
@@ -667,7 +678,7 @@ export default {
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : vm.form.Type === 'SIPR' ? results.id : '',
+            task: vm.form.Type === 'SIPR' ? results.data.d.Id : vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : '',
             forms: siprs
           })
         }
@@ -676,7 +687,7 @@ export default {
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.DREN.task ? vm.securityForm.DREN.task : vm.form.Type === 'DREN' ? results.id : '',
+            task: vm.form.Type === 'DREN' ? results.data.d.Id : vm.securityForm.DREN.task ? vm.securityForm.DREN.task : '',
             forms: drens
           })
         }
@@ -685,7 +696,7 @@ export default {
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : vm.form.Type === 'JWICS' ? results.id : '',
+            task: vm.form.Type === 'JWICS' ? results.data.d.Id : vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : '',
             forms: jwics
           })
         }
@@ -694,7 +705,7 @@ export default {
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.SCI.task ? vm.securityForm.SCI.task : vm.form.Type === 'SCI' ? results.id : '',
+            task: vm.form.Type === 'SCI' ? results.data.d.Id : vm.securityForm.SCI.task ? vm.securityForm.SCI.task : '',
             forms: scis
           })
         }
@@ -703,13 +714,24 @@ export default {
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
-            task: vm.securityForm.CAC.task ? vm.securityForm.CAC.task : vm.form.Type === 'CAC' ? results.id : '',
+            task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
             forms: cacs
           })
         }
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
-        await Security.dispatch('updateSecurityForm', payload)
+        await Security.dispatch('updateSecurityForm', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
         // Run conditional on the results of the security form to either add or update security form
         // await Security.dispatch('')
         // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
@@ -736,7 +758,7 @@ export default {
         }
         // need CAC and SCI clear here as well
         document.querySelector('.e-upload-files').children.forEach(child => {
-          child.text = ''
+          child.HTML = ''
         })
         vm.files = []
         vm.fileSelected = null

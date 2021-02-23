@@ -38,18 +38,23 @@
         </b-form-row>
         <!-- don't load until everything else has come in -->
         <!-- Loop through the type of account and each of the forms. -->
-        <b-form-row v-if="loaded">
-          <b-embed type="iframe" :src="submittedurl" allowfullscreen></b-embed>
-        </b-form-row>
-        <b-row-form>
-          <b-form-row>
-            <b-col cols="10"></b-col>
-            <b-col cols="2">
-              <b-button variant="danger" class="formbutton" @click="rejectForm">Reject</b-button>
-              <b-button variant="success" class="formbutton" @click="approveForm">Approve</b-button>
-            </b-col>
-          </b-form-row>
-        </b-row-form>
+        <div v-if="loaded">
+          <div v-for="form in forms.forms" :key="form.id">
+            <b-form-row>
+              <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+            </b-form-row>
+            <b-row-form>
+              <b-form-row>
+                <b-col cols="10"></b-col>
+                <b-col cols="2">
+                  <b-button variant="danger" class="formbutton" @click="rejectForm(form.id)">Reject</b-button>
+                  <b-button variant="success" class="formbutton" @click="approveForm(form.id)">Approve</b-button>
+                </b-col>
+              </b-form-row>
+            </b-row-form>
+          </div>
+        </div>
+
         <!-- Add a Notify Government button -->
       </b-card>
     </div>
@@ -67,7 +72,7 @@ import User from '@/models/User'
 export default {
   name: 'SecurityView',
   props: {
-    // Switches the form type between Account, CAC and SCI
+    // Switches the form type between NIPR, SIPR, DREN, JWICS, CAC and SCI
     form: {
       type: String
     },
@@ -76,9 +81,6 @@ export default {
     }
   },
   computed: {
-    submittedurl() {
-      return this.libraryUrl + this.formName
-    },
     userid() {
       return User.getters('CurrentUserId')
     }
@@ -97,21 +99,20 @@ export default {
       CACSCIUserID: null,
       securityFormTracker: {},
       authorId: '',
-      docLibraryType: '',
       libraryUrl: '',
       library: '',
       loaded: false,
-      formType: '',
+      forms: {},
       formTitle: '',
+      formName: '',
+      formUrl: '',
+      formId: null,
       company: '',
       name: '',
       personId: null,
       sciType: null,
-      formName: '',
-      formUrl: '',
       creator: null,
       taskId: null,
-      formId: null,
       submittedDate: '',
       etag: '',
       uri: ''
@@ -122,7 +123,7 @@ export default {
     await Security.dispatch('getDigest')
     await this.getUserIDs()
     await this.checkType()
-    await this.getForm()
+    await this.getForms()
   },
   methods: {
     getUserIDs: async function() {
@@ -130,37 +131,45 @@ export default {
       this.$store.dispatch('support/getAFRLUser')
       this.$store.dispatch('support/getCACSCIUser')
     },
-    getForm: async function() {
+    getForms: async function() {
       // Run query to load the form
       let payload = {
-        library: this.library,
-        id: this.id
+        Id: this.id
       }
-      Security.dispatch('getFormByTypeId', payload)
+      Security.dispatch('getSecurityFormById', payload)
         .then(function(results) {
           vm.company = results.Company
           vm.name = results.PersonName
           vm.personId = results.PersonnelID
           vm.sciType = results.SCIType ? results.SCIType : null
-          vm.creator = results.AuthorId
-          vm.etag = results.__metadata.etag
-          vm.uri = results.__metadata.uri
-          vm.formName = results.Title.indexOf('.pdf') > -1 ? results.Title : results.Title + '.pdf'
-          vm.taskId = results.TaskID
-          vm.formId = results.Id
-          vm.authorId = results.AuthorId
-          vm.docLibraryType = results.__metadata.type
+          vm.etag = results.etag
+          vm.uri = results.uri
+          switch (vm.form) {
+            case 'NIPR':
+              vm.forms = results.NIPR
+              break
+            case 'SIPR':
+              vm.forms = results.SIPR
+              break
+            case 'DREN':
+              vm.forms = results.DREN
+              break
+            case 'JWICS':
+              vm.forms = results.JWICS
+              break
+            case 'CAC':
+              vm.forms = results.CAC
+              break
+            case 'SCI':
+              vm.forms = results.SCI
+              break
+          }
+          // task will be held in the
+          vm.taskId = vm.forms.task
           // Format the Created column using moment
           vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
           // need to check the response for the direct url to the document
           vm.loaded = true
-        })
-        .then(async function() {
-          // Get the SecurityForms entry here
-          let payload = {
-            PersonnelID: vm.personId
-          }
-          vm.securityFormTracker = await Security.dispatch('getSecurityFormByPersonnelId', payload)
         })
         .catch(e => {
           // Add user notification and system logging
@@ -183,38 +192,32 @@ export default {
           // set the url for the post of file
           this.library = 'AccountsNIPR'
           this.libraryUrl = this.AccountsNIPRForms
-          this.formTitle = 'Approve/Reject Account Form'
-          this.formType = 'account'
+          this.formTitle = 'Approve/Reject NIPR Forms'
           break
         case 'SIPR':
           this.library = 'AccountsSIPR'
           this.libraryUrl = this.AccountsSIPRForms
-          this.formTitle = 'Approve/Reject Account Form'
-          this.formType = 'account'
+          this.formTitle = 'Approve/Reject SIPR Forms'
           break
         case 'DREN':
           this.library = 'AccountsDREN'
           this.libraryUrl = this.AccountsDRENForms
-          this.formTitle = 'Approve/Reject Account Form'
-          this.formType = 'account'
+          this.formTitle = 'Approve/Reject DREN Forms'
           break
         case 'JWICS':
           this.library = 'AccountsJWICS'
           this.libraryUrl = this.AccountsJWICSForms
-          this.formTitle = 'Approve/Reject Account Form'
-          this.formType = 'account'
+          this.formTitle = 'Approve/Reject JWICS Forms'
           break
         case 'CAC':
           this.library = 'CACForms'
           this.libraryUrl = this.CACForms
-          this.formTitle = 'Approve/Reject CAC Form'
-          this.formType = 'cac'
+          this.formTitle = 'Approve/Reject CAC Forms'
           break
         case 'SCI':
           this.library = 'SCIForms'
           this.libraryUrl = this.SCIForms
-          this.formTitle = 'Approve/Reject SCI Form'
-          this.formType = 'sci'
+          this.formTitle = 'Approve/Reject SCI Forms'
           break
       }
     },
@@ -222,8 +225,7 @@ export default {
       // Post Approval data
       let payload = {
         etag: this.etag,
-        uri: this.uri,
-        type: this.docLibraryType
+        uri: this.uri
       }
       try {
         await Security.dispatch('ApproveForm', payload)
@@ -326,7 +328,7 @@ export default {
           const notification = {
             type: 'success',
             title: 'Rejected Form',
-            message: 'Rejected ' + vm.formType + ' form for ' + vm.formName,
+            message: 'Rejected ' + vm.form + ' form for ' + vm.formName,
             push: true
           }
           vm.$store.dispatch('notification/add', notification, { root: true })
