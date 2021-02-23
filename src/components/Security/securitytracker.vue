@@ -402,6 +402,8 @@ export default {
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
                 let id = parseInt(event.currentTarget.dataset.id)
+                let link = data.href
+                console.log(`LINK: ${link}`)
                 let taskId,
                   account,
                   taskUserId = vm.$store.state.support.AccountUserId
@@ -415,7 +417,7 @@ export default {
                 })
                 await this.updateForm(data, taskId)
                   .then(() => {
-                    window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.href, '_blank')
+                    window.open(url + '/_layouts/download.aspx?SourceUrl=' + link, '_blank')
                   })
                   .catch(e => {
                     // Add user notification and system logging
@@ -543,12 +545,12 @@ export default {
                 payload.SCICE = d.SCICE ? this.$moment(d.SCICE).format('MM-DD-YYYY') : ''
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('MM-DD-YYYY') : ''*/
                 payload.CACValid = d.CACValid
-                payload.CACExpirationDate = d.CACExpirationDate
+                payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null
                 payload.CACIssuedBy = d.CACIssuedBy
-                payload.SCIIndocAssistDate = d.SCIIndocAssistDate
-                payload.SCIPR = d.SCIPR
-                payload.SCICE = d.SCICE
-                payload.SCIAccessCheckDate = d.SCIAccessCheckDate
+                payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? d.SCIIndocAssistDate : null
+                payload.SCIPR = d.SCIPR ? d.SCIPR : null
+                payload.SCICE = d.SCICE ? d.SCICE : null
+                payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? d.SCIAccessCheckDate : null
                 payload.SCIStatus = d.SCIStatus
                 await Security.dispatch('updateSecurityForm', payload)
                   .then(function(result) {
