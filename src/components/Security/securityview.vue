@@ -221,7 +221,7 @@ export default {
           break
       }
     },
-    approveForm: async function() {
+    approveForm: async function(id) {
       // Post Approval data
       let payload = {
         etag: this.etag,
