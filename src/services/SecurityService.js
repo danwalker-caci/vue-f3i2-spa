@@ -11,6 +11,7 @@ let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
 let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -118,6 +119,7 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -128,14 +130,22 @@ export default {
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
-      itemprops.SCIIndoc = payload.SCIIndoc
     }
     if (payload.CAC) {
       itemprops.CAC = payload.CAC
-      itemprops.CACValid = payload.CACValid
-      itemprops.CACExpirationDate = payload.CACExpirationDate
-      itemprops.CACIssuedBy = payload.CACIssuedBy
     }
+    itemprops.CACValid = payload.CACValid
+    itemprops.CACExpirationDate = payload.CACExpirationDate
+    itemprops.CACRequestDate = payload.CACRequestDate
+    itemprops.CACIssuedBy = payload.CACIssuedBy
+    itemprops.CACStatus = payload.CACStatus
+    itemprops.SCIAccessCheckDate = payload.SCIAccessCheckDate
+    itemprops.SCIStatus = payload.SCIStatus
+    itemprops.SCIFormType = payload.SCIFormType
+    itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
+    itemprops.SCIPR = payload.SCIPR
+    itemprops.SCICE = payload.SCICE
+    itemprops.SCIIndoc = payload.SCIIndoc
     return axios
       .post(endpoint, itemprops, config)
       .then(function(response) {
@@ -172,6 +182,7 @@ export default {
       CACValid: payload.CACValid,
       CACIssuedBy: payload.CACIssuedBy,
       CACExpirationDate: payload.CACExpirationDate,
+      CACRequestDate: payload.CACRequestDate,
       CACStatus: payload.CACStatus,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,

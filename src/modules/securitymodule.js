@@ -1,5 +1,6 @@
 import Security from '@/models/Security'
 import SecurityService from '@/services/SecurityService.js'
+import moment from 'moment-timezone'
 
 const getters = {
   allSecurity() {
@@ -88,56 +89,71 @@ function formatForms(j) {
   let p = []
   //extrapulate the forms into a nice array of objects
   for (let i = 0; i < j.length; i++) {
-    var types = JSON.parse(j[i]['Types'])
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
       CACValid: j[i]['CACValid'],
       CACIssuedBy: j[i]['CACIssuedBy'],
-      CACExpirationDate: j[i]['CACExpirationDate'],
+      CACExpirationDate: moment(j[i]['CACExpirationDate']).isValid() ? moment(j[i]['CACExpirationDate']) : '',
+      CACRequestDate: moment(j[i]['CACRequestDate']).isValid() ? moment(j[i]['CACRequestDate']) : '',
       CACStatus: j[i]['CACStatus'],
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
-      SCI: JSON.parse(j[i]['SCI']), // TODO: sort the SCI forms
+      Accounts: JSON.parse(j[i]['Types']),
+      SCI: j[i]['SCI'] ? JSON.parse(j[i]['SCI']) : '', // TODO: sort the SCI forms
       SCIStatus: j[i]['SCIStatus'],
-      SCIIndocAssistDate: j[i]['SCIIndocAssistDate'],
-      SCIAccessCheckDate: j[i]['SCIAccessCheckDate'],
+      SCIIndocAssistDate: moment(j[i]['SCIIndocAssistDate']).isValid() ? moment(j[i]['SCIIndocAssistDate']) : '',
+      SCIAccessCheckDate: moment(j[i]['SCIAccessCheckDate']).isValid() ? moment(j[i]['SCIAccessCheckDate']) : '',
       SCIPR: j[i]['SCIPR'],
       SCICE: j[i]['SCICE'],
-      SCIIndoc: j[i]['SCIIndoc'],
-      CAC: JSON.parse(j[i]['CAC']), // TODO: sort the CAC forms
+      SCIFormType: j[i]['SCIFormType'],
+      SCIFormSubmitted: moment(j[i]['SCIFormSubmitted']).isValid() ? moment(j[i]['SCIFormSubmitted']) : '',
+      SCIIndoc: moment(j[i]['SCIIndoc']).isValid() ? moment(j[i]['SCIIndoc']) : '',
+      CAC: j[i]['CAC'] ? JSON.parse(j[i]['CAC']) : '', // TODO: sort the CAC forms
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })
   }
+  p.sort((a, b) => {
+    var nameA = a.PersonName.toUpperCase()
+    var nameB = b.PersonName.toUpperCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
   return p
 }
 
 function formatForm(j) {
   let p = {}
   //extrapulate the forms into a nice array of objects
-  var types = JSON.parse(j[0]['Types'])
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
     CACValid: j[0]['CACValid'],
     CACIssuedBy: j[0]['CACIssuedBy'],
-    CACExpirationDate: j[0]['CACExpirationDate'],
+    CACExpirationDate: moment(j[0]['CACExpirationDate']).isValid() ? moment(j[0]['CACExpirationDate']) : '',
+    CACRequestDate: moment(j[0]['CACRequestDate']).isValid() ? moment(j[0]['CACRequestDate']) : '',
     CACStatus: j[0]['CACStatus'],
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],
-    Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+    Accounts: JSON.parse(j[0]['Types']),
     SCI: JSON.parse(j[0]['SCI']),
     SCIStatus: j[0]['SCIStatus'],
-    SCIIndocAssistDate: j[0]['SCIIndocAssistDate'],
-    SCIAccessCheckDate: j[0]['SCIAccessCheckDate'],
+    SCIIndocAssistDate: moment(j[0]['SCIIndocAssistDate']).isValid() ? moment(j[0]['SCIIndocAssistDate']) : '',
+    SCIAccessCheckDate: moment(j[0]['SCIAccessCheckDate']).isValid() ? moment(j[0]['SCIAccessCheckDate']) : '',
     SCIPR: j[0]['SCIPR'],
     SCICE: j[0]['SCICE'],
-    SCIIndoc: j[0]['SCIIndoc'],
+    SCIFormType: j[0]['SCIFormType'],
+    SCIFormSubmitted: moment(j[0]['SCIFormSubmitted']).isValid() ? moment(j[0]['SCIFormSubmitted']) : '',
+    SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
     CAC: JSON.parse(j[0]['CAC']),
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],

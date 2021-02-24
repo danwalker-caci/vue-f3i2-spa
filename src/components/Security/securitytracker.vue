@@ -9,36 +9,41 @@
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
       <ejs-grid
-        id="FormsGrid"
-        ref="FormsGrid"
+        id="SecurityGrid"
+        ref="SecurityGrid"
         :dataSource="securityforms"
         :allowPaging="true"
-        :allowReordering="false"
+        :allowReordering="true"
+        :allowResizing="true"
         :pageSettings="pageSettings"
         :editSettings="editSettings"
         :filterSettings="filterSettings"
         :toolbar="toolbar"
         :allowExcelExport="true"
         :toolbarClick="toolbarClick"
+        :actionComplete="actionComplete"
+        :dataBound="dataBound"
         :detailTemplate="detailTemplate"
         rowHeight="20"
         height="100%"
         width="100%"
       >
         <e-columns>
-          <e-column field="PersonName" headerText="Person Name" textAlign="Left" width="250"></e-column>
-          <e-column field="Company" headerText="Company" width="100" textAlign="Left"></e-column>
-          <e-column field="SCIStatus" headerText="SCI Status" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
+          <e-column field="PersonName" headerText="Person Name" minWidth="250" textAlign="Left"></e-column>
+          <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
+          <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" minWidth="125" textAlign="Left"></e-column>
+          <e-column field="SCIPR" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCICE" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACValid" headerText="Is CAC Valid" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACStatus" headerText="CAC Status" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACRequestDate" headerText="CAC Request Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+          <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACStatus" headerText="CAC Status" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACIssuedBy" headerText="CAC Issued By" minWidth="50" textAlign="Left"></e-column>
           <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
@@ -70,7 +75,7 @@ import Personnel from '@/models/Personnel'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
-import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport } from '@syncfusion/ej2-vue-grids'
+import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport, Resize, Search } from '@syncfusion/ej2-vue-grids'
 
 export default {
   name: 'SecurityForms',
@@ -109,7 +114,7 @@ export default {
   data: function() {
     return {
       company: '',
-      pageSettings: { pageSize: 15 },
+      pageSettings: { pageSize: 30 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -118,7 +123,7 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['ExcelExport'],
+      toolbar: ['ExcelExport', 'Search'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
@@ -310,7 +315,8 @@ export default {
             data: function() {
               return {
                 data: {
-                  GovernmentDate: ''
+                  GovernmentDate: '',
+                  securityforms: []
                 },
                 ddfields: { text: 'text', value: 'value' },
                 status: [
@@ -342,7 +348,6 @@ export default {
             },
             methods: {
               AssistDateChange(data) {
-                console.log(data.SCIStatus)
                 data.SCIStatus = 'SSO Processed'
               },
               async NotifyGov(data, e) {
@@ -402,8 +407,7 @@ export default {
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
                 let id = parseInt(event.currentTarget.dataset.id)
-                let link = data.href
-                console.log(`LINK: ${link}`)
+                console.log(`DATA: ${JSON.stringify(data)}`)
                 let taskId,
                   account,
                   taskUserId = vm.$store.state.support.AccountUserId
@@ -417,7 +421,10 @@ export default {
                 })
                 await this.updateForm(data, taskId)
                   .then(() => {
-                    window.open(url + '/_layouts/download.aspx?SourceUrl=' + link, '_blank')
+                    // To Do: change this to automatically download the type of account
+                    data.Accounts.forEach(account => {
+                      window.open(url + '/_layouts/download.aspx?SourceUrl=' + account.href, '_blank')
+                    })
                   })
                   .catch(e => {
                     // Add user notification and system logging
@@ -545,8 +552,10 @@ export default {
                 payload.SCICE = d.SCICE ? this.$moment(d.SCICE).format('MM-DD-YYYY') : ''
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('MM-DD-YYYY') : ''*/
                 payload.CACValid = d.CACValid
+                payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
                 payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null
                 payload.CACIssuedBy = d.CACIssuedBy
+                payload.SCIIndoc = d.SCIIndoc ? d.SCIIndoc : null
                 payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? d.SCIIndocAssistDate : null
                 payload.SCIPR = d.SCIPR ? d.SCIPR : null
                 payload.SCICE = d.SCICE ? d.SCICE : null
@@ -609,8 +618,20 @@ export default {
         vm.$options.interval = setInterval(vm.waitForPersonnel, 1500)
       })
     } else {
-      this.getUserIDs()
-      await Security.dispatch('getSecurityForms')
+      //await this.getUserIDs()
+      console.log('Getting Security Forms')
+      await Security.dispatch('getSecurityForms').then(() => {
+        this.securityforms.forEach(form => {
+          form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+          form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
+          form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
+          form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+          form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+          form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+          form.SCIPR = this.$moment(form.SCIPR).isValid() ? this.$moment(form.SCIPR).format('MM/DD/YYYY') : ''
+          form.SCICE = this.$moment(form.SCICE).isValid() ? this.$moment(form.SCICE).format('MM/DD/YYYY') : ''
+        })
+      })
     }
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
@@ -619,6 +640,22 @@ export default {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
       this.$store.dispatch('support/getCACSCIUser')
+    },
+    actionComplete(args) {
+      // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
+      if (args.requestType == 'columnstate') {
+        this.$refs['SecurityGrid'].autoFitColumns()
+      }
+      /*if (args.requestType == 'refresh') {
+        let h1 = 0
+        let h2 = this.$refs.SecurityGrid.$el.children[7].children[0].clientHeight // cildren[7] matches .e-gridconent
+        h1 = Math.floor(h2 / 20)
+        this.pageSettings.pageSize = h1
+        this.$refs.SecurityGrid.pageSettings = { pageSize: h1 }
+      }*/
+    },
+    dataBound: function() {
+      this.$refs.SecurityGrid.autoFitColumns()
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -672,35 +709,37 @@ export default {
       })
     },
     toolbarClick: function(args) {
-      if (args.item.id === 'FormsGrid_excelexport') {
+      if (args.item.id === 'SecurityGrid_excelexport') {
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
-        this.$refs.FormsGrid.getColumns()[2].visible = true
-        this.$refs.FormsGrid.getColumns()[3].visible = true
-        this.$refs.FormsGrid.getColumns()[4].visible = true
-        this.$refs.FormsGrid.getColumns()[5].visible = true
-        this.$refs.FormsGrid.getColumns()[6].visible = true
-        this.$refs.FormsGrid.getColumns()[7].visible = true
-        this.$refs.FormsGrid.getColumns()[8].visible = true
-        this.$refs.FormsGrid.getColumns()[9].visible = true
-        this.$refs.FormsGrid.getColumns()[10].visible = true
-        this.$refs.FormsGrid.getColumns()[11].visible = true
-        this.$refs.FormsGrid.getColumns()[12].visible = true
-        this.$refs.FormsGrid.getColumns()[13].visible = true
-        this.$refs.FormsGrid.getColumns()[14].visible = true
-        this.$refs.FormsGrid.getColumns()[15].visible = true
-        this.$refs.FormsGrid.getColumns()[16].visible = true
-        this.$refs.FormsGrid.getColumns()[17].visible = true
-        this.$refs.FormsGrid.getColumns()[18].visible = true
-        this.$refs.FormsGrid.getColumns()[19].visible = true
-        this.$refs.FormsGrid.getColumns()[20].visible = true
-        this.$refs.FormsGrid.getColumns()[21].visible = true
-        this.$refs.FormsGrid.getColumns()[22].visible = true
-        this.$refs.FormsGrid.getColumns()[23].visible = true
-        this.$refs.FormsGrid.getColumns()[24].visible = true
-        this.$refs.FormsGrid.getColumns()[25].visible = false
-        this.$refs.FormsGrid.getColumns()[26].visible = false
-        this.$refs.FormsGrid.getColumns()[27].visible = false
+        this.$refs.SecurityGrid.getColumns()[2].visible = true
+        this.$refs.SecurityGrid.getColumns()[3].visible = true
+        this.$refs.SecurityGrid.getColumns()[4].visible = true
+        this.$refs.SecurityGrid.getColumns()[5].visible = true
+        this.$refs.SecurityGrid.getColumns()[6].visible = true
+        this.$refs.SecurityGrid.getColumns()[7].visible = true
+        this.$refs.SecurityGrid.getColumns()[8].visible = true
+        this.$refs.SecurityGrid.getColumns()[9].visible = true
+        this.$refs.SecurityGrid.getColumns()[10].visible = true
+        this.$refs.SecurityGrid.getColumns()[11].visible = true
+        this.$refs.SecurityGrid.getColumns()[12].visible = true
+        this.$refs.SecurityGrid.getColumns()[13].visible = true
+        this.$refs.SecurityGrid.getColumns()[14].visible = true
+        this.$refs.SecurityGrid.getColumns()[15].visible = true
+        this.$refs.SecurityGrid.getColumns()[16].visible = true
+        this.$refs.SecurityGrid.getColumns()[17].visible = true
+        this.$refs.SecurityGrid.getColumns()[18].visible = true
+        this.$refs.SecurityGrid.getColumns()[19].visible = true
+        this.$refs.SecurityGrid.getColumns()[20].visible = true
+        this.$refs.SecurityGrid.getColumns()[21].visible = true
+        this.$refs.SecurityGrid.getColumns()[22].visible = true
+        this.$refs.SecurityGrid.getColumns()[23].visible = true
+        this.$refs.SecurityGrid.getColumns()[24].visible = true
+        this.$refs.SecurityGrid.getColumns()[25].visible = true
+        this.$refs.SecurityGrid.getColumns()[26].visible = true
+        this.$refs.SecurityGrid.getColumns()[27].visible = false
+        this.$refs.SecurityGrid.getColumns()[28].visible = false
+        this.$refs.SecurityGrid.getColumns()[29].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -708,15 +747,17 @@ export default {
             PersonName: sf.PersonName,
             Company: sf.Company,
             SCIStatus: sf.SCIStatus,
-            SCIIndocAssistDate: sf.SCIIndocAssistDate ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
-            SCIPR: sf.SCIPR ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
-            SCICE: sf.SCICE ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
-            SCIIndocDate: sf.SCIIndoc ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
-            SCIAccessCheckDate: sf.SCIAccessCheckDate ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
+            SCIFormType: sf.SCIFormType,
+            SCIFormSubmitted: this.$moment(sf.SCIFormSubmitted).isValid() ? this.$moment(sf.SCIFormSubmitted).format('MM/DD/YYYY') : '',
+            SCIIndocAssistDate: this.$moment(sf.SCIIndocAssistDate).isValid() ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
+            SCIPR: this.$moment(sf.SCIPR).isValid() ? this.$moment(sf.SCIPR).format('MM/DD/YYYY') : '',
+            SCICE: this.$moment(sf.SCICE).isValid() ? this.$moment(sf.SCICE).format('MM/DD/YYYY') : '',
+            SCIIndocDate: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
+            SCIAccessCheckDate: this.$moment(sf.SCIAccessCheckDate).isValid() ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,
-            CACRequestDate: sf.CACRequestDate ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
-            CACExpirationDate: sf.CACExpirationDate ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
+            CACRequestDate: this.$moment(sf.CACRequestDate).isValid() ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
+            CACExpirationDate: this.$moment(sf.CACExpirationDate).isValid() ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
             CACIssuedBy: sf.CACIssuedBy,
             NIPRAccount: '',
             NIPRGovSentDate: '',
@@ -731,30 +772,32 @@ export default {
             JWICGovSentDate: '',
             JWICGovCompleteDate: ''
           }
-          sf.Accounts.forEach(a => {
-            switch (a.account) {
-              case 'NIPR':
-                CurrentData['NIPRAccount'] = 'Yes'
-                CurrentData['NIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['NIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'SIPR':
-                CurrentData['SIPRAccount'] = 'Yes'
-                CurrentData['SIPRGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['SIPRGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'DREN':
-                CurrentData['DRENAccount'] = 'Yes'
-                CurrentData['DRENGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['DRENGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-              case 'JWIC':
-                CurrentData['JWICAccount'] = 'Yes'
-                CurrentData['JWICGovSentDate'] = a.GovSentDate ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                CurrentData['JWICGovCompleteDate'] = a.GovCompleteDate ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                break
-            }
-          })
+          if (sf.Accounts && sf.Accounts.length > 0) {
+            sf.Accounts.forEach(a => {
+              switch (a.account) {
+                case 'NIPR':
+                  CurrentData['NIPRAccount'] = 'Yes'
+                  CurrentData['NIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['NIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'SIPR':
+                  CurrentData['SIPRAccount'] = 'Yes'
+                  CurrentData['SIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['SIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'DREN':
+                  CurrentData['DRENAccount'] = 'Yes'
+                  CurrentData['DRENGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['DRENGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+                case 'JWIC':
+                  CurrentData['JWICAccount'] = 'Yes'
+                  CurrentData['JWICGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData['JWICGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  break
+              }
+            })
+          }
           data.push(CurrentData)
         })
         let excelExportProperties = {
@@ -762,12 +805,12 @@ export default {
           dataSource: data,
           includeHiddenColumn: false
         }
-        this.$refs.FormsGrid.excelExport(excelExportProperties)
+        this.$refs.SecurityGrid.excelExport(excelExportProperties)
       }
     }
   },
   provide: {
-    grid: [Page, DetailRow, VirtualScroll, Toolbar, ExcelExport]
+    grid: [Page, DetailRow, VirtualScroll, Toolbar, ExcelExport, Resize, Search]
   }
   /*actionBegin(args) {
     switch (args.requestType) {
