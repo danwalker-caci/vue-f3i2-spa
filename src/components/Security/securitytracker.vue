@@ -114,7 +114,7 @@ export default {
   data: function() {
     return {
       company: '',
-      pageSettings: { pageSize: 30 },
+      pageSettings: { pageSize: 20 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -133,7 +133,7 @@ export default {
               <b-container fluid>
                 <b-row>
                   <!-- Account Template -->
-                  <b-col cols="12" v-if="data.Accounts.length > 0">
+                  <b-col cols="12" v-if="data.Accounts && data.Accounts.length > 0">
                     <div class="detailDiv">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
@@ -171,7 +171,7 @@ export default {
                       </b-table-simple>
                     </div>
                   </b-col>
-                  <b-col v-if="data.SCI.length > 0" cols="12">
+                  <b-col v-if="data.SCI && data.SCI.length > 0" cols="12">
                    <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -214,7 +214,7 @@ export default {
                         </b-tbody>
                       </b-table-simple>
                   </b-col>
-                  <b-col v-if="data.CAC.length > 0" cols="12">
+                  <b-col v-if="data.CAC && data.CAC.length > 0" cols="12">
                     <div v-if="data.CACValid === 'Yes'">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
@@ -299,6 +299,9 @@ export default {
                 </b-row>
               </b-container>`,
             computed: {
+              userloaded() {
+                return User.getters('Loaded')
+              },
               isSecurity() {
                 return User.getters('isSecurity')
               },
@@ -611,26 +614,10 @@ export default {
     // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
     await Security.dispatch('getDigest')
     await Todo.dispatch('getDigest')
-    if (this.isSubcontractor) {
-      Company.dispatch('getCompanies').then(function() {
-        // Add notification
-        vm.$options.interval = setInterval(vm.waitForPersonnel, 1500)
-      })
+    if (this.userloaded) {
+      this.getData()
     } else {
-      //await this.getUserIDs()
-      console.log('Getting Security Forms')
-      await Security.dispatch('getSecurityForms').then(() => {
-        this.securityforms.forEach(form => {
-          form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
-          form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
-          form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
-          form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
-          form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
-          form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
-          form.SCIPR = this.$moment(form.SCIPR).isValid() ? this.$moment(form.SCIPR).format('MM/DD/YYYY') : ''
-          form.SCICE = this.$moment(form.SCICE).isValid() ? this.$moment(form.SCICE).format('MM/DD/YYYY') : ''
-        })
-      })
+      vm.$options.interval = setInterval(vm.getData, 1000)
     }
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
@@ -655,6 +642,30 @@ export default {
     },
     dataBound: function() {
       this.$refs.SecurityGrid.autoFitColumns()
+    },
+    getData: async function() {
+      clearInterval(vm.$options.interval)
+      if (this.isSubcontractor) {
+        Company.dispatch('getCompanies').then(function() {
+          // Add notification
+          vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
+        })
+      } else {
+        //await this.getUserIDs()
+        console.log('Getting Security Forms')
+        await Security.dispatch('getSecurityForms').then(() => {
+          this.securityforms.forEach(form => {
+            form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+            form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
+            form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
+            form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+            form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+            form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+            form.SCIPR = this.$moment(form.SCIPR).isValid() ? this.$moment(form.SCIPR).format('MM/DD/YYYY') : ''
+            form.SCICE = this.$moment(form.SCICE).isValid() ? this.$moment(form.SCICE).format('MM/DD/YYYY') : ''
+          })
+        })
+      }
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -788,24 +799,24 @@ export default {
             sf.Accounts.forEach(a => {
               switch (a.account) {
                 case 'NIPR':
-                  CurrentData['NIPRAccount'] = 'Yes'
-                  CurrentData['NIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData['NIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.NIPRAccount = 'Yes'
+                  CurrentData.NIPRGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.NIPRGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
                 case 'SIPR':
-                  CurrentData['SIPRAccount'] = 'Yes'
-                  CurrentData['SIPRGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData['SIPRGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.SIPRAccount = 'Yes'
+                  CurrentData.SIPRGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.SIPRGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
                 case 'DREN':
-                  CurrentData['DRENAccount'] = 'Yes'
-                  CurrentData['DRENGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData['DRENGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.DRENAccount = 'Yes'
+                  CurrentData.DRENGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.DRENGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
-                case 'JWIC':
-                  CurrentData['JWICAccount'] = 'Yes'
-                  CurrentData['JWICGovSentDate'] = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData['JWICGovCompleteDate'] = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                case 'JWICS':
+                  CurrentData.JWICAccount = 'Yes'
+                  CurrentData.JWICGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.JWICGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
               }
             })
