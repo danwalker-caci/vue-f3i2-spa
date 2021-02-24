@@ -243,7 +243,7 @@ export default {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {
       if (sfurl === null) {
-        sfurl = securityformurl + '?$filter=(Company eq ' + payload.company + ')'
+        sfurl = securityformurl + "?$filter=(Company eq '" + payload.company + "')"
       }
 
       let response = await axios.get(sfurl, {

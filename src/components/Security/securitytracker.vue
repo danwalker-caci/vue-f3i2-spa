@@ -674,18 +674,31 @@ export default {
           })
           console.log('ERROR: ' + error.message)
         })
-        await Security.dispatch('getSecurityFormsByCompany', payload).catch(error => {
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: error.message,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
+        await Security.dispatch('getSecurityFormsByCompany', payload)
+          .then(() => {
+            this.securityforms.forEach(form => {
+              form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+              form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
+              form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
+              form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+              form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+              form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+              form.SCIPR = this.$moment(form.SCIPR).isValid() ? this.$moment(form.SCIPR).format('MM/DD/YYYY') : ''
+              form.SCICE = this.$moment(form.SCICE).isValid() ? this.$moment(form.SCICE).format('MM/DD/YYYY') : ''
+            })
           })
-          console.log('ERROR: ' + error.message)
-        })
+          .catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
         clearInterval(vm.$options.interval)
       }
     },
