@@ -89,7 +89,6 @@ function formatForms(j) {
   let p = []
   //extrapulate the forms into a nice array of objects
   for (let i = 0; i < j.length; i++) {
-    var types = JSON.parse(j[i]['Types'])
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
@@ -101,7 +100,7 @@ function formatForms(j) {
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Accounts: types ? types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)) : '',
+      Accounts: JSON.parse(j[i]['Types']),
       SCI: j[i]['SCI'] ? JSON.parse(j[i]['SCI']) : '', // TODO: sort the SCI forms
       SCIStatus: j[i]['SCIStatus'],
       SCIIndocAssistDate: moment(j[i]['SCIIndocAssistDate']).isValid() ? moment(j[i]['SCIIndocAssistDate']) : '',
@@ -117,13 +116,23 @@ function formatForms(j) {
       uri: j[i]['__metadata']['uri']
     })
   }
+  p.sort((a, b) => {
+    var nameA = a.PersonName.toUpperCase()
+    var nameB = b.PersonName.toUpperCase()
+    if (nameA < nameB) {
+      return -1
+    }
+    if (nameA > nameB) {
+      return 1
+    }
+    return 0
+  })
   return p
 }
 
 function formatForm(j) {
   let p = {}
   //extrapulate the forms into a nice array of objects
-  var types = JSON.parse(j[0]['Types'])
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
@@ -135,7 +144,7 @@ function formatForm(j) {
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],
-    Accounts: types.sort((a, b) => parseFloat(a.type) - parseFloat(b.type)),
+    Accounts: JSON.parse(j[0]['Types']),
     SCI: JSON.parse(j[0]['SCI']),
     SCIStatus: j[0]['SCIStatus'],
     SCIIndocAssistDate: moment(j[0]['SCIIndocAssistDate']).isValid() ? moment(j[0]['SCIIndocAssistDate']) : '',

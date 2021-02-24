@@ -35,8 +35,8 @@
           <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" minWidth="125" textAlign="Left"></e-column>
-          <e-column field="SCIPR" headerText="SCI PR" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SCICE" headerText="SCI CE" :visible="false" textAlign="Left"></e-column>
+          <e-column field="SCIPR" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="SCICE" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
@@ -65,6 +65,8 @@
   </b-container>
 </template>
 <script>
+// eslint-disable-next-line no-undef
+let url = _spPageContextInfo.webAbsoluteUrl
 let vm = null
 //let url = _spPageContextInfo.webAbsoluteUrl
 import Vue from 'vue'
@@ -73,7 +75,7 @@ import Personnel from '@/models/Personnel'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
 import Todo from '@/models/Todo'
-import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport, Resize } from '@syncfusion/ej2-vue-grids'
+import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport, Resize, Search } from '@syncfusion/ej2-vue-grids'
 
 export default {
   name: 'SecurityForms',
@@ -121,7 +123,7 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       //toolbar: ['Edit', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['ExcelExport'],
+      toolbar: ['ExcelExport', 'Search'],
       // Add a template with logic to handle each of the account types with buttons to indicate when they were sent to/completed by the gov
       // template should also check what the formType is and only display those forms
       detailTemplate: function() {
@@ -405,26 +407,57 @@ export default {
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
                 let id = parseInt(event.currentTarget.dataset.id)
-                let taskId
+                let taskId,
+                  account,
+                  taskUserId = vm.$store.state.support.AccountUserId
                 // get the current item data
                 data.Accounts.forEach(type => {
                   if (id === type.id) {
                     type.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                     taskId = type.task
+                    account = type.account
                   }
                 })
-                await this.updateForm(data, taskId).catch(e => {
-                  // Add user notification and system logging
+                await this.updateForm(data, taskId)
+                  .then(() => {
+                    // To Do: change this to automatically download the type of account
+                    data.Accounts.forEach(account => {
+                      window.open(url + '/_layouts/download.aspx?SourceUrl=' + account.href, '_blank')
+                    })
+                  })
+                  .catch(e => {
+                    // Add user notification and system logging
+                    const notification = {
+                      type: 'danger',
+                      title: 'Portal Error',
+                      message: e,
+                      push: true
+                    }
+                    this.$store.dispatch('notification/add', notification, {
+                      root: true
+                    })
+                    console.log('ERROR: ' + e.message)
+                  })
+                let payload = {
+                  Title: 'AFRL Completed ' + data.PersonName + ' ' + account + ' Request',
+                  AssignedToId: taskUserId,
+                  Description: 'AFRL Completed ' + data.PersonName + ' ' + account + ' Request. Please notify the original submitter.',
+                  IsMilestone: false,
+                  PercentComplete: 0,
+                  TaskType: account + ' Request',
+                  TaskLink: '/security/tracker/accounts'
+                }
+                await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
                     type: 'danger',
                     title: 'Portal Error',
-                    message: e,
+                    message: error.message,
                     push: true
                   }
                   this.$store.dispatch('notification/add', notification, {
                     root: true
                   })
-                  console.log('ERROR: ' + e.message)
+                  console.log('ERROR: ' + error.message)
                 })
                 // Remove the button and display current Date
               },
@@ -518,12 +551,14 @@ export default {
                 payload.SCICE = d.SCICE ? this.$moment(d.SCICE).format('MM-DD-YYYY') : ''
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? this.$moment(d.SCIAccessCheckDate).format('MM-DD-YYYY') : ''*/
                 payload.CACValid = d.CACValid
-                payload.CACExpirationDate = d.CACExpirationDate
+                payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
+                payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null
                 payload.CACIssuedBy = d.CACIssuedBy
-                payload.SCIIndocAssistDate = d.SCIIndocAssistDate
-                payload.SCIPR = d.SCIPR
-                payload.SCICE = d.SCICE
-                payload.SCIAccessCheckDate = d.SCIAccessCheckDate
+                payload.SCIIndoc = d.SCIIndoc ? d.SCIIndoc : null
+                payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? d.SCIIndocAssistDate : null
+                payload.SCIPR = d.SCIPR ? d.SCIPR : null
+                payload.SCICE = d.SCICE ? d.SCICE : null
+                payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? d.SCIAccessCheckDate : null
                 payload.SCIStatus = d.SCIStatus
                 await Security.dispatch('updateSecurityForm', payload)
                   .then(function(result) {
@@ -592,6 +627,8 @@ export default {
           form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
           form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
           form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+          form.SCIPR = this.$moment(form.SCIPR).isValid() ? this.$moment(form.SCIPR).format('MM/DD/YYYY') : ''
+          form.SCICE = this.$moment(form.SCICE).isValid() ? this.$moment(form.SCICE).format('MM/DD/YYYY') : ''
         })
       })
     }
@@ -734,7 +771,7 @@ export default {
             JWICGovSentDate: '',
             JWICGovCompleteDate: ''
           }
-          if (sf.Accounts.length > 0) {
+          if (sf.Accounts && sf.Accounts.length > 0) {
             sf.Accounts.forEach(a => {
               switch (a.account) {
                 case 'NIPR':
@@ -772,7 +809,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, DetailRow, VirtualScroll, Toolbar, ExcelExport, Resize]
+    grid: [Page, DetailRow, VirtualScroll, Toolbar, ExcelExport, Resize, Search]
   }
   /*actionBegin(args) {
     switch (args.requestType) {
