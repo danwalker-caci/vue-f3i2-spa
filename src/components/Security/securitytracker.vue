@@ -407,7 +407,6 @@ export default {
               async CompleteGov(data, event) {
                 await Security.dispatch('getDigest')
                 let id = parseInt(event.currentTarget.dataset.id)
-                console.log(`DATA: ${JSON.stringify(data)}`)
                 let taskId,
                   account,
                   taskUserId = vm.$store.state.support.AccountUserId
