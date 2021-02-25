@@ -234,6 +234,7 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
+import Security from '@/models/Security'
 import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
@@ -792,6 +793,7 @@ export default {
     },
     newOk: async function() {
       await Personnel.dispatch('getDigest')
+      await Security.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -832,7 +834,15 @@ export default {
         }
       } else {
         try {
-          Personnel.dispatch('addPerson', this.newData).then(function() {
+          Personnel.dispatch('addPerson', this.newData).then(async function(results) {
+            // TO DO: change the config around to support the new format FirstName, LastName
+
+            let payload = {
+              PersonnelID: results.data.d.results.Id,
+              PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
+              Title: results.data.d.results.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
+            }
+            await Security.dispatch('addSecurityForm', payload)
             vm.hideme('NewModal', 'refresh')
           })
         } catch (e) {
