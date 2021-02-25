@@ -97,14 +97,6 @@
                 <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
                 <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
                 <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
-                <e-column field="CACStatus" :visible="false" :showInColumnChooser="true" headerText="CAC Status" textAlign="Left" width="110"></e-column>
-                <e-column field="CACRequestDate" :visible="false" :showInColumnChooser="true" headerText="CAC Req Date" textAlign="Left" width="180"></e-column>
-                <e-column field="CACExpirationDate" :visible="false" :showInColumnChooser="true" headerText="CAC Exp Date" textAlign="Left" width="180"></e-column>
-                <e-column field="SCIFormStatus" :visible="false" :showInColumnChooser="true" headerText="SCI Form Status" textAlign="Left" width="150"></e-column>
-                <e-column field="SCIFormType" :visible="false" :showInColumnChooser="true" headerText="SCI Form Type" textAlign="Left" width="150"></e-column>
-                <e-column field="SCIFormSubmitted" :visible="false" :showInColumnChooser="true" headerText="SCI Form Submitted" textAlign="Left" width="150"></e-column>
-                <e-column field="PRDueDate" :visible="false" :showInColumnChooser="true" headerText="PR Due Date" textAlign="Left" width="180"></e-column>
-                <e-column field="CEDate" :visible="false" :showInColumnChooser="true" headerText="CE Date" textAlign="Left" width="180"></e-column>
                 <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
                 <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
                 <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true" :showInColumnChooser="false"></e-column>
@@ -152,34 +144,6 @@
               <td colspan="2"><input class="e-input" type="text" v-model="rowData.Email" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Email }}</p></td>
               <td><input class="e-input" type="text" v-model="rowData.Phone" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Phone }}</p></td>
               <td><ejs-dropdownlist v-model="rowData.SubET" :dataSource="subet" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SubET }}</p></td>
-            </tr>
-            <tr class="bg-info text-white">
-              <th colspan="2" title="CAC Status">CAC Status</th>
-              <th colspan="2" title="CAC Request Date">CAC Req Date</th>
-              <th colspan="2" title="CAC Expiration Date">CAC Exp Date</th>
-            </tr>
-            <tr class="text-white">
-              <td colspan="2"><ejs-dropdownlist v-model="rowData.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACStatus }}</p></td>
-              <td colspan="2"><ejs-datepicker v-model="rowData.CACRequestDate"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACRequestDate }}</p></td>
-              <td colspan="2"><ejs-datepicker v-model="rowData.CACExpirationDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACExpirationDate }}</p></td>
-            </tr>
-            <tr class="bg-info text-white">
-              <th colspan="2" title="SCI Form Status">SCI Form Status</th>
-              <th colspan="2" title="SCI Form Type">SCI Form Type</th>
-              <th colspan="2" title="SCI Form Submitted">SCI Form Submiited</th>
-            </tr>
-            <tr class="text-white">
-              <td colspan="2"><ejs-dropdownlist v-model="rowData.SCIFormStatus" :dataSource="formstatus" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormStatus }}</p></td>
-              <td colspan="2"><ejs-dropdownlist v-model="rowData.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormType }}</p></td>
-              <td colspan="2"><ejs-datepicker v-model="rowData.SCIFormSubmitted" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormSubmitted }}</p></td>
-            </tr>
-            <tr class="bg-info text-white">
-              <th colspan="3" title="PR Due Date">PR Due Date</th>
-              <th colspan="3" title="CE Date">CE Date</th>
-            </tr>
-            <tr class="text-white">
-              <td colspan="3"><ejs-datepicker v-model="rowData.PRDueDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.PRDueDate }}</p></td>
-              <td colspan="3"><ejs-datepicker v-model="rowData.CEDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CEDate }}</p></td>
             </tr>
             <tr class="bg-info text-white text-center">
               <td colspan="6"><b>Work Plans</b></td>
@@ -451,97 +415,6 @@ export default {
           Selected: 'S',
           Predicate: 'E',
           FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'CACStatus',
-          Visible: false,
-          DisplayName: 'CAC Status',
-          Filter: false,
-          Type: 'Dropdown',
-          DropdownSource: 'cacstatus',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'CACRequestDate',
-          Visible: false,
-          DisplayName: 'CAC Req Date',
-          Filter: false,
-          Type: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'CACExpirationDate',
-          Visible: false,
-          DisplayName: 'CAC Exp Date',
-          Filter: false,
-          Type: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'SCIFormStatus',
-          Visible: false,
-          DisplayName: 'SCI Form Status',
-          Filter: false,
-          Type: 'Dropdown',
-          DropdownSource: 'formstatus',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'SCIFormType',
-          Visible: false,
-          DisplayName: 'SCI Form Type',
-          Filter: false,
-          Type: 'Dropdown',
-          DropdownSource: 'formtype',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'SCIFormSubmitted',
-          Visible: false,
-          DisplayName: 'SCI Form Submitted',
-          Filter: false,
-          Type: 'Date',
-          Predicate: '',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'PRDueDate',
-          Visible: false,
-          DisplayName: 'PR Due Date',
-          Filter: false,
-          Type: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'CEDate',
-          Visible: false,
-          DisplayName: 'CE Date',
-          Filter: false,
-          Type: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
           Sort: ''
         }
       ],

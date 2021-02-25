@@ -66,10 +66,13 @@
             </h3>
           </template>
           <b-card-body>
-            <b-row class="p-0 m-0">
+            <b-row class="p-0 m-1">
               <b-button :disabled="travel.length <= 0" ref="UpdateTravel" variant="success" @click="UpdateTravel">Update Travelers</b-button>
               <b-button ref="InstallSecurity" variant="danger" @click="InstallSecurity" class="ml-1">Install Security</b-button>
               <!-- <b-button ref="btnPlayground" variant="success" @click="btnPlaygroundClick">Playground</b-button> -->
+            </b-row>
+            <b-row class="p-0 m-1">
+              <b-button ref="migrateSecurityInfo" variant="success" @click="migrateSecurityInfo" class="ml-1">Migrate Security Info</b-button>
             </b-row>
             <!-- <b-row class="p-0 m-0">
               <b-form-input id="txtUserId" ref="txtUserId" v-model="UserId" placeholder="User Id"></b-form-input>
@@ -89,6 +92,7 @@ import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
 import Travel from '@/models/Travel'
+import Security from '@/models/Security'
 
 let vm = null
 let SPCI = null
@@ -196,6 +200,7 @@ export default {
       console.log('sp.js is loaded')
     })
     vm = this
+    Security.dispatch('getDigest')
     User.dispatch('getDigest')
     MSR.dispatch('getDigest')
     Travel.dispatch('getDigest')
@@ -565,6 +570,45 @@ export default {
         e.push(this.travel[i])
         Travel.dispatch('editTraveler', e)
       }
+    },
+    async migrateSecurityInfo() {
+      // First grab all of the information from the personnel
+      if (this.personnelloaded && this.allpersonnel.length > 0) {
+        this.asyncForEach(this.allpersonnel, async person => {
+          // get the relevant fields and then addSecurityForm
+          // Relevant fields:
+          // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
+          this.updateSecurityForm({
+            Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
+            PersonnelID: person.Id,
+            PersonName: person.FirstName + ' ' + person.LastName,
+            Company: person.Company,
+            SCIPR: person.PRDueDate ? person.PRDueDate : null,
+            SCICE: person.CEDate ? person.CEDate : null,
+            SCIStatus: person.SCIFormStatus,
+            SCIFormType: person.SCIFormType, // Add field in
+            SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in
+            CACExpirationDate: person.CACExpirationDate ? person.CACExpirationDate : null,
+            CACRequestDate: person.CACRequestDate ? person.CACRequestDate : null,
+            CACStatus: person.CACStatus,
+            CACValid: person.CACStatus === 'Issued' || person.CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No'
+          })
+        })
+      } else {
+        console.log('PERSONNEL NOT LOADED...')
+        Personnel.dispatch('getPersonnel').then(() => {
+          vm.migrateSecurityInfo()
+        })
+      }
+    },
+    async updateSecurityForm(data) {
+      Security.dispatch('addSecurityForm', data)
+        .then(results => {
+          console.log('Migrate Security: ' + results)
+        })
+        .catch(e => {
+          console.log('ERROR: ' + e)
+        })
     }
   }
 }
