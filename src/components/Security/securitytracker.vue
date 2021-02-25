@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="contentHeight m-0">
-    <div>
+  <b-col cols="12" class="m-0 p-0">
+    <b-container fluid class="contentHeight m-0 p-0">
       <b-row class="bg-warning text-black formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
@@ -61,8 +61,8 @@
           <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
         </e-columns>
       </ejs-grid>
-    </div>
-  </b-container>
+    </b-container>
+  </b-col>
 </template>
 <script>
 let vm = null
