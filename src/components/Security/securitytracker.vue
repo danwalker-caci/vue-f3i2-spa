@@ -131,7 +131,7 @@ export default {
           template: Vue.component('accountDetailTemplate', {
             template: `
               <b-container fluid>
-                <b-col cols="12">
+                <b-col cols="10">
                   <b-row>
                   <!-- Original fields Template -->
                     <b-table-simple small responsive>
@@ -253,7 +253,7 @@ export default {
                       </b-table-simple>
                     </div>
                   </b-col>
-                  <b-col v-if="data.SCI && data.SCI.length > 0" cols="12">
+                  <b-col v-if="data.SCI && data.SCI.length > 0" cols="10">
                    <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -290,7 +290,7 @@ export default {
                         </b-tbody>
                       </b-table-simple>
                   </b-col>
-                  <b-col v-if="data.CAC && data.CAC.length > 0" cols="12">
+                  <b-col v-if="data.CAC && data.CAC.length > 0" cols="10">
                     <div v-if="data.CACValid === 'Yes'">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
