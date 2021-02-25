@@ -10,8 +10,8 @@ let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
-//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
-let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -118,8 +118,8 @@ export default {
       headers: headers
     }
     let itemprops = {
-      //__metadata: { type: 'SP.Data.SecurityFormsListItem' },
-      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -198,6 +198,8 @@ export default {
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
       PRDueDate: payload.PRDueDate,
       CEDate: payload.CEDate,
+      SCIFormType: payload.SCIFormType,
+      SCIFormSubmitted: payload.SCIFormSubmitted,
       SCIIndoc: payload.SCIIndoc
     }
     if (payload.NIPR) {
@@ -280,7 +282,7 @@ export default {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {
       if (sfurl === null) {
-        sfurl = securityformurl + '?$filter=(Company eq ' + payload.company + ')'
+        sfurl = securityformurl + "?$filter=(Company eq '" + payload.company + "')"
       }
 
       let response = await axios.get(sfurl, {
