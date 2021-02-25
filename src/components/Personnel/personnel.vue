@@ -836,11 +836,11 @@ export default {
         try {
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
             // TO DO: change the config around to support the new format FirstName, LastName
-
+            console.log(JSON.stringify(results.data.d.results))
             let payload = {
-              PersonnelID: results.data.d.results.Id,
+              PersonnelID: results.data.d.Id,
               PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
-              Title: results.data.d.results.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
+              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
             }
             await Security.dispatch('addSecurityForm', payload)
             vm.hideme('NewModal', 'refresh')
