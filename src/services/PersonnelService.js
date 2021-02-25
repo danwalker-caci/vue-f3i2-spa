@@ -384,9 +384,11 @@ export default {
         }
 
         try {
-          await axios.post(url, itemprops2, config2)
+          return axios.post(url, itemprops2, config2).then(function(response) {
+            return response
+          })
           // go get the data for the saved item to return back to the user
-          return axios
+          /*return axios
             .get(url, {
               headers: {
                 accept: 'application/json;odata=verbose'
@@ -394,7 +396,7 @@ export default {
             })
             .then(function(response) {
               return response
-            })
+            })*/
         } catch (error) {
           console.log('PersonnelService Error Updating Personnel: ' + error)
         }
