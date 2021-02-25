@@ -29,21 +29,21 @@
         width="100%"
       >
         <e-columns>
-          <e-column field="PersonName" headerText="Person Name" minWidth="250" textAlign="Left"></e-column>
+          <e-column field="PersonName" headerText="Person Name" minWidth="200" textAlign="Left"></e-column>
           <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
           <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" minWidth="125" textAlign="Left"></e-column>
+          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIPR" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCICE" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACStatus" headerText="CAC Status" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
           <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
           <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACIssuedBy" headerText="CAC Issued By" minWidth="50" textAlign="Left"></e-column>
+          <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
           <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
@@ -131,7 +131,89 @@ export default {
           template: Vue.component('accountDetailTemplate', {
             template: `
               <b-container fluid>
-                <b-row>
+                <b-col cols="12">
+                  <b-row>
+                  <!-- Original fields Template -->
+                    <b-table-simple small responsive>
+                      <b-thead head-variant="dark">
+                        <b-tr>
+                          <b-th>CAC Status</b-th>
+                          <b-th>CAC Request Date</b-th>
+                          <b-th>CAC Expiration Date</b-th>
+                          <b-th></b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody>
+                        <b-tr>
+                          <b-td>
+                            <ejs-dropdownlist id="cacStatus" :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                          </b-td>
+                          <b-td>
+                            <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="data.CACRequestDate"></ejs-datepicker>
+                          </b-td>
+                          <b-td>
+                            <ejs-datepicker id="cacExpirationDate" :disable="!isSecurity" v-model="data.CACExpirationDate"></ejs-datepicker>
+                          </b-td>
+                          <b-td>
+                            <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm m-1 float-right" @click="updateForm(data)">Update</b-button>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table>
+                  </b-row>
+                  <b-row>
+                    <b-table-simple small responsive>
+                      <b-thead head-variant="dark">
+                        <b-tr>
+                          <b-th>SCI Status</b-th>
+                          <b-th>SCI Form Type</b-th>
+                          <b-th>SCI Form Submitted</b-th>
+                          <b-th></b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody>
+                        <b-tr>
+                          <b-td>
+                            <ejs-dropdownlist id="sciStatus" :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                          </b-td>
+                          <b-td>
+                            <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
+                          </b-td>
+                          <b-td>
+                            <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
+                          </b-td>
+                          <b-td>
+                            <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm m-1 float-right" @click="updateForm(data)">Update</b-button>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table>
+                  </b-row>
+                  <b-row>
+                    <b-table-simple small responsive>
+                      <b-thead head-variant="dark">
+                        <b-tr>
+                          <b-th>PR Due Date</b-th>
+                          <b-th>CE Date</b-th>
+                          <b-th></b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody>
+                        <b-tr>
+                          <b-td>
+                            <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.SCIPR"></ejs-datepicker>
+                          </b-td>
+                          <b-td>
+                            <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.SCICE"></ejs-datepicker>
+                          </b-td>
+                          <b-td>
+                            <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm m-1 float-right" @click="updateForm(data)">Update</b-button>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table>
+                    </b-row>
+                  </b-col>
                   <!-- Account Template -->
                   <b-col cols="12" v-if="data.Accounts && data.Accounts.length > 0">
                     <div class="detailDiv">
@@ -194,12 +276,6 @@ export default {
                             </b-td>
                             <b-td>
                               <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                            </b-td>
-                            <b-td>
-                              <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.SCIPR"></ejs-datepicker>
-                            </b-td>
-                            <b-td>
-                              <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.SCICE"></ejs-datepicker>
                             </b-td>
                             <b-td>
                               <span v-for="sci in data.SCI" :key="sci.Id">
@@ -346,6 +422,11 @@ export default {
                   { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
                   { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
                   { text: 'Transfer Pending', value: 'Transfer Pending' }
+                ],
+                formtype: [
+                  { text: 'N/A', value: 'N/A' },
+                  { text: 'Nomination', value: 'Nomination' },
+                  { text: 'Transfer', value: 'Transfer' }
                 ]
               }
             },
@@ -562,6 +643,8 @@ export default {
                 payload.SCIPR = d.SCIPR ? d.SCIPR : null
                 payload.SCICE = d.SCICE ? d.SCICE : null
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate ? d.SCIAccessCheckDate : null
+                payload.SCIFormType = d.SCIFormType
+                payload.SCIFormSubmitted = d.SCIFormSubmitted ? d.SCIFormSubmitted : null
                 payload.SCIStatus = d.SCIStatus
                 await Security.dispatch('updateSecurityForm', payload)
                   .then(function(result) {
@@ -612,6 +695,13 @@ export default {
     vm = this
     // First get current user informaiton
     // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+    const notification = {
+      type: 'info',
+      title: 'Getting Data',
+      message: 'Getting Security Information. Please wait...',
+      push: false
+    }
+    this.$store.dispatch('notification/add', notification, { root: true })
     await Security.dispatch('getDigest')
     await Todo.dispatch('getDigest')
     if (this.userloaded) {

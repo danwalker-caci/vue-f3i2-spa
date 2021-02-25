@@ -187,6 +187,8 @@ export default {
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
+      SCIFormType: payload.SCIFormType,
+      SCIFormSubmitted: payload.SCIFormSubmitted,
       SCIPR: payload.SCIPR,
       SCICE: payload.SCICE,
       SCIIndoc: payload.SCIIndoc
