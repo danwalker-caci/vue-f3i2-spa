@@ -153,8 +153,11 @@
                         </div>
                         <div class="col-6">
                           <b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.EndTime" ref="end" type="date" title="End" :state="ValidateMe('end')"></b-form-input>
-                          <b-form-invalid-feedback>
+                          <b-form-invalid-feedback v-if="BadEndDate === true">
                             Enter a valid date (mm/dd/yyyy)
+                          </b-form-invalid-feedback>
+                          <b-form-invalid-feedback v-if="EndBeforeStart === true">
+                            End Date cannot be before Start Date
                           </b-form-invalid-feedback>
                         </div>
                       </div>

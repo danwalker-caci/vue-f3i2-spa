@@ -509,6 +509,8 @@ export default {
       workplanuri: null,
       workplanetag: null,
       newindex: null,
+      EndBeforeStart: null,
+      BadEndDate: null,
       editing: false,
       fileSelected: null,
       fileBuffer: null,

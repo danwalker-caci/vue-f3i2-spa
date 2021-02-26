@@ -97,9 +97,10 @@
               :width="rect.width - 5"
             >
               <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" :lockColumn="true" headerText="Status" width="150"></e-column>
-                <e-column field="Comments" headerText="Purpose" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
+                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                <e-column field="Status" headerText="Status" width="150"></e-column>
+                <!-- <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column> -->
+                <e-column field="Title" headerText="Title" textAlign="Left" width="400"></e-column>
                 <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                 <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                 <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
@@ -862,7 +863,7 @@ export default {
         this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
         if (this.$route) {
-          let idx = String(this.$route.query.IndexNumber)
+          let idx = String(this.$route.query.id)
           if (idx == 'null' || idx == 'undefined') {
             // do nothing here
           } else {
@@ -967,53 +968,51 @@ export default {
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
       } else {
-        if (args.column.headerText == 'Actions' || args.column.field == 'Status') {
-          let c = String(args.data['Status'])
-          switch (c) {
-            case 'Approved': {
-              args.cell.classList.add('bg-orange', 'text-white')
-              break
-            }
+        let c = String(args.data['Status'])
+        switch (c) {
+          case 'Approved': {
+            args.cell.classList.add('bg-orange', 'text-white')
+            break
+          }
 
-            case 'WPMReview': {
-              args.cell.classList.add('bg-blue', 'text-white')
-              break
-            }
+          case 'WPMReview': {
+            args.cell.classList.add('bg-blue', 'text-white')
+            break
+          }
 
-            case 'AFRLReview': {
-              args.cell.classList.add('bg-cyan', 'text-white')
-              break
-            }
+          case 'AFRLReview': {
+            args.cell.classList.add('bg-cyan', 'text-white')
+            break
+          }
 
-            case 'ReportDue': {
-              args.cell.classList.add('bg-yellow', 'text-dark')
-              break
-            }
+          case 'ReportDue': {
+            args.cell.classList.add('bg-yellow', 'text-dark')
+            break
+          }
 
-            case 'ReportLate': {
-              args.cell.classList.add('bg-red', 'text-white')
-              break
-            }
+          case 'ReportLate': {
+            args.cell.classList.add('bg-red', 'text-white')
+            break
+          }
 
-            case 'Completed': {
-              args.cell.classList.add('bg-green', 'text-white')
-              break
-            }
+          case 'Completed': {
+            args.cell.classList.add('bg-green', 'text-white')
+            break
+          }
 
-            case 'TripReportReview': {
-              args.cell.classList.add('bg-teal', 'text-dark')
-              break
-            }
+          case 'TripReportReview': {
+            args.cell.classList.add('bg-teal', 'text-dark')
+            break
+          }
 
-            case 'Postponed': {
-              args.cell.classList.add('bg-azure', 'text-dark')
-              break
-            }
+          case 'Postponed': {
+            args.cell.classList.add('bg-azure', 'text-dark')
+            break
+          }
 
-            case 'Cancelled': {
-              args.cell.classList.add('bg-purple', 'text-white')
-              break
-            }
+          case 'Cancelled': {
+            args.cell.classList.add('bg-purple', 'text-white')
+            break
           }
         }
       }
