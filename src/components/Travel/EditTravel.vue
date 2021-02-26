@@ -662,7 +662,17 @@ export default {
     vm = this
     try {
       let payload = {}
-      payload.id = vm.TripId
+      if (this.$route) {
+        let idx = String(this.$route.query.id)
+        if (idx) {
+          console.log('QUERY: ' + idx)
+          payload.id = idx
+        } else {
+          payload.id = vm.TripId
+        }
+      } else {
+        payload.id = vm.TripId
+      }
       Travel.dispatch('getTripById', payload).then(function() {
         vm.$options.interval = setInterval(vm.waitForTrip, 1000)
       })
