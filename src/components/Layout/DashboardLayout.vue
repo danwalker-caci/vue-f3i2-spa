@@ -1,57 +1,71 @@
 <template>
-  <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
-    <NotificationContainer />
-    <side-bar>
-      <user-menu v-if="userloaded"></user-menu>
-      <template slot="links">
-        <sidebar-item :link="{ name: 'Travel', library: 'fas', icon: 'plane', path: '/travel/home' }">
-          <sidebar-item :link="{ name: 'Travel Calendar', library: 'fas', icon: 'calendar', path: '/travel/home/refreshcalendar' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Travel Tracker', library: 'fas', icon: 'subway', path: '/travel/home/refreshtracker' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'New Travel Request', library: 'fas', icon: 'plane-departure', path: '/travel/home/new' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item :link="{ name: 'Personnel', library: 'fas', icon: 'users' }">
-          <sidebar-item :link="{ name: 'Onboarding', library: 'fas', icon: 'user-check', path: '/personnel/home/new/onboarding' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Roster', library: 'fas', icon: 'id-card', path: '/personnel/home/reports/default' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item :link="{ name: 'Work Plans', library: 'fas', icon: 'briefcase' }">
-          <sidebar-item :link="{ name: 'Active Work Plans', library: 'fas', icon: 'briefcase', path: '/workplans/home/active' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item :link="{ name: 'PMO Calendar', library: 'far', icon: 'calendar-alt', path: '/calendar/home' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Features and Bugs', library: 'far', icon: 'lightbulb' }">
-          <sidebar-item :link="{ name: 'Report Bug or Request Feature', library: 'fas', icon: 'bug', path: '/feature/home' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Features', library: 'fas', icon: 'cubes', path: '/features/home' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Bugs', library: 'fas', icon: 'spider', path: '/bugs/home' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item :link="{ name: 'Monthly Status Reports', library: 'fas', icon: 'file-contract' }">
-          <sidebar-item v-if="!isAFRL" :link="{ name: 'Edit Reports', library: 'fas', icon: 'file-signature', path: '/msr/home' }"></sidebar-item>
-          <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Report Library', library: 'fas', icon: 'folder', path: '/msr/library' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item :link="{ name: 'Training', library: 'fas', icon: 'chalkboard-teacher' }">
-          <sidebar-item v-if="!isSubcontractor" :link="{ name: 'AFRL Training', library: 'fas', icon: 'folder', path: '/training/AFRL' }"></sidebar-item>
-          <sidebar-item v-if="!isAFRL" :link="{ name: 'Subcontractor Training', library: 'fas', icon: 'folder', path: '/training/Subcontractor' }"></sidebar-item>
-          <sidebar-item v-if="!isSubcontractor && !isAFRL" :link="{ name: 'CACI Training', library: 'fas', icon: 'folder', path: '/training/CACI' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
-          <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
-          <!-- <sidebar-item :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item> -->
-        </sidebar-item>
-        <!-- Add Security Menu Links -->
-        <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">
-          <sidebar-item :link="{ name: 'Add Accounts', library: 'fas', icon: 'id-card-alt', path: '/security/account' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Add CAC', library: 'fas', icon: 'id-badge', path: '/security/cac' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Add SCI', library: 'fas', icon: 'id-card', path: '/security/sci' }"></sidebar-item>
-          <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker/accounts' }"></sidebar-item>
-        </sidebar-item>
-        <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
-      </template>
-    </side-bar>
-    <div class="main-panel">
-      <top-navbar></top-navbar>
-      <dashboard-content @click.native="toggleSidebar"></dashboard-content>
-      <content-footer></content-footer>
-    </div>
-  </div>
+  <b-container fluid class="m-0 p-0">
+    <b-row no-gutter class="cui">
+      <b-col cols="4" class="p-0"></b-col>
+      <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
+      <b-col cols="4" class="p-0"></b-col>
+    </b-row>
+    <b-row no-gutter>
+      <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
+        <NotificationContainer />
+        <side-bar>
+          <user-menu v-if="userloaded"></user-menu>
+          <template slot="links">
+            <sidebar-item :link="{ name: 'Travel', library: 'fas', icon: 'plane', path: '/travel/home' }">
+              <sidebar-item :link="{ name: 'Travel Calendar', library: 'fas', icon: 'calendar', path: '/travel/home/refreshcalendar' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Travel Tracker', library: 'fas', icon: 'subway', path: '/travel/home/refreshtracker' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'New Travel Request', library: 'fas', icon: 'plane-departure', path: '/travel/home/new' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item :link="{ name: 'Personnel', library: 'fas', icon: 'users' }">
+              <sidebar-item :link="{ name: 'Onboarding', library: 'fas', icon: 'user-check', path: '/personnel/home/new/onboarding' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Roster', library: 'fas', icon: 'id-card', path: '/personnel/home/reports/default' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item :link="{ name: 'Work Plans', library: 'fas', icon: 'briefcase' }">
+              <sidebar-item :link="{ name: 'Active Work Plans', library: 'fas', icon: 'briefcase', path: '/workplans/home/active' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item :link="{ name: 'PMO Calendar', library: 'far', icon: 'calendar-alt', path: '/calendar/home' }"></sidebar-item>
+            <sidebar-item :link="{ name: 'Features and Bugs', library: 'far', icon: 'lightbulb' }">
+              <sidebar-item :link="{ name: 'Report Bug or Request Feature', library: 'fas', icon: 'bug', path: '/feature/home' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Features', library: 'fas', icon: 'cubes', path: '/features/home' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Bugs', library: 'fas', icon: 'spider', path: '/bugs/home' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item :link="{ name: 'Monthly Status Reports', library: 'fas', icon: 'file-contract' }">
+              <sidebar-item v-if="!isAFRL" :link="{ name: 'Edit Reports', library: 'fas', icon: 'file-signature', path: '/msr/home' }"></sidebar-item>
+              <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Report Library', library: 'fas', icon: 'folder', path: '/msr/library' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item :link="{ name: 'Training', library: 'fas', icon: 'chalkboard-teacher' }">
+              <sidebar-item v-if="!isSubcontractor" :link="{ name: 'AFRL Training', library: 'fas', icon: 'folder', path: '/training/AFRL' }"></sidebar-item>
+              <sidebar-item v-if="!isAFRL" :link="{ name: 'Subcontractor Training', library: 'fas', icon: 'folder', path: '/training/Subcontractor' }"></sidebar-item>
+              <sidebar-item v-if="!isSubcontractor && !isAFRL" :link="{ name: 'CACI Training', library: 'fas', icon: 'folder', path: '/training/CACI' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
+              <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
+              <!-- <sidebar-item :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item> -->
+            </sidebar-item>
+            <!-- Add Security Menu Links -->
+            <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">
+              <sidebar-item :link="{ name: 'Add Accounts', library: 'fas', icon: 'id-card-alt', path: '/security/account' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Add CAC', library: 'fas', icon: 'id-badge', path: '/security/cac' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Add SCI', library: 'fas', icon: 'id-card', path: '/security/sci' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker/accounts' }"></sidebar-item>
+            </sidebar-item>
+            <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
+          </template>
+        </side-bar>
+        <div class="main-panel">
+          <top-navbar></top-navbar>
+          <dashboard-content @click.native="toggleSidebar"></dashboard-content>
+          <content-footer></content-footer>
+        </div>
+      </div>
+    </b-row>
+    <b-row no-gutter class="cui">
+      <b-col cols="4" class="p-0"></b-col>
+      <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
+      <b-col cols="4" class="p-0"></b-col>
+    </b-row>
+  </b-container>
 </template>
 <script>
 import User from '@/models/User'
@@ -95,6 +109,7 @@ export default {
     // get the bounds of the content class which represents the main content area.
     let el = document.getElementById('maincontent')
     let rect = el.getBoundingClientRect()
+    console.log('CALCULATED CONTENT AREA: HEIGHT: ' + rect.height + ', WIDTH: ' + rect.width)
     this.$store.dispatch('support/setContentRect', rect)
     this.$store.dispatch('support/addActivity', '<div class="bg-success text-white">DashboardLayout-MOUNTED: ' + rect.top + ', ' + rect.left + ', ' + rect.width + ', ' + rect.height + '</div>')
   },
@@ -107,4 +122,10 @@ export default {
   }
 }
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.cui {
+  height: 25px;
+  line-height: 25px;
+  background-color: #8d1d8d;
+}
+</style>
