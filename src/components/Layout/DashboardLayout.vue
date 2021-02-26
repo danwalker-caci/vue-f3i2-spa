@@ -116,13 +116,19 @@ export default {
     UserMenu
   },
   mounted: function() {
-    // get the bounds of the content class which represents the main content area.
-    let el = document.getElementById('maincontent')
-    let rect = el.getBoundingClientRect()
-    this.$store.dispatch('support/setContentRect', rect)
-    this.$store.dispatch('support/addActivity', '<div class="bg-success text-white">DashboardLayout-MOUNTED: ' + rect.top + ', ' + rect.left + ', ' + rect.width + ', ' + rect.height + '</div>')
+    this.$options.interval = setInterval(this.waitForUser, 1000)
   },
   methods: {
+    waitForUser() {
+      if (this.userloaded) {
+        clearInterval(this.$options.interval)
+        // get the bounds of the content class which represents the main content area.
+        let el = document.getElementById('maincontent')
+        let rect = el.getBoundingClientRect()
+        this.$store.dispatch('support/setContentRect', rect)
+        this.$store.dispatch('support/addActivity', '<div class="bg-success text-white">DashboardLayout-MOUNTED: ' + rect.top + ', ' + rect.left + ', ' + rect.width + ', ' + rect.height + '</div>')
+      }
+    },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {
         this.$sidebar.displaySidebar(false)
