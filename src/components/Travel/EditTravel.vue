@@ -134,8 +134,8 @@
                           <b-input-group>
                             <b-form-input disabled class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" :state="ValidateMe('IndexNumber')" ref="IndexNumber"></b-form-input>
                             <b-input-group-append v-if="travelmodel.WorkPlanNumber != ''">
-                              <b-button class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
-                              <b-button class="form-control-sm form-control-travel" variant="info" @click="SelectIndex">Select Existing</b-button>
+                              <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
+                              <b-button v-b-tooltip.hover.v-dark title="select an existing index number" class="form-control-sm form-control-travel" variant="info" @click="SelectIndex">Select Existing</b-button>
                             </b-input-group-append>
                           </b-input-group>
                         </div>
@@ -237,12 +237,12 @@
                             Numbers only
                           </b-form-invalid-feedback>
                         </div>
-                        <div class="col">
+                        <!-- <div class="col">
                           <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" ref="IndexNumber" :state="ValidateMe('IndexNumber')"></b-form-input>
                           <b-form-invalid-feedback>
                             11-1111-11 [WP Plus Index #]
                           </b-form-invalid-feedback>
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
                         <div class="col-12">Purpose</div>
@@ -663,13 +663,16 @@ export default {
     try {
       let payload = {}
       if (this.$route) {
-        let idx = String(this.$route.query.id)
-        if (idx) {
-          console.log('QUERY: ' + idx)
-          payload.id = idx
-        } else {
+        let idx = this.$route.query.id
+        console.log('idx: ' + idx)
+        if (idx === undefined || idx === null) {
+          console.log('TEST B')
           payload.id = vm.TripId
+        } else {
+          console.log('TEST A')
+          payload.id = idx
         }
+        console.log('PAYLOAD ID: ' + payload.id)
       } else {
         payload.id = vm.TripId
       }
@@ -1168,10 +1171,12 @@ export default {
     /* ---------------------------------------------------------------------------------------------------------------- End Validation Events ------------------------------------------------------------------------ */
     /* ---------------------------------------------------------------------------------------------------------------- Form Events ---------------------------------------------------------------------------------- */
     onModalHide: function() {
-      if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
-        this.$router.push({ name: this.$router.currentRoute.params.back })
-      } else {
+      let back = String(this.$router.currentRoute.params.back) === 'undefined' ? 'monkey' : String(this.$router.currentRoute.params.back)
+      console.log('BACK: ' + back + ', ' + typeof back)
+      if (back === 'monkey') {
         this.$router.push({ name: 'Travel Tracker' }) // default
+      } else {
+        this.$router.push({ name: back })
       }
     },
     onTabSelected: function(newidx, oldidx, event) {
@@ -1191,15 +1196,99 @@ export default {
 
           case 2:
             if (newidx > oldidx) {
-              let valid = this.validateSecondTab()
+              let valid = this.validateFirstTab()
               if (!valid) {
                 event.preventDefault()
                 this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                }
               }
             }
             break
 
           case 3:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  }
+                }
+              }
+            }
+            break
+
+          case 4:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                    }
+                  }
+                }
+              }
+            }
+            break
+
+          case 5:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                    }
+                  }
+                }
+              }
+            }
+            break
+
+          /* case 3:
             var fv = true
             if (newidx > oldidx && oldidx == 0) {
               let valid = this.validateFirstTab()
@@ -1218,7 +1307,7 @@ export default {
               }
             }
             this.formValid = fv
-            break
+            break */
         }
       }
     },
@@ -1627,7 +1716,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .helpHide {
   margin: 1rem;
 }

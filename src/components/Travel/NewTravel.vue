@@ -57,11 +57,6 @@
           </div>
         </b-container>
       </b-modal>
-      <b-sidebar v-model="ShowIndexPicker" id="IndexPicker" ref="IndexPicker" title="Select Travel Index #" bg-variant="dark" text-variant="light" right>
-        <div class="px-3 py-2">
-          <b-form-radio-group v-model="travelmodel.IndexNumber" :options="IndexNumbers" name="IndexRadios" stacked @change="IndexNumberChanged"></b-form-radio-group>
-        </div>
-      </b-sidebar>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="bg-black text-white formheader">
@@ -599,7 +594,7 @@ export default {
         ]
       },
       NewTravelfilterSettings: { type: 'Menu' },
-      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo', 'IndexNumber'],
+      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
       fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'Clearance'],
       fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
@@ -848,15 +843,99 @@ export default {
 
           case 2:
             if (newidx > oldidx) {
-              let valid = this.validateSecondTab()
+              let valid = this.validateFirstTab()
               if (!valid) {
                 event.preventDefault()
                 this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                }
               }
             }
             break
 
           case 3:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  }
+                }
+              }
+            }
+            break
+
+          case 4:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                    }
+                  }
+                }
+              }
+            }
+            break
+
+          case 5:
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                    }
+                  }
+                }
+              }
+            }
+            break
+
+          /* case 3:
             var fv = true
             if (newidx > oldidx && oldidx == 0) {
               let valid = this.validateFirstTab()
@@ -875,7 +954,7 @@ export default {
               }
             }
             this.formValid = fv
-            break
+            break */
         }
       }
     },

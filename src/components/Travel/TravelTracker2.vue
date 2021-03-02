@@ -67,69 +67,79 @@
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="buttonrow">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </b-row>
-          <b-row no-gutters class="gridrow">
-            <ejs-grid
-              id="TravelGrid"
-              ref="TravelGrid"
-              :frozenColumns="2"
-              :enablePersistence="false"
-              :dataSource="filteredtravel"
-              :allowPaging="true"
-              :allowReordering="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :queryCellInfo="formatCell"
-              :excelQueryCellInfo="formatExcelCell"
-              rowHeight="20"
-              :height="rect.height - 175"
-              :width="rect.width - 5"
-            >
-              <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="150"></e-column>
-                <!-- <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column> -->
-                <e-column field="Title" headerText="Title" textAlign="Left" width="400"></e-column>
-                <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
-                <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
-                <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
-                <e-column field="Created" headerText="Travel Requested" textAlign="Left" width="150" type="date" format="yMd"></e-column>
-                <e-column field="StartTime" headerText="Departure Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="EndTime" headerText="Return Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="TravelersText" headerText="Travelers" textAlign="Left" width="200"></e-column>
-                <e-column field="Company" headerText="Company" textAlign="Left" width="150"></e-column>
-                <e-column field="Sponsor" headerText="Sponsor" textAlign="Left" width="150"></e-column>
-                <e-column field="EstimatedCost" headerText="Est Cost" textAlign="Left" width="100"></e-column>
-                <e-column field="PreApproved" headerText="Pre Approved" textAlign="Left" width="100"></e-column>
-                <e-column field="VisitRequest" headerText="Visit Request" textAlign="Left" width="150"></e-column>
-                <e-column field="Clearance" headerText="Clearance" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUS" headerText="OCONUS" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUSLocation" headerText="OCONUS Location" textAlign="Left" width="150"></e-column>
-                <e-column field="OCONUSApprovedBy" headerText="OCONUS Approved By" textAlign="Left" width="180"></e-column>
-                <e-column field="OCONUSApprovedOn" headerText="OCONUS Approved Date" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TravelFrom" headerText="Travel From" textAlign="Left" width="150"></e-column>
-                <e-column field="TravelTo" headerText="Travel To" textAlign="Left" width="150"></e-column>
-                <e-column field="POCName" headerText="POC Name" textAlign="Left" width="120"></e-column>
-                <e-column field="POCEmail" headerText="POC Email" textAlign="Left" width="180"></e-column>
-                <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
-                <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
-                <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-              </e-columns>
-            </ejs-grid>
-          </b-row>
+          <b-form>
+            <b-row no-gutters class="buttonrow">
+              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                Toggle Filters
+              </b-button>
+              <b-input-group class="searchgroup">
+                <b-form-input type="text" placeholder="Search..." class="form-control form-control-search" v-model="searchinput" v-on:keyup.enter="searchme"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="warning" class="form-control-search-button" @click.stop="searchme" title="Search">
+                    <font-awesome-icon far icon="search" class="icon"></font-awesome-icon>
+                  </b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-row>
+            <b-row no-gutters class="gridrow">
+              <ejs-grid
+                id="TravelGrid"
+                ref="TravelGrid"
+                :frozenColumns="2"
+                :enablePersistence="false"
+                :dataSource="filteredtravel"
+                :allowPaging="true"
+                :allowReordering="true"
+                :allowResizing="true"
+                :pageSettings="pageSettings"
+                :editSettings="editSettings"
+                :toolbar="toolbar"
+                :allowExcelExport="true"
+                :toolbarClick="toolbarClick"
+                :dataBound="dataBound"
+                :actionBegin="actionBegin"
+                :actionComplete="actionComplete"
+                :queryCellInfo="formatCell"
+                :excelQueryCellInfo="formatExcelCell"
+                rowHeight="20"
+                :height="rect.height - 175"
+                :width="rect.width - 5"
+              >
+                <e-columns>
+                  <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                  <e-column field="Status" headerText="Status" width="150"></e-column>
+                  <!-- <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column> -->
+                  <e-column field="Title" headerText="Title" textAlign="Left" width="400"></e-column>
+                  <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
+                  <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
+                  <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
+                  <e-column field="Created" headerText="Travel Requested" textAlign="Left" width="150" type="date" format="yMd"></e-column>
+                  <e-column field="StartTime" headerText="Departure Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="EndTime" headerText="Return Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="TravelersText" headerText="Travelers" textAlign="Left" width="200"></e-column>
+                  <e-column field="Company" headerText="Company" textAlign="Left" width="150"></e-column>
+                  <e-column field="Sponsor" headerText="Sponsor" textAlign="Left" width="150"></e-column>
+                  <e-column field="EstimatedCost" headerText="Est Cost" textAlign="Left" width="100"></e-column>
+                  <e-column field="PreApproved" headerText="Pre Approved" textAlign="Left" width="100"></e-column>
+                  <e-column field="VisitRequest" headerText="Visit Request" textAlign="Left" width="150"></e-column>
+                  <e-column field="Clearance" headerText="Clearance" textAlign="Left" width="100"></e-column>
+                  <e-column field="OCONUS" headerText="OCONUS" textAlign="Left" width="100"></e-column>
+                  <e-column field="OCONUSLocation" headerText="OCONUS Location" textAlign="Left" width="150"></e-column>
+                  <e-column field="OCONUSApprovedBy" headerText="OCONUS Approved By" textAlign="Left" width="180"></e-column>
+                  <e-column field="OCONUSApprovedOn" headerText="OCONUS Approved Date" textAlign="Left" width="200" type="date" format="yMd"></e-column>
+                  <e-column field="TravelFrom" headerText="Travel From" textAlign="Left" width="150"></e-column>
+                  <e-column field="TravelTo" headerText="Travel To" textAlign="Left" width="150"></e-column>
+                  <e-column field="POCName" headerText="POC Name" textAlign="Left" width="120"></e-column>
+                  <e-column field="POCEmail" headerText="POC Email" textAlign="Left" width="180"></e-column>
+                  <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
+                  <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
+                  <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
+                  <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
+                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                </e-columns>
+              </ejs-grid>
+            </b-row>
+          </b-form>
         </b-container>
       </b-col>
     </b-row>
@@ -138,7 +148,7 @@
 
 <script>
 import Vue from 'vue'
-import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
 
@@ -206,11 +216,12 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze, Search]
   },
   data: function() {
     return {
       busyTitle: 'Getting Data. Please Wait.',
+      searchinput: '',
       moreevents: false,
       company: null,
       routeCount: 0,
@@ -612,7 +623,7 @@ export default {
         allowDeleting: false,
         mode: 'Dialog'
       },
-      toolbar: ['Add', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['Add', 'Print', 'ExcelExport'],
       rowData: {},
       legenditems: [
         {
@@ -862,15 +873,6 @@ export default {
         this.loadfilters()
         this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
-        if (this.$route) {
-          let idx = String(this.$route.query.id)
-          if (idx == 'null' || idx == 'undefined') {
-            // do nothing here
-          } else {
-            console.log('QUERY: ' + idx)
-            this.$refs.TravelGrid.search(idx)
-          }
-        }
       }
     },
     getRef: function(text, idx) {
@@ -890,16 +892,29 @@ export default {
     ToggleFilters() {
       this.$refs['FilterModal'].toggle('#ShowFilters')
     },
+    searchme: function() {
+      this.$refs.TravelGrid.search(this.searchinput)
+    },
     actionBegin(args) {
+      console.log('ACTIONBEGIN: ' + args.requestType)
       switch (args.requestType) {
         case 'add':
           args.cancel = true
           this.$router.push({ name: 'New Travel', params: { back: 'Travel Tracker' } })
           break
+
+        case 'searching':
+          args.cancel = true
+          console.log('i am not a crook')
+          // var searchText = document.getElementById('TravelGrid_searchbar').innerText
+          // this.$refs.TravelGrid.search(searchText)
+          break
       }
     },
     actionComplete(args) {
-      // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
+      if (console) {
+        console.log('ACTION COMPLETE: ' + args.requestType)
+      }
       if (args.requestType == 'columnstate') {
         this.$refs['TravelGrid'].autoFitColumns()
       }
@@ -1318,9 +1333,28 @@ export default {
 <style lang="scss">
 .buttonrow {
   height: 50px;
+  justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item
 }
+
 .gridrow {
   height: calc(100vh - 200px);
+}
+
+.searchgroup {
+  width: 400px !important;
+  height: 30px;
+  margin-right: 25px; // move to left of possible scroll bar
+  margin-top: 55px; // move down to place inside grid toolbar [yes, a hack]
+  z-index: 1500; // sit on top of grid toolbar [yes, more hackiness]
+}
+
+.form-control-search {
+  height: 30px !important;
+}
+
+.form-control-search-button {
+  line-height: 30px !important;
+  padding: 0px 10px !important;
 }
 
 .sorted {
