@@ -725,14 +725,14 @@
     }
 
     .wrapper{
-      height: auto;
+      height: calc(100vh - 100px);
     }
 
     .sidebar,
     .main-panel{
       overflow: visible;
       max-height: none;
-      height: auto;
+      height: calc(100vh - 100px);
     }
 
     .navbar-fixed{
