@@ -67,19 +67,19 @@
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-form>
+          <b-form @submit="onSubmit">
             <b-row no-gutters class="buttonrow">
               <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
                 Toggle Filters
               </b-button>
-              <b-input-group class="searchgroup">
+              <!-- <b-input-group class="searchgroup">
                 <b-form-input type="text" placeholder="Search..." class="form-control form-control-search" v-model="searchinput" v-on:keyup.enter="searchme"></b-form-input>
                 <b-input-group-append>
                   <b-button variant="warning" class="form-control-search-button" @click.stop="searchme" title="Search">
                     <font-awesome-icon far icon="search" class="icon"></font-awesome-icon>
                   </b-button>
                 </b-input-group-append>
-              </b-input-group>
+              </b-input-group> -->
             </b-row>
             <b-row no-gutters class="gridrow">
               <ejs-grid
@@ -623,7 +623,7 @@ export default {
         allowDeleting: false,
         mode: 'Dialog'
       },
-      toolbar: ['Add', 'Print', 'ExcelExport'],
+      toolbar: ['Add', 'Print', 'ExcelExport', 'Search'],
       rowData: {},
       legenditems: [
         {
@@ -878,6 +878,9 @@ export default {
     getRef: function(text, idx) {
       return text + '_' + idx
     },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
+    },
     toolbarClick: function(args) {
       switch (args.item.id) {
         case 'TravelGrid_excelexport':
@@ -896,25 +899,18 @@ export default {
       this.$refs.TravelGrid.search(this.searchinput)
     },
     actionBegin(args) {
-      console.log('ACTIONBEGIN: ' + args.requestType)
+      // console.log('ACTIONBEGIN: ' + args.requestType)
       switch (args.requestType) {
         case 'add':
           args.cancel = true
           this.$router.push({ name: 'New Travel', params: { back: 'Travel Tracker' } })
           break
-
-        case 'searching':
-          args.cancel = true
-          console.log('i am not a crook')
-          // var searchText = document.getElementById('TravelGrid_searchbar').innerText
-          // this.$refs.TravelGrid.search(searchText)
-          break
       }
     },
     actionComplete(args) {
-      if (console) {
+      /* if (console) {
         console.log('ACTION COMPLETE: ' + args.requestType)
-      }
+      } */
       if (args.requestType == 'columnstate') {
         this.$refs['TravelGrid'].autoFitColumns()
       }
@@ -1069,7 +1065,7 @@ export default {
         p = Vue._.orderBy(
           p,
           function(o) {
-            return new vm.$moment(o[e]).format('YYYYMMDD')
+            return new this.$moment(o[e]).format('YYYYMMDD')
           },
           'asc'
         )
@@ -1094,7 +1090,7 @@ export default {
         p = Vue._.orderBy(
           p,
           function(o) {
-            return new vm.$moment(o[e]).format('YYYYMMDD')
+            return new this.$moment(o[e]).format('YYYYMMDD')
           },
           'desc'
         )
@@ -1113,9 +1109,7 @@ export default {
       }
     },
     showorhide: function(e) {
-      // console.log('SHOW OR HIDE: ' + e)
       var checked = e.checked
-      // var fieldname = e.event.target.value
       var displayname = e.event.target.labels[0].innerText
       if (checked) {
         this.$refs.TravelGrid.showColumns([displayname])
@@ -1130,82 +1124,82 @@ export default {
       // this is a top down filter
       // loop through all the fields and filter the ones that have a predicate and filtervalue set
       var p = this.travel // set initial filter to all based on the module. travel in this case
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].Predicate !== 'S') {
-          if (vm.fields[i].FilterValue !== '' || vm.fields[i].Selected !== 'S') {
+      for (var i = 1; i < this.fields.length; i++) {
+        if (this.fields[i].Predicate !== 'S') {
+          if (this.fields[i].FilterValue !== '' || this.fields[i].Selected !== 'S') {
             // determine what to filter based on predicate
-            switch (vm.fields[i].Predicate) {
+            switch (this.fields[i].Predicate) {
               case 'SW':
                 // Starts With
-                p = p.filter(search => Vue._.startsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.startsWith(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'EW':
                 // Ends With
-                p = p.filter(search => Vue._.endsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.endsWith(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'C':
                 // Contains
-                p = p.filter(search => Vue._.includes(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.includes(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'E':
                 // Equals
-                if (vm.fields[i].DataType == 'Choice') {
-                  p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].Selected))
+                if (this.fields[i].DataType == 'Choice') {
+                  p = p.filter(search => Vue._.isEqual(search[this.fields[i].FieldName], this.fields[i].Selected))
                 } else {
-                  if (vm.fields[i].DataType == 'Number') {
-                    p = p.filter(search => search[vm.fields[i].FieldName] == vm.fields[i].FilterValue)
+                  if (this.fields[i].DataType == 'Number') {
+                    p = p.filter(search => search[this.fields[i].FieldName] == this.fields[i].FilterValue)
                   } else {
-                    p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isSame(vm.$moment(vm.fields[i].FilterValue), 'day'))
+                    p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isSame(this.$moment(this.fields[i].FilterValue), 'day'))
                   }
                 }
                 break
 
               case 'NE':
                 // Not Equals
-                p = p.filter(search => Vue._.without(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.without(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'GT':
                 // Greater Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] > vm.fields[i].FilterValue)
+                if (this.fields[i].DataType == 'Number') {
+                  p = p.filter(search => search[this.fields[i].FieldName] > this.fields[i].FilterValue)
                 } else {
                   // date
-                  p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isAfter(vm.$moment(vm.fields[i].FilterValue)))
+                  p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isAfter(this.$moment(this.fields[i].FilterValue)))
                 }
                 break
 
               case 'LT':
                 // Less Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] < vm.fields[i].FilterValue)
+                if (this.fields[i].DataType == 'Number') {
+                  p = p.filter(search => search[this.fields[i].FieldName] < this.fields[i].FilterValue)
                 } else {
                   // date
-                  p = p.filter(search => vm.$moment(vm.fields[i].FilterValue).isAfter(vm.$moment(search[vm.fields[i].FieldName])))
+                  p = p.filter(search => this.$moment(this.fields[i].FilterValue).isAfter(this.$moment(search[this.fields[i].FieldName])))
                 }
                 break
 
               case 'B':
                 // Between
-                p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isBetween(vm.$moment(vm.fields[i].FilterValue), vm.$moment(vm.fields[i].FilterValue2)))
+                p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isBetween(this.$moment(this.fields[i].FilterValue), this.$moment(this.fields[i].FilterValue2)))
                 break
             }
-            if (vm.sortfield !== '') {
+            if (this.sortfield !== '') {
               // if this is a date field we need to do a bit more work to convert and test for sorting
-              if (vm.fields[i].DataType == 'Date') {
-                var f = vm.fields[i].FieldName
+              if (this.fields[i].DataType == 'Date') {
+                var f = this.fields[i].FieldName
                 p = Vue._.orderBy(
                   p,
                   function(o) {
-                    return new vm.$moment(o[f]).format('YYYYMMDD')
+                    return new this.$moment(o[f]).format('YYYYMMDD')
                   },
-                  vm.sortdir
+                  this.sortdir
                 )
               } else {
-                p = Vue._.orderBy(p, vm.sortfield, vm.sortdir)
+                p = Vue._.orderBy(p, this.sortfield, this.sortdir)
               }
             } else {
               p = Vue._.orderBy(p, 'Id', 'desc')
@@ -1213,60 +1207,62 @@ export default {
           }
         }
       }
-      if (vm.sortfield == '') {
+      if (this.sortfield == '') {
         p = Vue._.orderBy(p, 'Id', 'desc')
       }
-      vm.filteredtravel = p
+      this.filteredtravel = p
     },
     clearfilter: function(e) {
       var f = String(e.target.id).split('_')[1]
       // console.log('CLEARING FILTER: ' + f)
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].FieldName == f) {
-          vm.fields[i].Predicate = 'S'
-          vm.fields[i].FilterValue = ''
-          if (vm.fields[i].DataType == 'Date') {
-            vm.fields[i].FilterValue2 = ''
+      for (var i = 1; i < this.fields.length; i++) {
+        this.fields[i].Sort = ''
+        if (this.fields[i].FieldName == f) {
+          this.fields[i].Predicate = 'S'
+          this.fields[i].FilterValue = ''
+          if (this.fields[i].DataType == 'Date') {
+            this.fields[i].FilterValue2 = ''
           }
-          if (vm.fields[i].DataType == 'Choice') {
-            vm.fields[i].Predicate = 'E'
-            vm.fields[i].Selected = 'S'
+          if (this.fields[i].DataType == 'Choice') {
+            this.fields[i].Predicate = 'E'
+            this.fields[i].Selected = 'S'
           }
-          if (vm.fields[i].DataType == 'Number' && vm.fields[i].Control == 'DropdownBox') {
-            vm.fields[i].Predicate = 'S'
-            vm.fields[i].FilterValue = 'S'
+          if (this.fields[i].DataType == 'Number' && this.fields[i].Control == 'DropdownBox') {
+            this.fields[i].Predicate = 'S'
+            this.fields[i].FilterValue = 'S'
           }
         }
       }
-      vm.setfilter()
+      this.setfilter()
     },
     clearfilters: function() {
-      window.localStorage.removeItem('travel')
-      for (var i = 1; i < vm.fields.length; i++) {
-        vm.fields[i].Predicate = 'S'
-        vm.fields[i].FilterValue = ''
-        vm.fields[i].Sort = ''
-        if (vm.fields[i].DataType == 'Date') {
-          vm.fields[i].FilterValue2 = ''
+      window.localStorage.removeItem('TravelFilter')
+      for (var i = 1; i < this.fields.length; i++) {
+        this.fields[i].Sort = ''
+        this.fields[i].Predicate = 'S'
+        this.fields[i].FilterValue = ''
+        this.fields[i].Sort = ''
+        if (this.fields[i].DataType == 'Date') {
+          this.fields[i].FilterValue2 = ''
         }
-        if (vm.fields[i].DataType == 'Choice') {
-          vm.fields[i].Predicate = 'E'
-          vm.fields[i].Selected = 'S'
+        if (this.fields[i].DataType == 'Choice') {
+          this.fields[i].Predicate = 'E'
+          this.fields[i].Selected = 'S'
         }
-        if (vm.fields[i].DataType == 'Number' && vm.fields[i].Control == 'DropdownBox') {
-          vm.fields[i].Predicate = 'S'
-          vm.fields[i].FilterValue = 'S'
+        if (this.fields[i].DataType == 'Number' && this.fields[i].Control == 'DropdownBox') {
+          this.fields[i].Predicate = 'S'
+          this.fields[i].FilterValue = 'S'
         }
       }
-      vm.filteredtravel = vm.travel
-      vm.setfilter()
+      this.filteredtravel = this.travel
+      this.setfilter()
     },
     savefilters: function() {
       this.fields[0].Value = this.appversion
-      window.localStorage.setItem('travel', JSON.stringify(this.fields))
+      window.localStorage.setItem('TravelFilter', JSON.stringify(this.fields))
     },
     loadfilters: function() {
-      let f = String(window.localStorage.getItem('travel'))
+      let f = String(window.localStorage.getItem('TravelFilter'))
       if (f != 'null') {
         // here we will load the fields from local storage and test the version.
         // if the version matches the current app version then load the fields.
