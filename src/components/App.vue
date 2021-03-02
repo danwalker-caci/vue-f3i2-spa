@@ -68,9 +68,7 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
   color: #000;
-  /* background-color: white !important; */
   background-image: url('/sites/f3i2/SiteAssets/html/static/img/background-1.JPG');
   background-size: cover;
   background-position: center center;
