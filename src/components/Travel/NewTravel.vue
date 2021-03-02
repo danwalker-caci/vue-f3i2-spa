@@ -880,81 +880,38 @@ export default {
             break
 
           case 4:
-            if (newidx > oldidx) {
-              let valid = this.validateFirstTab()
-              if (!valid) {
-                event.preventDefault()
-                this.tabInvalid = true
-              } else {
-                let valid = this.validateSecondTab()
-                if (!valid) {
-                  event.preventDefault()
-                  this.tabInvalid = true
-                } else {
-                  let valid = this.validateThirdTab()
-                  if (!valid) {
-                    event.preventDefault()
-                    this.tabInvalid = true
-                  } else {
-                    let valid = this.validateFourthTab()
-                    if (!valid) {
-                      event.preventDefault()
-                      this.tabInvalid = true
-                    }
-                  }
-                }
-              }
-            }
-            break
-
-          case 5:
-            if (newidx > oldidx) {
-              let valid = this.validateFirstTab()
-              if (!valid) {
-                event.preventDefault()
-                this.tabInvalid = true
-              } else {
-                let valid = this.validateSecondTab()
-                if (!valid) {
-                  event.preventDefault()
-                  this.tabInvalid = true
-                } else {
-                  let valid = this.validateThirdTab()
-                  if (!valid) {
-                    event.preventDefault()
-                    this.tabInvalid = true
-                  } else {
-                    let valid = this.validateFourthTab()
-                    if (!valid) {
-                      event.preventDefault()
-                      this.tabInvalid = true
-                    }
-                  }
-                }
-              }
-            }
-            break
-
-          /* case 3:
             var fv = true
-            if (newidx > oldidx && oldidx == 0) {
+            if (newidx > oldidx) {
               let valid = this.validateFirstTab()
               if (!valid) {
                 event.preventDefault()
                 this.tabInvalid = true
                 fv = false
-              }
-            }
-            if (newidx > oldidx && oldidx == 2) {
-              let valid = this.validateThirdTab()
-              if (!valid) {
-                event.preventDefault()
-                this.tabInvalid = true
-                fv = false
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                  fv = false
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                    fv = false
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                      fv = false
+                    }
+                  }
+                }
               }
             }
             this.formValid = fv
-            break */
+            break
         }
       }
     },
