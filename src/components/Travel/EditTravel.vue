@@ -546,7 +546,7 @@
             <div class="col-4 p-0 text-right">
               <b-button-group class="mt-2">
                 <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalHide">Cancel</b-button>
-                <b-button v-if="formValid || isTravelApprover" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
+                <b-button v-if="formValid && isTravelApprover" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
                 <a ref="EmailLink" href="#" v-show="false">Email</a>
               </b-button-group>
             </div>
