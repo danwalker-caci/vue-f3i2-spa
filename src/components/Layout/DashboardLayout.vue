@@ -122,7 +122,6 @@ export default {
     waitForUser() {
       if (this.userloaded) {
         clearInterval(this.$options.interval)
-        // get the bounds of the content class which represents the main content area.
         let el = document.getElementById('maincontent')
         let rect = el.getBoundingClientRect()
         this.$store.dispatch('support/setContentRect', rect)
