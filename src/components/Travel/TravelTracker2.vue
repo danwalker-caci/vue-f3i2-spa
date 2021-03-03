@@ -889,6 +889,7 @@ export default {
       this.$refs.TravelGrid.autoFitColumns()
     },
     rowDataBound: function(args) {
+      // set class based on status
       let c = String(args.data['Status'])
       c = 'travel-' + c
       args.row.classList.add(c)
