@@ -20,7 +20,7 @@
           </sidebar-item>
         </slot>
       </ul>
-      <ul class="legend" @click="setLegend" :class="{ 'legend-expanded': legendHeightExpanded }">
+      <!-- <ul class="legend" @click="setLegend" :class="{ 'legend-expanded': legendHeightExpanded }">
         <li class="legend-item">
           <b-alert variant="secondary" class="text-center" show>
             <span class="text-dark">LEGEND <b class="caret legend-caret" :class="{ 'legend-expanded-caret': legendHeightExpanded }"></b></span>
@@ -29,7 +29,21 @@
         <div>
           <legend-item v-for="item in legendItems" :key="item.id" :item="item"></legend-item>
         </div>
-      </ul>
+      </ul> -->
+      <div class="accordion legend" role="tablist" :class="{ 'legend-expanded': legendHeightExpanded }">
+        <b-card no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button block v-b-toggle.legend-accordion variant="secondary" class="text-center">Legend</b-button>
+          </b-card-header>
+          <b-collapse id="legend-accordion" visible accordion="legend-accordion" role="tabpanel">
+            <b-list-group>
+              <b-list-group-item v-for="item in legendItems" :key="item.id" :item="item" class="list-group-item-sm">
+                <b-button block size="sm" class="text-left" :class="item.class">{{ item.name }}</b-button>
+              </b-list-group-item>
+            </b-list-group>
+          </b-collapse>
+        </b-card>
+      </div>
     </div>
   </div>
 </template>
@@ -102,6 +116,9 @@ export default {
   },
   mounted: function() {
     this.getLegend()
+    this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
+      this.legendHeightExpanded = isJustShown
+    })
   },
   methods: {
     getLegend: function() {

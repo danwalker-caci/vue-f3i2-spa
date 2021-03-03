@@ -611,60 +611,40 @@ export default {
       rowData: {},
       legenditems: [
         {
-          id: 0,
-          type: 'alert',
           name: 'ReportLate',
-          variant: 'red'
+          class: 'travel-ReportLate'
         },
         {
-          id: 1,
-          type: 'alert',
           name: 'ReportDue',
-          variant: 'yellow',
-          classes: 'text-dark'
+          class: 'travel-ReportDue'
         },
         {
-          id: 2,
-          type: 'alert',
           name: 'Approved',
-          variant: 'orange',
-          classes: 'text-dark'
+          class: 'travel-Approved'
         },
         {
-          id: 3,
-          type: 'alert',
           name: 'WPMReview',
-          variant: 'blue'
+          class: 'travel-WPMReview'
         },
         {
-          id: 4,
-          type: 'alert',
           name: 'AFRLReview',
-          variant: 'cyan'
+          class: 'travel-AFRLReview'
         },
         {
-          id: 5,
-          type: 'alert',
           name: 'Completed',
-          variant: 'green'
+          class: 'travel-Completed'
         },
         {
-          id: 6,
-          type: 'alert',
           name: 'TripReportReview',
-          variant: 'teal'
+          class: 'travel-TripReportReview'
         },
         {
-          id: 7,
-          type: 'alert',
           name: 'Postponed',
-          variant: 'azure'
+          class: 'travel-Postponed'
         },
         {
-          id: 8,
-          type: 'alert',
           name: 'Cancelled',
-          variant: 'purple'
+          class: 'travel-Cancelled'
         }
       ],
       TravelersTemplate: function() {
@@ -910,7 +890,9 @@ export default {
     },
     rowDataBound: function(args) {
       let c = String(args.data['Status'])
-      switch (c) {
+      c = 'travel-' + c
+      args.row.classList.add(c)
+      /* switch (c) {
         case 'Approved': {
           args.row.classList.add('bg-orange', 'text-dark')
           break
@@ -955,8 +937,7 @@ export default {
           args.row.classList.add('bg-purple', 'text-light')
           break
         }
-      }
-      // args.row.classList.add(c)
+      } */
     },
     formatCell: function(args) {
       if (args.column.field == 'TripReport') {
