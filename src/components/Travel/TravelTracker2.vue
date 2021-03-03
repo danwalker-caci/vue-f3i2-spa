@@ -895,10 +895,12 @@ export default {
       args.row.classList.add(c)
     },
     formatCell: function(args) {
+      let c = String(args.data['Status'])
+      c = 'travel-' + c
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
       } else {
-        args.cell.classList.add('text-white')
+        args.cell.classList.add(c)
       }
     },
     formatExcelCell: function(args) {
