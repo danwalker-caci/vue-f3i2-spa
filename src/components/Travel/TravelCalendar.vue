@@ -309,7 +309,9 @@ export default {
     },
     onEventRendered: function(args) {
       let c = args.data.Status
-      switch (c) {
+      c = 'travel-' + c
+      args.element.classList.add(c)
+      /* switch (c) {
         case 'Approved': {
           args.element.classList.add('bg-orange', 'text-dark')
           break
@@ -339,7 +341,7 @@ export default {
           args.element.classList.add('bg-green')
           break
         }
-      }
+      } */
     },
     onEventClick(args) {
       args.cancel = true

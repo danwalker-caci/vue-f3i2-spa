@@ -697,16 +697,16 @@ export default {
           template: Vue.component('actionsTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton" @click="edit(data)" title="Edit Travel">
+              <b-button v-if="isWPManager || isAdmin" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
                 <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
+              <b-button class="actionbutton transparent text-white" @click="report(data)" v-b-tooltip.hover.v-dark title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="postpone(data)" v-b-tooltip.hover.v-dark title="Postpone Travel">
                 <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="cancel(data)" v-b-tooltip.hover.v-dark title="Cancel Travel">
                 <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -892,56 +892,12 @@ export default {
       let c = String(args.data['Status'])
       c = 'travel-' + c
       args.row.classList.add(c)
-      /* switch (c) {
-        case 'Approved': {
-          args.row.classList.add('bg-orange', 'text-dark')
-          break
-        }
-
-        case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-light')
-          break
-        }
-
-        case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-light')
-          break
-        }
-
-        case 'ReportDue': {
-          args.row.classList.add('bg-yellow', 'text-dark')
-          break
-        }
-
-        case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-light')
-          break
-        }
-
-        case 'Completed': {
-          args.row.classList.add('bg-green', 'text-light')
-          break
-        }
-
-        case 'TripReportReview': {
-          args.row.classList.add('bg-teal', 'text-light')
-          break
-        }
-
-        case 'Postponed': {
-          args.row.classList.add('bg-azure', 'text-dark')
-          break
-        }
-
-        case 'Cancelled': {
-          args.row.classList.add('bg-purple', 'text-light')
-          break
-        }
-      } */
     },
     formatCell: function(args) {
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
+      } else {
+        args.cell.classList.add('text-white')
       }
     },
     formatExcelCell: function(args) {

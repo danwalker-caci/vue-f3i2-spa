@@ -190,48 +190,48 @@ input[type=button], input[type=reset], input[type=submit], button {
 /* #region Travel Status Colors */
 
 .travel-Completed {
-  background-color: #026f1a;
-  color: #fff;
+  background-color: #026f1a !important;
+  color: #fff !important;
 }
 
 .travel-Cancelled {
-  background-color: #6f5e59;
-  color: #fff;
+  background-color: #6f5e59 !important;
+  color: #fff !important;
 }
 
 .travel-Postponed {
-  background-color: #8f9296;
-  color: #fff;
+  background-color: #8f9296 !important;
+  color: #fff !important;
 }
 
 .travel-Approved {
-  background-color: #45b85e;
-  color: #fff;
+  background-color: #45b85e !important;
+  color: #fff !important;
 }
 
 .travel-ReportDue {
-  background-color: #d95648;
-  color: #fff;
+  background-color: #d95648 !important;
+  color: #fff !important;
 }
 
 .travel-ReportLate {
-  background-color: #970000;
-  color: #fff;
+  background-color: #970000 !important;
+  color: #fff !important;
 }
 
 .travel-WPMReview {
-  background-color: #053a7e;
-  color: #fff;
+  background-color: #053a7e !important;
+  color: #fff !important;
 }
 
 .travel-AFRLReview {
-  background-color: #17a2b8;
-  color: #fff;
+  background-color: #17a2b8 !important;
+  color: #fff !important;
 }
 
 .travel-TripReportReview {
-  background-color: #20c997;
-  color: #fff;
+  background-color: #20c997 !important;
+  color: #fff !important;
 }
 
 /* #endregion */
@@ -250,6 +250,11 @@ input[type=button], input[type=reset], input[type=submit], button {
     line-height: 1;
     min-width: 1em;
     font-size: .75rem !important;
+    border: none;
+  }
+
+  .transparent {
+    background: transparent !important;
   }
 
   .mb-2,
