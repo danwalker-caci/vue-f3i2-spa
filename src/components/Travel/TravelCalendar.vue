@@ -116,8 +116,6 @@ export default {
       moreevents: false,
       company: null,
       routeCount: 0,
-      sortfield: '',
-      sortdir: '',
       filteredtravel: [],
       TripId: 0,
       EditTravel: false,
@@ -135,542 +133,44 @@ export default {
         dataSource: data
       },
       height: '100%',
-      fields: [
-        {
-          FieldName: 'Version',
-          Value: null
-        },
-        {
-          FieldName: 'Status',
-          Visible: true,
-          DisplayName: 'Status',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'status',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'WPMReview', value: 'WPMReview' },
-            { text: 'Approved', value: 'Approved' },
-            { text: 'Rejected', value: 'Rejected' },
-            { text: 'AFRLReview', value: 'AFRLReview' },
-            { text: 'ATPRequested', value: 'ATPRequested' },
-            { text: 'ATPApproved', value: 'ATPApproved' },
-            { text: 'Completed', value: 'Completed' }
-          ]
-        },
-        {
-          FieldName: 'Comments',
-          Visible: true,
-          DisplayName: 'Purpose',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'WorkPlanNumber',
-          Visible: true,
-          DisplayName: 'Workplan Number',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'WorkPlanText',
-          Visible: true,
-          DisplayName: 'Workplan Name',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'IndexNumber',
-          Visible: true,
-          DisplayName: 'Index Number',
-          Filter: false,
-          Control: '',
-          DataType: 'Number',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'Created',
-          Visible: true,
-          DisplayName: 'Travel Requested',
-          Filter: false,
-          Control: '',
-          DataType: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'StartDate',
-          Visible: true,
-          DisplayName: 'Departure Date',
-          Filter: false,
-          Control: '',
-          DataType: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'EndDate',
-          Visible: true,
-          DisplayName: 'Return Date',
-          Filter: false,
-          Control: '',
-          DataType: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'Company',
-          Visible: true,
-          DisplayName: 'Company',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'companies',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: []
-        },
-        {
-          FieldName: 'Sponsor',
-          Visible: true,
-          DisplayName: 'Sponsor',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'EstimatedCost',
-          Visible: true,
-          DisplayName: 'Est Cost',
-          Filter: false,
-          Control: '',
-          DataType: 'Number',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'PreApproved',
-          Visible: true,
-          DisplayName: 'Pre Approved',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'Yes', value: 'Yes' },
-            { text: 'No', value: 'No' }
-          ]
-        },
-        {
-          FieldName: 'VisitRequest',
-          Visible: true,
-          DisplayName: 'Visit Request',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'yesno',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'Yes', value: 'Yes' },
-            { text: 'No', value: 'No' }
-          ]
-        },
-        {
-          FieldName: 'Clearance',
-          Visible: true,
-          DisplayName: 'Clearance',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'clearance',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'None', value: 'None' },
-            { text: 'S', value: 'S' },
-            { text: 'TS', value: 'TS' },
-            { text: 'TS/SCI', value: 'TS/SCI' }
-          ]
-        },
-        {
-          FieldName: 'OCONUS',
-          Visible: true,
-          DisplayName: 'OCONUS',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'yesno',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'Yes', value: 'Yes' },
-            { text: 'No', value: 'No' }
-          ]
-        },
-        {
-          FieldName: 'OCONUSLocation',
-          Visible: true,
-          DisplayName: 'OCONUS Location',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'olocations',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'Germany', value: 'Germany' },
-            { text: 'Korea', value: 'Korea' },
-            { text: 'Other', value: 'Other' }
-          ]
-        },
-        {
-          FieldName: 'OCONUSApprovedBy',
-          Visible: true,
-          DisplayName: 'OCONUS Approved By',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'OCONUSApprovedOn',
-          Visible: true,
-          DisplayName: 'OCONUS Approved Date',
-          Filter: false,
-          Control: '',
-          DataType: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'TravelFrom',
-          Visible: true,
-          DisplayName: 'Travel From',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'TravelTo',
-          Visible: true,
-          DisplayName: 'Travel To',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'POCName',
-          Visible: true,
-          DisplayName: 'POC Name',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'POCEmail',
-          Visible: true,
-          DisplayName: 'POC Email',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'POC Phone',
-          Visible: true,
-          DisplayName: 'POC Phone',
-          Filter: false,
-          Control: '',
-          DataType: 'Text',
-          Predicate: 'S',
-          FilterValue: '',
-          Sort: ''
-        },
-        {
-          FieldName: 'SecurityAction',
-          Visible: true,
-          DisplayName: 'Security Action',
-          Filter: false,
-          Control: 'DropdownBox',
-          DataType: 'Choice',
-          DropdownSource: 'actions',
-          Selected: 'S',
-          Predicate: 'E',
-          FilterValue: '',
-          Sort: '',
-          Options: [
-            { text: 'Select...', value: 'S' },
-            { text: 'Collateral VR Sent', value: 'Collateral VR Sent' },
-            { text: 'SCI VR Sent', value: 'SCI VR Sent' },
-            { text: 'Verified VR Processed in JPAS', value: 'Verified VR Processed in JPAS' },
-            { text: 'Contacted Sub FSO', value: 'Contacted Sub FSO' }
-          ]
-        },
-        {
-          FieldName: 'SecurityActionCompleted',
-          Visible: true,
-          DisplayName: 'Security Action Completed',
-          Filter: false,
-          Control: '',
-          DataType: 'Date',
-          Predicate: 'S',
-          FilterValue: '',
-          FilterValue2: '',
-          Sort: ''
-        }
-      ],
-      ddfields: { text: 'text', value: 'value' },
-      textpredicate: [
-        { text: 'Select...', value: 'S' },
-        { text: 'Starts With', value: 'SW' },
-        { text: 'Ends With', value: 'EW' },
-        { text: 'Contains', value: 'C' },
-        { text: 'Equal', value: 'E' },
-        { text: 'Not Equal', value: 'NE' }
-      ],
-      datepredicate: [
-        { text: 'Select...', value: 'S' },
-        { text: 'Greater Than', value: 'GT' },
-        { text: 'Less Than', value: 'LT' },
-        { text: 'Equal', value: 'E' },
-        { text: 'Between', value: 'B' }
-      ],
-      numberpredicate: [
-        { text: 'Select...', value: 'S' },
-        { text: 'Greater Than', value: 'GT' },
-        { text: 'Less Than', value: 'LT' },
-        { text: 'Equal', value: 'E' }
-      ],
-      pageSettings: { pageSize: 30 },
-      editSettings: {
-        allowEditing: this.isWPManager || this.isAdmin ? true : false,
-        allowAdding: true,
-        allowDeleting: false,
-        mode: 'Dialog'
-      },
-      toolbar: ['Add', 'Print', 'Search', 'ExcelExport'],
-      rowData: {},
       legenditems: [
         {
-          id: 0,
-          type: 'alert',
           name: 'ReportLate',
-          variant: 'red'
+          class: 'travel-ReportLate'
         },
         {
-          id: 1,
-          type: 'alert',
           name: 'ReportDue',
-          variant: 'yellow',
-          classes: 'text-dark'
+          class: 'travel-ReportDue'
         },
         {
-          id: 2,
-          type: 'alert',
           name: 'Approved',
-          variant: 'orange',
-          classes: 'text-dark'
+          class: 'travel-Approved'
         },
         {
-          id: 3,
-          type: 'alert',
           name: 'WPMReview',
-          variant: 'blue'
+          class: 'travel-WPMReview'
         },
         {
-          id: 4,
-          type: 'alert',
           name: 'AFRLReview',
-          variant: 'cyan'
+          class: 'travel-AFRLReview'
         },
         {
-          id: 5,
-          type: 'alert',
           name: 'Completed',
-          variant: 'green'
+          class: 'travel-Completed'
+        },
+        {
+          name: 'TripReportReview',
+          class: 'travel-TripReportReview'
+        },
+        {
+          name: 'Postponed',
+          class: 'travel-Postponed'
+        },
+        {
+          name: 'Cancelled',
+          class: 'travel-Cancelled'
         }
-      ],
-      TravelersTemplate: function() {
-        return {
-          template: Vue.component('columnTemplate', {
-            template: `
-              <div v-for="(traveler, index) in travelers" :key="traveler">
-                <span><span v-if="index > 0">, </span>{{traveler.firstName}} {{traveler.lastName}}</span>
-              </div>
-            `,
-            data: function() {
-              return {
-                data: {}
-              }
-            },
-            computed: {
-              travelers() {
-                return JSON.parse(this.data.Travelers)
-              }
-            }
-          })
-        }
-      },
-      TripReportTemplate: function() {
-        return {
-          template: Vue.component('columnTemplate', {
-            template: `
-              <div>
-                <a :href="href" target="_blank">{{ tripreport }}</span>
-              </div>
-            `,
-            data: function() {
-              return {
-                data: {}
-              }
-            },
-            computed: {
-              tripreport() {
-                return this.data.TripReport
-              },
-              href() {
-                return this.data.TripReportLink
-              }
-            }
-          })
-        }
-      },
-      ActionsTemplate: function() {
-        return {
-          template: Vue.component('actionsTemplate', {
-            template: `
-            <div>
-              <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton" @click="edit(data)" title="Edit Travel">
-                <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
-                <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
-                <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
-                <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
-              </b-button>
-            </div>`,
-            data: function() {
-              return {
-                data: {}
-              }
-            },
-            computed: {
-              isPM() {
-                return User.getters('isPM')
-              },
-              isAdmin() {
-                return User.getters('isAdmin')
-              },
-              isWPManager() {
-                return User.getters('isWPManager')
-              },
-              isSubcontractor() {
-                return User.getters('isSubcontractor')
-              },
-              isAFRL() {
-                return User.getters('isAFRL')
-              }
-            },
-            methods: {
-              edit: function(data) {
-                // TODO: close any modal that may be open. Most likely should never have one open at this point. Then set travelid to selected travel and open edit form
-                vm.EditTravel = false
-                vm.TripId = data.Id
-                vm.EditTravel = true
-              },
-              report: function(data) {
-                vm.IndexNumber = data.IndexNumber
-                vm.TripReport = false
-                vm.TripId = data.Id
-                vm.TripReport = true
-              },
-              postpone: async function(data) {
-                console.log(`Postpone Data: ${JSON.stringify(data)}`)
-                // post the data to the list and then reload the data
-                let response = await Travel.dispatch('postponeTravel', data)
-                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-                let path = '/travel/home/refresh' + vm.mode
-                vm.$router.push({ path: path })
-              },
-              cancel: async function(data) {
-                console.log(`Cancel Data: ${JSON.stringify(data)}`)
-                // post the data to the list and then reload the data
-                let response = await Travel.dispatch('cancelTravel', data)
-                vm.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-                let path = '/travel/home/refresh' + vm.mode
-                vm.$router.push({ path: path })
-              }
-            }
-          })
-        }
-      }
+      ]
     }
   },
   mounted: function() {
@@ -809,7 +309,9 @@ export default {
     },
     onEventRendered: function(args) {
       let c = args.data.Status
-      switch (c) {
+      c = 'travel-' + c
+      args.element.classList.add(c)
+      /* switch (c) {
         case 'Approved': {
           args.element.classList.add('bg-orange', 'text-dark')
           break
@@ -839,7 +341,7 @@ export default {
           args.element.classList.add('bg-green')
           break
         }
-      }
+      } */
     },
     onEventClick(args) {
       args.cancel = true

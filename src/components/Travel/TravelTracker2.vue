@@ -627,61 +627,40 @@ export default {
       rowData: {},
       legenditems: [
         {
-          id: 0,
-          type: 'alert',
           name: 'ReportLate',
-          variant: 'red'
+          class: 'travel-ReportLate'
         },
         {
-          id: 1,
-          type: 'alert',
           name: 'ReportDue',
-          variant: 'yellow',
-          classes: 'text-dark'
+          class: 'travel-ReportDue'
         },
         {
-          id: 2,
-          type: 'alert',
           name: 'Approved',
-          variant: 'orange'
+          class: 'travel-Approved'
         },
         {
-          id: 3,
-          type: 'alert',
           name: 'WPMReview',
-          variant: 'blue'
+          class: 'travel-WPMReview'
         },
         {
-          id: 4,
-          type: 'alert',
           name: 'AFRLReview',
-          variant: 'cyan'
+          class: 'travel-AFRLReview'
         },
         {
-          id: 5,
-          type: 'alert',
           name: 'Completed',
-          variant: 'green'
+          class: 'travel-Completed'
         },
         {
-          id: 6,
-          type: 'alert',
           name: 'TripReportReview',
-          variant: 'teal',
-          classes: 'text-dark'
+          class: 'travel-TripReportReview'
         },
         {
-          id: 7,
-          type: 'alert',
           name: 'Postponed',
-          variant: 'azure',
-          classes: 'text-dark'
+          class: 'travel-Postponed'
         },
         {
-          id: 8,
-          type: 'alert',
           name: 'Cancelled',
-          variant: 'purple'
+          class: 'travel-Cancelled'
         }
       ],
       TravelersTemplate: function() {
@@ -734,16 +713,16 @@ export default {
           template: Vue.component('actionsTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton" @click="edit(data)" title="Edit Travel">
+              <b-button v-if="isWPManager || isAdmin" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
                 <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
+              <b-button class="actionbutton transparent text-white" @click="report(data)" v-b-tooltip.hover.v-dark title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="postpone(data)" v-b-tooltip.hover.v-dark title="Postpone Travel">
                 <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="cancel(data)" v-b-tooltip.hover.v-dark title="Cancel Travel">
                 <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -926,106 +905,18 @@ export default {
       this.$refs.TravelGrid.autoFitColumns()
     },
     rowDataBound: function(args) {
+      // set class based on status
       let c = String(args.data['Status'])
-      switch (c) {
-        case 'Approved': {
-          args.row.classList.add('bg-orange', 'text-white')
-          break
-        }
-
-        case 'WPMReview': {
-          args.row.classList.add('bg-blue', 'text-white')
-          break
-        }
-
-        case 'AFRLReview': {
-          args.row.classList.add('bg-cyan', 'text-white')
-          break
-        }
-
-        case 'ReportDue': {
-          args.row.classList.add('bg-yellow', 'text-dark')
-          break
-        }
-
-        case 'ReportLate': {
-          args.row.classList.add('bg-red', 'text-white')
-          break
-        }
-
-        case 'Completed': {
-          args.row.classList.add('bg-green', 'text-white')
-          break
-        }
-
-        case 'TripReportReview': {
-          args.row.classList.add('bg-teal', 'text-dark')
-          break
-        }
-
-        case 'Postponed': {
-          args.row.classList.add('bg-azure', 'text-dark')
-          break
-        }
-
-        case 'Cancelled': {
-          args.row.classList.add('bg-purple', 'text-white')
-          break
-        }
-      }
-      // args.row.classList.add(c)
+      c = 'travel-' + c
+      args.row.classList.add(c)
     },
     formatCell: function(args) {
+      let c = String(args.data['Status'])
+      c = 'travel-' + c
       if (args.column.field == 'TripReport') {
         args.cell.classList.add('bg-white', 'text-dark')
       } else {
-        let c = String(args.data['Status'])
-        switch (c) {
-          case 'Approved': {
-            args.cell.classList.add('bg-orange', 'text-white')
-            break
-          }
-
-          case 'WPMReview': {
-            args.cell.classList.add('bg-blue', 'text-white')
-            break
-          }
-
-          case 'AFRLReview': {
-            args.cell.classList.add('bg-cyan', 'text-white')
-            break
-          }
-
-          case 'ReportDue': {
-            args.cell.classList.add('bg-yellow', 'text-dark')
-            break
-          }
-
-          case 'ReportLate': {
-            args.cell.classList.add('bg-red', 'text-white')
-            break
-          }
-
-          case 'Completed': {
-            args.cell.classList.add('bg-green', 'text-white')
-            break
-          }
-
-          case 'TripReportReview': {
-            args.cell.classList.add('bg-teal', 'text-dark')
-            break
-          }
-
-          case 'Postponed': {
-            args.cell.classList.add('bg-azure', 'text-dark')
-            break
-          }
-
-          case 'Cancelled': {
-            args.cell.classList.add('bg-purple', 'text-white')
-            break
-          }
-        }
+        args.cell.classList.add(c)
       }
     },
     formatExcelCell: function(args) {
