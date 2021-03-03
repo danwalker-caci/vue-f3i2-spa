@@ -840,6 +840,7 @@ export default {
             let payload = {
               PersonnelID: results.data.d.Id,
               PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
+              Company: vm.newData.Company,
               Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
             }
             await Security.dispatch('addSecurityForm', payload)
