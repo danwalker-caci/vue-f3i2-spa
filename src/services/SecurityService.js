@@ -123,6 +123,8 @@ export default {
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
+      FirstName: payload.FirstName,
+      LastName: payload.LastName,
       Company: payload.Company
     }
     if (payload.NIPR) {
@@ -187,6 +189,8 @@ export default {
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
+      FirstName: payload.FirstName,
+      LastName: payload.LastName,
       Company: payload.Company,
       CACValid: payload.CACValid,
       CACIssuedBy: payload.CACIssuedBy,

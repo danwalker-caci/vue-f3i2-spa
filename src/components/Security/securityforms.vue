@@ -363,6 +363,8 @@ export default {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+            vm.form.FirstName = result ? result[0].FirstName : ''
+            vm.form.LastName = result ? result[0].LastName : ''
             // Pulled from personnel list
             if (vm.formSCI && result && result[0].SCIFormStatus) {
               vm.form.SCIStatus = result[0].SCIFormStatus
@@ -388,6 +390,8 @@ export default {
       this.personnel.forEach(person => {
         if (person.value === vm.form.PersonnelID) {
           vm.form.Name = person.text
+          vm.form.FirstName = person.text.substr(0, person.text.indexOf(' '))
+          vm.form.LastName = person.text.substr(person.text.indexOf(' '), person.text.length)
           vm.form.PersonnelID = person.value
           vm.checkSecurityForms()
         }
@@ -430,6 +434,8 @@ export default {
         Title: this.form.PersonnelID + '-' + this.form.Name,
         PersonnelID: this.form.PersonnelID,
         PersonName: this.form.Name,
+        FirstName: this.form.FirstName,
+        LastName: this.form.LastName,
         Company: this.form.Company
       }
       let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)

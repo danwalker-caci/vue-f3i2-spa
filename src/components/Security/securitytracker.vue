@@ -114,7 +114,7 @@ export default {
   data: function() {
     return {
       company: '',
-      pageSettings: { pageSize: 20 },
+      pageSettings: { pageSize: 30 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -421,7 +421,8 @@ export default {
                   { text: 'Disposition-Returned', value: 'Disposition-Returned' },
                   { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
                   { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
-                  { text: 'Transfer Pending', value: 'Transfer Pending' }
+                  { text: 'Transfer Pending', value: 'Transfer Pending' },
+                  { text: 'Renewable', value: 'Renewable' }
                 ],
                 formtype: [
                   { text: 'N/A', value: 'N/A' },
