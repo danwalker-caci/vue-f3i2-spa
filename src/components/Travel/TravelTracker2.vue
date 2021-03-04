@@ -102,7 +102,7 @@
                 :queryCellInfo="formatCell"
                 :excelQueryCellInfo="formatExcelCell"
                 rowHeight="20"
-                :height="rect.height - 175"
+                :height="rect.height - 125"
                 :width="rect.width - 5"
               >
                 <e-columns>

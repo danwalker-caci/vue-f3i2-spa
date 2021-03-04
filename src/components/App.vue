@@ -83,6 +83,6 @@ export default {
 
 .wrapper {
   width: 100vw;
-  height: calc(100vh - 50px);
+  height: 100vh; /* calc(100vh - 50px); */
 }
 </style>
