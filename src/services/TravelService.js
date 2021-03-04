@@ -214,7 +214,7 @@ export default {
     body += '<p>Subject: ' + payload.Subject + '</p>'
     body += '<p>Clearance Required: ' + payload.Clearance + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/home/view?id=' + id + '">Travel</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/view?id=' + id + '">Travel</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },

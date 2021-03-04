@@ -120,9 +120,9 @@ export default {
   },
   mounted: function() {
     this.getLegend()
-    this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
+    /* this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
       this.legendHeightExpanded = isJustShown
-    })
+    }) */
   },
   methods: {
     getLegend: function() {
