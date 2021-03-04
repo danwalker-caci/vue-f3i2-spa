@@ -92,8 +92,8 @@
               :queryCellInfo="formatCell"
               :excelQueryCellInfo="formatExcelCell"
               rowHeight="20"
-              height="100%"
-              width="100%"
+              :height="rect.height - 175"
+              :width="rect.width - 5"
             >
               <e-columns>
                 <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
