@@ -684,7 +684,7 @@ export default {
 
         case 'Company':
           if (this.isSubcontractor) {
-            ret = this.travelmodelCompany == this.company ? true : false
+            ret = this.travelmodel.Company == this.company ? true : false
           } else {
             ret = this.travelmodel.Company != '' ? true : false
           }
