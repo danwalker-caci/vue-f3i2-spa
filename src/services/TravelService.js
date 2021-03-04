@@ -362,7 +362,6 @@ export default {
       POCPhone: payload[0].POCPhone,
       Comments: payload[0].Comments,
       Clearance: payload[0].Clearance,
-      IndexNumber: payload[0].IndexNumber,
       InternalData: JSON.stringify(payload[0].InternalData),
       VisitRequest: payload[0].VisitRequest === 'Yes' ? 'Yes' : 'No'
     }
