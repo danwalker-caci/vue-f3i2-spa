@@ -49,6 +49,8 @@
 
 .sidebar{
   position: fixed;
+  /* top: 25px;
+  bottom: 25px; */
   top: 0;
   bottom: 0;
   left: 0;
@@ -57,8 +59,6 @@
   z-index: 1;
   color: #fff;
   font-weight: 200;
-  /* background-size: cover;
-  background-position: center center; */
 
   .logo-img{
     width: 34px;
@@ -498,23 +498,25 @@
 
 
 .main-panel{
-  /* background: #ffffff; */
-  position: relative;
-  float: right;
-  width: $sidebar-width;
+  /* float: right;
+  width: $sidebar-width; */
+  position: fixed;
+  /* top: 25px;
+  bottom: 25px; */
+  top: 0;
+  bottom: 0;
+  left: 300px;
+  height: 100vh; /* calc(100vh - 50px); */
+  width: calc(100vw - 300px);
 
   .content{
-    /* padding: 30px 15px; */
     height: calc(100vh - 100px);
+    width: calc(100vw - 300px);
     background: $BACKGROUNDCOLOR;
     display: flex;
     justify-content: center;
     align-items: center;
   }
-
-  /* .footer{
-    border-top: 1px solid #000000;
-  } */
 
   .navbar{
     margin-bottom: 0;
@@ -707,8 +709,25 @@
     }
 
     .main-panel{
-      width: calc(100% - 4rem);
-      margin-left: 4rem;
+      /* width: calc(100% - 4rem);
+      margin-left: 4rem; */
+      position: fixed;
+      /* top: 25px;
+      bottom: 25px; */
+      top: 0;
+      bottom: 0;
+      left: 4rem;
+      height: 100vh; /* calc(100vh - 50px); */
+      width: calc(100vw - 4rem);
+
+      .content{
+        height: calc(100vh - 100px);
+        width: calc(100vw - 4rem);
+        background: $BACKGROUNDCOLOR;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
 
     .wrapper{
