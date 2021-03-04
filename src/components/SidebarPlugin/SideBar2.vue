@@ -35,7 +35,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-button @click="setLegend" block size="sm" v-b-toggle.legend-accordion variant="secondary" class="text-center">Legend<span class="caret legend-caret" :class="{ 'legend-expanded-caret': legendHeightExpanded }"></span></b-button>
           </b-card-header>
-          <b-collapse id="legend-accordion" visible accordion="legend-accordion" role="tabpanel">
+          <b-collapse id="legend-accordion" accordion="legend-accordion" role="tabpanel">
             <b-list-group>
               <b-list-group-item v-for="item in legendItems" :key="item.id" :item="item" class="list-group-item-sm">
                 <b-button block size="sm" class="text-left" :class="item.class">
@@ -120,9 +120,9 @@ export default {
   },
   mounted: function() {
     this.getLegend()
-    /* this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
+    this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
       this.legendHeightExpanded = isJustShown
-    }) */
+    })
   },
   methods: {
     getLegend: function() {
