@@ -422,7 +422,7 @@ export default {
                   { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
                   { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
                   { text: 'Transfer Pending', value: 'Transfer Pending' },
-                  { text: 'Renewable', value: 'Renewable' }
+                  { text: 'Renewal', value: 'Renewal' }
                 ],
                 formtype: [
                   { text: 'N/A', value: 'N/A' },

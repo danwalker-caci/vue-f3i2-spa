@@ -68,7 +68,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
   color: #000;
   /* background-color: white !important; */
   background-image: url('/sites/f3i2/SiteAssets/html/static/img/background-1.JPG');
@@ -80,5 +79,10 @@ export default {
   width: 100%;
   height: 100vh;
   z-index: 1000 !important;
+}
+
+.wrapper {
+  width: 100vw;
+  height: 100vh; /* calc(100vh - 50px); */
 }
 </style>

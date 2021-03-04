@@ -71,6 +71,7 @@
               :enablePersistence="false"
               :dataSource="filteredpersonnel"
               :allowPaging="true"
+              :allowReordering="true"
               :allowResizing="true"
               :pageSettings="pageSettings"
               :editSettings="editSettings"
@@ -235,7 +236,7 @@ import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -840,6 +841,7 @@ export default {
             let payload = {
               PersonnelID: results.data.d.Id,
               PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
+              Company: vm.newData.Company,
               Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
             }
             await Security.dispatch('addSecurityForm', payload)
@@ -1199,7 +1201,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze, Search]
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
