@@ -1,10 +1,10 @@
 <template>
   <b-container fluid class="m-0 p-0">
-    <b-row no-gutter class="cui">
+    <!-- <b-row no-gutter class="cui">
       <b-col cols="4" class="p-0"></b-col>
       <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
       <b-col cols="4" class="p-0"></b-col>
-    </b-row>
+    </b-row> -->
     <b-row no-gutter>
       <div v-if="userloaded" class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
         <NotificationContainer />
@@ -70,11 +70,11 @@
         <div class="blockG" id="rotateG_08"></div>
       </div>
     </b-row>
-    <b-row no-gutter class="cui">
+    <!-- <b-row no-gutter class="cui">
       <b-col cols="4" class="p-0"></b-col>
       <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
       <b-col cols="4" class="p-0"></b-col>
-    </b-row>
+    </b-row> -->
   </b-container>
 </template>
 <script>

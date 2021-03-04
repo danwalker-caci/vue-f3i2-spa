@@ -49,8 +49,10 @@
 
 .sidebar{
   position: fixed;
-  top: 25px;
-  bottom: 25px;
+  /* top: 25px;
+  bottom: 25px; */
+  top: 0;
+  bottom: 0;
   left: 0;
   width: 300px;
   display: block;
@@ -499,14 +501,16 @@
   /* float: right;
   width: $sidebar-width; */
   position: fixed;
-  top: 25px;
-  bottom: 25px;
+  /* top: 25px;
+  bottom: 25px; */
+  top: 0;
+  bottom: 0;
   left: 300px;
-  height: calc(100vh - 50px);
+  height: 100vh; /* calc(100vh - 50px); */
   width: calc(100vw - 300px);
 
   .content{
-    height: calc(100vh - 150px);
+    height: calc(100vh - 100px);
     width: calc(100vw - 300px);
     background: $BACKGROUNDCOLOR;
     display: flex;
@@ -708,14 +712,16 @@
       /* width: calc(100% - 4rem);
       margin-left: 4rem; */
       position: fixed;
-      top: 25px;
-      bottom: 25px;
+      /* top: 25px;
+      bottom: 25px; */
+      top: 0;
+      bottom: 0;
       left: 4rem;
-      height: calc(100vh - 50px);
+      height: 100vh; /* calc(100vh - 50px); */
       width: calc(100vw - 4rem);
 
       .content{
-        height: calc(100vh - 150px);
+        height: calc(100vh - 100px);
         width: calc(100vw - 4rem);
         background: $BACKGROUNDCOLOR;
         display: flex;
