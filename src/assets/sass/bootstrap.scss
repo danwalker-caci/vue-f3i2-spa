@@ -94,18 +94,6 @@ $modal-sm:                          300px !default;
   vertical-align: .4em;
 }
 
-#ApprovalCount {
-  margin-top: 5px;
-}
-
-/* .btn-burger .icon { height: 18px; } */
-
-.form-control-travel {
-  border: 1px solid #000000; // set the same as ipgraylb
-  background-color: $light; // set the same as ipyellow
-  color: #000000;
-}
-
 input[type=button], input[type=reset], input[type=submit], button {
     min-width: 1em;
 }
@@ -113,14 +101,6 @@ input[type=button], input[type=reset], input[type=submit], button {
 .full-frame {
   height: 100%;
   width: 100%;
-}
-
-.form-control-xs {
-  height: 18px !important;
-  padding: 1px !important;
-  font-size: 11px !important;
-  line-height: normal;
-  border-radius: 0;
 }
 
 #ContactsMenu .dropdown-menu {
@@ -207,16 +187,59 @@ input[type=button], input[type=reset], input[type=submit], button {
   margin: 5px 0;
 }
 
-#TasksMenu .dropdown-menu {
-  width: 300px;
-  background-color: $white !important;
+.list-group-item-sm {
+  padding: 0 !important;
+  border: none;
 }
 
-#TasksMenu li:hover > .dropdown-item {
-  /* background-color: #f4a94c; */
-  background-color: $gray-300;
-  color: #000000;
+/* #region Travel Status Colors */
+
+.travel-Completed {
+  background-color: #026f1a !important;
+  color: #fff !important;
 }
+
+.travel-Cancelled {
+  background-color: #6f5e59 !important;
+  color: #fff !important;
+}
+
+.travel-Postponed {
+  background-color: #8f9296 !important;
+  color: #fff !important;
+}
+
+.travel-Approved {
+  background-color: #45b85e !important;
+  color: #fff !important;
+}
+
+.travel-ReportDue {
+  background-color: #d95648 !important;
+  color: #fff !important;
+}
+
+.travel-ReportLate {
+  background-color: #970000 !important;
+  color: #fff !important;
+}
+
+.travel-WPMReview {
+  background-color: #053a7e !important;
+  color: #fff !important;
+}
+
+.travel-AFRLReview {
+  background-color: #17a2b8 !important;
+  color: #fff !important;
+}
+
+.travel-TripReportReview {
+  background-color: #20c997 !important;
+  color: #fff !important;
+}
+
+/* #endregion */
 
   /*============================================================================================= CUSTOM BOOTSTRAP OVERRIDES ====================================================================================*/
 
@@ -232,6 +255,11 @@ input[type=button], input[type=reset], input[type=submit], button {
     line-height: 1;
     min-width: 1em;
     font-size: .75rem !important;
+    border: none;
+  }
+
+  .transparent {
+    background: transparent !important;
   }
 
   .mb-2,
