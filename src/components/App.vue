@@ -24,6 +24,7 @@ export default {
     vm = this
     Todo.dispatch('getDigest')
     Company.dispatch('getDigest')
+    Company.dispatch('getCompanies')
     this.getUserInfo()
   },
   methods: {

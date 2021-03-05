@@ -206,66 +206,67 @@
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="buttonrow">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </b-row>
-          <b-row no-gutters class="gridrow">
-            <b-overlay :show="filteredpersonnel.length > 0" :variant="overlayVariant" z-index="3000">
-              <ejs-grid
-                id="PersonnelGrid"
-                ref="PersonnelGrid"
-                :enablePersistence="false"
-                :dataSource="filteredpersonnel"
-                :allowPaging="true"
-                :allowResizing="true"
-                :pageSettings="pageSettings"
-                :editSettings="editSettings"
-                :toolbar="toolbar"
-                :allowExcelExport="true"
-                :toolbarClick="toolbarClick"
-                :dataBound="dataBound"
-                :actionBegin="actionBegin"
-                :actionComplete="actionComplete"
-                :detailTemplate="detailTemplate"
-                rowHeight="20"
-                height="100%"
-                width="100%"
-              >
-                <e-columns>
-                  <e-column field="LastName" headerText="Last" textAlign="Left" width="100" :showInColumnChooser="false"></e-column>
-                  <e-column field="FirstName" headerText="First" width="100" :showInColumnChooser="false"></e-column>
-                  <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
-                  <e-column field="Cadency" headerText="Cadency" textAlign="Left" width="100"></e-column>
-                  <e-column field="Position" headerText="Position" textAlign="Left" width="180"></e-column>
-                  <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
-                  <e-column field="Email" headerText="Email" textAlign="Left" width="300"></e-column>
-                  <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
-                  <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
-                  <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
-                  <e-column field="CACStatus" :visible="false" :showInColumnChooser="true" headerText="CAC Status" textAlign="Left" width="110"></e-column>
-                  <e-column field="CACRequestDate" :visible="false" :showInColumnChooser="true" headerText="CAC Req Date" textAlign="Left" width="180"></e-column>
-                  <e-column field="CACExpirationDate" :visible="false" :showInColumnChooser="true" headerText="CAC Exp Date" textAlign="Left" width="180"></e-column>
-                  <e-column field="SCIFormStatus" :visible="false" :showInColumnChooser="true" headerText="SCI Form Status" textAlign="Left" width="150"></e-column>
-                  <e-column field="SCIFormType" :visible="false" :showInColumnChooser="true" headerText="SCI Form Type" textAlign="Left" width="150"></e-column>
-                  <e-column field="SCIFormSubmitted" :visible="false" :showInColumnChooser="true" headerText="SCI Form Submitted" textAlign="Left" width="150"></e-column>
-                  <e-column field="PRDueDate" :visible="false" :showInColumnChooser="true" headerText="PR Due Date" textAlign="Left" width="180"></e-column>
-                  <e-column field="CEDate" :visible="false" :showInColumnChooser="true" headerText="CE Date" textAlign="Left" width="180"></e-column>
-                  <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
-                  <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
-                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true" :showInColumnChooser="false"></e-column>
-                  <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" width="40" :showInColumnChooser="false"></e-column>
-                </e-columns>
-              </ejs-grid>
-              <template #overlay>
-                <div class="text-center">
-                  <b-icon icon="stopwatch" font-scale="3" animation="cylon"></b-icon>
-                  <p id="busy-label">{{ overlayText }}</p>
-                </div>
-              </template>
-            </b-overlay>
-         </b-row>
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="buttonrow">
+              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                Toggle Filters
+              </b-button>
+            </b-row>
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filteredpersonnel.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="PersonnelGrid"
+                  ref="PersonnelGrid"
+                  :enablePersistence="false"
+                  :dataSource="filteredpersonnel"
+                  :allowPaging="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :dataBound="dataBound"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  :detailTemplate="detailTemplate"
+                  rowHeight="20"
+                  :height="rect.height - 175"
+                  :width="rect.width - 5"
+                >
+                  <e-columns>
+                    <e-column field="LastName" headerText="Last" textAlign="Left" width="100"></e-column>
+                    <e-column field="FirstName" headerText="First" width="100"></e-column>
+                    <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
+                    <e-column field="Cadency" headerText="Cadency" textAlign="Left" width="100"></e-column>
+                    <e-column field="Position" headerText="Position" textAlign="Left" width="180"></e-column>
+                    <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
+                    <e-column field="Email" headerText="Email" textAlign="Left" width="300"></e-column>
+                    <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
+                    <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
+                    <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
+                    <e-column field="CACStatus" :visible="false" headerText="CAC Status" textAlign="Left" width="110"></e-column>
+                    <e-column field="CACRequestDate" :visible="false" headerText="CAC Req Date" textAlign="Left" width="180"></e-column>
+                    <e-column field="CACExpirationDate" :visible="false" headerText="CAC Exp Date" textAlign="Left" width="180"></e-column>
+                    <e-column field="SCIFormStatus" :visible="false" headerText="SCI Form Status" textAlign="Left" width="150"></e-column>
+                    <e-column field="SCIFormType" :visible="false" headerText="SCI Form Type" textAlign="Left" width="150"></e-column>
+                    <e-column field="SCIFormSubmitted" :visible="false" headerText="SCI Form Submitted" textAlign="Left" width="150"></e-column>
+                    <e-column field="PRDueDate" :visible="false" headerText="PR Due Date" textAlign="Left" width="180"></e-column>
+                    <e-column field="CEDate" :visible="false" headerText="CE Date" textAlign="Left" width="180"></e-column>
+                    <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70"></e-column>
+                    <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                    <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" width="40"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
         </b-container>
       </b-col>
     </b-row>
@@ -278,7 +279,7 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -293,7 +294,7 @@ export default {
       type: Number
     }
   },
-  errorCaptured(err, vm, info) {
+  /* errorCaptured(err, vm, info) {
     const notification = {
       type: 'danger',
       title: 'Error in personnel.vue ' + err,
@@ -301,7 +302,7 @@ export default {
       push: true
     }
     this.$store.dispatch('notification/add', notification, { root: true })
-  },
+  }, */
   computed: {
     personnel() {
       return Personnel.getters('allPersonnel')
@@ -330,16 +331,21 @@ export default {
     companies() {
       return Company.getters('DropDown')
     },
-    user() {
+    currentuser() {
       return User.getters('CurrentUser')
     },
     userloaded() {
       return User.getters('Loaded')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
     return {
       waterMark: 'Select a date',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
       company: null,
       showDenial: false,
       showOldData: false,
@@ -692,20 +698,8 @@ export default {
   },
   mounted: async function() {
     vm = this
-    Company.dispatch('getCompanies').catch(e => {
-      // Add user notification and system logging
-      vm.handleError(e)
-    })
-    if (this.userloaded) {
-      this.company = this.user[0].Company
-    }
-    const notification = {
-      type: 'info',
-      title: 'Getting Data',
-      message: 'Getting Workplans and Personnel. Please wait...',
-      push: false
-    }
-    this.$store.dispatch('notification/add', notification, { root: true })
+    this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
+    this.company = this.currentuser[0].Company
     Personnel.dispatch('getDigest')
     Workplan.dispatch('getWorkplans')
       .then(function() {
@@ -717,7 +711,8 @@ export default {
               vm.$options.interval = setInterval(vm.waitForPeople, 1000)
             })
             .catch(e => {
-              vm.handleError(e)
+              // vm.handleError(e)
+              console.log('getPersonnelByCompany ERROR: ' + e)
             })
         } else {
           Personnel.dispatch('getPersonnel')
@@ -725,13 +720,15 @@ export default {
               vm.$options.interval = setInterval(vm.waitForPeople, 1000)
             })
             .catch(e => {
-              vm.handleError(e)
+              // vm.handleError(e)
+              console.log('getPersonnel ERROR: ' + e)
             })
         }
       })
       .catch(e => {
         // Add user notification and system logging
-        vm.handleError(e)
+        // vm.handleError(e)
+        console.log('getWorkplans ERROR: ' + e)
       })
     if (vm.mode === 'edit') {
       // Don't show all of the records until after the form is submitted
@@ -791,12 +788,13 @@ export default {
             // document.getElementById('PageTitle').innerHTML = ' -  Reports'
             break
         }
-      } else {
-        this.waitForPeople()
       }
     },
     getRef: function(text, idx) {
       return text + '_' + idx
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     toolbarClick: function(args) {
       switch (args.item.id) {
@@ -870,7 +868,7 @@ export default {
         try {
           Personnel.dispatch('editPerson', data).then(async function() {
             let managerEmails = []
-            vm.user[0].WPData.length.foreach(async function(wp) {
+            vm.currentuser[0].WPData.length.foreach(async function(wp) {
               let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
               console.log(`Manager: ${JSON.stringify(manager)}`)
               if (manager[0]) {
@@ -934,7 +932,7 @@ export default {
         try {
           let results = Personnel.dispatch('addSub', data)
           let managerEmails = []
-          vm.user[0].WPData.foreach(async wp => {
+          vm.currentuser[0].WPData.foreach(async wp => {
             let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
             console.log(`Manager: ${JSON.stringify(manager)}`)
             if (manager[0]) {
@@ -1324,7 +1322,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Search]
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
@@ -1361,6 +1359,15 @@ export default {
 </script>
 
 <style lang="scss">
+.buttonrow {
+  height: 50px;
+  justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item if needed
+}
+
+.gridrow {
+  height: calc(100vh - 200px);
+}
+
 .sorted {
   color: #04ee04 !important;
 }
@@ -1387,10 +1394,6 @@ h3 {
 
 #ShowFilters {
   height: 40px;
-}
-
-.tableHeight {
-  height: calc(100vh - 130px);
 }
 
 #ulFields {
