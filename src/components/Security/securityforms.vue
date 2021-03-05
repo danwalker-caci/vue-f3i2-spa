@@ -629,7 +629,11 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-              payload.CACStatus = vm.form.CACStatus
+              if (vm.form.CACValid === 'Yes' && vm.form.CACEver === 'Yes') {
+                payload.CACStatus = 'Non-F3I2 CAC'
+              } else {
+                payload.CACStatus = 'Pending Info'
+              }
               break
             case 'SCI':
               scis.push({
@@ -646,7 +650,7 @@ export default {
               break
           }
         })
-        // Notification must be reworked to point to the id of SecurityForms and then the account type.
+        // Notification must be reworked to point to the idF of SecurityForms and then the account type.
         let taskPayload = {
           Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
           //AssignedToId: vm.userid, // Hardcoding the Security Group
