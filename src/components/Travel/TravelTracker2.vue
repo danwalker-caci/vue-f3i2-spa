@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
     <b-row no-gutters class="contentHeight">
-      <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+      <!-- <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
             <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
@@ -9,7 +9,7 @@
           </div>
         </template>
         <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
-      </b-toast>
+      </b-toast> -->
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Travel Filter</template>
         <div>
@@ -73,60 +73,68 @@
             </b-button>
           </b-row>
           <b-row no-gutters class="gridrow">
-            <ejs-grid
-              id="TravelGrid"
-              ref="TravelGrid"
-              :enablePersistence="false"
-              :dataSource="filteredtravel"
-              :allowPaging="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :rowDataBound="rowDataBound"
-              :queryCellInfo="formatCell"
-              :excelQueryCellInfo="formatExcelCell"
-              rowHeight="20"
-              :height="rect.height - 175"
-              :width="rect.width - 5"
-            >
-              <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Status" headerText="Status" width="150"></e-column>
-                <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
-                <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
-                <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
-                <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
-                <e-column field="Created" headerText="Travel Requested" textAlign="Left" width="150" type="date" format="yMd"></e-column>
-                <e-column field="StartTime" headerText="Departure Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="EndTime" headerText="Return Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="TravelersText" headerText="Travelers" textAlign="Left" width="200"></e-column>
-                <e-column field="Company" headerText="Company" textAlign="Left" width="150"></e-column>
-                <e-column field="Sponsor" headerText="Sponsor" textAlign="Left" width="150"></e-column>
-                <e-column field="EstimatedCost" headerText="Est Cost" textAlign="Left" width="100"></e-column>
-                <e-column field="PreApproved" headerText="Pre Approved" textAlign="Left" width="100"></e-column>
-                <e-column field="VisitRequest" headerText="Visit Request" textAlign="Left" width="150"></e-column>
-                <e-column field="Clearance" headerText="Clearance" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUS" headerText="OCONUS" textAlign="Left" width="100"></e-column>
-                <e-column field="OCONUSLocation" headerText="OCONUS Location" textAlign="Left" width="150"></e-column>
-                <e-column field="OCONUSApprovedBy" headerText="OCONUS Approved By" textAlign="Left" width="180"></e-column>
-                <e-column field="OCONUSApprovedOn" headerText="OCONUS Approved Date" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TravelFrom" headerText="Travel From" textAlign="Left" width="150"></e-column>
-                <e-column field="TravelTo" headerText="Travel To" textAlign="Left" width="150"></e-column>
-                <e-column field="POCName" headerText="POC Name" textAlign="Left" width="120"></e-column>
-                <e-column field="POCEmail" headerText="POC Email" textAlign="Left" width="180"></e-column>
-                <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
-                <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
-                <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-              </e-columns>
-            </ejs-grid>
+            <b-overlay :show="filteredtravel.length > 0" :variant="overlayVariant" z-index="3000">
+              <ejs-grid
+                id="TravelGrid"
+                ref="TravelGrid"
+                :enablePersistence="false"
+                :dataSource="filteredtravel"
+                :allowPaging="true"
+                :allowResizing="true"
+                :pageSettings="pageSettings"
+                :editSettings="editSettings"
+                :toolbar="toolbar"
+                :allowExcelExport="true"
+                :toolbarClick="toolbarClick"
+                :dataBound="dataBound"
+                :actionBegin="actionBegin"
+                :actionComplete="actionComplete"
+                :rowDataBound="rowDataBound"
+                :queryCellInfo="formatCell"
+                :excelQueryCellInfo="formatExcelCell"
+                rowHeight="20"
+                :height="rect.height - 175"
+                :width="rect.width - 5"
+              >
+                <e-columns>
+                  <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                  <e-column field="Status" headerText="Status" width="150"></e-column>
+                  <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
+                  <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
+                  <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
+                  <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
+                  <e-column field="Created" headerText="Travel Requested" textAlign="Left" width="150" type="date" format="yMd"></e-column>
+                  <e-column field="StartTime" headerText="Departure Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="EndTime" headerText="Return Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="TravelersText" headerText="Travelers" textAlign="Left" width="200"></e-column>
+                  <e-column field="Company" headerText="Company" textAlign="Left" width="150"></e-column>
+                  <e-column field="Sponsor" headerText="Sponsor" textAlign="Left" width="150"></e-column>
+                  <e-column field="EstimatedCost" headerText="Est Cost" textAlign="Left" width="100"></e-column>
+                  <e-column field="PreApproved" headerText="Pre Approved" textAlign="Left" width="100"></e-column>
+                  <e-column field="VisitRequest" headerText="Visit Request" textAlign="Left" width="150"></e-column>
+                  <e-column field="Clearance" headerText="Clearance" textAlign="Left" width="100"></e-column>
+                  <e-column field="OCONUS" headerText="OCONUS" textAlign="Left" width="100"></e-column>
+                  <e-column field="OCONUSLocation" headerText="OCONUS Location" textAlign="Left" width="150"></e-column>
+                  <e-column field="OCONUSApprovedBy" headerText="OCONUS Approved By" textAlign="Left" width="180"></e-column>
+                  <e-column field="OCONUSApprovedOn" headerText="OCONUS Approved Date" textAlign="Left" width="200" type="date" format="yMd"></e-column>
+                  <e-column field="TravelFrom" headerText="Travel From" textAlign="Left" width="150"></e-column>
+                  <e-column field="TravelTo" headerText="Travel To" textAlign="Left" width="150"></e-column>
+                  <e-column field="POCName" headerText="POC Name" textAlign="Left" width="120"></e-column>
+                  <e-column field="POCEmail" headerText="POC Email" textAlign="Left" width="180"></e-column>
+                  <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
+                  <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
+                  <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
+                  <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
+                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                </e-columns>
+              </ejs-grid>
+              <template #overlay>
+                <div class="text-center">
+                  <b-icon icon="stopwatch" font-scale="3" animation="cylon"></b-icon>
+                  <p id="busy-label">{{ overlayText }}</p>
+                </div>
+              </template>
+            </b-overlay>
           </b-row>
         </b-container>
       </b-col>
@@ -145,7 +153,7 @@ let data = []
 
 export default {
   name: 'Tracker',
-  errorCaptured(err, vm, info) {
+  /* errorCaptured(err, vm, info) {
     const notification = {
       type: 'danger',
       title: 'Error in traveltracker.vue ' + err,
@@ -153,7 +161,7 @@ export default {
       push: false
     }
     this.$store.dispatch('notification/add', notification, { root: true })
-  },
+  }, */
   computed: {
     travelloaded() {
       return Travel.getters('loaded')
@@ -209,6 +217,8 @@ export default {
   data: function() {
     return {
       busyTitle: 'Getting Data. Please Wait.',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
       searchinput: '',
       moreevents: false,
       company: null,
@@ -765,79 +775,43 @@ export default {
   },
   mounted: function() {
     vm = this
+    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
+    this.company = this.currentuser[0].Company
+    if (console) {
+      console.log('COMPANY: ' + this.company)
+    }
     try {
-      Travel.dispatch('getDigest')
-      this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
-      this.$options.interval = setInterval(this.waitForUser, 500)
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
+      if (this.isSubcontractor == true) {
+        if (this.company !== null) {
+          let payload = {}
+          payload.company = this.company
+          Travel.dispatch('getTripsByCompany', payload).then(function() {
+            vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+          })
+        } else {
+          this.overlayText = 'You are not assigned a company in the portal. Please contact us...'
+          this.overlayVariant = 'warning'
+        }
+      } else {
+        Travel.dispatch('getTRIPS').then(function() {
+          vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+        })
       }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
+    } catch (e) {
+      this.overlayText = 'There was an error getting travel. Please try again and contact us if it continues.'
+      this.overlayVariant = 'danger'
     }
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
   },
   methods: {
-    waitForUser: function() {
-      if (this.userloaded) {
-        clearInterval(this.$options.interval)
-        this.company = this.currentuser[0].Company
-        if (console) {
-          console.log('COMPANY: ' + this.company)
-        }
-        this.$bvToast.show('busy-toast')
-        // Check if user is subcontractor first.
-        if (this.isSubcontractor == true) {
-          if (this.company !== null) {
-            let payload = {}
-            payload.company = this.company
-            Travel.dispatch('getTripsByCompany', payload).then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          } else {
-            // TODO: LET THE USER KNOW?
-          }
-        } else {
-          try {
-            Travel.dispatch('getTRIPS').then(function() {
-              vm.$bvToast.hide('busy-toast')
-              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-            })
-          } catch (e) {
-            // Add user notification and system logging
-            const notification = {
-              type: 'danger',
-              title: 'Portal Error',
-              message: e,
-              push: true
-            }
-            this.$store.dispatch('notification/add', notification, {
-              root: true
-            })
-            console.log('ERROR: ' + e)
-          }
-        }
-      }
-    },
-    loadEvents: function() {},
     waitForEvents: function() {
       this.$store.dispatch('support/addActivity', '<div class="bg-info">traveltracker-WAITING FOR EVENTS:  ' + this.mode + '</div>')
       if (this.travel && this.travel.length > 0) {
-        this.$bvToast.hide('busy-toast')
         clearInterval(this.$options.interval)
         this.filteredtravel = Vue._.orderBy(this.travel, 'Id', 'desc')
-        // load any saved filters
-        this.loadfilters()
+        this.loadfilters() // TODO: Remove on filter story
         this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
       }

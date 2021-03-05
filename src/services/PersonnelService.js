@@ -10,8 +10,9 @@ if (window._spPageContextInfo) {
 
 let portalemail = ''
 let baseurl = SPCI.webAbsoluteUrl
-let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Title"
-geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
+let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Id"
+geturl += '&$filter=(Active eq 1)'
+// geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
 let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=ContactOrder"
 let zurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$filter=(Company eq '"
 curl += '&$filter=(Contact eq 1)'

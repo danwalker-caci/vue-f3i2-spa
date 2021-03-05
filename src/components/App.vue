@@ -79,9 +79,4 @@ export default {
   height: 100vh;
   z-index: 1000 !important;
 }
-
-.wrapper {
-  width: 100vw;
-  height: 100vh; /* calc(100vh - 50px); */
-}
 </style>

@@ -1,7 +1,7 @@
 <!-- eslint-disable -->
 <template>
-  <b-container fluid class="contentHeight">
-    <b-row ref="GridRow" class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Personnel Filter</template>
         <div>
@@ -57,175 +57,218 @@
           </ul>
         </div>
       </b-modal>
+      <b-modal id="EditModal" ref="EditModal" size="xl" centered>
+        <template v-slot:modal-title>Edit Details For {{ rowData.FirstName + ' ' + rowData.LastName }}</template>
+        <b-container fluid>
+          <p v-if="isSubcontractor">{{ rowData.ModDeniedReason }}</p>
+          <table id="EditTable" class="personneltable">
+            <tbody>
+              <tr class="bg-info text-white">
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Middle</th>
+                <th>Cadency (SR, JR, etc)</th>
+                <th>Location</th>
+                <th>Company</th>
+              </tr>
+              <tr class="text-white">
+                <td><input class="e-input" type="text" v-model="rowData.LastName" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.LastName }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.FirstName" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.FirstName }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.Middle" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Middle }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.Cadency" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Cadency }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.Location" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Location }}</p></td>
+                <td>
+                  <ejs-dropdownlist v-model="rowData.Company" :dataSource="companies"></ejs-dropdownlist>
+                  <p v-if="showOldData" class="text-info">Original Value: {{ oldData.Company }}</p>
+                  <!-- <input class="e-input" type="text" v-model="rowData.Company" /> -->
+                </td>
+              </tr>
+              <tr class="bg-info text-white">
+                <th colspan="2">Position</th>
+                <th colspan="2">Email</th>
+                <th>Phone</th>
+                <th>SubET</th>
+              </tr>
+              <tr class="text-white">
+                <td colspan="2"><input class="e-input" type="text" v-model="rowData.Position" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Position }}</p></td>
+                <td colspan="2"><input class="e-input" type="text" v-model="rowData.Email" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Email }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.Phone" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Phone }}</p></td>
+                <td><ejs-dropdownlist v-model="rowData.SubET" :dataSource="subet" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SubET }}</p></td>
+              </tr>
+              <tr class="bg-info text-white">
+                <th colspan="2" title="CAC Status">CAC Status</th>
+                <th colspan="2" title="CAC Request Date">CAC Req Date</th>
+                <th colspan="2" title="CAC Expiration Date">CAC Exp Date</th>
+              </tr>
+              <tr class="text-white">
+                <td colspan="2"><ejs-dropdownlist v-model="rowData.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACStatus }}</p></td>
+                <td colspan="2"><ejs-datepicker v-model="rowData.CACRequestDate"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACRequestDate }}</p></td>
+                <td colspan="2"><ejs-datepicker v-model="rowData.CACExpirationDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CACExpirationDate }}</p></td>
+              </tr>
+              <tr class="bg-info text-white">
+                <th colspan="2" title="SCI Form Status">SCI Form Status</th>
+                <th colspan="2" title="SCI Form Type">SCI Form Type</th>
+                <th colspan="2" title="SCI Form Submitted">SCI Form Submiited</th>
+              </tr>
+              <tr class="text-white">
+                <td colspan="2"><ejs-dropdownlist v-model="rowData.SCIFormStatus" :dataSource="formstatus" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormStatus }}</p></td>
+                <td colspan="2"><ejs-dropdownlist v-model="rowData.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormType }}</p></td>
+                <td colspan="2"><ejs-datepicker v-model="rowData.SCIFormSubmitted" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SCIFormSubmitted }}</p></td>
+              </tr>
+              <tr class="bg-info text-white">
+                <th colspan="3" title="PR Due Date">PR Due Date</th>
+                <th colspan="3" title="CE Date">CE Date</th>
+              </tr>
+              <tr class="text-white">
+                <td colspan="3"><ejs-datepicker v-model="rowData.PRDueDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.PRDueDate }}</p></td>
+                <td colspan="3"><ejs-datepicker v-model="rowData.CEDate" :placeholder="waterMark"></ejs-datepicker><p v-if="showOldData" class="text-info">Original Value: {{ oldData.CEDate }}</p></td>
+              </tr>
+              <tr class="bg-info text-white text-center">
+                <td colspan="6"><b>Work Plans</b></td>
+              </tr>
+              <tr>
+                <td colspan="6">
+                  <b-table id="WPTable" ref="WPTable" v-model="WPData" :items="Plans" :fields="WPFields" style="table-layout: fixed;">
+                    <template v-slot:cell(actions)="data">
+                      <button size="sm" class="actionbutton" @click="deleteme(data.index)" title="Delete It">
+                        <font-awesome-icon far icon="trash-alt" class="icon" :style="{ color: 'red' }"></font-awesome-icon>
+                      </button>
+                    </template>
+                    <template v-slot:cell(Workplan)="data">
+                      <ejs-dropdownlist v-model="WPData[data.index].Workplan" :dataSource="workplans" :fields="ddfields2" :id="getRef('Workplan', data.index)" @change="changewp"></ejs-dropdownlist>
+                    </template>
+                    <template v-slot:cell(PercentSupport)="data">
+                      <ejs-dropdownlist v-model="WPData[data.index].PercentSupport" :dataSource="support" :fields="ddfields"></ejs-dropdownlist>
+                    </template>
+                  </b-table>
+                  <button size="sm" @click="btnAddClick" variant="success">Add Work Plan</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </b-container>
+        <template v-slot:modal-footer>
+          <div id="editModalButtons" v-show="!approvalOnly" class="editModalButtons">
+            <b-button variant="danger" size="sm" @click="editClose">Close</b-button>
+            <b-button variant="success" size="sm" @click="editOk">OK</b-button>
+          </div>
+          <div id="EditPersonnelButtons" v-show="!showDenial && approvalOnly" class="editModalButtons">
+            <b-button v-if="isWPManager" size="sm" @click="showDenial = !showDenial" variant="secondary">Deny</b-button>
+            <b-button v-if="isWPManager" size="sm" @click="btnApproveClick" variant="primary">Approve</b-button>
+          </div>
+          <div id="wpmDenial" v-show="showDenial" class="editModalButtons">
+            Reason: <textarea id="DeniedReason"></textarea>
+            <b-button size="sm" @click="showDenial = !showDenial" variant="danger">Cancel</b-button>
+            <b-button size="sm" @click="btnDenyClick" class="btn-success" variant="success">Submit</b-button>
+          </div>
+        </template>
+      </b-modal>
+      <b-modal id="NewModal" ref="NewModal" size="xl" centered @ok="newOk">
+        <template v-slot:modal-title>Add New User</template>
+        <div class="container-fluid">
+          <table id="NewTable" class="personneltable">
+            <tbody>
+              <tr class="bg-warning text-white">
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Middle</th>
+                <th>Company</th>
+              </tr>
+              <tr>
+                <td>
+                  <input class="e-input" type="text" v-model="newData.LastName" />
+                </td>
+                <td>
+                  <input class="e-input" type="text" v-model="newData.FirstName" />
+                </td>
+                <td>
+                  <input class="e-input" type="text" v-model="newData.Middle" />
+                </td>
+                <td>
+                  <ejs-dropdownlist v-model="newData.Company" :dataSource="companies"></ejs-dropdownlist>
+                </td>
+              </tr>
+              <tr class="bg-warning text-white">
+                <th colspan="2">Email</th>
+                <th colspan="2">Phone</th>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <input class="e-input" type="text" v-model="newData.Email" />
+                </td>
+                <td colspan="2">
+                  <input class="e-input" type="text" v-model="newData.Phone" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-row no-gutters class="buttonrow">
             <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
               Toggle Filters
             </b-button>
-          </div>
-          <div class="col-12 tableHeight">
-            <ejs-grid
-              id="PersonnelGrid"
-              ref="PersonnelGrid"
-              :enablePersistence="false"
-              :dataSource="filteredpersonnel"
-              :allowPaging="true"
-              :allowReordering="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :detailTemplate="detailTemplate"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column field="LastName" headerText="Last" textAlign="Left" width="100" :showInColumnChooser="false"></e-column>
-                <e-column field="FirstName" headerText="First" width="100" :showInColumnChooser="false"></e-column>
-                <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
-                <e-column field="Cadency" headerText="Cadency" textAlign="Left" width="100"></e-column>
-                <e-column field="Position" headerText="Position" textAlign="Left" width="180"></e-column>
-                <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
-                <e-column field="Email" headerText="Email" textAlign="Left" width="300"></e-column>
-                <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
-                <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
-                <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
-                <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
-                <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true" :showInColumnChooser="false"></e-column>
-                <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" width="40" :showInColumnChooser="false"></e-column>
-              </e-columns>
-            </ejs-grid>
-          </div>
-        </b-row>
+          </b-row>
+          <b-row no-gutters class="gridrow">
+            <b-overlay :show="filteredpersonnel.length > 0" :variant="overlayVariant" z-index="3000">
+              <ejs-grid
+                id="PersonnelGrid"
+                ref="PersonnelGrid"
+                :enablePersistence="false"
+                :dataSource="filteredpersonnel"
+                :allowPaging="true"
+                :allowResizing="true"
+                :pageSettings="pageSettings"
+                :editSettings="editSettings"
+                :toolbar="toolbar"
+                :allowExcelExport="true"
+                :toolbarClick="toolbarClick"
+                :dataBound="dataBound"
+                :actionBegin="actionBegin"
+                :actionComplete="actionComplete"
+                :detailTemplate="detailTemplate"
+                rowHeight="20"
+                height="100%"
+                width="100%"
+              >
+                <e-columns>
+                  <e-column field="LastName" headerText="Last" textAlign="Left" width="100" :showInColumnChooser="false"></e-column>
+                  <e-column field="FirstName" headerText="First" width="100" :showInColumnChooser="false"></e-column>
+                  <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
+                  <e-column field="Cadency" headerText="Cadency" textAlign="Left" width="100"></e-column>
+                  <e-column field="Position" headerText="Position" textAlign="Left" width="180"></e-column>
+                  <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
+                  <e-column field="Email" headerText="Email" textAlign="Left" width="300"></e-column>
+                  <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
+                  <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
+                  <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
+                  <e-column field="CACStatus" :visible="false" :showInColumnChooser="true" headerText="CAC Status" textAlign="Left" width="110"></e-column>
+                  <e-column field="CACRequestDate" :visible="false" :showInColumnChooser="true" headerText="CAC Req Date" textAlign="Left" width="180"></e-column>
+                  <e-column field="CACExpirationDate" :visible="false" :showInColumnChooser="true" headerText="CAC Exp Date" textAlign="Left" width="180"></e-column>
+                  <e-column field="SCIFormStatus" :visible="false" :showInColumnChooser="true" headerText="SCI Form Status" textAlign="Left" width="150"></e-column>
+                  <e-column field="SCIFormType" :visible="false" :showInColumnChooser="true" headerText="SCI Form Type" textAlign="Left" width="150"></e-column>
+                  <e-column field="SCIFormSubmitted" :visible="false" :showInColumnChooser="true" headerText="SCI Form Submitted" textAlign="Left" width="150"></e-column>
+                  <e-column field="PRDueDate" :visible="false" :showInColumnChooser="true" headerText="PR Due Date" textAlign="Left" width="180"></e-column>
+                  <e-column field="CEDate" :visible="false" :showInColumnChooser="true" headerText="CE Date" textAlign="Left" width="180"></e-column>
+                  <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
+                  <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70" :showInColumnChooser="false"></e-column>
+                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true" :showInColumnChooser="false"></e-column>
+                  <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" width="40" :showInColumnChooser="false"></e-column>
+                </e-columns>
+              </ejs-grid>
+              <template #overlay>
+                <div class="text-center">
+                  <b-icon icon="stopwatch" font-scale="3" animation="cylon"></b-icon>
+                  <p id="busy-label">{{ overlayText }}</p>
+                </div>
+              </template>
+            </b-overlay>
+         </b-row>
+        </b-container>
       </b-col>
     </b-row>
-    <b-modal id="EditModal" ref="EditModal" size="xl" centered>
-      <template v-slot:modal-title>Edit Details For {{ rowData.FirstName + ' ' + rowData.LastName }}</template>
-      <b-container fluid>
-        <p v-if="isSubcontractor">{{ rowData.ModDeniedReason }}</p>
-        <table id="EditTable" class="personneltable">
-          <tbody>
-            <tr class="bg-info text-white">
-              <th>Last Name</th>
-              <th>First Name</th>
-              <th>Middle</th>
-              <th>Cadency (SR, JR, etc)</th>
-              <th>Location</th>
-              <th>Company</th>
-            </tr>
-            <tr class="text-white">
-              <td><input class="e-input" type="text" v-model="rowData.LastName" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.LastName }}</p></td>
-              <td><input class="e-input" type="text" v-model="rowData.FirstName" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.FirstName }}</p></td>
-              <td><input class="e-input" type="text" v-model="rowData.Middle" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Middle }}</p></td>
-              <td><input class="e-input" type="text" v-model="rowData.Cadency" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Cadency }}</p></td>
-              <td><input class="e-input" type="text" v-model="rowData.Location" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Location }}</p></td>
-              <td>
-                <ejs-dropdownlist v-model="rowData.Company" :dataSource="companies"></ejs-dropdownlist>
-                <p v-if="showOldData" class="text-info">Original Value: {{ oldData.Company }}</p>
-                <!-- <input class="e-input" type="text" v-model="rowData.Company" /> -->
-              </td>
-            </tr>
-            <tr class="bg-info text-white">
-              <th colspan="2">Position</th>
-              <th colspan="2">Email</th>
-              <th>Phone</th>
-              <th>SubET</th>
-            </tr>
-            <tr class="text-white">
-              <td colspan="2"><input class="e-input" type="text" v-model="rowData.Position" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Position }}</p></td>
-              <td colspan="2"><input class="e-input" type="text" v-model="rowData.Email" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Email }}</p></td>
-              <td><input class="e-input" type="text" v-model="rowData.Phone" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Phone }}</p></td>
-              <td><ejs-dropdownlist v-model="rowData.SubET" :dataSource="subet" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SubET }}</p></td>
-            </tr>
-            <tr class="bg-info text-white text-center">
-              <td colspan="6"><b>Work Plans</b></td>
-            </tr>
-            <tr>
-              <td colspan="6">
-                <b-table id="WPTable" ref="WPTable" v-model="WPData" :items="Plans" :fields="WPFields" style="table-layout: fixed;">
-                  <template v-slot:cell(actions)="data">
-                    <button size="sm" class="actionbutton" @click="deleteme(data.index)" title="Delete It">
-                      <font-awesome-icon far icon="trash-alt" class="icon" :style="{ color: 'red' }"></font-awesome-icon>
-                    </button>
-                  </template>
-                  <template v-slot:cell(Workplan)="data">
-                    <ejs-dropdownlist v-model="WPData[data.index].Workplan" :dataSource="workplans" :fields="ddfields2" :id="getRef('Workplan', data.index)" @change="changewp"></ejs-dropdownlist>
-                  </template>
-                  <template v-slot:cell(PercentSupport)="data">
-                    <ejs-dropdownlist v-model="WPData[data.index].PercentSupport" :dataSource="support" :fields="ddfields"></ejs-dropdownlist>
-                  </template>
-                </b-table>
-                <button size="sm" @click="btnAddClick" variant="success">Add Work Plan</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </b-container>
-      <template v-slot:modal-footer>
-        <div id="editModalButtons" v-show="!approvalOnly" class="editModalButtons">
-          <b-button variant="danger" size="sm" @click="editClose">Close</b-button>
-          <b-button variant="success" size="sm" @click="editOk">OK</b-button>
-        </div>
-        <div id="EditPersonnelButtons" v-show="!showDenial && approvalOnly" class="editModalButtons">
-          <b-button v-if="isWPManager" size="sm" @click="showDenial = !showDenial" variant="secondary">Deny</b-button>
-          <b-button v-if="isWPManager" size="sm" @click="btnApproveClick" variant="primary">Approve</b-button>
-        </div>
-        <div id="wpmDenial" v-show="showDenial" class="editModalButtons">
-          Reason: <textarea id="DeniedReason"></textarea>
-          <b-button size="sm" @click="showDenial = !showDenial" variant="danger">Cancel</b-button>
-          <b-button size="sm" @click="btnDenyClick" class="btn-success" variant="success">Submit</b-button>
-        </div>
-      </template>
-    </b-modal>
-    <b-modal id="NewModal" ref="NewModal" size="xl" centered @ok="newOk">
-      <template v-slot:modal-title>Add New User</template>
-      <div class="container-fluid">
-        <table id="NewTable" class="personneltable">
-          <tbody>
-            <tr class="bg-warning text-white">
-              <th>Last Name</th>
-              <th>First Name</th>
-              <th>Middle</th>
-              <th>Company</th>
-            </tr>
-            <tr>
-              <td>
-                <input class="e-input" type="text" v-model="newData.LastName" />
-              </td>
-              <td>
-                <input class="e-input" type="text" v-model="newData.FirstName" />
-              </td>
-              <td>
-                <input class="e-input" type="text" v-model="newData.Middle" />
-              </td>
-              <td>
-                <ejs-dropdownlist v-model="newData.Company" :dataSource="companies"></ejs-dropdownlist>
-              </td>
-            </tr>
-            <tr class="bg-warning text-white">
-              <th colspan="2">Email</th>
-              <th colspan="2">Phone</th>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <input class="e-input" type="text" v-model="newData.Email" />
-              </td>
-              <td colspan="2">
-                <input class="e-input" type="text" v-model="newData.Phone" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </b-modal>
   </b-container>
 </template>
 
@@ -235,8 +278,7 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
-import Security from '@/models/Security'
-import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -416,6 +458,97 @@ export default {
           Selected: 'S',
           Predicate: 'E',
           FilterValue: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'CACStatus',
+          Visible: false,
+          DisplayName: 'CAC Status',
+          Filter: false,
+          Type: 'Dropdown',
+          DropdownSource: 'cacstatus',
+          Selected: 'S',
+          Predicate: 'E',
+          FilterValue: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'CACRequestDate',
+          Visible: false,
+          DisplayName: 'CAC Req Date',
+          Filter: false,
+          Type: 'Date',
+          Predicate: 'S',
+          FilterValue: '',
+          FilterValue2: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'CACExpirationDate',
+          Visible: false,
+          DisplayName: 'CAC Exp Date',
+          Filter: false,
+          Type: 'Date',
+          Predicate: 'S',
+          FilterValue: '',
+          FilterValue2: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'SCIFormStatus',
+          Visible: false,
+          DisplayName: 'SCI Form Status',
+          Filter: false,
+          Type: 'Dropdown',
+          DropdownSource: 'formstatus',
+          Selected: 'S',
+          Predicate: 'E',
+          FilterValue: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'SCIFormType',
+          Visible: false,
+          DisplayName: 'SCI Form Type',
+          Filter: false,
+          Type: 'Dropdown',
+          DropdownSource: 'formtype',
+          Selected: 'S',
+          Predicate: 'E',
+          FilterValue: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'SCIFormSubmitted',
+          Visible: false,
+          DisplayName: 'SCI Form Submitted',
+          Filter: false,
+          Type: 'Date',
+          Predicate: '',
+          FilterValue: '',
+          FilterValue2: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'PRDueDate',
+          Visible: false,
+          DisplayName: 'PR Due Date',
+          Filter: false,
+          Type: 'Date',
+          Predicate: 'S',
+          FilterValue: '',
+          FilterValue2: '',
+          Sort: ''
+        },
+        {
+          FieldName: 'CEDate',
+          Visible: false,
+          DisplayName: 'CE Date',
+          Filter: false,
+          Type: 'Date',
+          Predicate: 'S',
+          FilterValue: '',
+          FilterValue2: '',
           Sort: ''
         }
       ],
@@ -794,7 +927,6 @@ export default {
     },
     newOk: async function() {
       await Personnel.dispatch('getDigest')
-      await Security.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -835,16 +967,7 @@ export default {
         }
       } else {
         try {
-          Personnel.dispatch('addPerson', this.newData).then(async function(results) {
-            // TO DO: change the config around to support the new format FirstName, LastName
-            console.log(JSON.stringify(results.data.d.results))
-            let payload = {
-              PersonnelID: results.data.d.Id,
-              PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
-              Company: vm.newData.Company,
-              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
-            }
-            await Security.dispatch('addSecurityForm', payload)
+          Personnel.dispatch('addPerson', this.newData).then(function() {
             vm.hideme('NewModal', 'refresh')
           })
         } catch (e) {
@@ -1201,7 +1324,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze, Search]
+    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
