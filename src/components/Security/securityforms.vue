@@ -726,10 +726,22 @@ export default {
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
-          .then(() => {
+          .then(result => {
+            vm.etag = result.headers.etag
             // Clear form after submission
             if (vm.formType === 'account') {
               vm.form.Type = vm.accountOptions[0]
+            }
+            if (vm.formType === 'cac') {
+              vm.form.CACValid = ''
+              vm.form.CACExpirationDate = ''
+              vm.form.CACIssuedBy = ''
+              vm.form.CACStatus = ''
+            }
+            if (vm.formType === 'sci') {
+              vm.form.SCIIndocDate = ''
+              vm.form.SCIType = ''
+              vm.form.SCIStatus = ''
             }
             vm.files = []
             vm.fileSelected = null
