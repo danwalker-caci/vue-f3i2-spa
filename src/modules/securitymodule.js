@@ -126,17 +126,6 @@ function formatForms(j) {
       uri: j[i]['__metadata']['uri']
     })
   }
-  p.sort((a, b) => {
-    var nameA = a.PersonName.toUpperCase()
-    var nameB = b.PersonName.toUpperCase()
-    if (nameA < nameB) {
-      return -1
-    }
-    if (nameA > nameB) {
-      return 1
-    }
-    return 0
-  })
   return p
 }
 

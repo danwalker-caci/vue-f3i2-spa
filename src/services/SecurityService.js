@@ -10,8 +10,8 @@ let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
-let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
-//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
+//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -118,8 +118,8 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
-      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -185,6 +185,7 @@ export default {
       headers: headers
     }
     let itemprops = {
+      //__metadata: { type: 'SP.Data.SecurityFormsListItem' },
       __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
@@ -243,7 +244,7 @@ export default {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {
       if (sfurl === null) {
-        sfurl = securityformurl
+        sfurl = securityformurl + '?$orderby=LastName'
       }
 
       let response = await axios.get(sfurl, {

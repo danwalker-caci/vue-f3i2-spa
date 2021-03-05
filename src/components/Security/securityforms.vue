@@ -219,7 +219,7 @@
           <b-col cols="10"></b-col>
           <b-col cols="2">
             <b-button variant="danger" class="formbutton" @click="closeForm">Cancel</b-button>
-            <b-button variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
+            <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
           </b-col>
         </b-form-row>
       </b-card>
@@ -306,6 +306,7 @@ export default {
       formTitle: '',
       library: '',
       libraryUrl: '',
+      lockSubmit: false,
       taskUserId: null,
       securityForm: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
@@ -433,7 +434,6 @@ export default {
       let payload = {
         Title: this.form.PersonnelID + '-' + this.form.Name,
         PersonnelID: this.form.PersonnelID,
-        PersonName: this.form.Name,
         FirstName: this.form.FirstName,
         LastName: this.form.LastName,
         Company: this.form.Company
@@ -464,6 +464,7 @@ export default {
       }
       if (!this.formError) {
         // Add post to correct document library with required MetaData
+        this.lockSubmit = true
         let payload = {}
         switch (this.form.Type) {
           case 'NIPR':
@@ -501,7 +502,6 @@ export default {
         payload.library = this.library
         payload.Company = vm.form.Company
         payload.PersonnelID = vm.form.PersonnelID
-        payload.PersonName = vm.form.Name
         //let digest = response.data.d.GetContextWebInformation.FormDigestValue
         // Run through a loop for the files
         let niprs = [],
@@ -548,7 +548,6 @@ export default {
           payload.library = vm.library
           payload.Company = vm.form.Company
           payload.PersonnelID = vm.form.PersonnelID
-          payload.PersonName = vm.form.Name
           let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
           let name = pdfName.split('.')[0]
           file.fileName = name
@@ -726,21 +725,34 @@ export default {
         }
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
-        await Security.dispatch('updateSecurityForm', payload).catch(error => {
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: error.message,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
+        await Security.dispatch('updateSecurityForm', payload)
+          .then(() => {
+            // Clear form after submission
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            vm.files = []
+            vm.fileSelected = null
+            vm.fileBuffer = null
+            vm.lockSubmit = false
+            // need CAC and SCI clear here as well
+            document.querySelector('.e-upload-file-list').parentElement.removeChild(document.querySelector('.e-upload-file-list'))
           })
-          console.log('ERROR: ' + error.message)
-        })
+          .catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
         // Run conditional on the results of the security form to either add or update security form
         // await Security.dispatch('')
-        // Post to the SecurityForms list with the PersonName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
+        // Post to the SecurityForms list with the FirstName, LastName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
         const notification = {
           type: 'success',
           title: 'Succesfully Uploaded Form',
@@ -758,17 +770,6 @@ export default {
           etag: vm.form.etag,
           uri: vm.form.uri
         })
-        // Clear form after submission
-        if (vm.formType === 'account') {
-          vm.form.Type = vm.accountOptions[0]
-        }
-        // need CAC and SCI clear here as well
-        document.querySelector('.e-upload-files').children.forEach(child => {
-          child.HTML = ''
-        })
-        vm.files = []
-        vm.fileSelected = null
-        vm.fileBuffer = null
       }
     },
     async onFileSelect(args) {

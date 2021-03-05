@@ -581,10 +581,11 @@ export default {
           this.updateSecurityForm({
             Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
             PersonnelID: person.Id,
-            PersonName: person.FirstName + ' ' + person.LastName,
+            FirstName: person.FirstName,
+            LastName: person.LastName,
             Company: person.Company,
             PRDueDate: person.PRDueDate ? person.PRDueDate : null,
-            CEDueDate: person.CEDate ? person.CEDate : null,
+            CEDate: person.CEDate ? person.CEDate : null,
             SCIStatus: person.SCIFormStatus,
             SCIFormType: person.SCIFormType, // Add field in
             SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in

@@ -840,7 +840,8 @@ export default {
             console.log(JSON.stringify(results.data.d.results))
             let payload = {
               PersonnelID: results.data.d.Id,
-              PersonName: vm.newData.FirstName + ' ' + vm.newData.LastName,
+              FirstName: vm.newData.FirstName,
+              LastName: vm.newData.LastName,
               Company: vm.newData.Company,
               Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
             }
