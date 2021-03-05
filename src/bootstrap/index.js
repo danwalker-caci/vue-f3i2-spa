@@ -13,7 +13,6 @@ import { DatePickerPlugin } from '@syncfusion/ej2-vue-calendars'
 import { DropDownListPlugin } from '@syncfusion/ej2-vue-dropdowns'
 import { CheckBoxPlugin } from '@syncfusion/ej2-vue-buttons'
 import { UploaderPlugin } from '@syncfusion/ej2-vue-inputs'
-import { SpreadsheetPlugin } from '@syncfusion/ej2-vue-spreadsheet'
 
 import '../assets/css/themify-icons.css'
 import '../assets/css/animate.css'
@@ -37,6 +36,5 @@ export default {
     Vue.use(DatePickerPlugin)
     Vue.use(DropDownListPlugin)
     Vue.use(CheckBoxPlugin)
-    Vue.use(SpreadsheetPlugin)
   }
 }

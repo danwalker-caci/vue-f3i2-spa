@@ -13,6 +13,9 @@ import Todo from '@/models/Todo'
 export default {
   name: 'App',
   computed: {
+    currentuser() {
+      return User.getters('CurrentUser')
+    },
     userloaded() {
       return User.getters('Loaded')
     },
@@ -24,40 +27,56 @@ export default {
     vm = this
     Todo.dispatch('getDigest')
     Company.dispatch('getDigest')
-    Company.dispatch('getCompanies')
-    this.getUserInfo()
+    this.getUserId()
   },
   methods: {
-    async getUserInfo() {
-      await User.dispatch('getUserId').catch(error => {
-        console.log('ERROR: ' + error)
-      })
-      await User.dispatch('getUserProfile')
+    async getUserId() {
+      await User.dispatch('getUserId')
         .then(() => {
-          vm.$options.interval = setInterval(vm.updateUserInfo, 500)
+          vm.$options.interval = setInterval(vm.getUserProfile, 500)
         })
         .catch(error => {
+          // do not continue if we can't get the user ID
           console.log('ERROR: ' + error)
-          User.dispatch('getUserProfile').then(() => {
-            vm.$options.interval = setInterval(vm.updateUserInfo, 500)
-          })
         })
     },
-    async updateUserInfo() {
-      clearInterval(this.$options.interval)
-      if (this.UserId) {
-        await User.dispatch('getUserGroups').catch(error => {
-          console.log('ERROR: ' + error)
-        })
+    async getUserProfile() {
+      if (this.UserId !== 0) {
+        clearInterval(this.$options.interval)
+        await User.dispatch('getUserProfile')
+          .then(() => {
+            vm.$options.interval = setInterval(vm.getUserGroups, 500)
+          })
+          .catch(error => {
+            // do not continue if we can't get the user Profile
+            console.log('ERROR: ' + error)
+          })
+      }
+    },
+    async getUserGroups() {
+      if (this.currentuser.length == 1) {
+        clearInterval(this.$options.interval)
+        await User.dispatch('getUserGroups')
+          .then(() => {
+            vm.$options.interval = setInterval(vm.getTodosByUser, 500)
+          })
+          .catch(error => {
+            // do not continue if we can't get the user Groups
+            console.log('ERROR: ' + error)
+          })
+      }
+    },
+    async getTodosByUser() {
+      if (this.userloaded && this.UserId !== 0) {
+        clearInterval(this.$options.interval)
         await Todo.dispatch('getTodosByUser', this.UserId)
           .then(() => {
             console.log('APP MOUNT COMPLETED')
           })
           .catch(error => {
+            // the user may not have todos but this should not result in an error
             console.log('ERROR: ' + error)
           })
-      } else {
-        this.getUserInfo()
       }
     }
   }

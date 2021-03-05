@@ -4463,27 +4463,7 @@ export default {
   ],
   provide: {
     richtexteditor: [Toolbar, Link, Image, Count, HtmlEditor, QuickToolbar, PasteCleanup, RTETable]
-  } /* ,
-  watch: {
-    Show: function() {
-      if (this.Show == true) {
-        this.$bvToast.show('form-toast')
-        this.WorkplanTitle = this.msrdata.WorkplanTitle
-        this.WorkplanNumber = this.msrdata.WorkplanNumber
-        if (this.user) {
-          this.Email = this.user[0].Email
-          this.Company = this.user[0].Company
-        }
-        let m = this.$moment().get('month')
-        this.Month = months[m]
-        this.Year = String(this.$moment().year())
-        MSR.dispatch('getDigest')
-        Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
-          vm.$options.interval = setInterval(vm.getData, 1000)
-        })
-      }
-    }
-  } */
+  }
 }
 </script>
 
@@ -4497,7 +4477,7 @@ export default {
   height: 50px !important;
 }
 .formbody {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 200px);
   overflow-y: scroll;
 }
 .defaultcalibri .e-rte-content .e-content {

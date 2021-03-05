@@ -12,7 +12,7 @@
     <b-row ref="MainRow" class="contentHeight">
       <b-col cols="12">
         <b-overlay :show="msrs.length == 0" :variant="overlayVariant" z-index="3000">
-          <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete">
+          <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" :height="rect.height - 80" :width="rect.width - 5" :actionComplete="actionComplete">
             <e-columns>
               <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
               <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
@@ -118,6 +118,9 @@ export default {
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
@@ -360,6 +363,7 @@ export default {
   },
   mounted: function() {
     vm = this
+    MSR.dispatch('getDigest')
     this.getData()
   },
   beforeDestroy() {

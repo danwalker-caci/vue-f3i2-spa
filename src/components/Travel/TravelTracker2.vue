@@ -78,6 +78,7 @@
                 <ejs-grid
                   id="TravelGrid"
                   ref="TravelGrid"
+                  :frozenColumns="2"
                   :enablePersistence="false"
                   :dataSource="filteredtravel"
                   :allowPaging="true"
@@ -100,7 +101,8 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Status" headerText="Status" width="150"></e-column>
-                    <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
+                    <!-- <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column> -->
+                    <e-column field="Title" headerText="Title" textAlign="Left" width="400"></e-column>
                     <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                     <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                     <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
