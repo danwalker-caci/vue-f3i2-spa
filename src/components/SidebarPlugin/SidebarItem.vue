@@ -16,7 +16,6 @@
     <slot name="title" v-if="children.length === 0 && !$slots.default && link.path">
       <component :to="link.path" @click.native="linkClick" :is="elementType(link, false)" :class="{ active: link.active }" class="nav-link" :target="link.target" :href="link.path">
         <template v-if="addLink">
-          <!-- <span class="sidebar-mini">{{ link.name.substring(0, 1) }}</span> -->
           <span class="sidebar-mini">
             <font-awesome-icon v-if="link.library === 'fas'" fas :icon="link.icon" class="icon"></font-awesome-icon>
             <font-awesome-icon v-else-if="link.library === 'far'" far :icon="link.icon" class="icon"></font-awesome-icon>
@@ -25,11 +24,14 @@
           <span v-if="link.badgeId != ''" :id="link.badgeId" class="badge badge-xs badge-danger float-right"></span>
         </template>
         <template v-else>
-          <!-- <i :class="link.icon"></i> -->
           <font-awesome-icon v-if="link.library === 'fas'" fas :icon="link.icon" class="icon"></font-awesome-icon>
           <font-awesome-icon v-else-if="link.library === 'far'" far :icon="link.icon" class="icon"></font-awesome-icon>
           <p>{{ link.name }}</p>
           <span v-if="link.badgeId != ''" :id="link.badgeId" class="badge badge-xs badge-danger float-right"></span>
+          <b-button v-if="sublink.filtertype && sublink.filtertype.length > 0" size="sm" class="actionbutton" v-b-toggle="'filtermenu_' + sublink.filtertype" @click.prevent="return launchfilter(sublink.filtertype)">
+            <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
+          </b-button>
+          <span v-if="link.hasFilter"></span>
         </template>
       </component>
     </slot>
