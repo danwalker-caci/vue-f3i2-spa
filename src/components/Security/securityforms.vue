@@ -193,18 +193,18 @@
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACValid === 'No'">
-            <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+            <b-form-group label="Have you ever had a CAC? " label-for="formCACValid">
               <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-            <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
-              <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
+            <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
+              <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
             <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
             </b-form-group>
           </b-form-row>
         </div>
@@ -283,6 +283,8 @@ export default {
         CACIssuedBy: '',
         CACExpirationDate: '',
         CACStatus: '',
+        CACTurnedIn: '',
+        CACExpiredOn: '',
         Company: '',
         Type: null,
         PersonnelID: null,
@@ -629,6 +631,8 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
+              payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
+              payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
               payload.CACStatus = vm.form.CACStatus
               break
             case 'SCI':
@@ -736,7 +740,10 @@ export default {
             vm.fileBuffer = null
             vm.lockSubmit = false
             // need CAC and SCI clear here as well
-            document.querySelector('.e-upload-file-list').parentElement.removeChild(document.querySelector('.e-upload-file-list'))
+            let uploadedFiles = document.querySelector('.e-upload-files')
+            while (uploadedFiles.firstChild) {
+              uploadedFiles.removeChild(uploadedFiles.firstChild)
+            }
           })
           .catch(error => {
             const notification = {

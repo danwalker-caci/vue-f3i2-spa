@@ -10,8 +10,8 @@ let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
-let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
-//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
+//let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
@@ -118,8 +118,8 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityListItem' },
-      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.SecurityListItem' },
+      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -147,6 +147,8 @@ export default {
     }
     itemprops.CACValid = payload.CACValid
     itemprops.CACExpirationDate = payload.CACExpirationDate
+    itemprops.CACExpiredOnDate = payload.CACExpiredOnDate
+    itemprops.CACTurnedIn = payload.CACTurnedIn
     itemprops.CACRequestDate = payload.CACRequestDate
     itemprops.CACIssuedBy = payload.CACIssuedBy
     itemprops.CACStatus = payload.CACStatus
@@ -185,8 +187,8 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityListItem' },
-      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      //__metadata: { type: 'SP.Data.SecurityListItem' },
+      __metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -197,6 +199,8 @@ export default {
       CACIssuedBy: payload.CACIssuedBy,
       CACExpirationDate: payload.CACExpirationDate,
       CACRequestDate: payload.CACRequestDate,
+      CACExpiredOnDate: payload.CACExpiredOnDate,
+      CACTurnedIn: payload.CACTurnedIn,
       CACStatus: payload.CACStatus,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,

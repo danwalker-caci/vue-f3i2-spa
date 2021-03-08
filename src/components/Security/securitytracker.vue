@@ -350,7 +350,7 @@ export default {
                         </b-tr>
                       </b-tbody>
                     </b-table-simple>
-                    <div v-if="data.CACValid === 'No' && data.CACIssuedBy && data.CACExpirationDate">
+                    <div v-if="data.CACValid === 'No' && data.CACTurnedIn && data.CACExpiredOnDate">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -366,13 +366,13 @@ export default {
                               Yes
                             </b-td>
                             <b-td>
-                              <ejs-dropdownlist v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields" disabled></ejs-dropdownlist>
+                              {{ data.CACStatus }}
                             </b-td>
                             <b-td>
-                              <b-form-input type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy" disabled></b-form-input>
+                              {{ data.CACTurnedIn }}
                             </b-td>
                             <b-td>
-                              <ejs-datepicker id="formCACExpirationDate" v-model="data.CACExpirationDate" disabled></ejs-datepicker>
+                              {{ data.CACExpiredOnDate }}
                             </b-td>
                           </b-tr>
                         </b-tbody>
@@ -687,6 +687,8 @@ export default {
                 payload.CACValid = d.CACValid
                 payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
                 payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null
+                payload.CACExpiredOnDate = d.CACExpiredOnDate ? d.CACExpiredOnDate : null
+                payload.CACTurnedIn = d.CACTurnedIn
                 payload.CACIssuedBy = d.CACIssuedBy
                 payload.PRDueDate = d.PRDueDate
                 payload.CEDate = d.CEDate
@@ -802,6 +804,7 @@ export default {
         await Security.dispatch('getSecurityForms').then(() => {
           this.securityforms.forEach(form => {
             form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+            form.CACExpiredOnDate = this.$moment(form.CACExpiredOnDate).isValid() ? this.$moment(form.CACExpiredOnDate).format('MM/DD/YYYY') : ''
             form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
             form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
             form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
@@ -835,6 +838,7 @@ export default {
           .then(() => {
             this.securityforms.forEach(form => {
               form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+              form.CACExpiredOnDate = this.$moment(form.CACExpiredOnDate).isValid() ? this.$moment(form.CACExpiredOnDate).format('MM/DD/YYYY') : ''
               form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
               form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
               form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
