@@ -42,7 +42,7 @@
           </b-form-row>
           <!-- don't load until everything else has come in -->
           <!-- Loop through the type of account and each of the forms. -->
-          <div v-if="loaded">
+          <div v-if="loaded && securityForms.forms.length > 0">
             <div v-for="form in securityForms.forms" :key="form.id">
               <b-form-row class="p-1">
                 <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
