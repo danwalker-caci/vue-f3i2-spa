@@ -540,7 +540,7 @@ export default {
         p = Vue._.orderBy(
           p,
           function(o) {
-            return new moment(o[e]).format('YYYYMMDD')
+            return new vm.$moment(o[e]).format('YYYYMMDD')
           },
           'asc'
         )
@@ -565,7 +565,7 @@ export default {
         p = Vue._.orderBy(
           p,
           function(o) {
-            return new moment(o[e]).format('YYYYMMDD')
+            return new vm.$moment(o[e]).format('YYYYMMDD')
           },
           'desc'
         )
