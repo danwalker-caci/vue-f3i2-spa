@@ -629,7 +629,7 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-              if (vm.form.CACValid === 'Yes' && vm.form.CACEver === 'Yes') {
+              if (vm.form.CACValid === 'Yes') {
                 payload.CACStatus = 'Non-F3I2 CAC'
               } else {
                 payload.CACStatus = 'Pending Info'
