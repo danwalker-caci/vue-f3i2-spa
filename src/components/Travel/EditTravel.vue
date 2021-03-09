@@ -984,7 +984,7 @@ export default {
               vm.TravelCount = results.length
               for (let i = 0; i < results.length; i++) {
                 let idx = results[i].IndexNumber
-                if (!Vue._.includes(vm.IndexNumbers, idx)) {
+                if (idx !== null && !Vue._.includes(vm.IndexNumbers, idx)) {
                   vm.IndexNumbers.push({
                     text: results[i].IndexNumber,
                     value: results[i].IndexNumber
@@ -1282,7 +1282,8 @@ export default {
     },
     AutoIndex() {
       // get count of unique index numbers based on workplan # and increment by 1
-      let c = vm.TravelCount + 1
+      // 3/9/2021 - removed the increment by one b/c it uses the number of Travel items related to the WP# of which the current item is one of them.
+      let c = vm.TravelCount
       this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
     },
     SelectIndex() {
@@ -1317,7 +1318,7 @@ export default {
         .then(function(response) {
           let results = response.data.d.results
           if (results.length > 0) {
-            vm.TravelCount = results.length
+            vm.TravelCount = results.length // current item edited included in this returned array
             for (let i = 0; i < results.length; i++) {
               let idx = results[i].IndexNumber
               if (!Vue._.includes(vm.IndexNumbers, idx)) {
