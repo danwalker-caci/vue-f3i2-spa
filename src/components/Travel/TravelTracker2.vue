@@ -1002,11 +1002,6 @@ export default {
     showorhide: function(e) {
       var checked = e.checked
       var displayname = e.event.target.labels[0].innerText
-      var field = this.fields.filter(obj => {
-        obj.DisplayName === displayname
-      })
-      console.log(field)
-      field.Visible = checked
       if (checked) {
         this.$refs.TravelGrid.showColumns([displayname])
         this.$refs.TravelGrid.autoFitColumns()
