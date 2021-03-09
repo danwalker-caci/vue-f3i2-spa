@@ -534,12 +534,12 @@ export default {
       // always reset to all records then do all filters as they are selected.
       // this is a top down filter
       // loop through all the fields and filter the ones that have a predicate and filtervalue set
-      var p = vm.bugs // set initial filter to all
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].Predicate !== 'S') {
-          if (vm.fields[i].FilterValue !== '' || vm.fields[i].Selected !== 'S') {
+      var p = this.bugs // set initial filter to all
+      for (var i = 1; i < this.fields.length; i++) {
+        if (this.fields[i].Predicate !== 'S') {
+          if (this.fields[i].FilterValue !== '' || this.fields[i].Selected !== 'S') {
             // determine what to filter based on predicate
-            switch (vm.fields[i].Predicate) {
+            switch (this.fields[i].Predicate) {
               case 'SW':
                 // Starts With
                 p = p.filter(search => Vue._.startsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
@@ -557,10 +557,10 @@ export default {
 
               case 'E':
                 // Equals
-                if (vm.fields[i].DataType == 'Choice') {
+                if (this.fields[i].DataType == 'Choice') {
                   p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].Selected))
                 } else {
-                  if (vm.fields[i].DataType == 'Number') {
+                  if (this.fields[i].DataType == 'Number') {
                     p = p.filter(search => search[vm.fields[i].FieldName] == vm.fields[i].FilterValue)
                   } else {
                     p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
@@ -575,7 +575,7 @@ export default {
 
               case 'GT':
                 // Greater Than
-                if (vm.fields[i].DataType == 'Number') {
+                if (this.fields[i].DataType == 'Number') {
                   p = p.filter(search => search[vm.fields[i].FieldName] > vm.fields[i].FilterValue)
                 } else {
                   // date
@@ -585,7 +585,7 @@ export default {
 
               case 'LT':
                 // Less Than
-                if (vm.fields[i].DataType == 'Number') {
+                if (this.fields[i].DataType == 'Number') {
                   p = p.filter(search => search[vm.fields[i].FieldName] < vm.fields[i].FilterValue)
                 } else {
                   // date
@@ -598,28 +598,29 @@ export default {
                 p = p.filter(search => moment(search[vm.fields[i].FieldName]).isBetween(moment(vm.fields[i].FilterValue), moment(vm.fields[i].FilterValue2)))
                 break
             }
-            if (vm.sortfield !== '') {
-              // if this is a date field we need to do a bit more work to convert and test for sorting
-              if (vm.fields[i].DataType == 'Date') {
-                var f = vm.fields[i].FieldName
-                p = Vue._.orderBy(
-                  p,
-                  function(o) {
-                    return new moment(o[f]).format('YYYYMMDD')
-                  },
-                  vm.sortdir
-                )
-                p.sort(function compare(a, b) {
-                  var da = new Date(a.FilterValue)
-                })
-              } else {
-                p = Vue._.orderBy(p, vm.sortfield, vm.sortdir)
-              }
-            }
+          }
+        }
+        if (this.sortfield !== '' && this.sortfield === this.fields[i].FieldName) {
+          // if this is a date field we need to do a bit more work to convert and test for sorting
+          if (this.fields[i].DataType == 'Date') {
+            var f = this.fields[i].FieldName
+            p = Vue._.orderBy(
+              p,
+              function(o) {
+                return new vm.$moment(o[f]).format('YYYYMMDD')
+              },
+              this.sortdir
+            )
+          } else {
+            p = Vue._.orderBy(p, this.sortfield, this.sortdir)
           }
         }
       }
-      vm.filteredbugs = p
+      if (this.sortfield === '') {
+        p = Vue._.orderBy(p, 'Id', 'desc')
+      }
+      this.filteredbugs = p
+      this.$refs.BugGrid.refresh()
     },
     clearfilter: function(e) {
       var f = String(e.target.id).split('_')[1]
@@ -692,22 +693,22 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                this.fields = JSON.parse(window.localStorage.getItem('bug'))
+                vm.fields = JSON.parse(window.localStorage.getItem('bug'))
                 // loop to display the selected columns
-                for (var i = 1; i < this.fields.length; i++) {
-                  if (this.fields[i].Visible) {
-                    this.$refs.BugGrid.showColumns(this.fields[i].DisplayName)
-                    this.$refs.BugGrid.autoFitColumns()
+                for (var i = 1; i < vm.fields.length; i++) {
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.BugGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.BugGrid.autoFitColumns()
                   } else {
-                    this.$refs.BugGrid.hideColumns(this.fields[i].DisplayName)
-                    this.$refs.BugGrid.autoFitColumns()
+                    vm.$refs.BugGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.BugGrid.autoFitColumns()
                   }
-                  if (this.fields[i].Sort !== '') {
-                    this.sortfield = this.fields[i].FieldName
-                    this.sortdir = this.fields[i].Sort
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
                   }
                 }
-                this.setfilter()
+                vm.setfilter()
               }
             })
             .catch(err => {

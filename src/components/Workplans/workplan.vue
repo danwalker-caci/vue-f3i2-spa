@@ -20,10 +20,10 @@
                 <b-button size="sm" class="actionbutton float-right" :class="field.Filter ? null : 'collapsed'" :aria-expanded="field.Filter ? 'true' : 'false'" :aria-controls="getRef('collapse', field.FieldName)" @click="field.Filter = !field.Filter">
                   <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
                 </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Down' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
+                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'desc' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
                   <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
                 </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Up' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
+                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'asc' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
                   <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
                 </b-button>
                 <b-collapse class="mt-1" :id="getRef('collapse', field.FieldName)" v-model="field.Filter">
@@ -600,7 +600,7 @@ export default {
       for (var i = 0; i < this.fields.length; i++) {
         if (this.fields[i].FieldName == e) {
           console.log('SORT UP: ' + e)
-          this.fields[i].Sort = 'Up'
+          this.fields[i].Sort = 'asc'
         } else {
           this.fields[i].Sort = ''
         }
@@ -625,7 +625,7 @@ export default {
       for (var i = 0; i < this.fields.length; i++) {
         if (this.fields[i].FieldName == e) {
           // console.log('SORT DOWN: ' + e)
-          this.fields[i].Sort = 'Down'
+          this.fields[i].Sort = 'desc'
         } else {
           this.fields[i].Sort = ''
         }
@@ -649,88 +649,92 @@ export default {
       // this is a top down filter
       // loop through all the fields and filter the ones that have a predicate and filtervalue set
       var p = this.data // set initial filter to all based on the module.
-      for (var i = 1; i < vm.fields.length; i++) {
-        if (vm.fields[i].Predicate !== 'S') {
-          if (vm.fields[i].FilterValue !== '' || vm.fields[i].Selected !== 'S') {
+      for (var i = 1; i < this.fields.length; i++) {
+        if (this.fields[i].Predicate !== 'S') {
+          if (this.fields[i].FilterValue !== '' || this.fields[i].Selected !== 'S') {
             // determine what to filter based on predicate
-            switch (vm.fields[i].Predicate) {
+            switch (this.fields[i].Predicate) {
               case 'SW':
                 // Starts With
-                p = p.filter(search => Vue._.startsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.startsWith(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'EW':
                 // Ends With
-                p = p.filter(search => Vue._.endsWith(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.endsWith(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'C':
                 // Contains
-                p = p.filter(search => Vue._.includes(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.includes(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'E':
                 // Equals
-                if (vm.fields[i].DataType == 'Choice') {
-                  p = p.filter(search => Vue._.isEqual(search[vm.fields[i].FieldName], vm.fields[i].Selected))
+                if (this.fields[i].DataType == 'Choice') {
+                  p = p.filter(search => Vue._.isEqual(search[this.fields[i].FieldName], this.fields[i].Selected))
                 } else {
-                  if (vm.fields[i].DataType == 'Number') {
-                    p = p.filter(search => search[vm.fields[i].FieldName] == vm.fields[i].FilterValue)
+                  if (this.fields[i].DataType == 'Number') {
+                    p = p.filter(search => search[this.fields[i].FieldName] == this.fields[i].FilterValue)
                   } else {
-                    p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isSame(vm.$moment(vm.fields[i].FilterValue), 'day'))
+                    p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isSame(this.$moment(this.fields[i].FilterValue), 'day'))
                   }
                 }
                 break
 
               case 'NE':
                 // Not Equals
-                p = p.filter(search => Vue._.without(search[vm.fields[i].FieldName], vm.fields[i].FilterValue))
+                p = p.filter(search => Vue._.without(search[this.fields[i].FieldName], this.fields[i].FilterValue))
                 break
 
               case 'GT':
                 // Greater Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] > vm.fields[i].FilterValue)
+                if (this.fields[i].DataType == 'Number') {
+                  p = p.filter(search => search[this.fields[i].FieldName] > this.fields[i].FilterValue)
                 } else {
                   // date
-                  p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isAfter(vm.$moment(vm.fields[i].FilterValue)))
+                  p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isAfter(this.$moment(this.fields[i].FilterValue)))
                 }
                 break
 
               case 'LT':
                 // Less Than
-                if (vm.fields[i].DataType == 'Number') {
-                  p = p.filter(search => search[vm.fields[i].FieldName] < vm.fields[i].FilterValue)
+                if (this.fields[i].DataType == 'Number') {
+                  p = p.filter(search => search[this.fields[i].FieldName] < this.fields[i].FilterValue)
                 } else {
                   // date
-                  p = p.filter(search => vm.$moment(vm.fields[i].FilterValue).isAfter(vm.$moment(search[vm.fields[i].FieldName])))
+                  p = p.filter(search => this.$moment(this.fields[i].FilterValue).isAfter(this.$moment(search[this.fields[i].FieldName])))
                 }
                 break
 
               case 'B':
                 // Between
-                p = p.filter(search => vm.$moment(search[vm.fields[i].FieldName]).isBetween(vm.$moment(vm.fields[i].FilterValue), vm.$moment(vm.fields[i].FilterValue2)))
+                p = p.filter(search => this.$moment(search[this.fields[i].FieldName]).isBetween(this.$moment(this.fields[i].FilterValue), this.$moment(this.fields[i].FilterValue2)))
                 break
-            }
-            if (vm.sortfield !== '') {
-              // if this is a date field we need to do a bit more work to convert and test for sorting
-              if (vm.fields[i].DataType == 'Date') {
-                var f = vm.fields[i].FieldName
-                p = Vue._.orderBy(
-                  p,
-                  function(o) {
-                    return new vm.$moment(o[f]).format('YYYYMMDD')
-                  },
-                  vm.sortdir
-                )
-              } else {
-                p = Vue._.orderBy(p, vm.sortfield, vm.sortdir)
-              }
             }
           }
         }
+        if (this.sortfield !== '' && this.sortfield === this.fields[i].FieldName) {
+          // if this is a date field we need to do a bit more work to convert and test for sorting
+          if (this.fields[i].DataType == 'Date') {
+            var f = this.fields[i].FieldName
+            p = Vue._.orderBy(
+              p,
+              function(o) {
+                return new vm.$moment(o[f]).format('YYYYMMDD')
+              },
+              this.sortdir
+            )
+          } else {
+            p = Vue._.orderBy(p, this.sortfield, this.sortdir)
+          }
+        }
       }
-      vm.filtereddata = p
+      if (this.sortfield === '') {
+        p = Vue._.orderBy(p, 'Id', 'desc')
+      }
+      this.filtereddata = p
+      this.$refs.WorkplanGrid.refresh()
     },
     clearfilter: function(e) {
       var f = String(e.target.id).split('_')[1]
@@ -803,23 +807,23 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                this.fields = flds
+                vm.fields = flds
                 // loop to display the selected columns
-                for (var i = 1; i < this.fields.length; i++) {
+                for (var i = 1; i < vm.fields.length; i++) {
                   // starting at 1 to skip the version 'field'
-                  if (this.fields[i].Visible) {
-                    this.$refs.WorkplanGrid.showColumns(this.fields[i].DisplayName)
-                    this.$refs.WorkplanGrid.autoFitColumns()
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.WorkplanGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.WorkplanGrid.autoFitColumns()
                   } else {
-                    this.$refs.WorkplanGrid.hideColumns(this.fields[i].DisplayName)
-                    this.$refs.WorkplanGrid.autoFitColumns()
+                    vm.$refs.WorkplanGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.WorkplanGrid.autoFitColumns()
                   }
-                  if (this.fields[i].Sort !== '') {
-                    this.sortfield = this.fields[i].FieldName
-                    this.sortdir = this.fields[i].Sort
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
                   }
                 }
-                this.setfilter()
+                vm.setfilter()
               }
             })
             .catch(err => {
