@@ -16,7 +16,7 @@
           <ul id="ulFields">
             <li v-for="field in fields" :key="field">
               <div v-if="field.FieldName !== 'Version'">
-                <ejs-checkbox :label="field.DisplayName" :checked="field.Visible" @change="showorhide" :value="field.FieldName"></ejs-checkbox>
+                <ejs-checkbox :label="field.DisplayName" v-model="field.Visible" :checked="field.Visible" @change="showorhide" :value="field.FieldName"></ejs-checkbox>
                 <b-button size="sm" class="actionbutton float-right" :class="field.Filter ? null : 'collapsed'" :aria-expanded="field.Filter ? 'true' : 'false'" :aria-controls="getRef('collapse', field.FieldName)" @click="field.Filter = !field.Filter">
                   <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
                 </b-button>
@@ -1002,6 +1002,11 @@ export default {
     showorhide: function(e) {
       var checked = e.checked
       var displayname = e.event.target.labels[0].innerText
+      var field = this.fields.filter(obj => {
+        obj.DisplayName === displayname
+      })
+      console.log(field)
+      field.Visible = checked
       if (checked) {
         this.$refs.TravelGrid.showColumns([displayname])
         this.$refs.TravelGrid.autoFitColumns()
