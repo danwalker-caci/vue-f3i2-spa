@@ -869,7 +869,7 @@ export default {
         try {
           Personnel.dispatch('editPerson', data).then(async function() {
             let managerEmails = []
-            vm.currentuser[0].WPData.length.foreach(async function(wp) {
+            vm.currentuser[0].WPData.foreach(async function(wp) {
               let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
               console.log(`Manager: ${JSON.stringify(manager)}`)
               if (manager[0]) {
