@@ -245,13 +245,13 @@ let financialMenu = {
       name: 'Financial Documents',
       component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
       props: true
-    },
-    {
-      path: 'manning',
-      name: 'Manning Report',
-      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/manning.vue'),
-      props: true
-    }
+    } //,
+    //{
+    //  path: 'manning',
+    //  name: 'Manning Report',
+    //  component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/manning.vue'),
+    //  props: true
+    //}
   ]
 }
 
