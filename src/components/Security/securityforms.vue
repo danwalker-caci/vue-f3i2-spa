@@ -278,6 +278,8 @@ export default {
       SCIForms: url + '/SCIForms/',
       accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
+      currentFirstName: '',
+      currentLastName: '',
       form: {
         CACValid: '',
         CACIssuedBy: '',
@@ -365,6 +367,8 @@ export default {
           Personnel.dispatch('getPersonnelByUserAccount', vm.userid).then(function(result) {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
+            vm.currentFirstName = result ? result[0].FirstName : ''
+            vm.currentLastName = result ? result[0].LastName : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
             vm.form.FirstName = result ? result[0].FirstName : ''
             vm.form.LastName = result ? result[0].LastName : ''
@@ -735,11 +739,28 @@ export default {
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
-          .then(() => {
+          .then(result => {
+            vm.etag = result.headers.etag
             // Clear form after submission
             if (vm.formType === 'account') {
               vm.form.Type = vm.accountOptions[0]
             }
+            if (vm.formType === 'cac') {
+              vm.form.CACValid = ''
+              vm.form.CACExpirationDate = ''
+              vm.form.CACIssuedBy = ''
+              vm.form.CACStatus = ''
+            }
+            if (vm.formType === 'sci') {
+              vm.form.SCIIndocDate = ''
+              vm.form.SCIType = ''
+              vm.form.SCIStatus = ''
+            }
+            vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
+            vm.form.setName = 'No'
+            vm.form.FirstName = vm.currentFirstName
+            vm.form.LastName = vm.currentLastName
+            vm.form.PersonnelID = vm.currentPersonnelID
             vm.files = []
             vm.fileSelected = null
             vm.fileBuffer = null
@@ -772,7 +793,7 @@ export default {
           push: true
         }
         vm.$store.dispatch('notification/add', notification, { root: true })
-
+        vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
         vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
         let event = []
         event.push({
