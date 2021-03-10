@@ -220,8 +220,8 @@ export default {
   data: function() {
     return {
       busyTitle: 'Getting Data. Please Wait.',
-      overlayText: 'Getting Data. Please Wait.',
-      overlayVariant: 'success',
+      overlayText: 'Getting Data. Please Wait...',
+      overlayVariant: 'light',
       searchinput: '',
       moreevents: false,
       company: null,

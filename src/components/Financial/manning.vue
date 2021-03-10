@@ -73,44 +73,51 @@
             </b-button>
           </b-row> -->
           <b-row no-gutters class="gridrow">
-            <ejs-grid
-              id="ManningGrid"
-              ref="ManningGrid"
-              :enablePersistence="false"
-              :dataSource="filtereddata"
-              :allowPaging="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
-                <e-column field="Number" headerText="Number" width="100"></e-column>
-                <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
-                <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
-                <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
-                <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
-                <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
-                <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
-                <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
-                <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
-                <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
-                <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
-                <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
-                <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
-                <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-              </e-columns>
-            </ejs-grid>
+            <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+              <ejs-grid
+                id="ManningGrid"
+                ref="ManningGrid"
+                :enablePersistence="false"
+                :dataSource="filtereddata"
+                :allowPaging="true"
+                :pageSettings="pageSettings"
+                :editSettings="editSettings"
+                :toolbar="toolbar"
+                :allowExcelExport="true"
+                :toolbarClick="toolbarClick"
+                :actionBegin="actionBegin"
+                :actionComplete="actionComplete"
+                rowHeight="20"
+                height="100%"
+                width="100%"
+              >
+                <e-columns>
+                  <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                  <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
+                  <e-column field="Number" headerText="Number" width="100"></e-column>
+                  <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
+                  <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
+                  <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
+                  <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
+                  <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
+                  <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
+                  <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
+                  <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
+                  <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
+                  <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
+                  <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
+                  <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
+                  <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                </e-columns>
+              </ejs-grid>
+              <template #overlay>
+                <div class="text-center">
+                  <p id="busy-label">{{ overlayText }}</p>
+                </div>
+              </template>
+            </b-overlay>
           </b-row>
           <!-- <b-row no-gutters class="bg-warning buttonrow">
             <b-col cols="4" class="p-0 text-left"></b-col>
@@ -181,6 +188,8 @@ export default {
   data: function() {
     return {
       busyTitle: 'Getting Data. Please Wait.',
+      overlayText: 'Getting Data. Please Wait...',
+      overlayVariant: 'light',
       sortfield: '',
       sortdir: '',
       data: [],

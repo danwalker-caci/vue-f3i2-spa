@@ -213,8 +213,8 @@ export default {
   data: function() {
     return {
       waterMark: 'Select a date',
-      overlayText: 'Getting Data. Please Wait.',
-      overlayVariant: 'success',
+      overlayText: 'Getting Data. Please Wait...',
+      overlayVariant: 'light',
       sortfield: '',
       sortdir: '',
       filteredbugs: [],
