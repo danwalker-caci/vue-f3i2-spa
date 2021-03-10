@@ -101,7 +101,6 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Status" headerText="Status" width="150"></e-column>
-                    <!-- <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column> -->
                     <e-column field="Title" headerText="Title" textAlign="Left" width="400"></e-column>
                     <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                     <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
@@ -127,6 +126,7 @@
                     <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
                     <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
                     <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
+                    <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
                     <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
                   </e-columns>
