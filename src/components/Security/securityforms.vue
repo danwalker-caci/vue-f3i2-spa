@@ -642,7 +642,6 @@ export default {
               }
               payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
               payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
-              payload.CACStatus = vm.form.CACStatus
               break
             case 'SCI':
               scis.push({
@@ -728,7 +727,7 @@ export default {
           })
         }
         if (cacs.length > 0) {
-          JSON.stringify({
+          payload.CAC = JSON.stringify({
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',

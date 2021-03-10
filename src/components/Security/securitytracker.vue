@@ -1,75 +1,71 @@
 <template>
-  <b-col cols="12" class="m-0 p-0">
-    <b-container fluid class="contentHeight m-0 p-0">
-      <b-row class="bg-warning text-black formheader">
-        <b-col cols="4" class="p-0 text-left"></b-col>
-        <b-col cols="4" class="p-0 text-center font-weight-bold">
-          <h3>Security Actions Tracker</h3>
-        </b-col>
-        <b-col cols="4" class="p-0 text-right"></b-col>
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-col cols="10" class="m-0 p-0">
+      <b-row no-gutters class="gridrow contentHeight">
+        <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
+          <ejs-grid
+            id="SecurityGrid"
+            ref="SecurityGrid"
+            :dataSource="securityforms"
+            :allowPaging="true"
+            :allowReordering="true"
+            :allowResizing="true"
+            :pageSettings="pageSettings"
+            :editSettings="editSettings"
+            :filterSettings="filterSettings"
+            :toolbar="toolbar"
+            :allowExcelExport="true"
+            :toolbarClick="toolbarClick"
+            :actionComplete="actionComplete"
+            :dataBound="dataBound"
+            :detailTemplate="detailTemplate"
+            rowHeight="20"
+            height="100%"
+            width="100%"
+          >
+            <e-columns>
+              <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
+              <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
+              <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
+              <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+              <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
+              <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
+              <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
+              <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
+              <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+              <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+            </e-columns>
+          </ejs-grid>
+          <template #overlay>
+            <div class="text-center">
+              <p id="busy-label">{{ overlayText }}</p>
+            </div>
+          </template>
+        </b-overlay>
       </b-row>
-      <b-overlay :show="filteredtravel.length == 0" :variant="overlayVariant" z-index="3000">
-        <ejs-grid
-          id="SecurityGrid"
-          ref="SecurityGrid"
-          :dataSource="securityforms"
-          :allowPaging="true"
-          :allowReordering="true"
-          :allowResizing="true"
-          :pageSettings="pageSettings"
-          :editSettings="editSettings"
-          :filterSettings="filterSettings"
-          :toolbar="toolbar"
-          :allowExcelExport="true"
-          :toolbarClick="toolbarClick"
-          :actionComplete="actionComplete"
-          :dataBound="dataBound"
-          :detailTemplate="detailTemplate"
-          rowHeight="20"
-          height="100%"
-          width="100%"
-        >
-          <e-columns>
-            <e-column field="PersonName" headerText="Person Name" minWidth="200" textAlign="Left"></e-column>
-            <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
-            <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SCIPR" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCICE" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
-            <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-          </e-columns>
-        </ejs-grid>
-        <template #overlay>
-          <div class="text-center">
-            <p id="busy-label">{{ overlayText }}</p>
-          </div>
-        </template>
-      </b-overlay>
-    </b-container>
-  </b-col>
+    </b-col>
+  </b-container>
 </template>
 <script>
 // eslint-disable-next-line no-undef
@@ -123,7 +119,7 @@ export default {
       overlayText: 'Getting Data. Please Wait...',
       overlayVariant: 'light',
       company: '',
-      pageSettings: { pageSize: 30 },
+      pageSettings: { pageSize: 20 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -168,7 +164,7 @@ export default {
                     </b-row>
                   </b-col>
                   <!-- Account Template -->
-                  <b-col cols="12" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
+                  <b-col cols="10" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
                     <div class="detailDiv">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
@@ -276,7 +272,7 @@ export default {
                       </b-table-simple>
                     </div>
                   </b-col>
-                  <b-col cols="12">
+                  <b-col cols="10">
                    <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -321,7 +317,7 @@ export default {
                         </b-tbody>
                       </b-table-simple>
                   </b-col>
-                  <b-col cols="12">
+                  <b-col cols="10">
                     <b-table-simple small responsive>
                       <b-thead head-variant="dark">
                         <b-tr>
@@ -893,6 +889,7 @@ export default {
       if (args.item.id === 'SecurityGrid_excelexport') {
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
+        this.$refs.SecurityGrid.getColumns()[1].visible = true
         this.$refs.SecurityGrid.getColumns()[2].visible = true
         this.$refs.SecurityGrid.getColumns()[3].visible = true
         this.$refs.SecurityGrid.getColumns()[4].visible = true
@@ -922,7 +919,6 @@ export default {
         this.$refs.SecurityGrid.getColumns()[28].visible = true
         this.$refs.SecurityGrid.getColumns()[29].visible = false
         this.$refs.SecurityGrid.getColumns()[30].visible = false
-        this.$refs.SecurityGrid.getColumns()[31].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -1007,6 +1003,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.gridrow {
+  height: calc(100vh - 100px);
+}
 .ellipses {
   text-overflow: ellipsis;
   white-space: nowrap;
