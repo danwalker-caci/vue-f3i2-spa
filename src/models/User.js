@@ -7,7 +7,7 @@ export default class User extends Model {
   static state() {
     return {
       digest: null,
-      appversion: '1.0.02',
+      appversion: '1.0.03',
       loaded: false,
       userid: 0,
       company: '',

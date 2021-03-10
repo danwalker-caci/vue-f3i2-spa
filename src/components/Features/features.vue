@@ -12,10 +12,10 @@
                 <b-button size="sm" class="actionbutton float-right" :class="field.Filter ? null : 'collapsed'" :aria-expanded="field.Filter ? 'true' : 'false'" :aria-controls="getRef('collapse', field.FieldName)" @click="field.Filter = !field.Filter">
                   <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
                 </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Down' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
+                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'desc' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
                   <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
                 </b-button>
-                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Up' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
+                <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'asc' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
                   <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
                 </b-button>
                 <b-collapse class="mt-1" :id="getRef('collapse', field.FieldName)" v-model="field.Filter">
@@ -658,7 +658,7 @@ export default {
       for (var i = 0; i < this.fields.length; i++) {
         if (this.fields[i].FieldName == e) {
           console.log('SORT UP: ' + e)
-          this.fields[i].Sort = 'Up'
+          this.fields[i].Sort = 'asc'
         } else {
           this.fields[i].Sort = ''
         }
@@ -683,7 +683,7 @@ export default {
       for (var i = 0; i < this.fields.length; i++) {
         if (this.fields[i].FieldName == e) {
           // console.log('SORT DOWN: ' + e)
-          this.fields[i].Sort = 'Down'
+          this.fields[i].Sort = 'desc'
         } else {
           this.fields[i].Sort = ''
         }
@@ -770,25 +770,29 @@ export default {
                 p = p.filter(search => moment(search[vm.fields[i].FieldName]).isBetween(moment(vm.fields[i].FilterValue), moment(vm.fields[i].FilterValue2)))
                 break
             }
-            if (vm.sortfield !== '') {
-              // if this is a date field we need to do a bit more work to convert and test for sorting
-              if (vm.fields[i].DataType == 'Date') {
-                var f = vm.fields[i].FieldName
-                p = Vue._.orderBy(
-                  p,
-                  function(o) {
-                    return new moment(o[f]).format('YYYYMMDD')
-                  },
-                  vm.sortdir
-                )
-              } else {
-                p = Vue._.orderBy(p, vm.sortfield, vm.sortdir)
-              }
-            }
+          }
+        }
+        if (this.sortfield !== '' && this.sortfield === this.fields[i].FieldName) {
+          // if this is a date field we need to do a bit more work to convert and test for sorting
+          if (this.fields[i].DataType == 'Date') {
+            var f = this.fields[i].FieldName
+            p = Vue._.orderBy(
+              p,
+              function(o) {
+                return new vm.$moment(o[f]).format('YYYYMMDD')
+              },
+              this.sortdir
+            )
+          } else {
+            p = Vue._.orderBy(p, this.sortfield, this.sortdir)
           }
         }
       }
-      vm.filteredfeatures = p
+      if (vm.sortfield === '') {
+        p = Vue._.orderBy(p, 'Id', 'desc')
+      }
+      this.filteredfeatures = p
+      this.$refs.FeatureGrid.refresh()
     },
     clearfilter: function(e) {
       var f = String(e.target.id).split('_')[1]
@@ -862,23 +866,23 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                this.fields = flds
+                vm.fields = flds
                 // loop to display the selected columns
-                for (var i = 1; i < this.fields.length; i++) {
+                for (var i = 1; i < vm.fields.length; i++) {
                   // starting at 1 to skip the version 'field'
-                  if (this.fields[i].Visible) {
-                    this.$refs.FeatureGrid.showColumns(this.fields[i].DisplayName)
-                    this.$refs.FeatureGrid.autoFitColumns()
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.FeatureGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.FeatureGrid.autoFitColumns()
                   } else {
-                    this.$refs.FeatureGrid.hideColumns(this.fields[i].DisplayName)
-                    this.$refs.FeatureGrid.autoFitColumns()
+                    vm.$refs.FeatureGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.FeatureGrid.autoFitColumns()
                   }
-                  if (this.fields[i].Sort !== '') {
-                    this.sortfield = this.fields[i].FieldName
-                    this.sortdir = this.fields[i].Sort
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
                   }
                 }
-                this.setfilter()
+                vm.setfilter()
               }
             })
             .catch(err => {
