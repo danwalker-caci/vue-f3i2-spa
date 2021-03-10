@@ -59,6 +59,11 @@ const actions = {
     })
     state.securityforms = formatForms(response)
   },
+  async getSecurityFormById({ state }, payload) {
+    let response = await SecurityService.getSecurityFormById(payload, state.digest)
+    if (response.length == 0) return response
+    return formatForm(response)
+  },
   async getSecurityFormsByCompany({ state }, payload) {
     let response = await SecurityService.getSecurityFormsByCompany(payload)
     Security.create({ data: formatForms(response) })
@@ -100,7 +105,12 @@ function formatForms(j) {
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
       PersonName: j[i]['PersonName'],
-      Accounts: JSON.parse(j[i]['Types']),
+      FirstName: j[i]['FirstName'],
+      LastName: j[i]['LastName'],
+      NIPR: j[i]['NIPR'] ? JSON.parse(j[i]['NIPR']) : '',
+      SIPR: j[i]['SIPR'] ? JSON.parse(j[i]['SIPR']) : '',
+      DREN: j[i]['DREN'] ? JSON.parse(j[i]['DREN']) : '',
+      JWICS: j[i]['JWICS'] ? JSON.parse(j[i]['JWICS']) : '',
       SCI: j[i]['SCI'] ? JSON.parse(j[i]['SCI']) : '', // TODO: sort the SCI forms
       SCIStatus: j[i]['SCIStatus'],
       SCIIndocAssistDate: moment(j[i]['SCIIndocAssistDate']).isValid() ? moment(j[i]['SCIIndocAssistDate']) : '',
@@ -116,17 +126,6 @@ function formatForms(j) {
       uri: j[i]['__metadata']['uri']
     })
   }
-  p.sort((a, b) => {
-    var nameA = a.PersonName.toUpperCase()
-    var nameB = b.PersonName.toUpperCase()
-    if (nameA < nameB) {
-      return -1
-    }
-    if (nameA > nameB) {
-      return 1
-    }
-    return 0
-  })
   return p
 }
 
@@ -144,8 +143,13 @@ function formatForm(j) {
     Company: j[0]['Company'],
     PersonnelId: j[0]['PersonnelID'],
     PersonName: j[0]['PersonName'],
-    Accounts: JSON.parse(j[0]['Types']),
-    SCI: JSON.parse(j[0]['SCI']),
+    FirstName: j[0]['FirstName'],
+    LastName: j[0]['LastName'],
+    NIPR: j[0]['NIPR'] ? JSON.parse(j[0]['NIPR']) : '',
+    SIPR: j[0]['SIPR'] ? JSON.parse(j[0]['SIPR']) : '',
+    DREN: j[0]['DREN'] ? JSON.parse(j[0]['DREN']) : '',
+    JWICS: j[0]['JWICS'] ? JSON.parse(j[0]['JWICS']) : '',
+    SCI: j[0]['SCI'] ? JSON.parse(j[0]['SCI']) : '',
     SCIStatus: j[0]['SCIStatus'],
     SCIIndocAssistDate: moment(j[0]['SCIIndocAssistDate']).isValid() ? moment(j[0]['SCIIndocAssistDate']) : '',
     SCIAccessCheckDate: moment(j[0]['SCIAccessCheckDate']).isValid() ? moment(j[0]['SCIAccessCheckDate']) : '',
@@ -154,7 +158,7 @@ function formatForm(j) {
     SCIFormType: j[0]['SCIFormType'],
     SCIFormSubmitted: moment(j[0]['SCIFormSubmitted']).isValid() ? moment(j[0]['SCIFormSubmitted']) : '',
     SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
-    CAC: JSON.parse(j[0]['CAC']),
+    CAC: j[0]['CAC'] ? JSON.parse(j[0]['CAC']) : '',
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']

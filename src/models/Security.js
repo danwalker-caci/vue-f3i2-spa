@@ -35,6 +35,10 @@ export default class Security extends Model {
       SCIFormType: this.attr(''),
       SCIFormSubmitted: this.attr(''),
       SCIIndoc: this.attr(''),
+      NIPR: this.attr(''),
+      SIPR: this.attr(''),
+      DREN: this.attr(''),
+      JWICS: this.attr(''),
       etag: this.attr(null),
       uri: this.attr(null)
     }

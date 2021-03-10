@@ -10,7 +10,7 @@ let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
-let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items"
+let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
 //let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
@@ -118,15 +118,26 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
+      FirstName: payload.FirstName,
+      LastName: payload.LastName,
       Company: payload.Company
     }
-    if (payload.Accounts) {
-      itemprops.Types = payload.Accounts
+    if (payload.NIPR) {
+      itemprops.NIPR = payload.NIPR
+    }
+    if (payload.SIPR) {
+      itemprops.SIPR = payload.SIPR
+    }
+    if (payload.DREN) {
+      itemprops.DREN = payload.DREN
+    }
+    if (payload.JWICS) {
+      itemprops.JWICS = payload.JWICS
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
@@ -143,8 +154,8 @@ export default {
     itemprops.SCIStatus = payload.SCIStatus
     itemprops.SCIFormType = payload.SCIFormType
     itemprops.SCIFormSubmitted = payload.SCIFormSubmitted
-    itemprops.SCIPR = payload.SCIPR
-    itemprops.SCICE = payload.SCICE
+    itemprops.PRDueDate = payload.PRDueDate
+    itemprops.CEDueDate = payload.CEDueDate
     itemprops.SCIIndoc = payload.SCIIndoc
     return axios
       .post(endpoint, itemprops, config)
@@ -174,10 +185,13 @@ export default {
       headers: headers
     }
     let itemprops = {
-      __metadata: { type: 'SP.Data.SecurityFormsListItem' },
+      __metadata: { type: 'SP.Data.SecurityListItem' },
+      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
+      FirstName: payload.FirstName,
+      LastName: payload.LastName,
       Company: payload.Company,
       CACValid: payload.CACValid,
       CACIssuedBy: payload.CACIssuedBy,
@@ -187,14 +201,23 @@ export default {
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,
+      PRDueDate: payload.PRDueDate,
+      CEDate: payload.CEDate,
       SCIFormType: payload.SCIFormType,
       SCIFormSubmitted: payload.SCIFormSubmitted,
-      SCIPR: payload.SCIPR,
-      SCICE: payload.SCICE,
       SCIIndoc: payload.SCIIndoc
     }
-    if (payload.Accounts) {
-      itemprops.Types = payload.Accounts
+    if (payload.NIPR) {
+      itemprops.NIPR = payload.NIPR
+    }
+    if (payload.SIPR) {
+      itemprops.SIPR = payload.SIPR
+    }
+    if (payload.DREN) {
+      itemprops.DREN = payload.DREN
+    }
+    if (payload.JWICS) {
+      itemprops.JWICS = payload.JWICS
     }
     if (payload.SCI) {
       itemprops.SCI = payload.SCI
@@ -221,7 +244,7 @@ export default {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {
       if (sfurl === null) {
-        sfurl = securityformurl
+        sfurl = securityformurl + '?$orderby=LastName'
       }
 
       let response = await axios.get(sfurl, {
@@ -240,6 +263,25 @@ export default {
       }
     }
     return getAllSecurityForms(null)
+  },
+  async getSecurityFormById(payload) {
+    let url = securityformurl + '?$filter=(Id eq ' + payload.Id + ')'
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    }).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Adding Security Form Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response.data.d.results
   },
   async getSecurityFormsByCompany(payload) {
     let allSecurityForms = []
@@ -284,6 +326,7 @@ export default {
     })
     return response.data.d.results
   },
+  // TO DO: include type, form id, personnel id and update JSON object
   ApproveForm(payload, digest) {
     let endpoint = payload.uri
     let headers = {

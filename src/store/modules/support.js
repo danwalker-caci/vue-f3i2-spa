@@ -10,12 +10,13 @@ export const state = {
   loaded: false,
   activity: '',
   portalemail: 'F3I-2Portal@caci.com',
+  // TO DO: Place these in a setting list to be looked up.
   AFRLUserEmail: 'juan.esparza@us.af.mil',
   AFRLUserId: null,
   AccountUserEmail: 'monica.dennis@caci.com',
   AccountUserId: null,
   CACSCIUserEmail: 'Michele.Blackburn@caci.com',
-  CACSCIUser: null,
+  CACSCIUserId: null,
   contentrect: {}
 }
 
@@ -97,14 +98,17 @@ export const actions = {
   async getAccountUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.AccountUserEmail)
     commit('SET_ACCOUNTID', response.data.d.results[0].Id)
+    return response.data.d.results[0].Id
   },
   async getAFRLUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.AFRLUserEmail)
     commit('SET_AFRLID', response.data.d.results[0].Id)
+    return response.data.d.results[0].Id
   },
   async getCACSCIUser({ commit }) {
     let response = await SupportService.getUserIdByEmail(state.CACSCIUserEmail)
     commit('SET_CACSCIID', response.data.d.results[0].Id)
+    return response.data.d.results[0].Id
   }
 }
 

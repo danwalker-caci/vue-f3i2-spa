@@ -279,6 +279,7 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
+import Security from '@/models/Security'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
@@ -965,7 +966,17 @@ export default {
         }
       } else {
         try {
-          Personnel.dispatch('addPerson', this.newData).then(function() {
+          Personnel.dispatch('addPerson', this.newData).then(async function(results) {
+            // TO DO: change the config around to support the new format FirstName, LastName
+            console.log(JSON.stringify(results.data.d.results))
+            let payload = {
+              PersonnelID: results.data.d.Id,
+              FirstName: vm.newData.FirstName,
+              LastName: vm.newData.LastName,
+              Company: vm.newData.Company,
+              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
+            }
+            await Security.dispatch('addSecurityForm', payload)
             vm.hideme('NewModal', 'refresh')
           })
         } catch (e) {
