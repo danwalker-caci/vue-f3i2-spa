@@ -1,69 +1,68 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
-    <b-col cols="10" class="m-0 p-0">
-      <b-row no-gutters class="gridrow contentHeight">
-        <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
-          <ejs-grid
-            id="SecurityGrid"
-            ref="SecurityGrid"
-            :dataSource="securityforms"
-            :allowPaging="true"
-            :allowReordering="true"
-            :allowResizing="true"
-            :pageSettings="pageSettings"
-            :editSettings="editSettings"
-            :filterSettings="filterSettings"
-            :toolbar="toolbar"
-            :allowExcelExport="true"
-            :toolbarClick="toolbarClick"
-            :actionComplete="actionComplete"
-            :dataBound="dataBound"
-            :detailTemplate="detailTemplate"
-            rowHeight="20"
-            height="100%"
-            width="100%"
-          >
-            <e-columns>
-              <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
-              <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
-              <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-              <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
-              <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
-              <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
-              <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
-              <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
-              <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-              <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-              <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-            </e-columns>
-          </ejs-grid>
-          <template #overlay>
-            <div class="text-center">
-              <p id="busy-label">{{ overlayText }}</p>
-            </div>
-          </template>
-        </b-overlay>
-      </b-row>
+    <b-col cols="12" class="m-0 p-0">
+      <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
+        <ejs-grid
+          id="SecurityGrid"
+          ref="SecurityGrid"
+          :dataSource="securityforms"
+          :allowPaging="true"
+          :allowReordering="true"
+          :allowResizing="true"
+          :pageSettings="pageSettings"
+          :editSettings="editSettings"
+          :filterSettings="filterSettings"
+          :toolbar="toolbar"
+          :allowExcelExport="true"
+          :toolbarClick="toolbarClick"
+          :actionBegin="actionBegin"
+          :actionComplete="actionComplete"
+          :dataBound="dataBound"
+          :detailTemplate="detailTemplate"
+          rowHeight="20"
+          height="rect.height - 175"
+          width="rect.width - 5"
+        >
+          <e-columns>
+            <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
+            <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
+            <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+          </e-columns>
+        </ejs-grid>
+        <template #overlay>
+          <div class="text-center">
+            <p id="busy-label">{{ overlayText }}</p>
+          </div>
+        </template>
+      </b-overlay>
     </b-col>
   </b-container>
 </template>
@@ -112,6 +111,9 @@ export default {
     },
     securityforms() {
       return Security.getters('SecurityForms')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
@@ -119,7 +121,7 @@ export default {
       overlayText: 'Getting Data. Please Wait...',
       overlayVariant: 'light',
       company: '',
-      pageSettings: { pageSize: 20 },
+      pageSettings: { pageSize: 15 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -135,37 +137,38 @@ export default {
         return {
           template: Vue.component('accountDetailTemplate', {
             template: `
-              <b-container fluid>
-                <b-col cols="10">
-                  <!-- PR Due Date and CE Date -->
-                  <b-row>
-                    <b-table-simple small responsive cols="12">
-                      <b-thead head-variant="dark">
-                        <b-tr>
-                          <b-th>PR Due Date</b-th>
-                          <b-th>CE Date</b-th>
-                          <b-th></b-th>
-                        </b-tr>
-                      </b-thead>
-                      <b-tbody>
-                        <b-tr>
-                          <b-td>
-                            <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
-                          </b-td>
-                          <b-td>
-                            <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
-                          </b-td>
-                          <b-td>
-                            <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm m-1 float-right" @click="updateForm(data)">Update</b-button>
-                          </b-td>
-                        </b-tr>
-                      </b-tbody>
-                    </b-table>
-                    </b-row>
-                  </b-col>
-                  <!-- Account Template -->
-                  <b-col cols="10" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
-                    <div class="detailDiv">
+              <b-container class="overflow-auto">
+                <b-tabs content-class="mt-1">
+                  <b-tab title="General" active>
+                    <b-col cols="8" class="m-0 p-0">
+                      <!-- PR Due Date and CE Date -->
+                      <b-table-simple small responsive cols="12">
+                        <b-thead head-variant="dark">
+                          <b-tr>
+                            <b-th>PR Due Date</b-th>
+                            <b-th>CE Date</b-th>
+                            <b-th></b-th>
+                          </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                          <b-tr>
+                            <b-td>
+                              <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                            </b-td>
+                            <b-td>
+                              <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                            </b-td>
+                            <b-td>
+                              <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm m-1 float-right" @click="updateForm(data)">Update</b-button>
+                            </b-td>
+                          </b-tr>
+                        </b-tbody>
+                      </b-table>
+                    </b-col>
+                  </b-tab>
+                  <b-tab title="Accounts">
+                    <!-- Account Template -->
+                    <b-col cols="8" class="m-0 p-0" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
@@ -270,10 +273,11 @@ export default {
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
-                    </div>
-                  </b-col>
-                  <b-col cols="10">
-                   <b-table-simple small responsive>
+                    </b-col>
+                  </b-tab>
+                  <b-tab title="SCI">
+                    <b-col cols="8" class="m-0 p-0">
+                      <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
                             <b-th>Date Indoctrination Assist Sent</b-th>
@@ -316,74 +320,77 @@ export default {
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
-                  </b-col>
-                  <b-col cols="10">
-                    <b-table-simple small responsive>
-                      <b-thead head-variant="dark">
-                        <b-tr>
-                          <b-th>CAC Status</b-th>
-                          <b-th>CAC Issued By</b-th>
-                          <b-th>CAC Request Date</b-th>
-                          <b-th>CAC Expiration Date</b-th>
-                          <b-th>Submitted Form</b-th>
-                          <b-th></b-th>
-                        </b-tr>
-                      </b-thead>
-                      <b-tbody>
-                        <b-tr>
-                          <b-td>
-                            <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
-                          </b-td>
-                          <b-td>
-                            <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
-                          </b-td>
-                          <b-td>
-                            <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="data.CACRequestDate"></ejs-datepicker>
-                          </b-td>
-                          <b-td>
-                            <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
-                          </b-td>
-                          <b-td>
-                            <b-button @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
-                          </b-td>
-                          <b-td>
-                            <!-- Update Button -->
-                            <!-- REMOVE DEVELOPER OPTION -->
-                            <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
-                          </b-td>
-                        </b-tr>
-                      </b-tbody>
-                    </b-table-simple>
-                    <div v-if="data.CACValid === 'No' && data.CACTurnedIn && data.CACExpiredOnDate">
+                    </b-col>
+                  </b-tab>
+                  <b-tab title="CAC">
+                    <b-col cols="8" class="m-0 p-0">
                       <b-table-simple small responsive>
                         <b-thead head-variant="dark">
                           <b-tr>
-                            <b-th>Historical CAC Data</b-th>
                             <b-th>CAC Status</b-th>
-                            <b-th>CAC Turned In Location</b-th>
-                            <b-th>CAC Turned In Date</b-th>
+                            <b-th>CAC Issued By</b-th>
+                            <b-th>CAC Request Date</b-th>
+                            <b-th>CAC Expiration Date</b-th>
+                            <b-th>Submitted Form</b-th>
+                            <b-th></b-th>
                           </b-tr>
                         </b-thead>
                         <b-tbody>
                           <b-tr>
                             <b-td>
-                              Yes
+                              <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
                             </b-td>
                             <b-td>
-                              {{ data.CACStatus }}
+                              <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
                             </b-td>
                             <b-td>
-                              {{ data.CACTurnedIn }}
+                              <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="data.CACRequestDate"></ejs-datepicker>
                             </b-td>
                             <b-td>
-                              {{ data.CACExpiredOnDate }}
+                              <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                            </b-td>
+                            <b-td>
+                              <b-button @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
+                            </b-td>
+                            <b-td>
+                              <!-- Update Button -->
+                              <!-- REMOVE DEVELOPER OPTION -->
+                              <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
                             </b-td>
                           </b-tr>
                         </b-tbody>
                       </b-table-simple>
-                    </div>
-                  </b-col>
-                </b-row>
+                      <div v-if="data.CACValid === 'No' && data.CACTurnedIn && data.CACExpiredOnDate">
+                        <b-table-simple small responsive>
+                          <b-thead head-variant="dark">
+                            <b-tr>
+                              <b-th>Historical CAC Data</b-th>
+                              <b-th>CAC Status</b-th>
+                              <b-th>CAC Turned In Location</b-th>
+                              <b-th>CAC Turned In Date</b-th>
+                            </b-tr>
+                          </b-thead>
+                          <b-tbody>
+                            <b-tr>
+                              <b-td>
+                                Yes
+                              </b-td>
+                              <b-td>
+                                {{ data.CACStatus }}
+                              </b-td>
+                              <b-td>
+                                {{ data.CACTurnedIn }}
+                              </b-td>
+                              <b-td>
+                                {{ data.CACExpiredOnDate }}
+                              </b-td>
+                            </b-tr>
+                          </b-tbody>
+                        </b-table-simple>
+                      </div>
+                    </b-col>
+                  </b-tab>
+                </b-tabs>
               </b-container>`,
             computed: {
               userloaded() {
@@ -779,7 +786,11 @@ export default {
       this.$store.dispatch('support/getAFRLUser')
       this.$store.dispatch('support/getCACSCIUser')
     },
+    actionBegin(args) {
+      console.log(args)
+    },
     actionComplete(args) {
+      console.log(args)
       // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
       if (args.requestType == 'columnstate') {
         this.$refs['SecurityGrid'].autoFitColumns()
@@ -889,7 +900,6 @@ export default {
       if (args.item.id === 'SecurityGrid_excelexport') {
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
-        this.$refs.SecurityGrid.getColumns()[1].visible = true
         this.$refs.SecurityGrid.getColumns()[2].visible = true
         this.$refs.SecurityGrid.getColumns()[3].visible = true
         this.$refs.SecurityGrid.getColumns()[4].visible = true
@@ -919,6 +929,7 @@ export default {
         this.$refs.SecurityGrid.getColumns()[28].visible = true
         this.$refs.SecurityGrid.getColumns()[29].visible = false
         this.$refs.SecurityGrid.getColumns()[30].visible = false
+        this.$refs.SecurityGrid.getColumns()[31].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -1003,14 +1014,14 @@ export default {
 }
 </script>
 <style lang="scss">
-.gridrow {
-  height: calc(100vh - 100px);
-}
 .ellipses {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   width: 10rem;
   display: inline-block;
+}
+.securityDetailHeight {
+  height: calc(100vh - 250px) !important;
 }
 </style>

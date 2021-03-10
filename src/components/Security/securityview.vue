@@ -2,15 +2,15 @@
   <!-- Add Form where users can download master docs and upload the changed docs. -->
   <b-container fluid class="contentHeight p-0" id="MainContainer">
     <div id="form" class="col-12 p-0">
-      <b-row class="bg-warning text-black formheader">
+      <b-row class="bg-dark formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
-          <h3>{{ formTitle }}</h3>
+          <h3 class="text-white">{{ formTitle }}</h3>
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
       <b-card no-body class="p-0">
-        <div class="p-3">
+        <div class="p-1">
           <b-form-row>
             <b-col>
               <b-button @click="$router.push({ path: '/security/tracker/accounts' })" variant="secondary">Return to Tracker</b-button>

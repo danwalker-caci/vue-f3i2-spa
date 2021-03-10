@@ -8,14 +8,14 @@
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
     <div id="form" class="col-12 p-4">
-      <b-row class="bg-warning text-black formheader">
+      <b-row class="bg-dark formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
-          <h3>{{ formTitle }}</h3>
+          <h3 class="text-white">{{ formTitle }}</h3>
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <b-card no-body class="p-3">
+      <b-card no-body class="p-1">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
         <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
         <p class="font-weight-bolder h4 text-danger">
@@ -193,18 +193,18 @@
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACValid === 'No'">
-            <b-form-group label="Have you ever had a CAC? " label-for="formCACValid">
+            <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
               <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-            <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
-              <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
+            <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
+              <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
             <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
             </b-form-group>
           </b-form-row>
         </div>
@@ -278,15 +278,11 @@ export default {
       SCIForms: url + '/SCIForms/',
       accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
-      currentFirstName: '',
-      currentLastName: '',
       form: {
         CACValid: '',
         CACIssuedBy: '',
         CACExpirationDate: '',
         CACStatus: '',
-        CACTurnedIn: '',
-        CACExpiredOn: '',
         Company: '',
         Type: null,
         PersonnelID: null,
@@ -367,8 +363,6 @@ export default {
           Personnel.dispatch('getPersonnelByUserAccount', vm.userid).then(function(result) {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
-            vm.currentFirstName = result ? result[0].FirstName : ''
-            vm.currentLastName = result ? result[0].LastName : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
             vm.form.FirstName = result ? result[0].FirstName : ''
             vm.form.LastName = result ? result[0].LastName : ''
@@ -635,13 +629,7 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-              if (vm.form.CACValid === 'Yes') {
-                payload.CACStatus = 'Non-F3I2 CAC'
-              } else {
-                payload.CACStatus = 'Pending Info'
-              }
-              payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
-              payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
+              payload.CACStatus = vm.form.CACStatus
               break
             case 'SCI':
               scis.push({
@@ -658,7 +646,7 @@ export default {
               break
           }
         })
-        // Notification must be reworked to point to the idF of SecurityForms and then the account type.
+        // Notification must be reworked to point to the id of SecurityForms and then the account type.
         let taskPayload = {
           Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
           //AssignedToId: vm.userid, // Hardcoding the Security Group
@@ -727,7 +715,7 @@ export default {
           })
         }
         if (cacs.length > 0) {
-          payload.CAC = JSON.stringify({
+          JSON.stringify({
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',
@@ -738,37 +726,17 @@ export default {
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
-          .then(result => {
-            vm.etag = result.headers.etag
+          .then(() => {
             // Clear form after submission
             if (vm.formType === 'account') {
               vm.form.Type = vm.accountOptions[0]
             }
-            if (vm.formType === 'cac') {
-              vm.form.CACValid = ''
-              vm.form.CACExpirationDate = ''
-              vm.form.CACIssuedBy = ''
-              vm.form.CACStatus = ''
-            }
-            if (vm.formType === 'sci') {
-              vm.form.SCIIndocDate = ''
-              vm.form.SCIType = ''
-              vm.form.SCIStatus = ''
-            }
-            vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
-            vm.form.setName = 'No'
-            vm.form.FirstName = vm.currentFirstName
-            vm.form.LastName = vm.currentLastName
-            vm.form.PersonnelID = vm.currentPersonnelID
             vm.files = []
             vm.fileSelected = null
             vm.fileBuffer = null
             vm.lockSubmit = false
             // need CAC and SCI clear here as well
-            let uploadedFiles = document.querySelector('.e-upload-files')
-            while (uploadedFiles.firstChild) {
-              uploadedFiles.removeChild(uploadedFiles.firstChild)
-            }
+            document.querySelector('.e-upload-file-list').parentElement.removeChild(document.querySelector('.e-upload-file-list'))
           })
           .catch(error => {
             const notification = {
@@ -792,7 +760,7 @@ export default {
           push: true
         }
         vm.$store.dispatch('notification/add', notification, { root: true })
-        vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
+
         vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
         let event = []
         event.push({
