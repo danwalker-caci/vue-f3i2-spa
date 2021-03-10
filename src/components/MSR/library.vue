@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="contentHeight p-0">
-    <b-row class="m-1">
+    <b-row class="m-1 buttonrow">
       <b-dropdown :text="month ? month : 'Month'" class="filterSelection" v-if="monthValues.length > 0" variant="secondary">
         <b-dropdown-item v-for="monthValue in monthValues" :key="monthValue.value" :value="monthValue.value" @click="internalMonth = monthValue.value">{{ monthValue.text }}</b-dropdown-item>
       </b-dropdown>
@@ -14,7 +14,7 @@
       <b-button variant="success" class="filterSelection" @click="filterLibrary()">Filter</b-button>
       <b-button variant="light" class="filterSelection" @click="copyFilter()">Copy Filter Link</b-button>
     </b-row>
-    <iframe id="LibraryFrame" :src="iframe.src" @load="load" v-show="iframe.loaded" height="100%" width="100%"></iframe>
+    <iframe id="LibraryFrame" :src="iframe.src" @load="load" v-show="iframe.loaded" :height="rect.height - 70" width="100%"></iframe>
   </b-container>
 </template>
 
@@ -41,6 +41,9 @@ export default {
   computed: {
     workplans() {
       return Workplan.getters('DropDown')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
@@ -176,6 +179,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.buttonrow {
+  height: 50px;
+}
+
 .filterSelection {
   margin-left: 0.75rem;
 }

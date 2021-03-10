@@ -1,10 +1,10 @@
 <template>
   <b-container fluid class="m-0 p-0">
-    <!-- <b-row no-gutter class="cui">
+    <b-row no-gutter class="cui">
       <b-col cols="4" class="p-0"></b-col>
       <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
       <b-col cols="4" class="p-0"></b-col>
-    </b-row> -->
+    </b-row>
     <b-row no-gutter>
       <div v-if="userloaded" class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
         <NotificationContainer />
@@ -41,7 +41,7 @@
             <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
               <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
               <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
-              <!-- <sidebar-item :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item> -->
+              <sidebar-item v-if="isDeveloper || isPCA" :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item>
             </sidebar-item>
             <!-- Add Security Menu Links -->
             <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">
@@ -70,11 +70,11 @@
         <div class="blockG" id="rotateG_08"></div>
       </div>
     </b-row>
-    <!-- <b-row no-gutter class="cui">
+    <b-row no-gutter class="cui">
       <b-col cols="4" class="p-0"></b-col>
       <b-col cols="4" class="p-0 text-center text-white">THIS SITE CONTAINS CONTROLLED UNCLASSIFIED INFORMATION</b-col>
       <b-col cols="4" class="p-0"></b-col>
-    </b-row> -->
+    </b-row>
   </b-container>
 </template>
 <script>
@@ -97,6 +97,9 @@ export default {
     },
     isMember() {
       return User.getters('isMember')
+    },
+    isPCA() {
+      return User.getters('isPCA')
     },
     isDeveloper() {
       return User.getters('isDeveloper')
@@ -122,7 +125,6 @@ export default {
     waitForUser() {
       if (this.userloaded) {
         clearInterval(this.$options.interval)
-        // get the bounds of the content class which represents the main content area.
         let el = document.getElementById('maincontent')
         let rect = el.getBoundingClientRect()
         this.$store.dispatch('support/setContentRect', rect)

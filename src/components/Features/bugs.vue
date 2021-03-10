@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="contentHeight">
-    <b-row ref="GridRow" class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Bugs Filter</template>
         <div>
@@ -62,87 +62,96 @@
           </ul>
         </div>
       </b-modal>
+      <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk">
+        <template v-slot:modal-title>Edit Details For {{ rowData.Title }}</template>
+        <b-container fluid>
+          <table id="EditTable" class="bugtable">
+            <tbody>
+              <tr>
+                <td colspan="6">Title</td>
+              </tr>
+              <tr>
+                <td colspan="6"><input class="e-input" type="text" v-model="rowData.Title" /></td>
+              </tr>
+              <tr>
+                <td colspan="2">Status</td>
+                <td>Priority</td>
+                <td>Effort</td>
+                <td>Due Date</td>
+                <td>% Complete</td>
+              </tr>
+              <tr>
+                <td colspan="2"><ejs-dropdownlist v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
+                <td><ejs-dropdownlist v-model="rowData.Priority" :dataSource="priority" :fields="ddfields"></ejs-dropdownlist></td>
+                <td><ejs-dropdownlist v-model="rowData.Effort" :dataSource="effort" :fields="ddfields"></ejs-dropdownlist></td>
+                <td><ejs-datepicker v-model="rowData.DueDate"></ejs-datepicker></td>
+                <td><ejs-dropdownlist v-model="rowData.PercentComplete" :dataSource="percent" :fields="ddfields"></ejs-dropdownlist></td>
+              </tr>
+              <tr>
+                <td colspan="4">Description</td>
+                <td colspan="2">Assigned To</td>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <b-form-textarea class="form-control-sm" v-model="rowData.BugDescription" rows="3" max-rows="6" ref="BugDescription"></b-form-textarea>
+                </td>
+                <td colspan="2"><ejs-dropdownlist v-model="rowData.AssignedTo" :dataSource="owners" :fields="ddfields"></ejs-dropdownlist></td>
+              </tr>
+            </tbody>
+          </table>
+        </b-container>
+      </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </div>
-          <div class="col-12 tableHeight">
-            <ejs-grid
-              id="BugGrid"
-              ref="BugGrid"
-              :enablePersistence="false"
-              :dataSource="filteredbugs"
-              :allowPaging="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :detailTemplate="detailTemplate"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-                <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
-                <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
-                <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
-                <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
-                <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
-              </e-columns>
-            </ejs-grid>
-          </div>
-        </b-row>
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="buttonrow">
+              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                Toggle Filters
+              </b-button>
+            </b-row>
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filteredbugs.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="BugGrid"
+                  ref="BugGrid"
+                  :enablePersistence="false"
+                  :dataSource="filteredbugs"
+                  :allowPaging="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :dataBound="dataBound"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  :detailTemplate="detailTemplate"
+                  rowHeight="20"
+                  :height="rect.height - 175"
+                  :width="rect.width - 5"
+                >
+                  <e-columns>
+                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
+                    <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
+                    <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
+                    <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
+                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
+                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
+        </b-container>
       </b-col>
     </b-row>
-    <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk">
-      <template v-slot:modal-title>Edit Details For {{ rowData.Title }}</template>
-      <b-container fluid>
-        <table id="EditTable" class="bugtable">
-          <tbody>
-            <tr>
-              <td colspan="6">Title</td>
-            </tr>
-            <tr>
-              <td colspan="6"><input class="e-input" type="text" v-model="rowData.Title" /></td>
-            </tr>
-            <tr>
-              <td colspan="2">Status</td>
-              <td>Priority</td>
-              <td>Effort</td>
-              <td>Due Date</td>
-              <td>% Complete</td>
-            </tr>
-            <tr>
-              <td colspan="2"><ejs-dropdownlist v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
-              <td><ejs-dropdownlist v-model="rowData.Priority" :dataSource="priority" :fields="ddfields"></ejs-dropdownlist></td>
-              <td><ejs-dropdownlist v-model="rowData.Effort" :dataSource="effort" :fields="ddfields"></ejs-dropdownlist></td>
-              <td><ejs-datepicker v-model="rowData.DueDate"></ejs-datepicker></td>
-              <td><ejs-dropdownlist v-model="rowData.PercentComplete" :dataSource="percent" :fields="ddfields"></ejs-dropdownlist></td>
-            </tr>
-            <tr>
-              <td colspan="4">Description</td>
-              <td colspan="2">Assigned To</td>
-            </tr>
-            <tr>
-              <td colspan="4">
-                <b-form-textarea class="form-control-sm" v-model="rowData.BugDescription" rows="3" max-rows="6" ref="BugDescription"></b-form-textarea>
-              </td>
-              <td colspan="2"><ejs-dropdownlist v-model="rowData.AssignedTo" :dataSource="owners" :fields="ddfields"></ejs-dropdownlist></td>
-            </tr>
-          </tbody>
-        </table>
-      </b-container>
-    </b-modal>
   </b-container>
 </template>
 
@@ -154,16 +163,15 @@ import VueLodash from 'vue-lodash'
 import lodash from 'lodash'
 import Bug from '@/models/Bug'
 import User from '@/models/User'
-import { GridPlugin, Page, Sort, Filter, Edit, Reorder, Resize, ColumnChooser, ColumnMenu, ContextMenu, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 import { DatePickerPlugin } from '@syncfusion/ej2-vue-calendars'
 import { DropDownListPlugin } from '@syncfusion/ej2-vue-dropdowns'
 import { CheckBoxPlugin } from '@syncfusion/ej2-vue-buttons'
 import { isNullOrUndefined } from 'util'
 
-Vue.use(GridPlugin)
-Vue.use(DatePickerPlugin)
+/* Vue.use(DatePickerPlugin)
 Vue.use(DropDownListPlugin)
-Vue.use(CheckBoxPlugin)
+Vue.use(CheckBoxPlugin) */
 Vue.use(VueLodash, { lodash: lodash })
 
 let vm = null
@@ -194,11 +202,19 @@ export default {
     },
     userid() {
       return User.getters('CurrentUserId')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
+  },
+  provide: {
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Search]
   },
   data: function() {
     return {
       waterMark: 'Select a date',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
       sortfield: '',
       sortdir: '',
       filteredbugs: [],
@@ -397,6 +413,9 @@ export default {
     },
     getRef: function(text, idx) {
       return text + '_' + idx
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     toolbarClick: function(args) {
       switch (args.item.id) {
@@ -728,9 +747,6 @@ export default {
       }
     }
   },
-  provide: {
-    grid: [Page, Sort, Filter, Edit, DetailRow, Reorder, Resize, ColumnChooser, ColumnMenu, ContextMenu, Toolbar, VirtualScroll, ExcelExport]
-  },
   watch: {
     // eslint-disable-next-line no-unused-vars
     $route(to, from) {
@@ -748,6 +764,15 @@ export default {
 </script>
 
 <style lang="scss">
+.buttonrow {
+  height: 50px;
+  justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item
+}
+
+.gridrow {
+  height: calc(100vh - 200px);
+}
+
 .sorted {
   color: #04ee04 !important;
 }

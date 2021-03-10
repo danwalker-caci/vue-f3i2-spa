@@ -113,38 +113,43 @@ const actions = {
 
 function formatPersonnel(j) {
   let p = []
+  let t = null
   for (let i = 0; i < j.length; i++) {
-    p.push({
-      id: j[i]['Id'],
-      Id: j[i]['Id'],
-      Contact: j[i]['Contact'] == true ? 'Yes' : 'No',
-      WPData: isNullOrUndefined(j[i]['WPData']) ? '' : JSON.parse(j[i]['WPData']),
-      Active: j[i]['Active'] == true ? 'Yes' : 'No',
-      LastName: j[i]['Title'], // This is the Title column in SharePoint
-      FirstName: j[i]['FirstName'],
-      Middle: j[i]['Middle'],
-      Cadency: j[i]['Cadency'],
-      Position: j[i]['Position'],
-      Location: j[i]['Location'],
-      Email: j[i]['Email'],
-      Phone: j[i]['Phone'],
-      Company: j[i]['Company'],
-      SubET: j[i]['SubET'],
-      CACStatus: j[i]['CACStatus'],
-      CACRequestDate: moment(j[i]['CACRequestDate']).isValid() ? String(moment(j[i]['CACRequestDate']).format('MM/DD/YYYY')) : '', // date
-      CACExpirationDate: moment(j[i]['CACExpirationDate']).isValid() ? String(moment(j[i]['CACExpirationDate']).format('MM/DD/YYYY')) : '', // date
-      SCIFormStatus: j[i]['SCIFormStatus'],
-      SCIFormType: j[i]['SCIFormType'],
-      SCIFormSubmitted: moment(j[i]['SCIFormSubmitted']).isValid() ? String(moment(j[i]['SCIFormSubmitted']).format('MM/DD/YYYY')) : '', // date
-      PRDueDate: moment(j[i]['PRDueDate']).isValid() ? String(moment(j[i]['PRDueDate']).format('MM/DD/YYYY')) : '', // date
-      CEDate: moment(j[i]['CEDate']).isValid() ? String(moment(j[i]['CEDate']).format('MM/DD/YYYY')) : '',  // date
-      ModifiedBy: j[i]['ModifiedBy'],
-      Modification: j[i]['Modification'],
-      ModDeniedReason: j[i]['ModDeniedReason'],
-      SubContractorModifier: j[i]['SubContractorModifier'],
-      etag: j[i]['__metadata']['etag'],
-      uri: j[i]['__metadata']['uri']
-    })
+    try {
+      p.push({
+        id: j[i]['Id'],
+        Id: j[i]['Id'],
+        Contact: j[i]['Contact'] == true ? 'Yes' : 'No',
+        WPData: isNullOrUndefined(j[i]['WPData']) ? '' : JSON.parse(j[i]['WPData']),
+        Active: j[i]['Active'] == true ? 'Yes' : 'No',
+        LastName: j[i]['Title'], // This is the Title column in SharePoint
+        FirstName: j[i]['FirstName'],
+        Middle: j[i]['Middle'],
+        Cadency: j[i]['Cadency'],
+        Position: j[i]['Position'],
+        Location: j[i]['Location'],
+        Email: j[i]['Email'],
+        Phone: j[i]['Phone'],
+        Company: j[i]['Company'],
+        SubET: j[i]['SubET'],
+        CACStatus: j[i]['CACStatus'],
+        CACRequestDate: moment(j[i]['CACRequestDate']).isValid() ? String(moment(j[i]['CACRequestDate']).format('MM/DD/YYYY')) : '', // date
+        CACExpirationDate: moment(j[i]['CACExpirationDate']).isValid() ? String(moment(j[i]['CACExpirationDate']).format('MM/DD/YYYY')) : '', // date
+        SCIFormStatus: j[i]['SCIFormStatus'],
+        SCIFormType: j[i]['SCIFormType'],
+        SCIFormSubmitted: moment(j[i]['SCIFormSubmitted']).isValid() ? String(moment(j[i]['SCIFormSubmitted']).format('MM/DD/YYYY')) : '', // date
+        PRDueDate: moment(j[i]['PRDueDate']).isValid() ? String(moment(j[i]['PRDueDate']).format('MM/DD/YYYY')) : '', // date
+        CEDate: moment(j[i]['CEDate']).isValid() ? String(moment(j[i]['CEDate']).format('MM/DD/YYYY')) : '',  // date
+        ModifiedBy: j[i]['ModifiedBy'],
+        Modification: j[i]['Modification'],
+        ModDeniedReason: j[i]['ModDeniedReason'],
+        SubContractorModifier: j[i]['SubContractorModifier'],
+        etag: j[i]['__metadata']['etag'],
+        uri: j[i]['__metadata']['uri']
+      })
+    } catch (e) {
+      console.log('ERROR FORMATTING USER: ' + j[i]['Id'] + ', message: ' + e )
+    }
   }
   return p
 }

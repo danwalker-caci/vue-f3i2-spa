@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
     <b-row no-gutters class="contentHeight">
-      <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+      <!-- <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
             <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
@@ -9,7 +9,7 @@
           </div>
         </template>
         <b-spinner style="width: 7rem; height: 7rem;" variant="success" label="Waiting Spinner"></b-spinner>
-      </b-toast>
+      </b-toast> -->
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Workplan Filter</template>
         <div>
@@ -66,109 +66,118 @@
           </ul>
         </div>
       </b-modal>
+      <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk">
+        <template v-slot:modal-title>Edit Work Plan</template>
+        <b-container fluid>
+          <table id="EditTable" class="workplantable">
+            <tbody>
+              <tr class="bg-warning text-white">
+                <th>Title</th>
+                <th>Number</th>
+                <th>Revision</th>
+                <th>POP Start</th>
+                <th>POP End</th>
+                <th>Status</th>
+                <th>Manager</th>
+                <th>Date Approved</th>
+              </tr>
+              <tr>
+                <td class="px300"><input class="e-input" type="text" v-model="rowData.Title" /></td>
+                <td><input class="e-input" type="text" v-model="rowData.Number" /></td>
+                <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
+                <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
+                <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
+                <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
+                <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.ManagerId" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
+                <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
+              </tr>
+            </tbody>
+          </table>
+        </b-container>
+      </b-modal>
+      <b-modal id="NewModal" ref="NewModal" size="xl" centered @ok="newOk">
+        <template v-slot:modal-title>Add New Work Plan</template>
+        <b-container fluid>
+          <table id="NewTable" class="workplantable">
+            <tbody>
+              <tr class="bg-warning text-white">
+                <th>Title</th>
+                <th>Number</th>
+                <th>Revision</th>
+                <th>POP Start</th>
+                <th>POP End</th>
+                <th>Status</th>
+                <th>Manager</th>
+                <th>Date Approved</th>
+              </tr>
+              <tr>
+                <td class="px300"><input class="e-input" type="text" v-model="newData.Title" /></td>
+                <td><input class="e-input" type="text" v-model="newData.Number" /></td>
+                <td><input class="e-input" type="text" v-model="newData.Revision" /></td>
+                <td><ejs-datepicker v-model="newData.POPStart"></ejs-datepicker></td>
+                <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
+                <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
+                <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
+                <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
+              </tr>
+            </tbody>
+          </table>
+        </b-container>
+      </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="buttonrow">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </b-row>
-          <b-row no-gutters class="gridrow">
-            <ejs-grid
-              id="WorkplanGrid"
-              ref="WorkplanGrid"
-              :dataSource="filtereddata"
-              :allowPaging="true"
-              :allowReordering="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :filterSettings="filterSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                <e-column field="Status" headerText="Status" width="125"></e-column>
-                <e-column field="Number" headerText="Number" width="100"></e-column>
-                <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
-                <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
-                <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
-                <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
-                <e-column field="DateApproved" headerText="Date Approved" textAlign="Left" width="150"></e-column>
-                <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-                <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
-                <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-                <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-              </e-columns>
-            </ejs-grid>
-            <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk">
-              <template v-slot:modal-title>Edit Work Plan</template>
-              <b-container fluid>
-                <table id="EditTable" class="workplantable">
-                  <tbody>
-                    <tr class="bg-warning text-white">
-                      <th>Title</th>
-                      <th>Number</th>
-                      <th>Revision</th>
-                      <th>POP Start</th>
-                      <th>POP End</th>
-                      <th>Status</th>
-                      <th>Manager</th>
-                      <th>Date Approved</th>
-                    </tr>
-                    <tr>
-                      <td class="px300"><input class="e-input" type="text" v-model="rowData.Title" /></td>
-                      <td><input class="e-input" type="text" v-model="rowData.Number" /></td>
-                      <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
-                      <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
-                      <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
-                      <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
-                      <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.ManagerId" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
-                      <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </b-container>
-            </b-modal>
-            <b-modal id="NewModal" ref="NewModal" size="xl" centered @ok="newOk">
-              <template v-slot:modal-title>Add New Work Plan</template>
-              <b-container fluid>
-                <table id="NewTable" class="workplantable">
-                  <tbody>
-                    <tr class="bg-warning text-white">
-                      <th>Title</th>
-                      <th>Number</th>
-                      <th>Revision</th>
-                      <th>POP Start</th>
-                      <th>POP End</th>
-                      <th>Status</th>
-                      <th>Manager</th>
-                      <th>Date Approved</th>
-                    </tr>
-                    <tr>
-                      <td class="px300"><input class="e-input" type="text" v-model="newData.Title" /></td>
-                      <td><input class="e-input" type="text" v-model="newData.Number" /></td>
-                      <td><input class="e-input" type="text" v-model="newData.Revision" /></td>
-                      <td><ejs-datepicker v-model="newData.POPStart"></ejs-datepicker></td>
-                      <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
-                      <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
-                      <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
-                      <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </b-container>
-            </b-modal>
-          </b-row>
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="buttonrow">
+              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                Toggle Filters
+              </b-button>
+            </b-row>
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="WorkplanGrid"
+                  ref="WorkplanGrid"
+                  :dataSource="filtereddata"
+                  :allowPaging="true"
+                  :allowReordering="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :filterSettings="filterSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :dataBound="dataBound"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  rowHeight="20"
+                  :height="rect.height - 175"
+                  :width="rect.width - 5"
+                >
+                  <e-columns>
+                    <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                    <e-column field="Status" headerText="Status" width="125"></e-column>
+                    <e-column field="Number" headerText="Number" width="100"></e-column>
+                    <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
+                    <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
+                    <e-column field="DateApproved" headerText="Date Approved" textAlign="Left" width="150"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                    <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
         </b-container>
       </b-col>
     </b-row>
@@ -180,7 +189,7 @@ import Vue from 'vue'
 import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
-import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
 
@@ -216,11 +225,16 @@ export default {
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
     return {
       busyTitle: 'Getting Data. Please Wait.',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
       sortfield: '',
       sortdir: '',
       data: [],
@@ -380,10 +394,10 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager" class="actionbutton" variant="danger" @click="archiveme(data)" title="Archive">
+              <b-button v-if="isWPManager" class="actionbutton" variant="danger" @click="archiveme(data)" v-b-tooltip.hover.v-dark title="Archive">
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button :href="href" class="actionbutton ml-1" variant="success" title="Email Workplan Manager">
+              <b-button :href="href" class="actionbutton ml-1" variant="success" v-b-tooltip.hover.v-dark title="Email Workplan Manager">
                 <font-awesome-icon far icon="envelope" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
@@ -478,6 +492,9 @@ export default {
     },
     getRef: function(text, idx) {
       return text + '_' + idx
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     toolbarClick: function(args) {
       switch (args.item.id) {
@@ -841,7 +858,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow]
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze, Search]
   }
 }
 </script>

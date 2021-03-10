@@ -21,7 +21,7 @@
 	<SharePointWebControls:FieldValue id="PageStylesField" FieldName="HeaderStyleDefinitions" runat="server" />
 	<PublishingWebControls:EditModePanel PageDisplayMode="Display" runat="server">
 		<style type="text/css">
-			a[href*="manning"] { display: none }
+			/* a[href*="manning"] { display: none } */
 			#s4-ribbonrow, #sideNavBox, #suiteBar, #titleAreaBox { display: none; }
 			#LoadingBars{
 				position:relative;

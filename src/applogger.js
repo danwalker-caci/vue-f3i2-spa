@@ -27,7 +27,7 @@ async function logToSharePoint(err) {
   } else {
     console.log('WINDOW ERROR')
     itemprops.Message = err.message
-    itemprops.Stack = err.error.stack
+    itemprops.Stack = err.stack
     itemprops.Component = err.source
     itemprops.Line = String(err.lineno)
     itemprops.Column = String(err.colno)

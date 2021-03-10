@@ -1,7 +1,7 @@
 <!-- eslint-disable -->
 <template>
-  <b-container fluid class="contentHeight featuresmain">
-    <b-row ref="GridRow" class="contentHeight">
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
       <b-modal ref="FilterModal" id="FilterModal" size="sm" no-fade modal-class="animated bounceInLeft">
         <template v-slot:modal-title>Feature Filter</template>
         <div>
@@ -64,104 +64,113 @@
           </ul>
         </div>
       </b-modal>
+      <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk" @shown="onModalShown">
+        <template v-slot:modal-title>Edit Details For {{ rowData.Title }}</template>
+        <b-container fluid id="EditTable" class="featuretable">
+          <b-row>
+            <b-col cols="8">Title</b-col>
+            <b-col cols="4">Product</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="8"><input class="e-input" type="text" v-model="rowData.Title" /></b-col>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.Product" :dataSource="product" :fields="ddfields"></ejs-dropdownlist></b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="4">Status</b-col>
+            <b-col cols="4">Priority</b-col>
+            <b-col cols="4">Category</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></b-col>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.Priority" :dataSource="priority" :fields="ddfields"></ejs-dropdownlist></b-col>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.Category" :dataSource="category" :fields="ddfields"></ejs-dropdownlist></b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="4">Effort</b-col>
+            <b-col cols="4">Due Date</b-col>
+            <b-col cols="4">% Complete</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.Effort" :dataSource="effort" :fields="ddfields"></ejs-dropdownlist></b-col>
+            <b-col cols="4"><ejs-datepicker v-model="rowData.DueDate"></ejs-datepicker></b-col>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.PercentComplete" :dataSource="percent" :fields="ddfields"></ejs-dropdownlist></b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="8">Description</b-col>
+            <b-col cols="4">Assigned To</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="8">
+              <ejs-richtexteditor ref="Comment" id="rteComment" v-model="rowData.Comment" height="200" :created="onCreate"></ejs-richtexteditor>
+            </b-col>
+            <b-col cols="4"><ejs-dropdownlist v-model="rowData.AssignedTo" :dataSource="owners" :fields="ddfields"></ejs-dropdownlist></b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">Comments</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <ejs-richtexteditor ref="Comments" id="rteComments" v-model="rowData.Comments" height="300" :created="onCreate"></ejs-richtexteditor>
+            </b-col>
+          </b-row>
+        </b-container>
+      </b-modal>
       <b-col cols="12" class="m-0 p-0">
-        <b-row class="contentHeight">
-          <div class="col-12 py40">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-              Toggle Filters
-            </b-button>
-          </div>
-          <div class="col-12 tableHeight">
-            <ejs-grid
-              id="FeatureGrid"
-              ref="FeatureGrid"
-              :enablePersistence="false"
-              :dataSource="filteredfeatures"
-              :allowPaging="true"
-              :allowResizing="true"
-              :pageSettings="pageSettings"
-              :editSettings="editSettings"
-              :toolbar="toolbar"
-              :allowExcelExport="true"
-              :toolbarClick="toolbarClick"
-              :dataBound="dataBound"
-              :actionBegin="actionBegin"
-              :actionComplete="actionComplete"
-              :detailTemplate="detailTemplate"
-              rowHeight="20"
-              height="100%"
-              width="100%"
-            >
-              <e-columns>
-                <e-column headerText="Your Rating" textAlign="Left" width="150" :template="RatingsTemplate"></e-column>
-                <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                <e-column field="Product" headerText="Product" width="100"></e-column>
-                <e-column field="Category" headerText="Category" width="100"></e-column>
-                <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-                <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
-                <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
-                <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
-                <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
-                <e-column field="Rating" headerText="Rating" textAlign="Left" width="150" :template="CombinedRatingsTemplate"></e-column>
-                <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
-                <e-column field="RatingData" :visible="false" headerText="Rating Data" width="110"></e-column>
-              </e-columns>
-            </ejs-grid>
-          </div>
-        </b-row>
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="buttonrow">
+              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                Toggle Filters
+              </b-button>
+            </b-row>
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filteredfeatures.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="FeatureGrid"
+                  ref="FeatureGrid"
+                  :enablePersistence="false"
+                  :dataSource="filteredfeatures"
+                  :allowPaging="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :dataBound="dataBound"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  :detailTemplate="detailTemplate"
+                  rowHeight="20"
+                  :height="rect.height - 175"
+                  :width="rect.width - 5"
+                >
+                  <e-columns>
+                    <e-column headerText="Your Rating" textAlign="Left" width="150" :template="RatingsTemplate"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                    <e-column field="Product" headerText="Product" width="100"></e-column>
+                    <e-column field="Category" headerText="Category" width="100"></e-column>
+                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
+                    <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
+                    <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
+                    <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
+                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
+                    <e-column field="Rating" headerText="Rating" textAlign="Left" width="150" :template="CombinedRatingsTemplate"></e-column>
+                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
+                    <e-column field="RatingData" :visible="false" headerText="Rating Data" width="110"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
+        </b-container>
       </b-col>
     </b-row>
-    <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk" @shown="onModalShown">
-      <template v-slot:modal-title>Edit Details For {{ rowData.Title }}</template>
-      <b-container fluid id="EditTable" class="featuretable">
-        <b-row>
-          <b-col cols="8">Title</b-col>
-          <b-col cols="4">Product</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="8"><input class="e-input" type="text" v-model="rowData.Title" /></b-col>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.Product" :dataSource="product" :fields="ddfields"></ejs-dropdownlist></b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="4">Status</b-col>
-          <b-col cols="4">Priority</b-col>
-          <b-col cols="4">Category</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></b-col>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.Priority" :dataSource="priority" :fields="ddfields"></ejs-dropdownlist></b-col>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.Category" :dataSource="category" :fields="ddfields"></ejs-dropdownlist></b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="4">Effort</b-col>
-          <b-col cols="4">Due Date</b-col>
-          <b-col cols="4">% Complete</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.Effort" :dataSource="effort" :fields="ddfields"></ejs-dropdownlist></b-col>
-          <b-col cols="4"><ejs-datepicker v-model="rowData.DueDate"></ejs-datepicker></b-col>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.PercentComplete" :dataSource="percent" :fields="ddfields"></ejs-dropdownlist></b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="8">Description</b-col>
-          <b-col cols="4">Assigned To</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="8">
-            <ejs-richtexteditor ref="Comment" id="rteComment" v-model="rowData.Comment" height="200" :created="onCreate"></ejs-richtexteditor>
-          </b-col>
-          <b-col cols="4"><ejs-dropdownlist v-model="rowData.AssignedTo" :dataSource="owners" :fields="ddfields"></ejs-dropdownlist></b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12">Comments</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12">
-            <ejs-richtexteditor ref="Comments" id="rteComments" v-model="rowData.Comments" height="300" :created="onCreate"></ejs-richtexteditor>
-          </b-col>
-        </b-row>
-      </b-container>
-    </b-modal>
   </b-container>
 </template>
 
@@ -170,7 +179,7 @@ import Vue from 'vue'
 import { EventBus } from '../../main'
 import Feature from '@/models/Feature'
 import User from '@/models/User'
-import { Page, Edit, Toolbar, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 import { Toolbar as RTEToolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table } from '@syncfusion/ej2-vue-richtexteditor'
 
 let vm = null
@@ -201,11 +210,20 @@ export default {
     },
     userid() {
       return User.getters('CurrentUserId')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
+  },
+  provide: {
+    grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Search],
+    richtexteditor: [RTEToolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table]
   },
   data: function() {
     return {
       waterMark: 'Select a date',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
       sortfield: '',
       sortdir: '',
       filteredfeatures: [],
@@ -533,6 +551,9 @@ export default {
     },
     getRef: function(text, idx) {
       return text + '_' + idx
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     onModalShown() {
       EventBus.$emit('refresh')
@@ -878,10 +899,6 @@ export default {
       }
     }
   },
-  provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport],
-    richtexteditor: [RTEToolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table]
-  },
   watch: {
     // eslint-disable-next-line no-unused-vars
     $route(to, from) {
@@ -899,6 +916,15 @@ export default {
 </script>
 
 <style lang="scss">
+.buttonrow {
+  height: 50px;
+  justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item
+}
+
+.gridrow {
+  height: calc(100vh - 200px);
+}
+
 .sorted {
   color: #04ee04 !important;
 }

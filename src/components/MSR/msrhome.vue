@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+    <!-- <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
           <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
@@ -8,26 +8,33 @@
         </div>
       </template>
       <b-progress :variant="busyVariant" :value="busyValue" :max="busyMax" show-progress animated></b-progress>
-    </b-toast>
+    </b-toast> -->
     <b-row ref="MainRow" class="contentHeight">
       <b-col cols="12">
-        <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" height="100%" :actionComplete="actionComplete">
-          <e-columns>
-            <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
-            <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
-            <e-column field="QAReview" headerText="QA Review" textAlign width="100"></e-column>
-            <e-column field="PCAReview" headerText="PCA Review" textAlign width="100"></e-column>
-            <e-column field="WorkplanNumber" headerText="Work Plan Number" width="100"></e-column>
-            <e-column field="WorkplanTitle" headerText="Work Plan Title" textAlign="Left" width="200"></e-column>
-            <e-column field="Status" headerText="Status" width="100"></e-column>
-            <e-column field="Month" headerText="Month" textAlign="Left" width="50"></e-column>
-            <e-column field="Year" headerText="Year" textAlign="Left" width="50"></e-column>
-            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-            <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-          </e-columns>
-        </ejs-grid>
+        <b-overlay :show="msrs.length == 0" :variant="overlayVariant" z-index="3000">
+          <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" :height="rect.height - 80" :width="rect.width - 5" :actionComplete="actionComplete">
+            <e-columns>
+              <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
+              <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
+              <e-column field="QAReview" headerText="QA Review" textAlign width="100"></e-column>
+              <e-column field="PCAReview" headerText="PCA Review" textAlign width="100"></e-column>
+              <e-column field="WorkplanNumber" headerText="Work Plan Number" width="100"></e-column>
+              <e-column field="WorkplanTitle" headerText="Work Plan Title" textAlign="Left" width="200"></e-column>
+              <e-column field="Status" headerText="Status" width="100"></e-column>
+              <e-column field="Month" headerText="Month" textAlign="Left" width="50"></e-column>
+              <e-column field="Year" headerText="Year" textAlign="Left" width="50"></e-column>
+              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+              <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+            </e-columns>
+          </ejs-grid>
+          <template #overlay>
+            <div class="text-center">
+              <p id="busy-label">{{ overlayText }}</p>
+            </div>
+          </template>
+        </b-overlay>
       </b-col>
     </b-row>
   </b-container>
@@ -111,6 +118,9 @@ export default {
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
@@ -121,6 +131,9 @@ export default {
       WorkplanNumber: '',
       viewTitle: 'MSR View for WP ',
       busyTitle: 'Getting Data. Please Wait.',
+      overlayText: 'Getting Data. Please Wait.',
+      overlayVariant: 'success',
+      interval: null,
       busyMax: 100,
       busyValue: 0,
       busyVariant: 'success',
@@ -155,30 +168,30 @@ export default {
             template: `
             <div>
               <div v-if="data.Locked === 'Yes'">
-                <b-button disabled class="actionbutton" title="Locked For Editing">
+                <b-button disabled class="actionbutton" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
                 </b-button>
-                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" title="Locked For Editing">
+                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" title="Locked For Editing">
+                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" title="Locked For Editing">
+                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
                 </b-button>
               </div>
               <div v-else>
-                <b-button variant="success" class="actionbutton" @click="edit(data)" title="Edit">
+                <b-button variant="success" class="actionbutton" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit">
                   <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
                 </b-button>
-                <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" :title="tooltipme('WPMReview', data)">
+                <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('WPMReview', data)">
                   <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
                 </b-button>
-                <b-button v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" :title="tooltipme('PCAReview', data)">
+                <b-button v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('PCAReview', data)">
                   <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
                 </b-button>
-                <b-button v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" :title="tooltipme('QAReview', data)">
+                <b-button v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('QAReview', data)">
                   <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
                 </b-button>
               </div>
@@ -350,44 +363,8 @@ export default {
   },
   mounted: function() {
     vm = this
-    try {
-      MSR.dispatch('getDigest')
-      this.$store.dispatch('support/setLegendItems', [])
-      const notification = {
-        type: 'success',
-        title: 'Getting MSRs',
-        message: 'Please Wait...',
-        push: false
-      }
-      this.$store.dispatch('notification/add', notification, { root: true })
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
-    try {
-      this.getData()
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
+    MSR.dispatch('getDigest')
+    this.getData()
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
@@ -396,7 +373,7 @@ export default {
     getData: function() {
       MSR.dispatch('getMSRs')
         .then(function() {
-          vm.displayMSRs()
+          vm.interval = setInterval(vm.displayMSRs, 500)
         })
         .then(() => {
           // Reload the page after 15 minutes
@@ -405,11 +382,11 @@ export default {
     },
     reloadPage: function() {
       clearInterval(this.$options.interval)
-      //this.$router.push({ name: 'Refresh', params: { action: 'msrhome' } })
       window.location.reload()
     },
     displayMSRs: function() {
       if (this.loaded) {
+        clearInterval(this.interval)
         try {
           if (vm.isSubcontractor) {
             vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 1 isSubcontractor: ' + vm.$moment().format() + '</div>')
@@ -433,13 +410,15 @@ export default {
               }
             }
             if (hasWorkplans === false) {
-              const notification = {
+              /* const notification = {
                 type: 'danger',
                 title: 'Error in MSR Home',
                 message: 'You are not assigned any MSRs',
                 push: true
               }
-              this.$store.dispatch('notification/add', notification, { root: true })
+              this.$store.dispatch('notification/add', notification, { root: true }) */
+              this.overlayText = 'You are not assigned to any workplans in the portal. Please contact us...'
+              this.overlayVariant = 'warning'
             }
           } else {
             vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 4: ' + vm.$moment().format() + '</div>')
@@ -447,8 +426,10 @@ export default {
             vm.msrs = Vue._.orderBy(vm.allmsrs, 'WorkplanNumber', 'asc')
           }
         } catch (e) {
+          this.overlayText = 'There was an error getting MSR data. Please contact us...'
+          this.overlayVariant = 'danger'
           // Add user notification and system logging
-          const notification = {
+          /* const notification = {
             type: 'danger',
             title: 'Portal Error',
             message: e,
@@ -457,10 +438,8 @@ export default {
           this.$store.dispatch('notification/add', notification, {
             root: true
           })
-          console.log('ERROR: ' + e)
+          console.log('ERROR: ' + e) */
         }
-        // setup timer to keep reloading after 60 seconds
-        // this.timer = setInterval(this.getData, 60000)
       } else {
         // will we ever get here
         if (console) {

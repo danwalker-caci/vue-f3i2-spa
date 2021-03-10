@@ -75,7 +75,12 @@ $modal-sm:                          300px !default;
 
 .hidden { display: none; }
 
-.contentHeight { height: calc(100vh - 100px) !important; }
+.wrapper {
+  width: 100vw;
+  height: calc(100vh - 50px);
+}
+
+.contentHeight { height: calc(100vh - 150px) !important; }
 
 .btn-burger {
   height: 35px;
