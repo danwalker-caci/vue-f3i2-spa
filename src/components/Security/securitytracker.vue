@@ -8,60 +8,66 @@
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <ejs-grid
-        id="SecurityGrid"
-        ref="SecurityGrid"
-        :dataSource="securityforms"
-        :allowPaging="true"
-        :allowReordering="true"
-        :allowResizing="true"
-        :pageSettings="pageSettings"
-        :editSettings="editSettings"
-        :filterSettings="filterSettings"
-        :toolbar="toolbar"
-        :allowExcelExport="true"
-        :toolbarClick="toolbarClick"
-        :actionComplete="actionComplete"
-        :dataBound="dataBound"
-        :detailTemplate="detailTemplate"
-        rowHeight="20"
-        height="100%"
-        width="100%"
-      >
-        <e-columns>
-          <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
-          <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
-          <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-          <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
-          <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
-          <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
-          <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
-          <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-          <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-          <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-          <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-        </e-columns>
-      </ejs-grid>
+      <b-overlay :show="filteredtravel.length == 0" :variant="overlayVariant" z-index="3000">
+        <ejs-grid
+          id="SecurityGrid"
+          ref="SecurityGrid"
+          :dataSource="securityforms"
+          :allowPaging="true"
+          :allowReordering="true"
+          :allowResizing="true"
+          :pageSettings="pageSettings"
+          :editSettings="editSettings"
+          :filterSettings="filterSettings"
+          :toolbar="toolbar"
+          :allowExcelExport="true"
+          :toolbarClick="toolbarClick"
+          :actionComplete="actionComplete"
+          :dataBound="dataBound"
+          :detailTemplate="detailTemplate"
+          rowHeight="20"
+          height="100%"
+          width="100%"
+        >
+          <e-columns>
+            <e-column field="PersonName" headerText="Person Name" minWidth="200" textAlign="Left"></e-column>
+            <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
+            <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SCIPR" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCICE" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
+            <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
+            <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+          </e-columns>
+        </ejs-grid>
+        <template #overlay>
+          <div class="text-center">
+            <p id="busy-label">{{ overlayText }}</p>
+          </div>
+        </template>
+      </b-overlay>
     </b-container>
   </b-col>
 </template>
@@ -114,6 +120,8 @@ export default {
   },
   data: function() {
     return {
+      overlayText: 'Getting Data. Please Wait...',
+      overlayVariant: 'light',
       company: '',
       pageSettings: { pageSize: 30 },
       editSettings: {
