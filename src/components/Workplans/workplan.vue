@@ -824,26 +824,23 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.filtereddata = []
-                setTimeout(() => {
-                  vm.fields = flds
-                  // loop to display the selected columns
-                  for (var i = 1; i < vm.fields.length; i++) {
-                    // starting at 1 to skip the version 'field'
-                    if (vm.fields[i].Visible) {
-                      vm.$refs.WorkplanGrid.showColumns(vm.fields[i].DisplayName)
-                      vm.$refs.WorkplanGrid.autoFitColumns()
-                    } else {
-                      vm.$refs.WorkplanGrid.hideColumns(vm.fields[i].DisplayName)
-                      vm.$refs.WorkplanGrid.autoFitColumns()
-                    }
-                    if (vm.fields[i].Sort !== '') {
-                      vm.sortfield = vm.fields[i].FieldName
-                      vm.sortdir = vm.fields[i].Sort
-                    }
+                vm.fields = flds
+                // loop to display the selected columns
+                for (var i = 1; i < vm.fields.length; i++) {
+                  // starting at 1 to skip the version 'field'
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.WorkplanGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.WorkplanGrid.autoFitColumns()
+                  } else {
+                    vm.$refs.WorkplanGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.WorkplanGrid.autoFitColumns()
                   }
-                  vm.setfilter()
-                }, 150)
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
+                  }
+                }
+                vm.setfilter()
               }
             })
             .catch(err => {

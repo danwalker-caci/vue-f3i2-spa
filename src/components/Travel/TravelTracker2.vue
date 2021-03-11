@@ -1129,7 +1129,6 @@ export default {
         // console.log('TEST POINT A: ' + version + ', flds: ' + flds)
         if (version == this.appversion) {
           // ask the user if they want to apply the saved filters or clear them
-          //this.$bvModal.show('restoreFilter')
           this.$bvModal
             .msgBoxConfirm('Load your saved filter?', {
               title: 'Please Confirm',
@@ -1144,28 +1143,23 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                // Show the overlay
-                vm.filteredtravel = []
-                // add a delay so that the modal can close and then continue with filtering
-                setTimeout(() => {
-                  vm.fields = flds
-                  // loop to display the selected columns
-                  for (var i = 1; i < vm.fields.length; i++) {
-                    // starting at 1 to skip the version 'field'
-                    if (vm.fields[i].Visible) {
-                      vm.$refs.TravelGrid.showColumns(vm.fields[i].DisplayName)
-                      vm.$refs.TravelGrid.autoFitColumns()
-                    } else {
-                      vm.$refs.TravelGrid.hideColumns(vm.fields[i].DisplayName)
-                      vm.$refs.TravelGrid.autoFitColumns()
-                    }
-                    if (vm.fields[i].Sort !== '') {
-                      vm.sortfield = vm.fields[i].FieldName
-                      vm.sortdir = vm.fields[i].Sort
-                    }
+                vm.fields = flds
+                // loop to display the selected columns
+                for (var i = 1; i < vm.fields.length; i++) {
+                  // starting at 1 to skip the version 'field'
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.TravelGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.TravelGrid.autoFitColumns()
+                  } else {
+                    vm.$refs.TravelGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.TravelGrid.autoFitColumns()
                   }
-                  vm.setfilter()
-                }, 150)
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
+                  }
+                }
+                vm.setfilter()
               }
             })
             .catch(err => {

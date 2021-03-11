@@ -712,25 +712,22 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.filteredbugs = []
-                setTimeout(() => {
-                  vm.fields = flds
-                  // loop to display the selected columns
-                  for (var i = 1; i < vm.fields.length; i++) {
-                    if (vm.fields[i].Visible) {
-                      vm.$refs.BugGrid.showColumns(vm.fields[i].DisplayName)
-                      vm.$refs.BugGrid.autoFitColumns()
-                    } else {
-                      vm.$refs.BugGrid.hideColumns(vm.fields[i].DisplayName)
-                      vm.$refs.BugGrid.autoFitColumns()
-                    }
-                    if (vm.fields[i].Sort !== '') {
-                      vm.sortfield = vm.fields[i].FieldName
-                      vm.sortdir = vm.fields[i].Sort
-                    }
+                vm.fields = JSON.parse(window.localStorage.getItem('bug'))
+                // loop to display the selected columns
+                for (var i = 1; i < vm.fields.length; i++) {
+                  if (vm.fields[i].Visible) {
+                    vm.$refs.BugGrid.showColumns(vm.fields[i].DisplayName)
+                    vm.$refs.BugGrid.autoFitColumns()
+                  } else {
+                    vm.$refs.BugGrid.hideColumns(vm.fields[i].DisplayName)
+                    vm.$refs.BugGrid.autoFitColumns()
                   }
-                  vm.setfilter()
-                }, 150)
+                  if (vm.fields[i].Sort !== '') {
+                    vm.sortfield = vm.fields[i].FieldName
+                    vm.sortdir = vm.fields[i].Sort
+                  }
+                }
+                vm.setfilter()
               }
             })
             .catch(err => {
