@@ -572,6 +572,9 @@ export default {
   },
   mounted: async function() {
     vm = this
+    if (this.companies.length === 0) {
+      await Company.dispatch('getCompanies')
+    }
     this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
     this.company = this.currentuser[0].Company
     Personnel.dispatch('getDigest')
