@@ -739,6 +739,25 @@ export default {
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
           .then(() => {
+            const notification = {
+              type: 'success',
+              title: 'Succesfully Uploaded Form',
+              message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+            let event = []
+            event.push({
+              name: vm.fileName,
+              Status: 'SecurityReview',
+              Form: this.library + vm.fileSelected,
+              etag: vm.form.etag,
+              uri: vm.form.uri
+            })
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
             // Clear form after submission
             if (vm.formType === 'cac') {
               vm.form.CACValid = ''
@@ -755,6 +774,7 @@ export default {
             vm.form.setName = 'No'
             vm.form.FirstName = vm.currentFirstName
             vm.form.LastName = vm.currentLastName
+            vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
             vm.form.PersonnelID = vm.currentPersonnelID
             vm.files = []
             vm.fileSelected = null
@@ -778,26 +798,6 @@ export default {
         // Run conditional on the results of the security form to either add or update security form
         // await Security.dispatch('')
         // Post to the SecurityForms list with the FirstName, LastName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
-        const notification = {
-          type: 'success',
-          title: 'Succesfully Uploaded Form',
-          message: 'Uploaded form ' + vm.form.Type + ' for ' + vm.form.Name,
-          push: true
-        }
-        vm.$store.dispatch('notification/add', notification, { root: true })
-        vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-        let event = []
-        event.push({
-          name: vm.fileName,
-          Status: 'SecurityReview',
-          Form: this.library + vm.fileSelected,
-          etag: vm.form.etag,
-          uri: vm.form.uri
-        })
-        if (vm.formType === 'account') {
-          vm.form.Type = vm.accountOptions[0]
-        }
-        vm.form.Name = vm.form.currentFirstName + ' ' + vm.form.currentLastName
       }
     },
     async onFileSelect(args) {
