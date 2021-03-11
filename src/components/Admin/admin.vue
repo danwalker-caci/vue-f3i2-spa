@@ -93,6 +93,7 @@ import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
 import Travel from '@/models/Travel'
 import Security from '@/models/Security'
+import axios from 'axios'
 
 let vm = null
 let SPCI = null
@@ -578,21 +579,33 @@ export default {
           // get the relevant fields and then addSecurityForm
           // Relevant fields:
           // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
-          this.updateSecurityForm({
-            Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
-            PersonnelID: person.Id,
-            FirstName: person.FirstName,
-            LastName: person.LastName,
-            Company: person.Company,
-            PRDueDate: person.PRDueDate ? person.PRDueDate : null,
-            CEDate: person.CEDate ? person.CEDate : null,
-            SCIStatus: person.SCIFormStatus,
-            SCIFormType: person.SCIFormType, // Add field in
-            SCIFormSubmitted: person.SCIFormSubmitted ? person.SCIFormSubmitted : null, // Add field in
-            CACExpirationDate: person.CACExpirationDate ? person.CACExpirationDate : null,
-            CACRequestDate: person.CACRequestDate ? person.CACRequestDate : null,
-            CACStatus: person.CACStatus,
-            CACValid: person.CACStatus === 'Issued' || person.CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No'
+          let oldSecurityUrl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items?$filter=(PersonnelID eq " + person.id + ')'
+          await axios({
+            method: 'GET',
+            url: oldSecurityUrl,
+            headers: {
+              Accept: 'application/json;odata=verbose'
+            }
+          }).then(oldsecurity => {
+            console.log(JSON.stringify(oldsecurity.data.d.results[0]))
+            if (oldsecurity.data.d.results[0]) {
+              this.updateSecurityForm({
+                Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
+                PersonnelID: person.Id,
+                FirstName: person.FirstName,
+                LastName: person.LastName,
+                Company: person.Company,
+                PRDueDate: oldsecurity.data.d.results[0].SCIPR ? oldsecurity.data.d.results[0].SCIPR : null,
+                CEDate: oldsecurity.data.d.results[0].SCICE ? oldsecurity.data.d.results[0].SCICE : null,
+                SCIStatus: oldsecurity.data.d.results[0].SCIStatus,
+                SCIFormType: oldsecurity.data.d.results[0].SCIFormType, // Add field in
+                SCIFormSubmitted: oldsecurity.data.d.results[0].SCIFormSubmitted ? oldsecurity.data.d.results[0].SCIFormSubmitted : null, // Add field in
+                CACExpirationDate: oldsecurity.data.d.results[0].CACExpirationDate ? oldsecurity.data.d.results[0].CACExpirationDate : null,
+                CACRequestDate: oldsecurity.data.d.results[0].CACRequestDate ? oldsecurity.data.d.results[0].CACRequestDate : null,
+                CACStatus: oldsecurity.data.d.results[0].CACStatus,
+                CACValid: oldsecurity.data.d.results[0].CACStatus === 'Issued' || oldsecurity.data.d.results[0].CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No'
+              })
+            }
           })
         })
       } else {
