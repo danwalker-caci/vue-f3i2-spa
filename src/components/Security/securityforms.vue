@@ -175,7 +175,7 @@
             </div>
           </b-col>
         </b-form-row>
-        <div v-if="formCAC">
+        <div v-if="formCAC" class="m-1 p-1">
           <b-form-row v-if="formCAC">
             <!-- list a series of questions for the user to fill out -->
             <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
@@ -629,7 +629,13 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-              payload.CACStatus = vm.form.CACStatus
+              if (vm.form.CACValid === 'Yes') {
+                payload.CACStatus = 'Non-F3I2 CAC'
+              } else {
+                payload.CACStatus = 'Pending Info'
+              }
+              payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
+              payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
               break
             case 'SCI':
               scis.push({
@@ -715,7 +721,7 @@ export default {
           })
         }
         if (cacs.length > 0) {
-          JSON.stringify({
+          payload.CAC = JSON.stringify({
             GovCompleteDate: '',
             GovSentDate: '',
             GovRejectDate: '',

@@ -763,19 +763,19 @@ export default {
     vm = this
     // First get current user informaiton
     // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    const notification = {
+    /*const notification = {
       type: 'info',
       title: 'Getting Data',
       message: 'Getting Security Information. Please wait...',
       push: false
     }
-    this.$store.dispatch('notification/add', notification, { root: true })
+    this.$store.dispatch('notification/add', notification, { root: true })*/
     await Security.dispatch('getDigest')
     await Todo.dispatch('getDigest')
     if (this.userloaded) {
       this.getData()
     } else {
-      vm.$options.interval = setInterval(vm.getData, 1000)
+      vm.$options.interval = setInterval(vm.getData, 500)
     }
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
