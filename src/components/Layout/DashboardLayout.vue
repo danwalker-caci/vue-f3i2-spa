@@ -59,15 +59,17 @@
           <content-footer></content-footer>
         </div>
       </div>
-      <div v-else id="LoadingBars">
-        <div class="blockG" id="rotateG_01"></div>
-        <div class="blockG" id="rotateG_02"></div>
-        <div class="blockG" id="rotateG_03"></div>
-        <div class="blockG" id="rotateG_04"></div>
-        <div class="blockG" id="rotateG_05"></div>
-        <div class="blockG" id="rotateG_06"></div>
-        <div class="blockG" id="rotateG_07"></div>
-        <div class="blockG" id="rotateG_08"></div>
+      <div v-else class="contentHeight" style="width:100%;">
+        <div id="LoadingBars">
+          <div class="blockG" id="rotateG_01"></div>
+          <div class="blockG" id="rotateG_02"></div>
+          <div class="blockG" id="rotateG_03"></div>
+          <div class="blockG" id="rotateG_04"></div>
+          <div class="blockG" id="rotateG_05"></div>
+          <div class="blockG" id="rotateG_06"></div>
+          <div class="blockG" id="rotateG_07"></div>
+          <div class="blockG" id="rotateG_08"></div>
+        </div>
       </div>
     </b-row>
     <b-row no-gutter class="cui">
