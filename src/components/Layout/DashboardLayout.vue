@@ -59,7 +59,7 @@
           <content-footer></content-footer>
         </div>
       </div>
-      <div v-else class="contentHeight" style="width:100%;">
+      <div v-else class="wrapper">
         <div id="LoadingBars">
           <div class="blockG" id="rotateG_01"></div>
           <div class="blockG" id="rotateG_02"></div>
