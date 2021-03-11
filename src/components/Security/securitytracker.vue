@@ -356,7 +356,7 @@ export default {
                             </b-tbody>
                           </b-table-simple>
                         </b-tab>
-                        <b-tab title="Historical CAC" v-if="data.CACValid === 'No' && data.CACTurnedIn && data.CACExpiredOnDate">
+                        <b-tab title="Historical CAC" v-if="data.CACTurnedIn && data.CACExpiredOnDate">
                           <b-table-simple small responsive>
                             <b-thead head-variant="dark">
                               <b-tr>

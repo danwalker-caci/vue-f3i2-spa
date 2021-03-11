@@ -198,13 +198,13 @@
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-            <b-form-group label="When was it turned in? " label-for="formCACTurnedIn">
-              <ejs-datepicker id="formCACTurnedIn" v-model="form.CACExpirationDate"></ejs-datepicker>
+            <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
+              <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
             </b-form-group>
           </b-form-row>
           <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
             <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
             </b-form-group>
           </b-form-row>
         </div>
@@ -278,11 +278,15 @@ export default {
       SCIForms: url + '/SCIForms/',
       accountOptions: ['Select...', 'NIPR', 'SIPR', 'JWICS', 'DREN'],
       currentPersonnelID: '',
+      currentFirstName: '',
+      currentLastName: '',
       form: {
         CACValid: '',
         CACIssuedBy: '',
         CACExpirationDate: '',
         CACStatus: '',
+        CACTurnedIn: '',
+        CACExpiredOnDate: '',
         Company: '',
         Type: null,
         PersonnelID: null,
@@ -364,6 +368,8 @@ export default {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
             vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+            vm.currentFirstName = result ? result[0].FirstName : ''
+            vm.currentLastName = result ? result[0].LastName : ''
             vm.form.FirstName = result ? result[0].FirstName : ''
             vm.form.LastName = result ? result[0].LastName : ''
             // Pulled from personnel list
@@ -734,9 +740,22 @@ export default {
         await Security.dispatch('updateSecurityForm', payload)
           .then(() => {
             // Clear form after submission
-            if (vm.formType === 'account') {
-              vm.form.Type = vm.accountOptions[0]
+            if (vm.formType === 'cac') {
+              vm.form.CACValid = ''
+              vm.form.CACExpirationDate = ''
+              vm.form.CACIssuedBy = ''
+              vm.form.CACStatus = ''
             }
+            if (vm.formType === 'sci') {
+              vm.form.SCIIndocDate = ''
+              vm.form.SCIType = ''
+              vm.form.SCIStatus = ''
+            }
+            vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
+            vm.form.setName = 'No'
+            vm.form.FirstName = vm.currentFirstName
+            vm.form.LastName = vm.currentLastName
+            vm.form.PersonnelID = vm.currentPersonnelID
             vm.files = []
             vm.fileSelected = null
             vm.fileBuffer = null
@@ -766,7 +785,6 @@ export default {
           push: true
         }
         vm.$store.dispatch('notification/add', notification, { root: true })
-
         vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
         let event = []
         event.push({
@@ -776,6 +794,10 @@ export default {
           etag: vm.form.etag,
           uri: vm.form.uri
         })
+        if (vm.formType === 'account') {
+          vm.form.Type = vm.accountOptions[0]
+        }
+        vm.form.Name = vm.form.currentFirstName + ' ' + vm.form.currentLastName
       }
     },
     async onFileSelect(args) {
