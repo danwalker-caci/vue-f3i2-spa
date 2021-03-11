@@ -901,6 +901,7 @@ export default {
       if (args.item.id === 'SecurityGrid_excelexport') {
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
+        this.$refs.SecurityGrid.getColumns()[1].visible = true
         this.$refs.SecurityGrid.getColumns()[2].visible = true
         this.$refs.SecurityGrid.getColumns()[3].visible = true
         this.$refs.SecurityGrid.getColumns()[4].visible = true
@@ -930,7 +931,6 @@ export default {
         this.$refs.SecurityGrid.getColumns()[28].visible = true
         this.$refs.SecurityGrid.getColumns()[29].visible = false
         this.$refs.SecurityGrid.getColumns()[30].visible = false
-        this.$refs.SecurityGrid.getColumns()[31].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
