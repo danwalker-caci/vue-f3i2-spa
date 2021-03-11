@@ -866,23 +866,26 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.fields = flds
-                // loop to display the selected columns
-                for (var i = 1; i < vm.fields.length; i++) {
-                  // starting at 1 to skip the version 'field'
-                  if (vm.fields[i].Visible) {
-                    vm.$refs.FeatureGrid.showColumns(vm.fields[i].DisplayName)
-                    vm.$refs.FeatureGrid.autoFitColumns()
-                  } else {
-                    vm.$refs.FeatureGrid.hideColumns(vm.fields[i].DisplayName)
-                    vm.$refs.FeatureGrid.autoFitColumns()
+                vm.filteredfeatures = []
+                setTimeout(() => {
+                  vm.fields = flds
+                  // loop to display the selected columns
+                  for (var i = 1; i < vm.fields.length; i++) {
+                    // starting at 1 to skip the version 'field'
+                    if (vm.fields[i].Visible) {
+                      vm.$refs.FeatureGrid.showColumns(vm.fields[i].DisplayName)
+                      vm.$refs.FeatureGrid.autoFitColumns()
+                    } else {
+                      vm.$refs.FeatureGrid.hideColumns(vm.fields[i].DisplayName)
+                      vm.$refs.FeatureGrid.autoFitColumns()
+                    }
+                    if (vm.fields[i].Sort !== '') {
+                      vm.sortfield = vm.fields[i].FieldName
+                      vm.sortdir = vm.fields[i].Sort
+                    }
                   }
-                  if (vm.fields[i].Sort !== '') {
-                    vm.sortfield = vm.fields[i].FieldName
-                    vm.sortdir = vm.fields[i].Sort
-                  }
-                }
-                vm.setfilter()
+                  vm.setfilter()
+                }, 150)
               }
             })
             .catch(err => {
