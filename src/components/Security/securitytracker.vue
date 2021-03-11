@@ -700,8 +700,8 @@ export default {
                 payload.CACExpiredOnDate = d.CACExpiredOnDate ? d.CACExpiredOnDate : null
                 payload.CACTurnedIn = d.CACTurnedIn
                 payload.CACIssuedBy = d.CACIssuedBy
-                payload.PRDueDate = d.PRDueDate
-                payload.CEDate = d.CEDate
+                payload.PRDueDate = d.PRDueDate ? d.PRDueDate : null
+                payload.CEDate = d.CEDate ? d.CEDate : null
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate
                 payload.SCIIndoc = d.SCIIndoc ? d.SCIIndoc : null
                 payload.SCIIndocAssistDate = d.SCIIndocAssistDate ? d.SCIIndocAssistDate : null
