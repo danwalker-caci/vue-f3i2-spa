@@ -817,20 +817,22 @@ export default {
       } else {
         //await this.getUserIDs()
         console.log('Getting Security Forms')
-        await Security.dispatch('getSecurityForms').then(() => {
-          this.securityforms.forEach(form => {
-            form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
-            form.CACExpiredOnDate = this.$moment(form.CACExpiredOnDate).isValid() ? this.$moment(form.CACExpiredOnDate).format('MM/DD/YYYY') : ''
-            form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
-            form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
-            form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
-            form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
-            form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
-            form.PRDueDate = this.$moment(form.PRDueDate).isValid() ? this.$moment(form.PRDueDate).format('MM/DD/YYYY') : ''
-            form.CEDate = this.$moment(form.CEDate).isValid() ? this.$moment(form.CEDate).format('MM/DD/YYYY') : ''
-          })
-        })
+        await Security.dispatch('getSecurityForms')
+        this.formatSecurity()
       }
+    },
+    formatSecurity: async function() {
+      this.securityforms.forEach(form => {
+        form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
+        form.CACExpiredOnDate = this.$moment(form.CACExpiredOnDate).isValid() ? this.$moment(form.CACExpiredOnDate).format('MM/DD/YYYY') : ''
+        form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
+        form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
+        form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+        form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+        form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
+        form.PRDueDate = this.$moment(form.PRDueDate).isValid() ? this.$moment(form.PRDueDate).format('MM/DD/YYYY') : ''
+        form.CEDate = this.$moment(form.CEDate).isValid() ? this.$moment(form.CEDate).format('MM/DD/YYYY') : ''
+      })
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -852,17 +854,7 @@ export default {
         })
         await Security.dispatch('getSecurityFormsByCompany', payload)
           .then(() => {
-            this.securityforms.forEach(form => {
-              form.CACExpirationDate = this.$moment(form.CACExpirationDate).isValid() ? this.$moment(form.CACExpirationDate).format('MM/DD/YYYY') : ''
-              form.CACExpiredOnDate = this.$moment(form.CACExpiredOnDate).isValid() ? this.$moment(form.CACExpiredOnDate).format('MM/DD/YYYY') : ''
-              form.CACRequestDate = this.$moment(form.CACRequestDate).isValid() ? this.$moment(form.CACRequestDate).format('MM/DD/YYYY') : ''
-              form.SCIIndocAssistDate = this.$moment(form.SCIIndocAssistDate).isValid() ? this.$moment(form.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
-              form.SCIAccessCheckDate = this.$moment(form.SCIAccessCheckDate).isValid() ? this.$moment(form.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
-              form.SCIFormSubmitted = this.$moment(form.SCIFormSubmitted).isValid() ? this.$moment(form.SCIFormSubmitted).format('MM/DD/YYYY') : ''
-              form.SCIIndoc = this.$moment(form.SCIIndoc).isValid() ? this.$moment(form.SCIIndoc).format('MM/DD/YYYY') : ''
-              form.PRDueDate = this.$moment(form.PRDueDate).isValid() ? this.$moment(form.PRDueDate).format('MM/DD/YYYY') : ''
-              form.CEDate = this.$moment(form.CEDate).isValid() ? this.$moment(form.CEDate).format('MM/DD/YYYY') : ''
-            })
+            vm.formatSecurity()
           })
           .catch(error => {
             const notification = {
