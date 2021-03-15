@@ -402,7 +402,8 @@ export default {
                   // loop through msrs and assign based on wp
                   vm.$store.dispatch('support/addActivity', '<div class="bg-primary">msrhome-displayMSRs Step 3 Checking all msrs for match: ' + vm.$moment().format() + '</div>')
                   for (let j = 0; j < vm.allmsrs.length; j++) {
-                    if (vm.allmsrs[j]['WorkplanNumber'] === wpn) {
+                    // add a check to see if the msrs already includes the specified MSR
+                    if (vm.allmsrs[j]['WorkplanNumber'] === wpn && !vm.msrs.includes(vm.allmsrs[j])) {
                       vm.msrs.push(vm.allmsrs[j])
                     }
                   }
@@ -411,12 +412,12 @@ export default {
             }
             if (hasWorkplans === false) {
               /* const notification = {
-                type: 'danger',
-                title: 'Error in MSR Home',
-                message: 'You are not assigned any MSRs',
-                push: true
-              }
-              this.$store.dispatch('notification/add', notification, { root: true }) */
+                  type: 'danger',
+                  title: 'Error in MSR Home',
+                  message: 'You are not assigned any MSRs',
+                  push: true
+                }
+                this.$store.dispatch('notification/add', notification, { root: true }) */
               this.overlayText = 'You are not assigned to any workplans in the portal. Please contact us...'
               this.overlayVariant = 'warning'
             }
@@ -430,15 +431,15 @@ export default {
           this.overlayVariant = 'danger'
           // Add user notification and system logging
           /* const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e) */
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e) */
         }
       } else {
         // will we ever get here
