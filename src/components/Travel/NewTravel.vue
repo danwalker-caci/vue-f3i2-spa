@@ -693,7 +693,7 @@ export default {
           if (this.isSubcontractor) {
             ret = this.travelmodel.Company == this.company ? true : false
           } else {
-            ret = this.travelmodel.Company != '' ? true : false
+            ret = this.travelmodel.Company == '' || this.travelmodel.Company == 'S' ? false : true
           }
           break
 
@@ -1050,6 +1050,12 @@ export default {
             let payload = {}
             payload.id = id
             payload.email = vm.ManagerEmail
+            payload.title = vm.travelmodel.Subject
+            payload.workplan = vm.travelmodel.WorkPlanNumber
+            payload.company = vm.travelmodel.Company
+            payload.travelers = vm.travelmodel.Travelers
+            payload.start = vm.travelmodel.StartTime
+            payload.end = vm.travelmodel.EndTime
             Travel.dispatch('NewTripEmail', payload).then(function() {
               vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
               if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
@@ -1063,6 +1069,12 @@ export default {
         payload = {}
         payload.id = id
         payload.email = this.ManagerEmail
+        payload.title = this.travelmodel.Subject
+        payload.workplan = this.travelmodel.WorkPlanNumber
+        payload.company = this.travelmodel.Company
+        payload.travelers = this.travelmodel.Travelers
+        payload.start = this.travelmodel.StartTime
+        payload.end = this.travelmodel.EndTime
         Travel.dispatch('NewTripEmail', payload).then(function() {
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
           if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
@@ -1089,7 +1101,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table td,
 .table th {
   padding: 0.1rem !important;
