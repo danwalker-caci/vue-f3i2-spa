@@ -579,34 +579,38 @@ export default {
           // get the relevant fields and then addSecurityForm
           // Relevant fields:
           // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
+          let currentSecurity = await Security.dispatch('getSecurityFormByPersonnelId', { PersonnelID: person.id })
+          console.log(JSON.stringify(currentSecurity))
           let oldSecurityUrl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items?$filter=(PersonnelID eq " + person.id + ')'
-          await axios({
+          let oldsecurity = await axios({
             method: 'GET',
             url: oldSecurityUrl,
             headers: {
               Accept: 'application/json;odata=verbose'
             }
-          }).then(oldsecurity => {
-            console.log(JSON.stringify(oldsecurity.data.d.results[0]))
-            if (oldsecurity.data.d.results[0]) {
-              this.updateSecurityForm({
-                Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
-                PersonnelID: person.Id,
-                FirstName: person.FirstName,
-                LastName: person.LastName,
-                Company: person.Company,
-                PRDueDate: oldsecurity.data.d.results[0].SCIPR ? oldsecurity.data.d.results[0].SCIPR : null,
-                CEDate: oldsecurity.data.d.results[0].SCICE ? oldsecurity.data.d.results[0].SCICE : null,
-                SCIStatus: oldsecurity.data.d.results[0].SCIStatus,
-                SCIFormType: oldsecurity.data.d.results[0].SCIFormType, // Add field in
-                SCIFormSubmitted: oldsecurity.data.d.results[0].SCIFormSubmitted ? oldsecurity.data.d.results[0].SCIFormSubmitted : null, // Add field in
-                CACExpirationDate: oldsecurity.data.d.results[0].CACExpirationDate ? oldsecurity.data.d.results[0].CACExpirationDate : null,
-                CACRequestDate: oldsecurity.data.d.results[0].CACRequestDate ? oldsecurity.data.d.results[0].CACRequestDate : null,
-                CACStatus: oldsecurity.data.d.results[0].CACStatus,
-                CACValid: oldsecurity.data.d.results[0].CACStatus === 'Issued' || oldsecurity.data.d.results[0].CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No'
-              })
-            }
           })
+          console.log(JSON.stringify(oldsecurity.data.d.results[0]))
+          if (oldsecurity.data.d.results[0]) {
+            this.updateSecurityForm({
+              Id: currentSecurity.id,
+              Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
+              PersonnelID: person.Id,
+              FirstName: person.FirstName,
+              LastName: person.LastName,
+              Company: person.Company,
+              PRDueDate: oldsecurity.data.d.results[0].SCIPR ? oldsecurity.data.d.results[0].SCIPR : null,
+              CEDate: oldsecurity.data.d.results[0].SCICE ? oldsecurity.data.d.results[0].SCICE : null,
+              SCIStatus: oldsecurity.data.d.results[0].SCIStatus,
+              SCIFormType: oldsecurity.data.d.results[0].SCIFormType, // Add field in
+              SCIFormSubmitted: oldsecurity.data.d.results[0].SCIFormSubmitted ? oldsecurity.data.d.results[0].SCIFormSubmitted : null, // Add field in
+              CACExpirationDate: oldsecurity.data.d.results[0].CACExpirationDate ? oldsecurity.data.d.results[0].CACExpirationDate : null,
+              CACRequestDate: oldsecurity.data.d.results[0].CACRequestDate ? oldsecurity.data.d.results[0].CACRequestDate : null,
+              CACStatus: oldsecurity.data.d.results[0].CACStatus,
+              CACValid: oldsecurity.data.d.results[0].CACStatus === 'Issued' || oldsecurity.data.d.results[0].CACStatus === 'Non-F3I2 CAC' ? 'Yes' : 'No',
+              etag: currentSecurity.etag,
+              uri: currentSecurity.uri
+            })
+          }
         })
       } else {
         console.log('PERSONNEL NOT LOADED...')
@@ -616,7 +620,7 @@ export default {
       }
     },
     async updateSecurityForm(data) {
-      Security.dispatch('addSecurityForm', data)
+      Security.dispatch('updateSecurityForm', data)
         .then(results => {
           console.log('Migrate Security: ' + results)
         })
