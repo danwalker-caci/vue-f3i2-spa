@@ -580,6 +580,7 @@ export default {
     this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
     this.company = this.currentuser[0].Company
     Personnel.dispatch('getDigest')
+    Security.dispatch('getDigest')
     Workplan.dispatch('getWorkplans')
       .then(function() {
         if (vm.isSubcontractor && vm.company) {
@@ -783,7 +784,6 @@ export default {
         try {
           Personnel.dispatch('editPerson', this.rowData).then(async function() {
             // Add integration with Security to update the following field in that list: FirstName, LastName, Company, Active
-            await Security.dispatch('getDigest')
             let securityPayload = {
               PersonnelID: vm.rowData.id,
               FirstName: vm.rowData.FirstName,
@@ -817,6 +817,7 @@ export default {
     },
     newOk: async function() {
       await Personnel.dispatch('getDigest')
+      await Security.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -858,7 +859,6 @@ export default {
       } else {
         try {
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
-            await Security.dispatch('getDigest')
             let payload = {
               Active: 'Yes',
               PersonnelID: results.data.d.Id,
