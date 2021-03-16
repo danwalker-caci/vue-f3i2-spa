@@ -714,7 +714,7 @@ export default {
               if (value == true) {
                 vm.filteredbugs = []
                 setTimeout(() => {
-                  vm.fields = flds
+                  vm.fields = JSON.parse(window.localStorage.getItem('bug'))
                   // loop to display the selected columns
                   for (var i = 1; i < vm.fields.length; i++) {
                     if (vm.fields[i].Visible) {
@@ -728,6 +728,7 @@ export default {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort
                     }
+                    
                   }
                   vm.setfilter()
                 }, 250)

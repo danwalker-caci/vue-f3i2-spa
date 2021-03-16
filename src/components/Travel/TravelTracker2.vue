@@ -150,6 +150,7 @@ import Vue from 'vue'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import { setTime } from '@syncfusion/ej2-vue-schedule'
 
 let vm = null
 let data = []
@@ -1129,7 +1130,6 @@ export default {
         // console.log('TEST POINT A: ' + version + ', flds: ' + flds)
         if (version == this.appversion) {
           // ask the user if they want to apply the saved filters or clear them
-          //this.$bvModal.show('restoreFilter')
           this.$bvModal
             .msgBoxConfirm('Load your saved filter?', {
               title: 'Please Confirm',
@@ -1144,9 +1144,6 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                // Show the overlay
-                vm.filteredtravel = []
-                // add a delay so that the modal can close and then continue with filtering
                 setTimeout(() => {
                   vm.fields = flds
                   // loop to display the selected columns
@@ -1163,8 +1160,8 @@ export default {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort
                     }
+                    vm.setfilter()
                   }
-                  vm.setfilter()
                 }, 250)
               }
             })

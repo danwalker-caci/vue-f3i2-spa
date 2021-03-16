@@ -572,6 +572,9 @@ export default {
   },
   mounted: async function() {
     vm = this
+    if (this.companies.length === 0) {
+      await Company.dispatch('getCompanies')
+    }
     this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
     this.company = this.currentuser[0].Company
     Personnel.dispatch('getDigest')
@@ -742,7 +745,7 @@ export default {
         try {
           Personnel.dispatch('editPerson', data).then(async function() {
             let managerEmails = []
-            vm.currentuser[0].WPData.foreach(async function(wp) {
+            vm.WPData.foreach(async function(wp) {
               let manager = await Workplan.dispatch('getManagerByWPNumber', wp)
               console.log(`Manager: ${JSON.stringify(manager)}`)
               if (manager[0]) {
@@ -1167,7 +1170,6 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.filteredpersonnel = []
                 setTimeout(() => {
                   vm.fields = flds
                   // loop to display the selected columns
@@ -1183,8 +1185,8 @@ export default {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort
                     }
+                    vm.setfilter()
                   }
-                  vm.setfilter()
                 }, 250)
               }
             })

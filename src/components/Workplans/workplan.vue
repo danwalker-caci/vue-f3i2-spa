@@ -837,6 +837,7 @@ export default {
                       vm.$refs.WorkplanGrid.hideColumns(vm.fields[i].DisplayName)
                       vm.$refs.WorkplanGrid.autoFitColumns()
                     }
+
                     if (vm.fields[i].Sort !== '') {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort

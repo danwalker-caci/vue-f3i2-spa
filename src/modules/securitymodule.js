@@ -97,6 +97,7 @@ function formatForms(j) {
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
+      CAC: j[i]['CAC'] ? JSON.parse(j[i]['CAC']) : '', // TODO: sort the CAC forms
       CACValid: j[i]['CACValid'],
       CACIssuedBy: j[i]['CACIssuedBy'],
       CACExpirationDate: moment(j[i]['CACExpirationDate']).isValid() ? moment(j[i]['CACExpirationDate']) : '',
@@ -106,7 +107,6 @@ function formatForms(j) {
       CACStatus: j[i]['CACStatus'],
       Company: j[i]['Company'],
       PersonnelId: j[i]['PersonnelID'],
-      PersonName: j[i]['PersonName'],
       FirstName: j[i]['FirstName'],
       LastName: j[i]['LastName'],
       NIPR: j[i]['NIPR'] ? JSON.parse(j[i]['NIPR']) : '',
@@ -117,12 +117,11 @@ function formatForms(j) {
       SCIStatus: j[i]['SCIStatus'],
       SCIIndocAssistDate: moment(j[i]['SCIIndocAssistDate']).isValid() ? moment(j[i]['SCIIndocAssistDate']) : '',
       SCIAccessCheckDate: moment(j[i]['SCIAccessCheckDate']).isValid() ? moment(j[i]['SCIAccessCheckDate']) : '',
-      SCIPR: j[i]['SCIPR'],
-      SCICE: j[i]['SCICE'],
       SCIFormType: j[i]['SCIFormType'],
       SCIFormSubmitted: moment(j[i]['SCIFormSubmitted']).isValid() ? moment(j[i]['SCIFormSubmitted']) : '',
       SCIIndoc: moment(j[i]['SCIIndoc']).isValid() ? moment(j[i]['SCIIndoc']) : '',
-      CAC: j[i]['CAC'] ? JSON.parse(j[i]['CAC']) : '', // TODO: sort the CAC forms
+      PRDueDate: moment(j[i]['PRDueDate']).isValid() ? moment(j[i]['PRDueDate']) : '',
+      CEDate: moment(j[i]['CEDate']).isValid() ? moment(j[i]['CEDate']) : '',
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
@@ -137,6 +136,7 @@ function formatForm(j) {
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
+    CAC: j[0]['CAC'] ? JSON.parse(j[0]['CAC']) : '',
     CACValid: j[0]['CACValid'],
     CACIssuedBy: j[0]['CACIssuedBy'],
     CACExpirationDate: moment(j[0]['CACExpirationDate']).isValid() ? moment(j[0]['CACExpirationDate']) : '',
@@ -157,12 +157,11 @@ function formatForm(j) {
     SCIStatus: j[0]['SCIStatus'],
     SCIIndocAssistDate: moment(j[0]['SCIIndocAssistDate']).isValid() ? moment(j[0]['SCIIndocAssistDate']) : '',
     SCIAccessCheckDate: moment(j[0]['SCIAccessCheckDate']).isValid() ? moment(j[0]['SCIAccessCheckDate']) : '',
-    SCIPR: j[0]['SCIPR'],
-    SCICE: j[0]['SCICE'],
     SCIFormType: j[0]['SCIFormType'],
     SCIFormSubmitted: moment(j[0]['SCIFormSubmitted']).isValid() ? moment(j[0]['SCIFormSubmitted']) : '',
     SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
-    CAC: j[0]['CAC'] ? JSON.parse(j[0]['CAC']) : '',
+    PRDueDate: moment(j[0]['PRDueDate']).isValid() ? moment(j[0]['PRDueDate']) : '',
+    CEDate: moment(j[0]['CEDate']).isValid() ? moment(j[0]['CEDate']) : '',
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']

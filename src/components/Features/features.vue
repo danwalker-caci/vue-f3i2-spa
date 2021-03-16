@@ -879,6 +879,7 @@ export default {
                       vm.$refs.FeatureGrid.hideColumns(vm.fields[i].DisplayName)
                       vm.$refs.FeatureGrid.autoFitColumns()
                     }
+
                     if (vm.fields[i].Sort !== '') {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort
