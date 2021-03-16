@@ -1144,6 +1144,7 @@ export default {
             })
             .then(value => {
               if (value == true) {
+                vm.filteredtravel = []
                 setTimeout(() => {
                   vm.fields = flds
                   // loop to display the selected columns

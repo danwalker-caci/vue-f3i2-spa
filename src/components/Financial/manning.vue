@@ -769,6 +769,7 @@ export default {
             })
             .then(value => {
               if (value == true) {
+                vm.filtereddata = []
                 setTimeout(() => {
                   vm.fields = flds
                   // loop to display the selected columns
