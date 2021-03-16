@@ -82,6 +82,15 @@ $modal-sm:                          300px !default;
 
 .contentHeight { height: calc(100vh - 150px) !important; }
 
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: #fff;
+  background-color: #007bff!important;
+}
+
+.width-98 {
+  width: 98%;
+}
+
 .btn-burger {
   height: 35px;
   width: 35px;

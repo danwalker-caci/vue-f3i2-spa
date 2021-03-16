@@ -137,188 +137,195 @@ export default {
         return {
           template: Vue.component('accountDetailTemplate', {
             template: `
-              <b-container class="securityDetailHeight overflow-auto">
+              <div class="securityDetailHeight overflow-auto">
                 <b-row>
                   <b-col cols="9" class="m-0 p-0">
-                    <b-tabs content-class="mt-0 p-0">
+                    <b-tabs pills vertical content-class="mt-0 p-0">
                       <b-tab title="General" active>
-                        <!-- PR Due Date and CE Date -->
-                        <b-table-simple small responsive>
-                          <b-thead head-variant="dark">
-                            <b-tr>
-                              <b-th>PR Due Date</b-th>
-                              <b-th>CE Date</b-th>
-                              <b-th></b-th>
-                            </b-tr>
-                          </b-thead>
-                          <b-tbody>
-                            <b-tr>
-                              <b-td>
-                                <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
-                              </b-td>
-                            </b-tr>
-                          </b-tbody>
-                        </b-table>
+                        <div class="width-98">
+                          <!-- PR Due Date and CE Date -->
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>PR Due Date</b-th>
+                                <b-th>CE Date</b-th>
+                                <b-th></b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <b-tr>
+                                <b-td>
+                                  <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
+                                </b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table>
+                        </div>
                       </b-tab>
                       <b-tab title="Accounts" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
-                        <!-- Account Template -->
-                        <b-table-simple small responsive>
-                          <b-thead head-variant="dark">
-                            <b-tr>
-                              <b-th>Account</b-th>
-                              <b-th>Government Sent Date</b-th>
-                              <b-th>Government Review</b-th>
-                              <b-th>Submitted Forms</b-th>
-                            </b-tr>
-                          </b-thead>
-                          <b-tbody>
-                            <!-- NIPR DATA -->
-                            <b-tr v-if="data.NIPR && data.NIPR.forms.length > 0">
-                              <b-td>NIPR</b-td>
-                              <b-td>
-                                <span v-if="data.NIPR.GovSentDate !== ''">{{ data.NIPR.GovSentDate }}</span>
-                                <span v-if="data.NIPR.GovSentDate == ''">
-                                  <!-- Should only show if in Security Group -->
-                                  <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'NIPR'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                  <span v-if="!isSecurity">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td>
-                                <span v-if="data.NIPR.GovCompleteDate !== ''">{{ data.NIPR.GovCompleteDate }}</span>
-                                <span v-if="data.NIPR.GovRejectDate !== ''">{{ data.NIPR.GovRejectDate }}</span>
-                                <span v-if="data.NIPR.GovCompleteDate == '' && data.NIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                  <!-- REMOVE DEVELOPER OPTION -->  
-                                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'NIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'NIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                  <span v-if="!isAFRL && data.NIPR.GovSentDate !== ''">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/NIPR'">View Forms</b-button></b-td>
-                            </b-tr>
-                            <!-- SIPR DATA -->
-                            <b-tr v-if="data.SIPR && data.SIPR.forms.length > 0">
-                              <b-td>SIPR</b-td>
-                              <b-td>
-                                <span v-if="data.SIPR.GovSentDate !== ''">{{ data.SIPR.GovSentDate }}</span>
-                                <span v-if="data.SIPR.GovSentDate == ''">
-                                  <!-- Should only show if in Security Group -->
-                                  <b-button v-if="isSecurity" ref="NotifyGov" :data-type="'SIPR'" variant="success" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                  <span v-if="!isSecurity">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td>
-                                <span v-if="data.SIPR.GovCompleteDate !== ''">{{ data.SIPR.GovCompleteDate }}</span>
-                                <span v-if="data.SIPR.GovRejectDate !== ''">{{ data.SIPR.GovRejectDate }}</span>
-                                <span v-if="data.SIPR.GovCompleteDate == '' && data.SIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                  <!-- REMOVE DEVELOPER OPTION -->  
-                                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                  <span v-if="!isAFRL && data.SIPR.GovSentDate !== ''">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
-                            </b-tr>
-                            <!-- DREN DATA -->
-                            <b-tr v-if="data.DREN && data.DREN.forms.length > 0">
-                              <b-td>DREN</b-td>
-                              <b-td>
-                                <span v-if="data.DREN.GovSentDate !== ''">{{ data.DREN.GovSentDate }}</span>
-                                <span v-if="data.DREN.GovSentDate == ''">
-                                  <!-- Should only show if in Security Group -->
-                                  <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'DREN'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                  <span v-if="!isSecurity">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td>
-                                <span v-if="data.DREN.GovCompleteDate !== ''">{{ data.DREN.GovCompleteDate }}</span>
-                                <span v-if="data.DREN.GovRejectDate !== ''">{{ data.DREN.GovRejectDate }}</span>
-                                <span v-if="data.DREN.GovCompleteDate == '' && data.DREN.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                  <!-- REMOVE DEVELOPER OPTION -->  
-                                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'DREN'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'DREN'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                  <span v-if="!isAFRL && data.DREN.GovSentDate !== ''">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/DREN'">View Forms</b-button></b-td>
-                            </b-tr>
-                            <!-- JWICS DATA -->
-                            <b-tr v-if="data.JWICS && data.JWICS.forms.length > 0">
-                              <b-td>JWICS</b-td>
-                              <b-td>
-                                <span v-if="data.JWICS.GovSentDate !== ''">{{ data.JWICS.GovSentDate }}</span>
-                                <span v-if="data.JWICS.GovSentDate == ''">
-                                  <!-- Should only show if in Security Group -->
-                                  <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                  <span v-if="!isSecurity">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td>
-                                <span v-if="data.JWICS.GovCompleteDate !== ''">{{ data.JWICS.GovCompleteDate }}</span>
-                                <span v-if="data.JWICS.GovRejectDate !== ''">{{ data.JWICS.GovRejectDate }}</span>
-                                <span v-if="data.JWICS.GovCompleteDate == '' && data.JWICS.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                  <!-- REMOVE DEVELOPER OPTION -->  
-                                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'JWICS'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'JWICS'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                  <span v-if="!isAFRL && data.JWICS.GovSentDate !== ''">Processing</span>
-                                </span>
-                              </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
-                            </b-tr>
-                          </b-tbody>
-                        </b-table-simple>
+                        <div class="width-98">
+                          <!-- Account Template -->
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>Account</b-th>
+                                <b-th>Government Sent Date</b-th>
+                                <b-th>Government Review</b-th>
+                                <b-th>Submitted Forms</b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <!-- NIPR DATA -->
+                              <b-tr v-if="data.NIPR && data.NIPR.forms.length > 0">
+                                <b-td>NIPR</b-td>
+                                <b-td>
+                                  <span v-if="data.NIPR.GovSentDate !== ''">{{ data.NIPR.GovSentDate }}</span>
+                                  <span v-if="data.NIPR.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'NIPR'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.NIPR.GovCompleteDate !== ''">{{ data.NIPR.GovCompleteDate }}</span>
+                                  <span v-if="data.NIPR.GovRejectDate !== ''">{{ data.NIPR.GovRejectDate }}</span>
+                                  <span v-if="data.NIPR.GovCompleteDate == '' && data.NIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'NIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'NIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.NIPR.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/NIPR'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- SIPR DATA -->
+                              <b-tr v-if="data.SIPR && data.SIPR.forms.length > 0">
+                                <b-td>SIPR</b-td>
+                                <b-td>
+                                  <span v-if="data.SIPR.GovSentDate !== ''">{{ data.SIPR.GovSentDate }}</span>
+                                  <span v-if="data.SIPR.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" :data-type="'SIPR'" variant="success" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.SIPR.GovCompleteDate !== ''">{{ data.SIPR.GovCompleteDate }}</span>
+                                  <span v-if="data.SIPR.GovRejectDate !== ''">{{ data.SIPR.GovRejectDate }}</span>
+                                  <span v-if="data.SIPR.GovCompleteDate == '' && data.SIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.SIPR.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- DREN DATA -->
+                              <b-tr v-if="data.DREN && data.DREN.forms.length > 0">
+                                <b-td>DREN</b-td>
+                                <b-td>
+                                  <span v-if="data.DREN.GovSentDate !== ''">{{ data.DREN.GovSentDate }}</span>
+                                  <span v-if="data.DREN.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'DREN'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.DREN.GovCompleteDate !== ''">{{ data.DREN.GovCompleteDate }}</span>
+                                  <span v-if="data.DREN.GovRejectDate !== ''">{{ data.DREN.GovRejectDate }}</span>
+                                  <span v-if="data.DREN.GovCompleteDate == '' && data.DREN.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'DREN'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'DREN'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.DREN.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/DREN'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- JWICS DATA -->
+                              <b-tr v-if="data.JWICS && data.JWICS.forms.length > 0">
+                                <b-td>JWICS</b-td>
+                                <b-td>
+                                  <span v-if="data.JWICS.GovSentDate !== ''">{{ data.JWICS.GovSentDate }}</span>
+                                  <span v-if="data.JWICS.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.JWICS.GovCompleteDate !== ''">{{ data.JWICS.GovCompleteDate }}</span>
+                                  <span v-if="data.JWICS.GovRejectDate !== ''">{{ data.JWICS.GovRejectDate }}</span>
+                                  <span v-if="data.JWICS.GovCompleteDate == '' && data.JWICS.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'JWICS'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'JWICS'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.JWICS.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
+                        </div>
                       </b-tab>
                       <b-tab title="SCI">
-                        <b-table-simple small responsive>
-                          <b-thead head-variant="dark">
-                            <b-tr>
-                              <b-th>Date Indoctrination Assist Sent</b-th>
-                              <b-th>SCI Access Check Date</b-th>
-                              <b-th>SCI Indoctrination Date</b-th>
-                              <b-th>SCI Form Submitted</b-th>
-                              <b-th>SCI Status</b-th>
-                              <b-th>SCI Form Type</b-th>
-                              <b-th>Submitted Forms</b-th>
-                              <b-th></b-th>
-                            </b-tr>
-                          </b-thead>
-                          <b-tbody>
-                            <b-tr>
-                              <b-td>
-                                <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="data.SCIIndoc"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                              </b-td>
-                              <b-td>
-                                <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
-                              </b-td>
-                              <b-td>
-                                <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
-                              </b-td>
-                              <b-td>
-                                <!-- Update Button -->
-                                <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update SCI</b-button>
-                              </b-td>
-                            </b-tr>
-                          </b-tbody>
-                        </b-table-simple>
+                        <div class="width-98">
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>Date Indoctrination Assist Sent</b-th>
+                                <b-th>SCI Access Check Date</b-th>
+                                <b-th>SCI Indoctrination Date</b-th>
+                                <b-th>SCI Form Submitted</b-th>
+                                <b-th>SCI Status</b-th>
+                                <b-th>SCI Form Type</b-th>
+                                <b-th>Submitted Forms</b-th>
+                                <b-th></b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <b-tr>
+                                <b-td>
+                                  <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="data.SCIIndoc"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
+                                </b-td>
+                                <b-td>
+                                  <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                                </b-td>
+                                <b-td>
+                                  <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
+                                </b-td>
+                                <b-td>
+                                  <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
+                                </b-td>
+                                <b-td>
+                                  <!-- Update Button -->
+                                  <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                </b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
+                        </div>
                       </b-tab>
                       <b-tab title="CAC">
+                        <div class="width-98">
                           <b-table-simple small responsive>
                             <b-thead head-variant="dark">
                               <b-tr>
@@ -350,44 +357,47 @@ export default {
                                 <b-td>
                                   <!-- Update Button -->
                                   <!-- REMOVE DEVELOPER OPTION -->
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update CAC</b-button>
+                                  <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
                           </b-table-simple>
+                          </div>
                         </b-tab>
                         <b-tab title="Historical CAC" v-if="data.CACTurnedIn && data.CACExpiredOnDate">
-                          <b-table-simple small responsive>
-                            <b-thead head-variant="dark">
-                              <b-tr>
-                                <b-th>Historical CAC Data</b-th>
-                                <b-th>CAC Status</b-th>
-                                <b-th>CAC Turned In Location</b-th>
-                                <b-th>CAC Turned In Date</b-th>
-                              </b-tr>
-                            </b-thead>
-                            <b-tbody>
-                              <b-tr>
-                                <b-td>
-                                  Yes
-                                </b-td>
-                                <b-td>
-                                  {{ data.CACStatus }}
-                                </b-td>
-                                <b-td>
-                                  {{ data.CACTurnedIn }}
-                                </b-td>
-                                <b-td>
-                                  {{ data.CACExpiredOnDate }}
-                                </b-td>
-                              </b-tr>
-                            </b-tbody>
-                          </b-table-simple>
-                        </b-tab>
+                          <div class="width-98">
+                            <b-table-simple small responsive>
+                              <b-thead head-variant="dark">
+                                <b-tr>
+                                  <b-th>Historical CAC Data</b-th>
+                                  <b-th>CAC Status</b-th>
+                                  <b-th>CAC Turned In Location</b-th>
+                                  <b-th>CAC Turned In Date</b-th>
+                                </b-tr>
+                              </b-thead>
+                              <b-tbody>
+                                <b-tr>
+                                  <b-td>
+                                    Yes
+                                  </b-td>
+                                  <b-td>
+                                    {{ data.CACStatus }}
+                                  </b-td>
+                                  <b-td>
+                                    {{ data.CACTurnedIn }}
+                                  </b-td>
+                                  <b-td>
+                                    {{ data.CACExpiredOnDate }}
+                                  </b-td>
+                                </b-tr>
+                              </b-tbody>
+                            </b-table-simple>
+                          </div>
+                      </b-tab>
                     </b-tabs>
                   </b-col>
                 </b-row>
-              </b-container>`,
+              </div>`,
             computed: {
               userloaded() {
                 return User.getters('Loaded')
