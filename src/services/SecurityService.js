@@ -120,6 +120,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      Active: payload.Active === 'Yes' ? true : false,
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -189,6 +190,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
+      Active: payload.Active === 'Yes' ? true : false,
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -248,7 +250,7 @@ export default {
     let allSecurityForms = []
     async function getAllSecurityForms(sfurl) {
       if (sfurl === null) {
-        sfurl = securityformurl + '?$orderby=LastName'
+        sfurl = securityformurl + '?$orderby=LastName&$filter=(Active eq 1)'
       }
 
       let response = await axios.get(sfurl, {

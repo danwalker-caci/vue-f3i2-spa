@@ -287,6 +287,7 @@ export default {
 
         let itemprops = {
           __metadata: { type: 'SP.Data.PersonnelListItem' },
+          Active: payload.Active === 'Yes' ? true : false,
           WPData: JSON.stringify(payload.WPData),
           Title: payload.LastName,
           FirstName: payload.FirstName,
@@ -371,6 +372,7 @@ export default {
 
         let itemprops2 = {
           __metadata: { type: 'SP.Data.PersonnelListItem' },
+          Active: payload.Active === 'Yes' ? true : false,
           WPData: JSON.stringify(payload.WPData),
           Title: payload.LastName,
           FirstName: payload.FirstName,
