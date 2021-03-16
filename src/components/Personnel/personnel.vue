@@ -1197,22 +1197,25 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.fields = flds
-                // loop to display the selected columns
-                for (var i = 1; i < vm.fields.length; i++) {
-                  if (vm.fields[i].Visible) {
-                    vm.$refs.PersonnelGrid.showColumns(vm.fields[i].DisplayName)
-                    vm.$refs.PersonnelGrid.autoFitColumns()
-                  } else {
-                    vm.$refs.PersonnelGrid.hideColumns(vm.fields[i].DisplayName)
-                    vm.$refs.PersonnelGrid.autoFitColumns()
+                vm.filteredpersonnel = []
+                setTimeout(() => {
+                  vm.fields = flds
+                  // loop to display the selected columns
+                  for (var i = 1; i < vm.fields.length; i++) {
+                    if (vm.fields[i].Visible) {
+                      vm.$refs.PersonnelGrid.showColumns(vm.fields[i].DisplayName)
+                      vm.$refs.PersonnelGrid.autoFitColumns()
+                    } else {
+                      vm.$refs.PersonnelGrid.hideColumns(vm.fields[i].DisplayName)
+                      vm.$refs.PersonnelGrid.autoFitColumns()
+                    }
+                    if (vm.fields[i].Sort !== '') {
+                      vm.sortfield = vm.fields[i].FieldName
+                      vm.sortdir = vm.fields[i].Sort
+                    }
+                    vm.setfilter()
                   }
-                  if (vm.fields[i].Sort !== '') {
-                    vm.sortfield = vm.fields[i].FieldName
-                    vm.sortdir = vm.fields[i].Sort
-                  }
-                }
-                vm.setfilter()
+                }, 250)
               }
             })
             .catch(err => {
