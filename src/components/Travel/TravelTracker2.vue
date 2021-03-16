@@ -1165,7 +1165,7 @@ export default {
                     }
                   }
                   vm.setfilter()
-                }, 150)
+                }, 250)
               }
             })
             .catch(err => {
