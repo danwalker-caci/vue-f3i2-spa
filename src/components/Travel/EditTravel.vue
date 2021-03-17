@@ -1050,7 +1050,7 @@ export default {
           if (this.isSubcontractor) {
             ret = this.travelmodel.Company == this.company ? true : false
           } else {
-            ret = this.travelmodel.Company != '' ? true : false
+            ret = this.travelmodel.Company == '' || this.travelmodel.Company == 'S' ? false : true
           }
           break
 

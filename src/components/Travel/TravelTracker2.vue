@@ -1160,8 +1160,8 @@ export default {
                       vm.sortfield = vm.fields[i].FieldName
                       vm.sortdir = vm.fields[i].Sort
                     }
-                    vm.setfilter()
                   }
+                  vm.setfilter()
                 }, 250)
               }
             })
