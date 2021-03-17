@@ -895,7 +895,7 @@ export default {
         this.travelmodel.OCONUSApprovedBy = this.selectedtrip.OCONUSApprovedBy
         this.travelmodel.OCONUSApprovedOn = this.$moment(this.selectedtrip.OCONUSApprovedOn).format('YYYY-MM-DD')
         this.travelmodel.OCONUSApprovedEmail = this.selectedtrip.OCONUSApprovedEmail
-        this.travelmodel.PreApproved = this.selectedtrip.PreApproved
+        this.travelmodel.PreApproved = this.selectedtrip.InternalData.PreApproved
         this.travelmodel.Company = this.selectedtrip.Company
         this.travelmodel.Subject = this.selectedtrip.Subject
         this.travelmodel.StartTime = this.$moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')

@@ -423,6 +423,7 @@ export default {
       Comments: payload[0].Comments,
       Clearance: payload[0].Clearance,
       InternalData: JSON.stringify(payload[0].InternalData),
+      PreApproved: payload[0].PreApproved,
       VisitRequest: payload[0].VisitRequest === 'Yes' ? 'Yes' : 'No',
       EstimatedCost: Number(payload[0].EstimatedCost),
       SecurityAction: payload[0].SecurityAction,
