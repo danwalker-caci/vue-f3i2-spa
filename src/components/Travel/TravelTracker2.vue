@@ -150,6 +150,7 @@ import Vue from 'vue'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import { setTime } from '@syncfusion/ej2-vue-schedule'
 
 let vm = null
 let data = []
@@ -1143,23 +1144,26 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.fields = flds
-                // loop to display the selected columns
-                for (var i = 1; i < vm.fields.length; i++) {
-                  // starting at 1 to skip the version 'field'
-                  if (vm.fields[i].Visible) {
-                    vm.$refs.TravelGrid.showColumns(vm.fields[i].DisplayName)
-                    vm.$refs.TravelGrid.autoFitColumns()
-                  } else {
-                    vm.$refs.TravelGrid.hideColumns(vm.fields[i].DisplayName)
-                    vm.$refs.TravelGrid.autoFitColumns()
+                vm.filteredtravel = []
+                setTimeout(() => {
+                  vm.fields = flds
+                  // loop to display the selected columns
+                  for (var i = 1; i < vm.fields.length; i++) {
+                    // starting at 1 to skip the version 'field'
+                    if (vm.fields[i].Visible) {
+                      vm.$refs.TravelGrid.showColumns(vm.fields[i].DisplayName)
+                      vm.$refs.TravelGrid.autoFitColumns()
+                    } else {
+                      vm.$refs.TravelGrid.hideColumns(vm.fields[i].DisplayName)
+                      vm.$refs.TravelGrid.autoFitColumns()
+                    }
+                    if (vm.fields[i].Sort !== '') {
+                      vm.sortfield = vm.fields[i].FieldName
+                      vm.sortdir = vm.fields[i].Sort
+                    }
+                    vm.setfilter()
                   }
-                  if (vm.fields[i].Sort !== '') {
-                    vm.sortfield = vm.fields[i].FieldName
-                    vm.sortdir = vm.fields[i].Sort
-                  }
-                }
-                vm.setfilter()
+                }, 250)
               }
             })
             .catch(err => {

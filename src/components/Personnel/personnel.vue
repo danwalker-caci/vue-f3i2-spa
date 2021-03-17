@@ -84,16 +84,18 @@
                 </td>
               </tr>
               <tr class="bg-info text-white">
-                <th colspan="2">Position</th>
+                <th>Position</th>
                 <th colspan="2">Email</th>
                 <th>Phone</th>
                 <th>SubET</th>
+                <th>Active</th>
               </tr>
               <tr class="text-white">
-                <td colspan="2"><input class="e-input" type="text" v-model="rowData.Position" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Position }}</p></td>
+                <td><input class="e-input" type="text" v-model="rowData.Position" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Position }}</p></td>
                 <td colspan="2"><input class="e-input" type="text" v-model="rowData.Email" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Email }}</p></td>
                 <td><input class="e-input" type="text" v-model="rowData.Phone" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Phone }}</p></td>
                 <td><ejs-dropdownlist v-model="rowData.SubET" :dataSource="subet" :fields="ddfields"></ejs-dropdownlist><p v-if="showOldData" class="text-info">Original Value: {{ oldData.SubET }}</p></td>
+                <td><b-form-checkbox v-model="rowData.Active" value="Yes" unchecked-value="No" ref="Active" switch></b-form-checkbox></td>
               </tr>
               <tr class="bg-info text-white text-center">
                 <td colspan="6"><b>Work Plans</b></td>
@@ -578,6 +580,7 @@ export default {
     this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
     this.company = this.currentuser[0].Company
     Personnel.dispatch('getDigest')
+    Security.dispatch('getDigest')
     Workplan.dispatch('getWorkplans')
       .then(function() {
         if (vm.isSubcontractor && vm.company) {
@@ -779,7 +782,19 @@ export default {
         }
       } else {
         try {
-          Personnel.dispatch('editPerson', this.rowData).then(function() {
+          Personnel.dispatch('editPerson', this.rowData).then(async function() {
+            // Add integration with Security to update the following field in that list: FirstName, LastName, Company, Active
+            let securityPayload = {
+              PersonnelID: vm.rowData.id,
+              FirstName: vm.rowData.FirstName,
+              LastName: vm.rowData.LastName,
+              Company: vm.rowData.Company,
+              Active: vm.rowData.Active
+            }
+            let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
+            securityPayload.etag = securityInfo.etag
+            securityPayload.uri = securityInfo.uri
+            await Security.dispatch('updateSecurityForm', securityPayload)
             vm.hideme('EditModal', 'refresh')
           })
         } catch (e) {
@@ -802,6 +817,7 @@ export default {
     },
     newOk: async function() {
       await Personnel.dispatch('getDigest')
+      await Security.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -843,9 +859,8 @@ export default {
       } else {
         try {
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
-            // TO DO: change the config around to support the new format FirstName, LastName
-            console.log(JSON.stringify(results.data.d.results))
             let payload = {
+              Active: 'Yes',
               PersonnelID: results.data.d.Id,
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,
@@ -883,7 +898,19 @@ export default {
       vm.rowData.ModDeniedReason = ''
       vm.rowData.Modification = '' // Remove previous Modification Data
       try {
-        Personnel.dispatch('editPerson', vm.rowData).then(function() {
+        Personnel.dispatch('editPerson', vm.rowData).then(async function() {
+          await Security.dispatch('getDigest')
+          let securityPayload = {
+            PersonnelID: vm.rowData.id,
+            FirstName: vm.rowData.FirstName,
+            LastName: vm.rowData.LastName,
+            Company: vm.rowData.Company,
+            Active: vm.rowData.Active
+          }
+          let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
+          securityPayload.etag = securityInfo.etag
+          securityPayload.uri = securityInfo.uri
+          await Security.dispatch('updateSecurityForm', securityPayload)
           vm.approvalOnly = false
           vm.hideme('EditModal', 'refresh')
         })
@@ -1170,22 +1197,25 @@ export default {
             })
             .then(value => {
               if (value == true) {
-                vm.fields = flds
-                // loop to display the selected columns
-                for (var i = 1; i < vm.fields.length; i++) {
-                  if (vm.fields[i].Visible) {
-                    vm.$refs.PersonnelGrid.showColumns(vm.fields[i].DisplayName)
-                    vm.$refs.PersonnelGrid.autoFitColumns()
-                  } else {
-                    vm.$refs.PersonnelGrid.hideColumns(vm.fields[i].DisplayName)
-                    vm.$refs.PersonnelGrid.autoFitColumns()
+                vm.filteredpersonnel = []
+                setTimeout(() => {
+                  vm.fields = flds
+                  // loop to display the selected columns
+                  for (var i = 1; i < vm.fields.length; i++) {
+                    if (vm.fields[i].Visible) {
+                      vm.$refs.PersonnelGrid.showColumns(vm.fields[i].DisplayName)
+                      vm.$refs.PersonnelGrid.autoFitColumns()
+                    } else {
+                      vm.$refs.PersonnelGrid.hideColumns(vm.fields[i].DisplayName)
+                      vm.$refs.PersonnelGrid.autoFitColumns()
+                    }
+                    if (vm.fields[i].Sort !== '') {
+                      vm.sortfield = vm.fields[i].FieldName
+                      vm.sortdir = vm.fields[i].Sort
+                    }
+                    vm.setfilter()
                   }
-                  if (vm.fields[i].Sort !== '') {
-                    vm.sortfield = vm.fields[i].FieldName
-                    vm.sortdir = vm.fields[i].Sort
-                  }
-                }
-                vm.setfilter()
+                }, 250)
               }
             })
             .catch(err => {

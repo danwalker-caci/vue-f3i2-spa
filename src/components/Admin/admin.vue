@@ -580,7 +580,6 @@ export default {
           // Relevant fields:
           // CACExpirationDate, CACRequestDate, CACStatus, SCIFormStatus, SCIFormSubmitted, SCIFormType
           let currentSecurity = await Security.dispatch('getSecurityFormByPersonnelId', { PersonnelID: person.id })
-          console.log(JSON.stringify(currentSecurity))
           let oldSecurityUrl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecurityForms')/items?$filter=(PersonnelID eq " + person.id + ')'
           let oldsecurity = await axios({
             method: 'GET',
@@ -589,10 +588,10 @@ export default {
               Accept: 'application/json;odata=verbose'
             }
           })
-          console.log(JSON.stringify(oldsecurity.data.d.results[0]))
           if (oldsecurity.data.d.results[0]) {
             this.updateSecurityForm({
               Id: currentSecurity.id,
+              Active: person.Active,
               Title: person.Id + '-' + person.FirstName + ' ' + person.LastName,
               PersonnelID: person.Id,
               FirstName: person.FirstName,
