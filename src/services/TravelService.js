@@ -18,15 +18,15 @@ let b = moment()
 let portalemail = ''
 
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc"
-let gurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Status eq 'AFRLReview')"
-let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(Company eq '"
+let gurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(Status eq 'AFRLReview')"
+let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(Company eq '"
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
 geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
 // let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
-let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
+let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
 /* #endregion */
 
 export default {
@@ -245,6 +245,23 @@ export default {
   NewTripEmail(state, digest, payload) {
     // need to somehow pass the id in the link and then have the system display info for that travel request
     let body = '<p>A new Travel Request has been submitted on your workplan.</p><p></p>'
+    // add more details
+    body += '<p>Subject: ' + payload.title
+    body += '<p>WorkPlanNumber: ' + payload.workplan
+    body += '<p>Company: ' + payload.company
+    let t = payload.travelers
+    let s = ''
+    for (let i = 0; i < t.length; i++) {
+      if (i == 0) {
+        s += t[i].firstName + ' ' + t[i].lastName
+      } else {
+        s += ', ' + t[i].firstName + ' ' + t[i].lastName
+      }
+    }
+    body += '<p>Travelers: ' + s
+    // build travelers text
+    body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
+    body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
     body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
     let mail = {
