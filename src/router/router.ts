@@ -1,0 +1,423 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import ThemeLayout from '@/components/Layout/DashboardLayout.vue'
+import home from '@/components/Pages/home.vue'
+
+Vue.use(VueRouter)
+
+const adminMenu = {
+  path: '/admin',
+  component: ThemeLayout,
+  redirect: '/admin/home',
+  children: [
+    {
+      path: 'home/:mode',
+      name: 'Admin',
+      component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/admin.vue'),
+      props: true
+    }
+  ]
+}
+
+const travelMenu = {
+  path: '/travel',
+  component: ThemeLayout,
+  redirect: '/travel/home',
+  children: [
+    {
+      path: 'home/:mode',
+      name: 'Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/HomeTS.vue'),
+      props: true
+    },
+    {
+      path: 'page/tracker',
+      name: 'Travel Tracker',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelTrackerTS.vue'),
+      props: true
+    },
+    {
+      path: 'page/calendar',
+      name: 'Travel Calendar',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TravelCalendar.vue'),
+      props: true
+    },
+    {
+      path: 'page/new',
+      name: 'New Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/NewTravel.vue'),
+      props: true
+    },
+    {
+      path: 'page/edit',
+      name: 'Edit Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/EditTravel.vue'),
+      props: true
+    },
+    {
+      path: 'page/report',
+      name: 'Trip Report',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TripReport.vue'),
+      props: true
+    }
+  ]
+}
+
+const securityMenu = {
+  path: '/security',
+  component: ThemeLayout,
+  redirect: '/security/account',
+  children: [
+    {
+      path: '/security/:formType',
+      name: 'Security Form',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityforms.vue'),
+      props: true
+    },
+    {
+      path: '/security/view/:id/:form',
+      name: 'View Security',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityview.vue'),
+      props: true
+    },
+    {
+      path: '/security/tracker/:formType',
+      name: 'Security Tracker',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securitytracker.vue'),
+      props: true
+    }
+  ]
+}
+
+const msrMenu = {
+  path: '/msr',
+  component: ThemeLayout,
+  redirect: '/msr/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Home',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/msrhome.vue'),
+      props: true
+    },
+    {
+      path: 'form/:id',
+      name: 'MSRForm',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/msrform.vue'),
+      props: true
+    },
+    {
+      path: 'library',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/year/:year',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/workplan/:workplan',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/year/:year',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/workplan/:workplan',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/year/:year/workplan/:workplan',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/year/:year/workplan/:workplan',
+      name: 'MSR Library',
+      component: () => import(/* webpackChunkName: "msr" */ '../components/MSR/library.vue'),
+      props: true
+    }
+  ]
+}
+
+const financialMenu = {
+  path: '/financial',
+  component: ThemeLayout,
+  redirect: '/financial/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Home',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/dashboard.vue'),
+      props: true
+    },
+    {
+      path: 'library',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin/month/:month',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin/year/:year',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin/workplan/:workplan',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin/month/:month/year/:year',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/clin/:clin/month/:month/year/:year/workplan/:workplan',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/year/:year',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/month/:month/workplan/:workplan',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/year/:year/',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/year/:year/workplan/:workplan',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    },
+    {
+      path: 'library/workplan/:workplan',
+      name: 'Financial Documents',
+      component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/library.vue'),
+      props: true
+    } //,
+    //{
+    //  path: 'manning',
+    //  name: 'Manning Report',
+    //  component: () => import(/* webpackChunkName: "financial" */ '../components/Financial/manning.vue'),
+    //  props: true
+    //}
+  ]
+}
+
+const trainingMenu = {
+  path: '/training',
+  component: ThemeLayout,
+  redirect: '/training/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Training',
+      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
+      props: true
+    },
+    {
+      path: '/training/:library',
+      name: 'Training',
+      component: () => import(/* webpackChunkName: "training" */ '../components/Training/library.vue'),
+      props: true
+    }
+  ]
+}
+
+const calendarMenu = {
+  path: '/calendar',
+  component: ThemeLayout,
+  redirect: '/calendar/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Calendar',
+      component: () => import(/* webpackChunkName: "calendar" */ '../components/Pages/calendar.vue'),
+      props: true
+    }
+  ]
+}
+
+const refreshMenu = {
+  path: '/refresh',
+  component: ThemeLayout,
+  redirect: '/refresh/home',
+  children: [
+    {
+      path: 'home/:action',
+      name: 'Refresh',
+      component: () => import(/* webpackChunkName: "refresh" */ '../components/Layout/Refresh.vue'),
+      props: true
+    }
+  ]
+}
+
+const featureMenu = {
+  path: '/feature',
+  component: ThemeLayout,
+  redirect: '/feature/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Feature',
+      component: () => import(/* webpackChunkName: "features" */ '../components/Features/feature.vue')
+    }
+  ]
+}
+
+const featuresMenu = {
+  path: '/features',
+  component: ThemeLayout,
+  redirect: '/features/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Features',
+      component: () => import(/* webpackChunkName: "features" */ '../components/Features/features.vue'),
+      props: true
+    }
+  ]
+}
+
+const bugsMenu = {
+  path: '/bugs',
+  component: ThemeLayout,
+  redirect: '/bugs/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Bugs',
+      component: () => import(/* webpackChunkName: "features" */ '../components/Features/bugs.vue'),
+      props: true
+    }
+  ]
+}
+
+const personnelMenu = {
+  path: '/personnel',
+  component: ThemeLayout,
+  redirect: '/personnel/home',
+  children: [
+    {
+      path: 'home/reports/:mode',
+      name: 'Reports',
+      component: () => import(/* webpackChunkName: "personnel" */ '../components/Personnel/personnel.vue'),
+      props: true
+    },
+    {
+      path: 'home/refresh/:mode',
+      name: 'Personnel',
+      component: () => import(/* webpackChunkName: "personnel" */ '../components/Personnel/personnel.vue'),
+      props: true
+    },
+    {
+      path: 'home/new/:mode',
+      name: 'Onboarding',
+      component: () => import(/* webpackChunkName: "personnel" */ '../components/Personnel/personnel.vue'),
+      props: true
+    }
+  ]
+}
+
+const workplanMenu = {
+  path: '/workplans',
+  component: ThemeLayout,
+  redirect: '/workplans/home',
+  children: [
+    {
+      path: 'home/active',
+      name: 'Work Plans',
+      component: () => import(/* webpackChunkName: "workplan" */ '../components/Workplans/workplan.vue'),
+      props: true
+    }
+  ]
+}
+
+const routes = [
+  {
+    path: '/',
+    redirect: '/pages/home'
+  },
+  adminMenu,
+  msrMenu,
+  financialMenu,
+  calendarMenu,
+  travelMenu,
+  featureMenu,
+  featuresMenu,
+  bugsMenu,
+  personnelMenu,
+  trainingMenu,
+  securityMenu,
+  workplanMenu,
+  refreshMenu,
+  {
+    path: '/pages',
+    component: ThemeLayout,
+    redirect: '/pages/home',
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: home
+      }
+    ]
+  }
+]
+
+const router = new VueRouter({
+  routes
+})
+
+export default router

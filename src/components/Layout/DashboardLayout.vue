@@ -6,7 +6,19 @@
       <b-col cols="4" class="p-0"></b-col>
     </b-row>
     <b-row no-gutter>
-      <div v-if="userloaded" class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
+      <div v-if="!UserLoadedFS" class="wrapper">
+        <div id="LoadingBars">
+          <div class="blockG" id="rotateG_01"></div>
+          <div class="blockG" id="rotateG_02"></div>
+          <div class="blockG" id="rotateG_03"></div>
+          <div class="blockG" id="rotateG_04"></div>
+          <div class="blockG" id="rotateG_05"></div>
+          <div class="blockG" id="rotateG_06"></div>
+          <div class="blockG" id="rotateG_07"></div>
+          <div class="blockG" id="rotateG_08"></div>
+        </div>
+      </div>
+      <div v-else class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
         <NotificationContainer />
         <side-bar v-if="userloaded">
           <user-menu v-if="userloaded"></user-menu>
@@ -59,18 +71,6 @@
           <content-footer></content-footer>
         </div>
       </div>
-      <div v-else class="wrapper">
-        <div id="LoadingBars">
-          <div class="blockG" id="rotateG_01"></div>
-          <div class="blockG" id="rotateG_02"></div>
-          <div class="blockG" id="rotateG_03"></div>
-          <div class="blockG" id="rotateG_04"></div>
-          <div class="blockG" id="rotateG_05"></div>
-          <div class="blockG" id="rotateG_06"></div>
-          <div class="blockG" id="rotateG_07"></div>
-          <div class="blockG" id="rotateG_08"></div>
-        </div>
-      </div>
     </b-row>
     <b-row no-gutter class="cui">
       <b-col cols="4" class="p-0"></b-col>
@@ -86,6 +86,7 @@ import TopNavbar from './TopNavbar.vue'
 import ContentFooter from './ContentFooter.vue'
 import DashboardContent from './Content.vue'
 import NotificationContainer from '@/components/NotificationContainer.vue'
+
 export default {
   computed: {
     isAdmin() {
@@ -121,13 +122,25 @@ export default {
     UserMenu
   },
   mounted: function() {
-    this.$options.interval = setInterval(this.waitForUser, 1000)
+    this.$options.interval = setInterval(this.waitForUser, 500)
+  },
+  data: function() {
+    return {
+      UserLoadedFS: false
+    }
   },
   methods: {
     waitForUser() {
       if (this.userloaded) {
+        this.UserLoadedFS = true
         clearInterval(this.$options.interval)
-        let el = document.getElementById('maincontent')
+        this.$options.interval = setInterval(this.waitForContent, 500)
+      }
+    },
+    waitForContent() {
+      let el = document.getElementById('MainBodyArea')
+      if (el !== null) {
+        clearInterval(this.$options.interval)
         let rect = el.getBoundingClientRect()
         this.$store.dispatch('support/setContentRect', rect)
         this.$store.dispatch('support/addActivity', '<div class="bg-success text-white">DashboardLayout-MOUNTED: ' + rect.top + ', ' + rect.left + ', ' + rect.width + ', ' + rect.height + '</div>')
