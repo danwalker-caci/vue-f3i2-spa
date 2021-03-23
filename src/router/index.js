@@ -66,22 +66,28 @@ let travelMenu = {
 let securityMenu = {
   path: '/security',
   component: ThemeLayout,
-  redirect: '/security/account',
+  redirect: '/security/tracker',
   children: [
     {
-      path: '/security/:formType',
-      name: 'Security Form',
-      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityforms.vue'),
+      path: '/security/add/:formType',
+      name: 'Security Add',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityadd.vue'),
       props: true
     },
     {
-      path: '/security/view/:id/:form',
-      name: 'View Security',
-      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityview.vue'),
+      path: '/security/review/:id/:form',
+      name: 'Security Review',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityreview.vue'),
       props: true
     },
     {
-      path: '/security/tracker/:formType',
+      path: '/security/edit/:id',
+      name: 'Security Edit',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityedit.vue'),
+      props: true
+    },
+    {
+      path: '/security/tracker',
       name: 'Security Tracker',
       component: () => import(/* webpackChunkName: "security" */ '../components/Security/securitytracker.vue'),
       props: true

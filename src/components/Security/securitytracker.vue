@@ -70,6 +70,7 @@
 // eslint-disable-next-line no-undef
 let url = _spPageContextInfo.webAbsoluteUrl
 let vm = null
+let vm2 = null
 //let url = _spPageContextInfo.webAbsoluteUrl
 import Vue from 'vue'
 import User from '@/models/User'
@@ -80,13 +81,7 @@ import Todo from '@/models/Todo'
 import { Page, VirtualScroll, DetailRow, Toolbar, ExcelExport, Resize, Search } from '@syncfusion/ej2-vue-grids'
 
 export default {
-  name: 'SecurityForms',
-  props: {
-    // Switches the form type between Account, CAC and SCI
-    formType: {
-      type: String
-    }
-  },
+  name: 'SecurityTracker',
   computed: {
     companies() {
       return Company.getters('DropDown')
@@ -143,28 +138,35 @@ export default {
                     <b-tabs content-class="mt-0 p-0">
                       <b-tab title="General" active>
                         <!-- PR Due Date and CE Date -->
-                        <b-table-simple small responsive>
-                          <b-thead head-variant="dark">
-                            <b-tr>
-                              <b-th>PR Due Date</b-th>
-                              <b-th>CE Date</b-th>
-                              <b-th></b-th>
-                            </b-tr>
-                          </b-thead>
-                          <b-tbody>
-                            <b-tr>
-                              <b-td>
-                                <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
-                              </b-td>
-                              <b-td>
-                                <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
-                              </b-td>
-                            </b-tr>
-                          </b-tbody>
-                        </b-table>
+                        <b-row nogutters class="m-0 p-0">
+                          <b-col cols="2" class="p-1" align-v="center">
+                            <b-button v-if="isSecurity || isDeveloper" ref="SecurityEdit" @click="editSecurity($event)" :data-link="'/security/edit/' + data.id " variant="primary" class="btn-lg float-left">Edit Person Security</b-button>
+                          </b-col>
+                          <b-col cols="10">
+                            <b-table-simple small responsive>
+                              <b-thead head-variant="dark">
+                                <b-tr>
+                                  <b-th>PR Due Date</b-th>
+                                  <b-th>CE Date</b-th>
+                                  <b-th></b-th>
+                                </b-tr>
+                              </b-thead>
+                              <b-tbody>
+                                <b-tr>
+                                  <b-td>
+                                    <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
+                                  </b-td>
+                                </b-tr>
+                              </b-tbody>
+                            </b-table>
+                          </b-col>
+                        </b-row>
                       </b-tab>
                       <b-tab title="Accounts" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
                         <!-- Account Template -->
@@ -199,7 +201,7 @@ export default {
                                   <span v-if="!isAFRL && data.NIPR.GovSentDate !== ''">Processing</span>
                                 </span>
                               </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/NIPR'">View Forms</b-button></b-td>
+                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.id + '/NIPR'">View Forms</b-button></b-td>
                             </b-tr>
                             <!-- SIPR DATA -->
                             <b-tr v-if="data.SIPR && data.SIPR.forms.length > 0">
@@ -222,7 +224,7 @@ export default {
                                   <span v-if="!isAFRL && data.SIPR.GovSentDate !== ''">Processing</span>
                                 </span>
                               </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
+                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
                             </b-tr>
                             <!-- DREN DATA -->
                             <b-tr v-if="data.DREN && data.DREN.forms.length > 0">
@@ -245,7 +247,7 @@ export default {
                                   <span v-if="!isAFRL && data.DREN.GovSentDate !== ''">Processing</span>
                                 </span>
                               </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/DREN'">View Forms</b-button></b-td>
+                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.Id + '/DREN'">View Forms</b-button></b-td>
                             </b-tr>
                             <!-- JWICS DATA -->
                             <b-tr v-if="data.JWICS && data.JWICS.forms.length > 0">
@@ -268,7 +270,7 @@ export default {
                                   <span v-if="!isAFRL && data.JWICS.GovSentDate !== ''">Processing</span>
                                 </span>
                               </b-td>
-                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
+                              <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
                             </b-tr>
                           </b-tbody>
                         </b-table-simple>
@@ -308,7 +310,7 @@ export default {
                                 <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
                               </b-td>
                               <b-td>
-                                <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
+                                <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.id + '/SCI'">View Forms</b-button>
                               </b-td>
                               <b-td>
                                 <!-- Update Button -->
@@ -345,7 +347,7 @@ export default {
                                   <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
                                 </b-td>
                                 <b-td>
-                                  <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
+                                  <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/review/' + data.id + '/CAC'">View Forms</b-button>
                                 </b-td>
                                 <b-td>
                                   <!-- Update Button -->
@@ -384,6 +386,16 @@ export default {
                             </b-tbody>
                           </b-table-simple>
                         </b-tab>
+                      <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
+                        <b-row>
+                          <b-col>
+                            <b-form-select v-model="completedForms.Type" :options="formTypes"></b-form-select>
+                          </b-col>
+                          <b-col>
+                            <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
+                          </b-col>
+                        </b-row>
+                      </b-tab>
                     </b-tabs>
                   </b-col>
                 </b-row>
@@ -410,11 +422,26 @@ export default {
             },
             data: function() {
               return {
+                files: [],
+                library: '',
+                libraryUrl: '',
                 data: {
                   GovernmentDate: '',
                   securityforms: []
                 },
                 ddfields: { text: 'text', value: 'value' },
+                uploadedCompletedForms: {
+                  Type: ''
+                },
+                formTypes: [
+                  { value: null, text: 'Please select an option' },
+                  { value: 'NIPR', text: 'NIPR' },
+                  { value: 'SIPR', text: 'SIPR' },
+                  { value: 'DREN', text: 'DREN' },
+                  { value: 'JWICS', text: 'JWICS' },
+                  { value: 'CAC', text: 'CAC' },
+                  { value: 'SCI', text: 'SCI' }
+                ],
                 status: [
                   { text: 'Not Required', value: 'Not Required' },
                   { text: 'Pending Info', value: 'Pending Info' },
@@ -466,7 +493,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 let results = await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -562,7 +589,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -644,7 +671,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -674,6 +701,171 @@ export default {
                 })
               },
               async updateForm(d, tId) {
+                if (d.files.length > 0 && this.formTypes !== null) {
+                  // first delete all files related to the formTypes
+                  await this.asyncForEach(d[this.formTypes].files, async file => {
+                    await Security.dispatch('deleteForm', file)
+                  })
+                  // Clear original form
+                  d[this.formTypes].files = []
+                  switch (this.formType) {
+                    case 'NIPR':
+                      // set the url for the post of file
+                      this.library = 'AccountsNIPR'
+                      this.libraryUrl = url + '/AccountsNIPR/'
+                      break
+                    case 'SIPR':
+                      this.library = 'AccountsSIPR'
+                      this.libraryUrl = url + '/AccountsDREN/'
+                      break
+                    case 'DREN':
+                      this.library = 'AccountsDREN'
+                      this.libraryUrl = url + '/AccountsSIPR/'
+                      break
+                    case 'JWICS':
+                      this.library = 'AccountsJWICS'
+                      this.libraryUrl = url + '/AccountsJWICS/'
+                      break
+                    case 'CAC':
+                      this.library = 'CACForms'
+                      this.libraryUrl = url + '/CACForms/'
+                      break
+                    case 'SCI':
+                      this.library = 'SCIForms'
+                      this.libraryUrl = url + '/SCIForms/'
+                      break
+                  }
+                  // loop and upload all attached files
+                  await this.asyncForEach(this.files, async file => {
+                    payload.library = vm2.library
+                    let pdfName = d.PersonnelID + '-' + d.FirstName + ' ' + d.LastName + '-' + file.fileSelected + '-Completed'
+                    let name = pdfName.split('.')[0]
+                    file.fileName = name
+                    payload.file = file.fileSelected
+                    payload.name = name
+                    payload.buffer = file.fileBuffer
+                    let item = await Security.dispatch('uploadForm', payload)
+                    //TO DO: Check if item contains the form Id. The update form could then be deleted
+                    let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+                    let form = await Security.dispatch('getForm', itemlink)
+                    let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+                    payload = form.data.d.__metadata
+                    //payload.file = file.fileSelected
+                    payload.name = pdfName
+                    // payload.IndexNumber = this.IndexNumber
+                    payload.SecurityFormId = d.Id
+                    await Security.dispatch('updateForm', payload)
+                    // First check to see if there is an entry for the PersonnelID in the Security Form List
+                    d[this.formType].files.push({
+                      account: this.formType,
+                      id: formId,
+                      library: vm2.library,
+                      name: pdfName,
+                      // task: results.data.d.Id,
+                      href: vm2.libraryUrl + pdfName,
+                      etag: form.data.d.__metadata.etag,
+                      uri: form.data.d.__metadata.uri
+                    })
+                    /*let niprs = [],
+                      siprs = [],
+                      drens = [],
+                      jwics = [],
+                      scis = [],
+                      cacs = []
+                    switch (this.formType) {
+                      case 'NIPR':
+                        // set the url for the post of file
+                        niprs.push({
+                          account: vm.form.Type,
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        break
+                      case 'SIPR':
+                        siprs.push({
+                          account: vm.form.Type,
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        break
+                      case 'DREN':
+                        drens.push({
+                          account: vm.form.Type,
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        break
+                      case 'JWICS':
+                        jwics.push({
+                          account: vm.form.Type,
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        break
+                      case 'CAC':
+                        cacs.push({
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        payload.CACValid = vm.form.CACValid
+                        payload.CACIssuedBy = vm.form.CACIssuedBy
+                        payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
+                        if (vm.form.CACValid === 'Yes') {
+                          payload.CACStatus = 'Non-F3I2 CAC'
+                        } else {
+                          payload.CACStatus = 'Pending Info'
+                        }
+                        payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
+                        payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
+                        break
+                      case 'SCI':
+                        scis.push({
+                          id: formId,
+                          library: vm.library,
+                          name: pdfName,
+                          // task: results.data.d.Id,
+                          href: vm.libraryUrl + pdfName,
+                          etag: form.data.d.__metadata.etag,
+                          uri: form.data.d.__metadata.uri
+                        })
+                        payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
+                        payload.SCIStatus = 'CACI Review'
+                        break
+                    }
+                  })*/
+
+                    // then upload files to replace the formType
+
+                    // Replace the files in original form type
+                    //d[this.formTypes].files =
+                    // finally, clear d.files to zero and remove from file uploader
+                  })
+                }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
                 if (payload.NIPR) {
@@ -752,7 +944,44 @@ export default {
                 event.preventDefault()
                 let link = event.currentTarget.dataset.link
                 this.$router.push({ path: link })
+              },
+              async editSecurity(event) {
+                event.preventDefault()
+                let link = event.currentTarget.dataset.link
+                this.$router.push({ path: link })
+              },
+              async onFileSelect(args) {
+                args.filesData.forEach(fileData => {
+                  let file = {}
+                  file.fileSelected = fileData.name
+                  let buffer = vm2.getFileBuffer(fileData.rawFile)
+                  buffer.then(function(buff) {
+                    file.fileBuffer = buff
+                    vm2.files.push(file)
+                  })
+                })
+              },
+              async asyncForEach(array, callback) {
+                for (let index = 0; index < array.length; index++) {
+                  await callback(array[index], index, array)
+                }
+              },
+              getFileBuffer(file) {
+                let p = new Promise(function(resolve, reject) {
+                  var reader = new FileReader()
+                  reader.onloadend = function(e) {
+                    resolve(e.target.result)
+                  }
+                  reader.onerror = function(e) {
+                    reject(e.target.error)
+                  }
+                  reader.readAsArrayBuffer(file)
+                })
+                return p
               }
+            },
+            mounted: async function() {
+              vm2 = this
             }
           })
         }
