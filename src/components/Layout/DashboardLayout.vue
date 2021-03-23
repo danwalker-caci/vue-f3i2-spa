@@ -45,10 +45,10 @@
             </sidebar-item>
             <!-- Add Security Menu Links -->
             <sidebar-item :link="{ name: 'Security', library: 'fas', icon: 'user-shield' }">
-              <sidebar-item :link="{ name: 'Add Accounts', library: 'fas', icon: 'id-card-alt', path: '/security/add/account' }"></sidebar-item>
-              <sidebar-item :link="{ name: 'Add CAC', library: 'fas', icon: 'id-badge', path: '/security/add/cac' }"></sidebar-item>
-              <sidebar-item :link="{ name: 'Add SCI', library: 'fas', icon: 'id-card', path: '/security/add/sci' }"></sidebar-item>
-              <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Add Accounts', library: 'fas', icon: 'id-card-alt', path: '/security/account' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Add CAC', library: 'fas', icon: 'id-badge', path: '/security/cac' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Add SCI', library: 'fas', icon: 'id-card', path: '/security/sci' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker/accounts' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
           </template>

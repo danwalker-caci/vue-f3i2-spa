@@ -239,7 +239,7 @@ import Security from '@/models/Security'
 import Todo from '@/models/Todo'
 
 export default {
-  name: 'SecurityAdd',
+  name: 'SecurityForms',
   props: {
     // Switches the form type between Account, CAC and SCI
     formType: {
@@ -454,7 +454,7 @@ export default {
       }
     },
     closeForm: function() {
-      vm.$router.push({ path: '/security/tracker' })
+      vm.$router.push({ path: '/security/tracker/accounts' })
     },
     onFormSubmit: async function() {
       // VALIDATE SUBK && FORM
@@ -667,7 +667,7 @@ export default {
           IsMilestone: false,
           PercentComplete: 0,
           TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/review/' + this.securityForm.Id + '/' + this.form.Type
+          TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
         }
         let results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
           const notification = {

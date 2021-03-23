@@ -150,6 +150,7 @@ import Vue from 'vue'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import { setTime } from '@syncfusion/ej2-vue-schedule'
 
 let vm = null
 let data = []
