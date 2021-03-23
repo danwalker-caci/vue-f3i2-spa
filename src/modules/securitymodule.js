@@ -74,6 +74,7 @@ const actions = {
   },
   async getSecurityFormByPersonnelId({ state }, payload) {
     let response = await SecurityService.getSecurityFormByPersonnelId(payload, state.digest)
+    console.log('By Personnel: ' + response)
     if (response.length == 0) {
       return response
     } else {

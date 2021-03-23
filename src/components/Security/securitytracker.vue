@@ -795,9 +795,6 @@ export default {
       this.$store.dispatch('support/getAFRLUser')
       this.$store.dispatch('support/getCACSCIUser')
     },
-    actionBegin(args) {
-      console.log(args)
-    },
     actionComplete(args) {
       // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
       if (args.requestType == 'columnstate') {

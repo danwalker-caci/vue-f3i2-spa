@@ -516,7 +516,7 @@ export default {
     await this.getForms()
   },
   methods: {
-    getUserIDs: async function() {
+    async getUserIDs() {
       this.AccountId = await this.$store.dispatch('support/getAccountUser')
       this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
       this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
@@ -524,12 +524,13 @@ export default {
       // console.log(this.$store.state.support.AccountUserID)
       // console.log(this.$store.state.support.CACSCIUserID)
     },
-    getForms: async function() {
+    async getForms() {
       // Run query to load the form
+      console.log(this.id)
       let payload = {
-        Id: this.id
+        PersonnelID: this.id
       }
-      let result = Security.dispatch('getSecurityByPersonnelId', payload).catch(e => {
+      let result = await Security.dispatch('getSecurityFormByPersonnelId', payload).catch(e => {
         // Add user notification and system logging
         const notification = {
           type: 'danger',
@@ -549,14 +550,14 @@ export default {
       this.Company = result.Company
       this.PersonnelID = this.id
       this.CEDate = result.CEDate
-      this.SCI = JSON.parse(result.SCI)
+      this.SCI = result.SCI
       this.SCIStatus = result.SCIStatus
       this.SCIIndoc = this.$moment(result.SCIIndoc).isValid() ? this.$moment(result.SCIIndoc).format('MM/DD/YYYY') : ''
       this.SCIIndocAssistDate = this.$moment(result.SCIIndocAssistDate).isValid() ? this.$moment(result.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
       this.SCIAccessCheckDate = this.$moment(result.SCIAccessCheckDate).isValid() ? this.$moment(result.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
       this.SCIFormType = result.SCIFormType
       this.SCIFormSubmitted = this.$moment(result.SCIFormSubmitted).isValid() ? this.$moment(result.SCIFormSubmitted).format('MM/DD/YYYY') : ''
-      this.CAC = JSON.parse(result.CAC)
+      this.CAC = result.CAC
       this.CACStatus = result.CACStatus
       this.CACRequestDate = this.$moment(result.CACRequestDate).isValid() ? this.$moment(result.CACRequestDate).format('MM/DD/YYYY') : ''
       this.CACExpirationDate = this.$moment(result.CACExpirationDate).isValid() ? this.$moment(result.CACExpirationDate).format('MM/DD/YYYY') : ''
@@ -564,10 +565,10 @@ export default {
       this.CACValid = result.CACValid
       this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : ''
       this.CACTurnedIn = result.CACTurnedIn
-      this.NIPR = JSON.parse(result.NIPR)
-      this.SIPR = JSON.parse(result.SIPR)
-      this.DREN = JSON.parse(result.DREN)
-      this.JWICS = JSON.parse(result.JWICS)
+      this.NIPR = result.NIPR
+      this.SIPR = result.SIPR
+      this.DREN = result.DREN
+      this.JWICS = result.JWICS
       await Security.dispatch('getDigest')
     },
     AssistDateChange() {

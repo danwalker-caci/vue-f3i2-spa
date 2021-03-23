@@ -75,7 +75,7 @@ let securityMenu = {
       props: true
     },
     {
-      path: '/security/edit/:formType',
+      path: '/security/edit/:id',
       name: 'Edit Security',
       component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityedit.vue'),
       props: true

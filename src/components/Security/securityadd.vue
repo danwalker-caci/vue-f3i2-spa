@@ -445,7 +445,6 @@ export default {
         Company: this.form.Company
       }
       let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-      console.log(`Security Form: ${securityForm}`)
       if (securityForm && securityForm.length == 0) {
         // generate an entry for Person
         this.securityForm = await Security.dispatch('addSecurityForm', payload)
