@@ -454,7 +454,7 @@ export default {
       }
     },
     closeForm: function() {
-      vm.$router.push({ path: '/security/tracker/accounts' })
+      vm.$router.push({ path: '/security/tracker' })
     },
     onFormSubmit: async function() {
       // VALIDATE SUBK && FORM

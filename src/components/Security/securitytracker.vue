@@ -155,17 +155,17 @@ export default {
                             <b-tbody>
                               <b-tr>
                                 <b-td>
-                                  <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                                  <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
                                 </b-td>
                                 <b-td>
-                                  <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                                  <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
                                 </b-td>
                                 <b-td>
                                   <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
-                          </b-table>
+                          </b-table-simple>
                         </div>
                       </b-tab>
                       <b-tab title="Accounts" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
@@ -476,7 +476,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 let results = await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -572,7 +572,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -654,7 +654,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {

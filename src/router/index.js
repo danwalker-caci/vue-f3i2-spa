@@ -69,9 +69,15 @@ let securityMenu = {
   redirect: '/security/account',
   children: [
     {
-      path: '/security/:formType',
-      name: 'Security Form',
-      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityforms.vue'),
+      path: '/security/add/:formType',
+      name: 'Add Security',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityadd.vue'),
+      props: true
+    },
+    {
+      path: '/security/edit/:formType',
+      name: 'Edit Security',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityedit.vue'),
       props: true
     },
     {
@@ -81,7 +87,7 @@ let securityMenu = {
       props: true
     },
     {
-      path: '/security/tracker/:formType',
+      path: '/security/tracker',
       name: 'Security Tracker',
       component: () => import(/* webpackChunkName: "security" */ '../components/Security/securitytracker.vue'),
       props: true
