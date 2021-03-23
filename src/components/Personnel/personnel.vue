@@ -858,6 +858,7 @@ export default {
         }
       } else {
         try {
+          this.newData.Active = 'Yes'
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
             let payload = {
               Active: 'Yes',
