@@ -428,7 +428,6 @@ export default {
                             </b-col>
                           </b-row>
                           <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
-                          </b-row>
                         </div>
                       </b-tab>
                     </b-tabs>
@@ -955,6 +954,11 @@ export default {
                     /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
+                    vm2.selectedSecurityFormType = null
+                    let uploadedFiles = document.querySelector('.e-upload-files')
+                    while (uploadedFiles.firstChild) {
+                      uploadedFiles.removeChild(uploadedFiles.firstChild)
+                    }
                     const notification = {
                       type: 'success',
                       title: 'Succesfully Updated Security Form',

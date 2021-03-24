@@ -780,7 +780,10 @@ export default {
             vm.fileBuffer = null
             vm.lockSubmit = false
             // need CAC and SCI clear here as well
-            document.querySelector('.e-upload-file-list').parentElement.removeChild(document.querySelector('.e-upload-file-list'))
+            let uploadedFiles = document.querySelector('.e-upload-files')
+            while (uploadedFiles.firstChild) {
+              uploadedFiles.removeChild(uploadedFiles.firstChild)
+            }
           })
           .catch(error => {
             const notification = {

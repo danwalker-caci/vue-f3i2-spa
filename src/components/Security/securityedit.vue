@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="contentHeight p-0 m-0">
+  <b-container fluid class="contentHeight p-0 m-0 overflow-auto">
     <b-row no-gutters>
       <b-col cols="12" class="m-0 p-0">
         <b-card>
@@ -36,33 +36,7 @@
             </b-form-row>
           </div>
           <b-tabs pills content-class="mt-0 p-0">
-            <!--<b-tab title="General" active>
-              <div class="width-98">
-                <b-table-simple small responsive>
-                  <b-thead head-variant="dark">
-                    <b-tr>
-                      <b-th>PR Due Date</b-th>
-                      <b-th>CE Date</b-th>
-                      <b-th></b-th>
-                    </b-tr>
-                  </b-thead>
-                  <b-tbody>
-                    <b-tr>
-                      <b-td>
-                        <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="PRDueDate"></ejs-datepicker>
-                      </b-td>
-                      <b-td>
-                        <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="CEDate"></ejs-datepicker>
-                      </b-td>
-                      <b-td>
-                        <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm()">Update</b-button>
-                      </b-td>
-                    </b-tr>
-                  </b-tbody>
-                </b-table-simple>
-              </div>
-            </b-tab>-->
-            <b-tab title="NIPR" v-if="NIPR" class="tab-top-margin">
+            <b-tab title="NIPR" v-if="NIPR" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -98,23 +72,23 @@
                     <!--<b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-type="'NIPR'">View Forms</b-button></b-td>-->
                   </b-tr>
                 </b-tbody>
-                <div v-if="NIPR.forms && NIPR.forms.length > 0">
-                  <div v-for="form in NIPR.forms" :key="form.id">
-                    <b-form-row class="p-1">
-                      <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
-                    </b-form-row>
-                    <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+              </b-table-simple>
+              <div v-if="NIPR.forms && NIPR.forms.length > 0">
+                <div v-for="form in NIPR.forms" :key="form.id">
+                  <b-form-row class="p-1">
+                    <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                       <b-col cols="10"></b-col>
                       <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                         <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                         <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
                       </b-col>
-                    </b-form-row>
-                  </div>
+                    </b-form-row>-->
                 </div>
-              </b-table-simple>
+              </div>
             </b-tab>
-            <b-tab title="SIPR" v-if="SIPR" class="tab-top-margin">
+            <b-tab title="SIPR" v-if="SIPR" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -156,13 +130,13 @@
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
-                    <!--<b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                       <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                       <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>-->
-                  </b-form-row>
+                    </b-col>
+                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -208,13 +182,13 @@
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
-                    <!--<b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                       <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                       <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>-->
-                  </b-form-row>
+                    </b-col>
+                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -251,7 +225,6 @@
                         <span v-if="!isAFRL && JWICS.GovSentDate !== ''">Processing</span>
                       </span>
                     </b-td>
-                    <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'JWICS'">View Forms</b-button></b-td>
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
@@ -260,13 +233,13 @@
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
-                    <!--<b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                       <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                       <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>-->
-                  </b-form-row>
+                    </b-col>
+                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -280,7 +253,6 @@
                     <b-th>SCI Form Submitted</b-th>
                     <b-th>SCI Status</b-th>
                     <b-th>SCI Form Type</b-th>
-                    <b-th>Submitted Forms</b-th>
                     <b-th></b-th>
                   </b-tr>
                 </b-thead>
@@ -302,10 +274,7 @@
                       <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
                     </b-td>
                     <b-td>
-                      <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-type="'SCI'">View Forms</b-button>
+                      <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
                     </b-td>
                     <b-td>
                       <!-- Update Button -->
@@ -319,13 +288,13 @@
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
-                    <!--<b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                       <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                       <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>-->
-                  </b-form-row>
+                    </b-col>
+                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -337,7 +306,6 @@
                     <b-th>CAC Issued By</b-th>
                     <b-th>CAC Request Date</b-th>
                     <b-th>CAC Expiration Date</b-th>
-                    <b-th>Submitted Form</b-th>
                     <b-th></b-th>
                   </b-tr>
                 </b-thead>
@@ -356,12 +324,9 @@
                       <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
                     </b-td>
                     <b-td>
-                      <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'CAC'">View Forms</b-button>
-                    </b-td>
-                    <b-td>
                       <!-- Update Button -->
                       <!-- REMOVE DEVELOPER OPTION -->
-                      <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="Id" class="btn-sm" @click="updateForm()">Update</b-button>
+                      <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
                     </b-td>
                   </b-tr>
                 </b-tbody>
@@ -371,13 +336,13 @@
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
-                    <!--<b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
                       <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
                       <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>-->
-                  </b-form-row>
+                    </b-col>
+                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -404,6 +369,29 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+            </b-tab>
+            <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
+              <div class="width-98">
+                <b-row no-gutters>
+                  <b-col class="mt-2">
+                    <p class="h4">
+                      <u><strong>Warning: </strong>uploading documents will overwrite previously uploaded documents!</u>
+                    </p>
+                  </b-col>
+                </b-row>
+                <b-row no-gutters>
+                  <b-col cols="2">
+                    <b-form-group label="Form Type: " label-for="formType">
+                      <b-form-select id="formType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2"></b-col>
+                  <b-col cols="8">
+                    <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
+                  </b-col>
+                </b-row>
+                <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="float-right btn-sm mt-2" @click="updateForm()">Upload Completed Forms</b-button>
+              </div>
             </b-tab>
           </b-tabs>
         </b-card>
@@ -450,7 +438,8 @@ export default {
   },
   data: function() {
     return {
-      PersonnelID: '',
+      Active: '',
+      PersonnelId: '',
       Name: '',
       FirstName: '',
       LastName: '',
@@ -476,6 +465,17 @@ export default {
       etag: '',
       uri: '',
       loaded: false,
+      library: '',
+      libraryUrl: '',
+      selectedSecurityFormType: '',
+      securityFormTypes: [
+        { value: 'NIPR', text: 'NIPR' },
+        { value: 'SIPR', text: 'SIPR' },
+        { value: 'DREN', text: 'DREN' },
+        { value: 'JWICS', text: 'JWICS' },
+        { value: 'CAC', text: 'CAC' },
+        { value: 'SCI', text: 'SCI' }
+      ],
       AccountId: '',
       AFRLId: '',
       SecurityId: '',
@@ -506,7 +506,7 @@ export default {
         { text: 'Transfer Pending', value: 'Transfer Pending' },
         { text: 'Renewal', value: 'Renewal' }
       ],
-      formtype: [
+      sciFormType: [
         { text: 'N/A', value: 'N/A' },
         { text: 'Nomination', value: 'Nomination' },
         { text: 'Transfer', value: 'Transfer' }
@@ -532,7 +532,7 @@ export default {
       // Run query to load the form
       console.log(this.id)
       let payload = {
-        PersonnelID: this.id
+        Id: this.id
       }
       let result = await Security.dispatch('getSecurityFormById', payload).catch(e => {
         // Add user notification and system logging
@@ -549,11 +549,12 @@ export default {
       })
       this.etag = result.etag
       this.uri = result.uri
+      this.Active = result.Active ? 'Yes' : 'No'
       this.FirstName = result.FirstName
       this.LastName = result.LastName
       this.Name = result.FirstName + ' ' + result.LastName
       this.Company = result.Company
-      this.PersonnelID = this.id
+      this.PersonnelId = result.PersonnelId
       this.CEDate = result.CEDate
       this.SCI = result.SCI
       this.SCIStatus = result.SCIStatus
@@ -802,6 +803,103 @@ export default {
       })
     },
     async updateForm(tId) {
+      if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
+        // first delete all files related to the formTypes
+        if (this[this.selectedSecurityFormType] && this[this.selectedSecurityFormType].forms && this[this.selectedSecurityFormType].forms.length > 0) {
+          await this.asyncForEach(this[this.selectedSecurityFormType].forms, async file => {
+            await Security.dispatch('DeleteForm', file).catch(error => {
+              const notification = {
+                type: 'danger',
+                title: 'Portal Error',
+                message: error,
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, {
+                root: true
+              })
+              console.log('ERROR: ' + error.message)
+            })
+          })
+        }
+        // Clear original form
+        this[this.selectedSecurityFormType].forms = []
+        switch (this.selectedSecurityFormType) {
+          case 'NIPR':
+            // set the url for the post of file
+            this.library = 'AccountsNIPR'
+            this.libraryUrl = url + '/AccountsNIPR/'
+            break
+          case 'SIPR':
+            this.library = 'AccountsSIPR'
+            this.libraryUrl = url + '/AccountsDREN/'
+            break
+          case 'DREN':
+            this.library = 'AccountsDREN'
+            this.libraryUrl = url + '/AccountsSIPR/'
+            break
+          case 'JWICS':
+            this.library = 'AccountsJWICS'
+            this.libraryUrl = url + '/AccountsJWICS/'
+            break
+          case 'CAC':
+            this.library = 'CACForms'
+            this.libraryUrl = url + '/CACForms/'
+            break
+          case 'SCI':
+            this.library = 'SCIForms'
+            this.libraryUrl = url + '/SCIForms/'
+            break
+        }
+        // loop and upload all attached files
+        await this.asyncForEach(this.files, async file => {
+          let payload = {}
+          payload.library = vm.library
+          let pdfName = 'Completed-' + vm.PersonnelId + '-' + vm.FirstName + ' ' + vm.LastName + '-' + file.fileSelected
+          let name = pdfName.split('.')[0]
+          file.fileName = name
+          payload.file = file.fileSelected
+          payload.name = name
+          payload.buffer = file.fileBuffer
+          let item = await Security.dispatch('uploadForm', payload)
+          //TO DO: Check if item contains the form Id. The update form could then be deleted
+          let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+          let form = await Security.dispatch('getForm', itemlink)
+          let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+          payload = form.data.d.__metadata
+          //payload.file = file.fileSelected
+          payload.name = pdfName
+          payload.SecurityFormId = this.id
+          await Security.dispatch('updateForm', payload).catch(e => {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
+          })
+          // First check to see if there is an entry for the PersonnelID in the Security Form List
+          this[this.selectedSecurityFormType].forms.push({
+            account: this.selectedSecurityFormType,
+            id: formId,
+            library: vm.library,
+            name: pdfName,
+            // task: results.data.d.Id,
+            href: vm.libraryUrl + pdfName,
+            etag: form.data.d.__metadata.etag,
+            uri: form.data.d.__metadata.uri
+          })
+          // then upload files to replace the formType
+
+          // Replace the files in original form type
+          //d[this.formTypes].files =
+          // finally, clear d.files to zero and remove from file uploader
+        })
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -836,13 +934,16 @@ export default {
       payload.SCIFormType = this.SCIFormType
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
+      payload.Active = this.Active
       await Security.dispatch('updateSecurityForm', payload)
         .then(function(result) {
           // grab a fresh etag for the record
-          this.etag = result.headers.etag
-          /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
-          d.etag = response.etag
-        })*/
+          vm.etag = result.headers.etag
+          vm.selectedSecurityFormType = null
+          let uploadedFiles = document.querySelector('.e-upload-files')
+          while (uploadedFiles.firstChild) {
+            uploadedFiles.removeChild(uploadedFiles.firstChild)
+          }
           const notification = {
             type: 'success',
             title: 'Succesfully Updated Security Form',
@@ -879,6 +980,35 @@ export default {
       event.preventDefault()
       let link = '/security/view/' + this.id + '/' + event.currentTarget.dataset.type
       this.$router.push({ path: link })
+    },
+    async onFileSelect(args) {
+      args.filesData.forEach(fileData => {
+        let file = {}
+        file.fileSelected = fileData.name
+        let buffer = vm.getFileBuffer(fileData.rawFile)
+        buffer.then(function(buff) {
+          file.fileBuffer = buff
+          vm.files.push(file)
+        })
+      })
+    },
+    async asyncForEach(array, callback) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array)
+      }
+    },
+    getFileBuffer(file) {
+      let p = new Promise(function(resolve, reject) {
+        var reader = new FileReader()
+        reader.onloadend = function(e) {
+          resolve(e.target.result)
+        }
+        reader.onerror = function(e) {
+          reject(e.target.error)
+        }
+        reader.readAsArrayBuffer(file)
+      })
+      return p
     }
   }
 }
