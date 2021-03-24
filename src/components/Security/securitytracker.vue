@@ -784,8 +784,7 @@ export default {
                   await this.asyncForEach(this.files, async file => {
                     let payload = {}
                     payload.library = vm2.library
-                    let pdfName = d.PersonnelID + '-' + d.FirstName + ' ' + d.LastName + '-' + file.fileSelected + '-Completed'
-                    console.log(`PDF NAME: ${pdfName}`)
+                    let pdfName = 'Completed-' + d.PersonnelId + '-' + d.FirstName + ' ' + d.LastName + '-' + file.fileSelected
                     let name = pdfName.split('.')[0]
                     file.fileName = name
                     payload.file = file.fileSelected
