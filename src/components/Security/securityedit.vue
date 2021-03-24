@@ -1,21 +1,21 @@
 <template>
-  <b-container>
-    <b-row>
+  <b-container fluid class="contentHeight p-0 m-0">
+    <b-row no-gutters>
       <b-col cols="12" class="m-0 p-0">
-        <b-card no-body class="p-0">
-          <div class="p-1">
+        <b-card>
+          <div class="ml-4 mr-4" v-if="loaded">
             <b-form-row>
               <b-col>
                 <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
               </b-col>
               <b-col>
                 <b-form-group label="Company: " label-for="company">
-                  <b-form-input id="company" v-model="company" value="{{ company }}" disabled />
+                  <b-form-input id="company" v-model="Company" value="{{ Company }}" disabled />
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group label="Name: " label-for="name">
-                  <b-form-input id="name" v-model="name" value="{{ FirstName }} {{ LastName }}" disabled />
+                  <b-form-input id="name" v-model="Name" value="{{ Name }}" disabled />
                 </b-form-group>
               </b-col>
               <b-col>
@@ -28,6 +28,8 @@
                   <ejs-datepicker :disable="!isSecurity" id="CEDate" v-model="CEDate"></ejs-datepicker>
                 </b-form-group>
               </b-col>
+            </b-form-row>
+            <b-form-row>
               <b-col>
                 <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm()">Update</b-button>
               </b-col>
@@ -60,7 +62,7 @@
                 </b-table-simple>
               </div>
             </b-tab>-->
-            <b-tab title="NIPR" v-if="NIPR && NIPR.forms.length > 0">
+            <b-tab title="NIPR" v-if="NIPR" class="tab-top-margin">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -96,7 +98,7 @@
                     <!--<b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-type="'NIPR'">View Forms</b-button></b-td>-->
                   </b-tr>
                 </b-tbody>
-                <div v-if="NIPR.forms.length > 0">
+                <div v-if="NIPR.forms && NIPR.forms.length > 0">
                   <div v-for="form in NIPR.forms" :key="form.id">
                     <b-form-row class="p-1">
                       <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -112,7 +114,7 @@
                 </div>
               </b-table-simple>
             </b-tab>
-            <b-tab title="SIPR" v-if="SIPR && SIPR.forms.length > 0">
+            <b-tab title="SIPR" v-if="SIPR" class="tab-top-margin">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -149,7 +151,7 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
-              <div v-if="SIPR.forms.length > 0">
+              <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -164,7 +166,7 @@
                 </div>
               </div>
             </b-tab>
-            <b-tab title="DREN" v-if="DREN && DREN.forms.length > 0">
+            <b-tab title="DREN" v-if="DREN" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -201,7 +203,7 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
-              <div v-if="DREN.forms.length > 0">
+              <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -216,7 +218,7 @@
                 </div>
               </div>
             </b-tab>
-            <b-tab title="JWICS" v-if="JWICS && JWICS.forms.length > 0">
+            <b-tab title="JWICS" v-if="JWICS" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -228,7 +230,7 @@
                 </b-thead>
                 <b-tbody>
                   <!-- JWICS DATA -->
-                  <b-tr v-if="JWICS && JWICS.forms.length > 0">
+                  <b-tr v-if="JWICS">
                     <b-td>JWICS</b-td>
                     <b-td>
                       <span v-if="JWICS.GovSentDate !== ''">{{ JWICS.GovSentDate }}</span>
@@ -253,7 +255,7 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
-              <div v-if="JWICS.forms.length > 0">
+              <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -268,7 +270,7 @@
                 </div>
               </div>
             </b-tab>
-            <b-tab title="SCI">
+            <b-tab title="SCI" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
                   <b-tr>
@@ -312,7 +314,7 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
-              <div v-if="SCI.forms.length > 0">
+              <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -328,7 +330,7 @@
               </div>
             </b-tab>
             <b-tab title="CAC">
-              <b-table-simple small responsive>
+              <b-table-simple small responsive class="pt-3">
                 <b-thead head-variant="dark">
                   <b-tr>
                     <b-th>CAC Status</b-th>
@@ -364,7 +366,7 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
-              <div v-if="CAC.forms.length > 0">
+              <div v-if="CAC.forms && CAC.forms.length > 0">
                 <div v-for="form in CAC.forms" :key="form.id">
                   <b-form-row class="p-1">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
@@ -380,7 +382,7 @@
               </div>
             </b-tab>
             <b-tab title="Historical CAC" v-if="CACTurnedIn && CACExpiredOnDate">
-              <b-table-simple small responsive>
+              <b-table-simple small responsive class="pt-3">
                 <b-thead head-variant="dark">
                   <b-tr>
                     <b-th>CAC Status</b-th>
@@ -449,6 +451,7 @@ export default {
   data: function() {
     return {
       PersonnelID: '',
+      Name: '',
       FirstName: '',
       LastName: '',
       Company: '',
@@ -472,6 +475,7 @@ export default {
       JWICS: {},
       etag: '',
       uri: '',
+      loaded: false,
       AccountId: '',
       AFRLId: '',
       SecurityId: '',
@@ -530,7 +534,7 @@ export default {
       let payload = {
         PersonnelID: this.id
       }
-      let result = await Security.dispatch('getSecurityFormByPersonnelId', payload).catch(e => {
+      let result = await Security.dispatch('getSecurityFormById', payload).catch(e => {
         // Add user notification and system logging
         const notification = {
           type: 'danger',
@@ -547,6 +551,7 @@ export default {
       this.uri = result.uri
       this.FirstName = result.FirstName
       this.LastName = result.LastName
+      this.Name = result.FirstName + ' ' + result.LastName
       this.Company = result.Company
       this.PersonnelID = this.id
       this.CEDate = result.CEDate
@@ -570,6 +575,7 @@ export default {
       this.DREN = result.DREN
       this.JWICS = result.JWICS
       await Security.dispatch('getDigest')
+      this.loaded = true
     },
     AssistDateChange() {
       this.SCIStatus = 'SSO Processed'

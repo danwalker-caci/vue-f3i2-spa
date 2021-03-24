@@ -82,8 +82,8 @@ let securityMenu = {
     },
     {
       path: '/security/view/:id/:form',
-      name: 'View Security',
-      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityview.vue'),
+      name: 'Review Security',
+      component: () => import(/* webpackChunkName: "security" */ '../components/Security/securityreview.vue'),
       props: true
     },
     {

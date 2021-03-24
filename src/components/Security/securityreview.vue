@@ -74,7 +74,7 @@ import Todo from '@/models/Todo'
 import User from '@/models/User'
 
 export default {
-  name: 'View Security',
+  name: 'Review Security',
   props: {
     // Switches the form type between NIPR, SIPR, DREN, JWICS, CAC and SCI
     form: {
