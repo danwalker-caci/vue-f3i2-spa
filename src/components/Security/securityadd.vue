@@ -161,7 +161,8 @@
           <b-col cols="6">
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
-                <b-form-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"> </b-form-select>
+                <!--<b-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"></b-select>-->
+                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :allowFiltering="true" :fields="ddfields" :dataSource="personnel"></ejs-dropdownlist>
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
