@@ -31,7 +31,7 @@
             </b-form-row>
             <b-form-row>
               <b-col>
-                <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm()">Update</b-button>
+                <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm()">Update</b-button>
               </b-col>
             </b-form-row>
           </div>
@@ -278,7 +278,7 @@
                     </b-td>
                     <b-td>
                       <!-- Update Button -->
-                      <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
                     </b-td>
                   </b-tr>
                 </b-tbody>
@@ -326,7 +326,7 @@
                     <b-td>
                       <!-- Update Button -->
                       <!-- REMOVE DEVELOPER OPTION -->
-                      <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
                     </b-td>
                   </b-tr>
                 </b-tbody>
@@ -390,7 +390,7 @@
                     <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
                   </b-col>
                 </b-row>
-                <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="float-right btn-sm mt-2" @click="updateForm()">Upload Completed Forms</b-button>
+                <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="float-right btn-sm mt-2" @click="updateForm()">Upload Completed Forms</b-button>
               </div>
             </b-tab>
           </b-tabs>
@@ -467,6 +467,7 @@ export default {
       loaded: false,
       library: '',
       libraryUrl: '',
+      lockSubmit: false,
       selectedSecurityFormType: '',
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
@@ -803,6 +804,7 @@ export default {
       })
     },
     async updateForm(tId) {
+      this.lockSubmit = true
       if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
         // first delete all files related to the formTypes
         if (this[this.selectedSecurityFormType] && this[this.selectedSecurityFormType].forms && this[this.selectedSecurityFormType].forms.length > 0) {
@@ -965,6 +967,7 @@ export default {
           })
           console.log('ERROR: ' + e)
         })
+      this.lockSubmit = false
       if (tId) {
         Todo.dispatch('getTodoById', tId).then(async function(task) {
           let payload = {

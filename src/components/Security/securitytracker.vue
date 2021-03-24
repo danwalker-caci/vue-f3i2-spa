@@ -173,7 +173,7 @@ export default {
                                       <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
                                     </b-td>
                                     <b-td>
-                                      <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
+                                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
                                     </b-td>
                                   </b-tr>
                                 </b-tbody>
@@ -331,7 +331,7 @@ export default {
                                 </b-td>
                                 <b-td>
                                   <!-- Update Button -->
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
@@ -371,7 +371,7 @@ export default {
                                 <b-td>
                                   <!-- Update Button -->
                                   <!-- REMOVE DEVELOPER OPTION -->
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
@@ -427,7 +427,7 @@ export default {
                               <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
                             </b-col>
                           </b-row>
-                          <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
+                          <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
                         </div>
                       </b-tab>
                     </b-tabs>
@@ -460,6 +460,7 @@ export default {
                   GovernmentDate: '',
                   securityforms: []
                 },
+                lockSubmit: false,
                 ddfields: { text: 'text', value: 'value' },
                 library: '',
                 libraryUrl: '',
@@ -732,6 +733,7 @@ export default {
                 })
               },
               async updateForm(d, tId) {
+                this.lockSubmit = true
                 if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
                   // first delete all files related to the formTypes
                   if (d[this.selectedSecurityFormType] && d[this.selectedSecurityFormType].forms && d[this.selectedSecurityFormType].forms.length > 0) {
@@ -811,99 +813,6 @@ export default {
                       etag: form.data.d.__metadata.etag,
                       uri: form.data.d.__metadata.uri
                     })
-                    /*let niprs = [],
-                      siprs = [],
-                      drens = [],
-                      jwics = [],
-                      scis = [],
-                      cacs = []
-                    switch (this.formType) {
-                      case 'NIPR':
-                        // set the url for the post of file
-                        niprs.push({
-                          account: vm.form.Type,
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        break
-                      case 'SIPR':
-                        siprs.push({
-                          account: vm.form.Type,
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        break
-                      case 'DREN':
-                        drens.push({
-                          account: vm.form.Type,
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        break
-                      case 'JWICS':
-                        jwics.push({
-                          account: vm.form.Type,
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        break
-                      case 'CAC':
-                        cacs.push({
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        payload.CACValid = vm.form.CACValid
-                        payload.CACIssuedBy = vm.form.CACIssuedBy
-                        payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
-                        if (vm.form.CACValid === 'Yes') {
-                          payload.CACStatus = 'Non-F3I2 CAC'
-                        } else {
-                          payload.CACStatus = 'Pending Info'
-                        }
-                        payload.CACExpiredOnDate = vm.form.CACExpiredOnDate !== '' ? vm.form.CACExpiredOnDate : null
-                        payload.CACTurnedIn = vm.form.CACTurnedIn !== '' ? vm.form.CACTurnedIn : ''
-                        break
-                      case 'SCI':
-                        scis.push({
-                          id: formId,
-                          library: vm.library,
-                          name: pdfName,
-                          // task: results.data.d.Id,
-                          href: vm.libraryUrl + pdfName,
-                          etag: form.data.d.__metadata.etag,
-                          uri: form.data.d.__metadata.uri
-                        })
-                        payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
-                        payload.SCIStatus = 'CACI Review'
-                        break
-                    }
-                  })*/
-
                     // then upload files to replace the formType
 
                     // Replace the files in original form type
@@ -980,6 +889,7 @@ export default {
                     })
                     console.log('ERROR: ' + e)
                   })
+                this.lockSubmit = false
                 if (tId) {
                   Todo.dispatch('getTodoById', tId).then(async function(task) {
                     let payload = {
