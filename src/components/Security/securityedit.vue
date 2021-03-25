@@ -805,6 +805,7 @@ export default {
       })
     },
     async updateForm(tId) {
+      await Security.dispatch('getDigest')
       this.lockSubmit = true
       if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
         // first delete all files related to the formTypes
@@ -938,6 +939,8 @@ export default {
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
       payload.Active = this.Active
+      payload.etag = this.etag
+      payload.uri = this.uri
       let result = await Security.dispatch('updateSecurityForm', payload).catch(e => {
         // Add user notification and system logging
         const notification = {
@@ -952,12 +955,13 @@ export default {
         console.log('ERROR: ' + e)
       })
       // grab a fresh etag for the record
-      console.log(result)
       vm.etag = result.headers.etag
       vm.selectedSecurityFormType = null
       let uploadedFiles = document.querySelector('.e-upload-files')
-      while (uploadedFiles.firstChild) {
-        uploadedFiles.removeChild(uploadedFiles.firstChild)
+      if (uploadedFiles) {
+        while (uploadedFiles.firstChild) {
+          uploadedFiles.removeChild(uploadedFiles.firstChild)
+        }
       }
       const notification = {
         type: 'success',
