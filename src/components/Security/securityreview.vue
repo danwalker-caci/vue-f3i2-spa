@@ -47,15 +47,13 @@
               <b-form-row class="p-1">
                 <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
               </b-form-row>
-              <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === ''">
-                <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                  <b-col cols="10"></b-col>
-                  <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                    <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                    <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                  </b-col>
-                </b-form-row>
-              </div>
+              <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                <b-col cols="10"></b-col>
+                <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
+                  <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
+                  <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
+                </b-col>
+              </b-form-row>
             </div>
           </div>
 
