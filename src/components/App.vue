@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-let vm = null
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { UserInt } from '../interfaces/User'
@@ -15,6 +14,7 @@ import User from '../models/User'
 import Todo from '../models/Todo'
 
 const users = namespace('users')
+let vm: any
 
 @Component
 export default class App extends Vue {

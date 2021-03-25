@@ -83,7 +83,7 @@
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { EventBus } from '../../main'
 import { namespace } from 'vuex-class'
-import { User } from '../../interfaces/User'
+// import { UserInt } from '../../interfaces/User'
 import { Notification } from '../../interfaces/Notification'
 import { TravelItem } from '../../interfaces/TravelItem'
 import { ClickEventArgs } from '@syncfusion/ej2-vue-navigations'

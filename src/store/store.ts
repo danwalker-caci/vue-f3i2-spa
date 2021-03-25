@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import * as support from '@/store/modules/support.js'
+// import * as support from '@/store/modules/support.js'
 import * as notification from '@/store/modules/notification.js'
 import travel from './modules/travel'
+import support from './modules/support'
+import users from './modules/users'
+import sidebar from './modules/sidebar'
 import User from '@/models/User'
 import usermodule from '@/modules/usermodule'
 import Todo from '@/models/Todo'
@@ -50,7 +53,9 @@ Vue.config.devtools = true
 
 export default new Vuex.Store({
   modules: {
+    users,
     support,
+    sidebar,
     notification,
     travel
   },

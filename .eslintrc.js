@@ -31,8 +31,8 @@ module.exports = {
       "ignoreReadBeforeAssign": false
     }],
     "no-use-before-define": ["off", {
-      "functions": true,
-      "classes": true
+      "functions": false,
+      "classes": false
     }],
     "prettier/prettier": [
       "error",

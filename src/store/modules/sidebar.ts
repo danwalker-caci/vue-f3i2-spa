@@ -7,12 +7,49 @@ import _ from 'lodash'
 
 declare const _spPageContextInfo: any
 const baseUrl = _spPageContextInfo.webAbsoluteUrl
-const nurl = baseUrl + "/_api/lists/getbytitle('Navigation')/items?$select=*&$orderby=OrderId"
+const nurl = baseUrl + "/_api/lists/getbytitle('Navigation')/items?$select=*&$orderby=OrderID"
 
 function formatNavigation(j: any): Array<SidebarItem> {
   const p: Array<SidebarItem> = []
   // console out the sidebar item results
   console.log('SIDEBAR ITEMS FROM AXIOS CALL ' + j)
+  // loop through the items and return something that we hope is correct
+  for (let i = 0; i < j.length; i++) {
+    // we know that any item that has isMenu set to true is a root item so we are going to set those up first
+    if (j[i]['isMenu'] == true) {
+      // add this item to the array
+      p.push({
+        id: Number(j[i]['Id']),
+        isMenu: true,
+        name: j[i]['Title'],
+        path: j[i]['path'],
+        children: [],
+        library: j[i]['library'],
+        icon: j[i]['icon']
+      })
+    }
+  }
+  // we now should have an array of main menu items
+  // add the children
+  for (let i = 0; i < j.length; i++) {
+    // we know that items with a parent set should be added to their respective parent
+    if (j[i]['parent']) {
+      // add this item to the array
+      let parent = Number(j[i]['parent'])
+      for (let k = 0; k < p.length; k++) {
+        if (p[k]['id'] == parent) {
+          p[k].children?.push({
+            id: Number(j[i]['Id']),
+            name: j[i]['Title'],
+            path: j[i]['path'],
+            library: j[i]['library'],
+            icon: j[i]['icon'],
+            filtertype: j[i]['filtertype']
+          })
+        }
+      }
+    }
+  }
   return p
 }
 
@@ -155,6 +192,7 @@ class Sidebar extends VuexModule {
   @Mutation
   public updateNavigation(navigation: Array<SidebarItem>): void {
     this.navigation = navigation
+    this.sidebaritems = navigation
   }
 
   @Mutation

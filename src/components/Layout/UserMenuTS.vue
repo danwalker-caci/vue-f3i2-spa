@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { User } from '../../interfaces/User'
+import { UserInt } from '../../interfaces/User'
 
 @Component({
   name: 'UserMenu'
@@ -27,7 +27,7 @@ export default class UserMenu extends Vue {
     return this.$store.state.users.todos.length
   }
 
-  get CurrentUser(): User {
+  get CurrentUser(): UserInt {
     return this.$store.state.users.currentUser
   }
 }

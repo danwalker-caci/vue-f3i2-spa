@@ -23,11 +23,11 @@ export default {
   },
   data() {
     return {
-      timeout: null
+      tout: null
     };
   },
   mounted() {
-    this.timeout = setTimeout(() => this.remove(this.notification), 5000);
+    this.tout = setTimeout(() => this.remove(this.notification), 5000);
     if (this.notification.push == true) {
       push.create(this.notification.title, {
         body: this.notification.message,
@@ -46,7 +46,7 @@ export default {
     }
   },
   beforeDestroy() {
-    clearTimeout(this.timeout);
+    clearTimeout(this.to);
   },
   computed: {
     notificationTypeClass() {
