@@ -1111,7 +1111,7 @@ export default {
         this.$refs.SecurityGrid.getColumns()[25].visible = true
         this.$refs.SecurityGrid.getColumns()[26].visible = true
         this.$refs.SecurityGrid.getColumns()[27].visible = true
-        this.$refs.SecurityGrid.getColumns()[28].visible = true
+        this.$refs.SecurityGrid.getColumns()[28].visible = false
         this.$refs.SecurityGrid.getColumns()[29].visible = false
         this.$refs.SecurityGrid.getColumns()[30].visible = false
         let data = []
@@ -1134,45 +1134,45 @@ export default {
             CACRequestDate: this.$moment(sf.CACRequestDate).isValid() ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
             CACExpirationDate: this.$moment(sf.CACExpirationDate).isValid() ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
             CACIssuedBy: sf.CACIssuedBy,
-            NIPRAccount: '',
-            NIPRGovSentDate: '',
-            NIPRGovCompleteDate: '',
-            SIPRAccount: '',
-            SIPRGovSentDate: '',
-            SIPRGovCompleteDate: '',
-            DRENAccount: '',
-            DRENGovSentDate: '',
-            DRENGovCompleteDate: '',
-            JWICAccount: '',
-            JWICGovSentDate: '',
-            JWICGovCompleteDate: ''
+            NIPRAccount: sf.NIPR && sf.NIPR.GovSentDate !== '' && sf.NIPR.GovCompleteDate !== '' ? 'Yes' : '',
+            NIPRGovSentDate: sf.NIPR && sf.NIPR.GovSentDate !== '' ? (sf.NIPR.GovSentDate === 'N/A' ? sf.NIPR.GovSentDate : this.$moment(sf.NIPR.GovSentDate).isValid() ? this.$moment(sf.NIPR.GovSentDate).format('MM/DD/YYYY') : '') : '',
+            NIPRGovCompleteDate: sf.NIPR && sf.NIPR.GovCompleteDate !== '' ? (sf.NIPR.GovCompleteDate === 'N/A' ? sf.NIPR.GovCompleteDate : this.$moment(sf.NIPR.GovCompleteDate).isValid() ? this.$moment(sf.NIPR.GovCompleteDate).format('MM/DD/YYYY') : '') : '',
+            SIPRAccount: sf.SIPR && sf.SIPR.GovSentDate !== '' && sf.SIPR.GovCompleteDate !== '' ? 'Yes' : '',
+            SIPRGovSentDate: sf.SIPR && sf.SIPR.GovSentDate !== '' ? (sf.SIPR.GovSentDate === 'N/A' ? sf.SIPR.GovSentDate : this.$moment(sf.SIPR.GovSentDate).isValid() ? this.$moment(sf.SIPR.GovSentDate).format('MM/DD/YYYY') : '') : '',
+            SIPRGovCompleteDate: sf.SIPR && sf.SIPR.GovCompleteDate !== '' ? (sf.SIPR.GovCompleteDate === 'N/A' ? sf.SIPR.GovCompleteDate : this.$moment(sf.SIPR.GovCompleteDate).isValid() ? this.$moment(sf.SIPR.GovCompleteDate).format('MM/DD/YYYY') : '') : '',
+            DRENAccount: sf.DREN && sf.DREN.GovSentDate !== '' && sf.DREN.GovCompleteDate !== '' ? 'Yes' : '',
+            DRENGovSentDate: sf.DREN && sf.DREN.GovSentDate !== '' ? (sf.DREN.GovSentDate === 'N/A' ? sf.DREN.GovSentDate : this.$moment(sf.DREN.GovSentDate).isValid() ? this.$moment(sf.DREN.GovSentDate).format('MM/DD/YYYY') : '') : '',
+            DRENGovCompleteDate: sf.DREN && sf.DREN.GovCompleteDate !== '' ? (sf.DREN.GovCompleteDate === 'N/A' ? sf.DREN.GovCompleteDate : this.$moment(sf.DREN.GovCompleteDate).isValid() ? this.$moment(sf.DREN.GovCompleteDate).format('MM/DD/YYYY') : '') : '',
+            JWICAccount: sf.JWICS && sf.JWICS.GovSentDate !== '' && sf.JWICS.GovCompleteDate !== '' ? 'Yes' : '',
+            JWICGovSentDate: sf.JWICS && sf.JWICS.GovSentDate !== '' ? (sf.JWICS.GovSentDate === 'N/A' ? sf.JWICS.GovSentDate : this.$moment(sf.JWICS.GovSentDate).isValid() ? this.$moment(sf.JWICS.GovSentDate).format('MM/DD/YYYY') : '') : '',
+            JWICGovCompleteDate: sf.JWICS && sf.JWICS.GovCompleteDate !== '' ? (sf.JWICS.GovCompleteDate === 'N/A' ? sf.JWICS.GovCompleteDate : this.$moment(sf.JWICS.GovCompleteDate).isValid() ? this.$moment(sf.JWICS.GovCompleteDate).format('MM/DD/YYYY') : '') : ''
           }
-          if (sf.Accounts && sf.Accounts.length > 0) {
+          /*if (sf.Accounts && sf.Accounts.length > 0) {
             sf.Accounts.forEach(a => {
               switch (a.account) {
                 case 'NIPR':
                   CurrentData.NIPRAccount = 'Yes'
-                  CurrentData.NIPRGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.NIPRGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.NIPRGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.NIPRGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
                 case 'SIPR':
                   CurrentData.SIPRAccount = 'Yes'
-                  CurrentData.SIPRGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.SIPRGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.SIPRGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.SIPRGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
                 case 'DREN':
                   CurrentData.DRENAccount = 'Yes'
-                  CurrentData.DRENGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.DRENGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.DRENGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.DRENGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
                 case 'JWICS':
                   CurrentData.JWICAccount = 'Yes'
-                  CurrentData.JWICGovSentDate = this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.JWICGovCompleteDate = this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
+                  CurrentData.JWICGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
+                  CurrentData.JWICGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
                   break
               }
             })
-          }
+          }*/
           data.push(CurrentData)
         })
         let excelExportProperties = {

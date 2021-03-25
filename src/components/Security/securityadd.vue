@@ -15,7 +15,7 @@
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <b-card no-body class="p-1">
+      <b-card no-body class="p-3">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
         <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
         <p class="font-weight-bolder h4 text-danger">
@@ -56,7 +56,7 @@
           </p>
         </div>
         <b-form-row>
-          <b-col>
+          <b-col cols="6">
             <b-form-group label="Company: " label-for="formCompany">
               <!-- Need to load personnel dropdown after making selection of company -->
               <div v-if="!isSubcontractor">
@@ -72,8 +72,11 @@
                 </b-form-invalid-feedback>
               </div>
             </b-form-group>
+            <b-form-group v-if="isSecurity" label="Historical Data: " label-for="formHistorical">
+              <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
+            </b-form-group>
           </b-col>
-          <b-col>
+          <b-col cols="6">
             <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
             <b-form-group label="Type: " label-for="formType">
               <div v-if="formAccount">
@@ -152,10 +155,9 @@
         <b-form-row>
           <b-col cols="6">
             <b-form-group>
-              <b-col cols="8">Form submission is for another Person: </b-col>
-              <b-col cols="4">
+              <b-form-group label="Form submission is for another Person: " label-for="formSetName">
                 <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" switch></b-form-checkbox>
-              </b-col>
+              </b-form-group>
             </b-form-group>
           </b-col>
           <b-col cols="6">
@@ -265,6 +267,9 @@ export default {
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
+    },
+    isSecurity() {
+      return User.getters('isSecurity')
     }
   },
   data: function() {
@@ -293,6 +298,7 @@ export default {
         setName: 'No',
         Name: null,
         GovSentDate: null,
+        Historical: '',
         etag: '',
         uri: '',
         SCIType: '',
@@ -657,33 +663,42 @@ export default {
               break
           }
         })
-        // Notification must be reworked to point to the id of SecurityForms and then the account type.
-        let taskPayload = {
-          Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-          //AssignedToId: vm.userid, // Hardcoding the Security Group
-          AssignedToId: this.taskUserId,
-          Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: vm.form.Type + ' Request',
-          TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
-        }
-        let results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: error.message,
-            push: true
+        let results = {
+          data: {
+            d: {
+              Id: ''
+            }
           }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
+        }
+        if (this.form.Historical !== 'Yes') {
+          // Notification must be reworked to point to the id of SecurityForms and then the account type.
+          let taskPayload = {
+            Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
+            //AssignedToId: vm.userid, // Hardcoding the Security Group
+            AssignedToId: this.taskUserId,
+            Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form.Type + ' Request',
+            TaskLink: '/security/view/' + this.securityForm.Id + '/' + this.form.Type
+          }
+          results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
           })
-          console.log('ERROR: ' + error.message)
-        })
+        }
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'NIPR' ? results.data.d.Id : vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : '',
             forms: niprs
@@ -691,8 +706,8 @@ export default {
         }
         if (siprs.length > 0) {
           payload.SIPR = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SIPR' ? results.data.d.Id : vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : '',
             forms: siprs
@@ -700,8 +715,8 @@ export default {
         }
         if (drens.length > 0) {
           payload.DREN = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'DREN' ? results.data.d.Id : vm.securityForm.DREN.task ? vm.securityForm.DREN.task : '',
             forms: drens
@@ -709,8 +724,8 @@ export default {
         }
         if (jwics.length > 0) {
           payload.JWICS = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'JWICS' ? results.data.d.Id : vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : '',
             forms: jwics
@@ -718,8 +733,8 @@ export default {
         }
         if (scis.length > 0) {
           payload.SCI = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SCI' ? results.data.d.Id : vm.securityForm.SCI.task ? vm.securityForm.SCI.task : '',
             forms: scis
@@ -727,8 +742,8 @@ export default {
         }
         if (cacs.length > 0) {
           payload.CAC = JSON.stringify({
-            GovCompleteDate: '',
-            GovSentDate: '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
             forms: cacs
