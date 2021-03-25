@@ -1,5 +1,5 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
-import { User } from '@/interfaces/User'
+import { UserInt } from '@/interfaces/User'
 import { TodoItem } from '@/interfaces/TodoItem'
 import { ObjectItem } from '@/interfaces/ObjectItem'
 import axios from 'axios'
@@ -17,7 +17,7 @@ const upbidUrl = baseUrl + "/_api/lists/getbytitle('Personnel')/items("
 class Users extends VuexModule {
   public digest?: string = ''
   public loaded?: boolean = false
-  public currentUser!: User
+  public currentUser!: UserInt
   public todoCount?: number
   public todos?: Array<TodoItem> = []
   public vm = this
@@ -43,7 +43,7 @@ class Users extends VuexModule {
   }
 
   @Mutation
-  public addUser(newUser: User): void {
+  public addUser(newUser: UserInt): void {
     this.currentUser = newUser
   }
 
@@ -148,14 +148,14 @@ class Users extends VuexModule {
   }
 
   @Action
-  public async getUserId(): Promise<User | boolean> {
+  public async getUserId(): Promise<UserInt | boolean> {
     const response = await axios.get(idurl, {
       headers: {
         accept: 'application/json;odata=verbose'
       }
     })
     const id = response.data.d.Id
-    const nuser: User = {
+    const nuser: UserInt = {
       userid: id
     }
     this.context.commit('addUser', nuser)
@@ -218,7 +218,7 @@ class Users extends VuexModule {
   }
 
   @Action
-  public async getUserPermissions(id: number): Promise<User> {
+  public async getUserPermissions(id: number): Promise<UserInt> {
     const groupurl = baseUrl + "/_api/web/getuserbyid('" + id + "')/groups"
     const response = await axios.get(groupurl, {
       headers: {

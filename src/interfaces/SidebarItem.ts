@@ -8,8 +8,5 @@ interface SidebarItem {
   library?: string
   icon?: string
   filtertype?: string
-  filtershown?: boolean
-  permission?: string
-  permissionvalue?: boolean
 }
 export { SidebarItem }

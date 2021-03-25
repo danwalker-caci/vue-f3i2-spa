@@ -1,5 +1,5 @@
 import { ObjectItem } from '@/interfaces/ObjectItem'
-interface User {
+interface UserInt {
   appversion?: string
   loaded?: boolean
   userid: number
@@ -34,4 +34,4 @@ interface User {
   WPData?: string
   JSONData?: Array<ObjectItem>
 }
-export { User }
+export { UserInt }

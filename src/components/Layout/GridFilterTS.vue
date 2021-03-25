@@ -61,7 +61,7 @@
 import { Component, Prop, Vue, Ref } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { EventBus } from '../../main'
-import { User } from '../../interfaces/User'
+import { UserInt } from '../../interfaces/User'
 import { FilterFieldItem } from '../../interfaces/FilterFieldItem'
 import { ObjectItem } from '../../interfaces/ObjectItem'
 
@@ -81,7 +81,7 @@ export default class GridFilter extends Vue {
   public ready: boolean = false
 
   @users.State
-  public currentUser!: User
+  public currentUser!: UserInt
 
   public ddfields: ObjectItem = { text: 'text', value: 'value', index: 'index' }
   public textpredicate: Array<ObjectItem> = [

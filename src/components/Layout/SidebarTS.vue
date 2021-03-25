@@ -78,7 +78,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
-import { User } from '../../interfaces/User'
+import { UserInt } from '../../interfaces/User'
 import { SidebarItem } from '../../interfaces/SidebarItem'
 import GridFilter from './GridFilterTS.vue'
 import UserMenu from './UserMenuTS.vue'
@@ -97,7 +97,7 @@ export default class Sidebar extends Vue {
   public Shown!: boolean
 
   @users.State
-  public currentUser!: User
+  public currentUser!: UserInt
 
   @Prop({ default: process.env.VUE_APP_HOMEPAGE }) readonly homepage!: string
 
@@ -106,9 +106,22 @@ export default class Sidebar extends Vue {
   @sidebar.State
   public sidebaritems!: Array<SidebarItem>
 
+  @sidebar.State
+  public navigation!: Array<SidebarItem>
+
+  @sidebar.Action
+  public getNavigation!: () => Promise<boolean>
+
   public launchfilter(filtertype: string) {
     console.log('FILTERING: ' + filtertype)
     return false
+  }
+
+  /** @method - lifecycle hook */
+  public mounted(): void {
+    this.getNavigation().then(response => {
+      console.log('NAVIGATION RESPONSE ' + response)
+    })
   }
 }
 </script>
