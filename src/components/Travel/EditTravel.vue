@@ -895,7 +895,7 @@ export default {
         this.travelmodel.OCONUSApprovedBy = this.selectedtrip.OCONUSApprovedBy
         this.travelmodel.OCONUSApprovedOn = this.$moment(this.selectedtrip.OCONUSApprovedOn).format('YYYY-MM-DD')
         this.travelmodel.OCONUSApprovedEmail = this.selectedtrip.OCONUSApprovedEmail
-        this.travelmodel.PreApproved = this.selectedtrip.WorkPlanText
+        this.travelmodel.PreApproved = this.selectedtrip.InternalData.PreApproved
         this.travelmodel.Company = this.selectedtrip.Company
         this.travelmodel.Subject = this.selectedtrip.Subject
         this.travelmodel.StartTime = this.$moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
@@ -1473,6 +1473,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.review = 'Travel Approval'
         try {
           Travel.dispatch('EditTripEmail', payload)
@@ -1496,6 +1502,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.review = 'OCONUS Travel Authorization To Proceed'
         try {
           Travel.dispatch('EditTripEmail', payload)
@@ -1519,6 +1531,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.comments = 'OCONUS Travel Authorization To Proceed Granted'
         try {
           Travel.dispatch('EditTripEmail', payload)
@@ -1543,6 +1561,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.comments = 'OCONUS Travel Authorization To Proceed Denied'
         try {
           Travel.dispatch('EditTripEmail', payload)
@@ -1572,6 +1596,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.comments = 'Travel Approved'
         try {
           Travel.dispatch('EditTripEmail', payload)
@@ -1597,6 +1627,12 @@ export default {
         let payload = {}
         payload.id = this.TripId
         payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
         payload.comments = 'Travel Denied'
         try {
           Travel.dispatch('EditTripEmail', payload)

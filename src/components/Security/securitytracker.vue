@@ -1,75 +1,84 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
-    <b-col cols="12" class="m-0 p-0">
-      <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
-        <ejs-grid
-          id="SecurityGrid"
-          ref="SecurityGrid"
-          :dataSource="securityforms"
-          :allowPaging="true"
-          :allowReordering="true"
-          :allowResizing="true"
-          :pageSettings="pageSettings"
-          :editSettings="editSettings"
-          :filterSettings="filterSettings"
-          :toolbar="toolbar"
-          :allowExcelExport="true"
-          :toolbarClick="toolbarClick"
-          :actionBegin="actionBegin"
-          :actionComplete="actionComplete"
-          :dataBound="dataBound"
-          :detailTemplate="detailTemplate"
-          rowHeight="20"
-          height="rect.height - 150"
-          width="rect.width - 5"
-        >
-          <e-columns>
-            <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
-            <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="PRDueDate" headerText="PR Due Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CEDate" headerText="CE Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="CACValid" headerText="Is CAC Valid" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
-            <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="50" textAlign="Left"></e-column>
-            <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
-            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-          </e-columns>
-        </ejs-grid>
-        <template #overlay>
-          <div class="text-center">
-            <p id="busy-label">{{ overlayText }}</p>
-          </div>
-        </template>
-      </b-overlay>
-    </b-col>
+    <b-row no-gutters class="contentHeight">
+      <b-col cols="12" class="m-0 p-0">
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="SecurityGrid"
+                  ref="SecurityGrid"
+                  :dataSource="securityforms"
+                  :allowPaging="true"
+                  :allowReordering="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :filterSettings="filterSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  :dataBound="dataBound"
+                  :detailTemplate="detailTemplate"
+                  rowHeight="20"
+                  :height="rect.height - 121"
+                  :width="rect.width - 1"
+                >
+                  <e-columns>
+                    <e-column field="FirstName" headerText="First Name" minWidth="50" textAlign="Left"></e-column>
+                    <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>
+                    <e-column field="Company" headerText="Company" minWidth="100" textAlign="Left"></e-column>
+                    <e-column field="SCIStatus" headerText="SCI Status" minWidth="50" textAlign="Left"></e-column>
+                    <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
+                    <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
+                    <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="PRDueDate" headerText="PR Due Date" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CEDate" headerText="CE Date" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="CACValid" headerText="Is CAC Valid" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="SIPRAccount" headerText="SIPR Account" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="SIPRGovSentDate" headerText="SIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="SIPRGovCompleteDate" headerText="SIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="DRENAccount" headerText="DREN Account" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="DRENGovSentDate" headerText="DREN Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="DRENGovCompleteDate" headerText="DREN Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
+        </b-container>
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 <script>
 // eslint-disable-next-line no-undef
 let url = _spPageContextInfo.webAbsoluteUrl
-let vm = null
+let vm = null,
+  vm2 = null
 //let url = _spPageContextInfo.webAbsoluteUrl
 import Vue from 'vue'
 import User from '@/models/User'
@@ -121,7 +130,7 @@ export default {
       overlayText: 'Getting Data. Please Wait...',
       overlayVariant: 'light',
       company: '',
-      pageSettings: { pageSize: 15 },
+      pageSettings: { pageSize: 30 },
       editSettings: {
         allowEditing: false,
         allowAdding: false,
@@ -137,35 +146,42 @@ export default {
         return {
           template: Vue.component('accountDetailTemplate', {
             template: `
-              <div class="securityDetailHeight overflow-auto">
+              <div>
                 <b-row>
                   <b-col cols="9" class="m-0 p-0">
                     <b-tabs pills vertical content-class="mt-0 p-0">
                       <b-tab title="General" active>
                         <div class="width-98">
-                          <!-- PR Due Date and CE Date -->
-                          <b-table-simple small responsive>
-                            <b-thead head-variant="dark">
-                              <b-tr>
-                                <b-th>PR Due Date</b-th>
-                                <b-th>CE Date</b-th>
-                                <b-th></b-th>
-                              </b-tr>
-                            </b-thead>
-                            <b-tbody>
-                              <b-tr>
-                                <b-td>
-                                  <ejs-datepicker id="prDueDate" :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker id="ceDate" :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
-                                </b-td>
-                              </b-tr>
-                            </b-tbody>
-                          </b-table>
+                          <b-row>
+                            <b-col cols="3" class="p-1" align-v="center">
+                              <b-button v-if="isSecurity || isDeveloper" ref="SecurityEdit" @click="editSecurity($event)" :data-link="'/security/edit/' + data.id " variant="secondary" class="btn float-right">Edit Person Security</b-button>
+                            </b-col>
+                            <!-- PR Due Date and CE Date -->
+                            <b-col cols="9">
+                              <b-table-simple small responsive>
+                                <b-thead head-variant="dark">
+                                  <b-tr>
+                                    <b-th>PR Due Date</b-th>
+                                    <b-th>CE Date</b-th>
+                                    <b-th></b-th>
+                                  </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                  <b-tr>
+                                    <b-td>
+                                      <ejs-datepicker :disable="!isSecurity" id="formPR" v-model="data.PRDueDate"></ejs-datepicker>
+                                    </b-td>
+                                    <b-td>
+                                      <ejs-datepicker :disable="!isSecurity" id="formCE" v-model="data.CEDate"></ejs-datepicker>
+                                    </b-td>
+                                    <b-td>
+                                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateOriginalInfo" variant="success" class="btn-sm float-right" @click="updateForm(data)">Update</b-button>
+                                    </b-td>
+                                  </b-tr>
+                                </b-tbody>
+                              </b-table-simple>
+                            </b-col>
+                          </b-row>
                         </div>
                       </b-tab>
                       <b-tab title="Accounts" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
@@ -310,14 +326,14 @@ export default {
                                   <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
                                 </b-td>
                                 <b-td>
-                                  <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="formtype" :fields="ddfields"></ejs-dropdownlist>
+                                  <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
                                 </b-td>
                                 <b-td>
                                   <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
                                 </b-td>
                                 <b-td>
                                   <!-- Update Button -->
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
@@ -357,7 +373,7 @@ export default {
                                 <b-td>
                                   <!-- Update Button -->
                                   <!-- REMOVE DEVELOPER OPTION -->
-                                  <b-button v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                 </b-td>
                               </b-tr>
                             </b-tbody>
@@ -394,6 +410,28 @@ export default {
                             </b-table-simple>
                           </div>
                       </b-tab>
+                      <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
+                        <div class="width-98">
+                          <b-row no-gutters>
+                            <b-col class="mt-2">
+                              <p class="h4"><u><strong>Warning: </strong>uploading documents will overwrite previously uploaded documents!</u></p>
+                            </b-col>
+                          </b-row>
+                          <b-row no-gutters>
+                            <b-col cols="2">
+                              <b-form-group>
+                                <b-form-group label="Form Type: " label-for="formType">
+                                <b-form-select id="formType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                              </b-form-group>
+                            </b-col>
+                            <b-col cols="2"></b-col>
+                            <b-col cols="8">
+                              <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
+                            </b-col>
+                          </b-row>
+                          <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
+                        </div>
+                      </b-tab>
                     </b-tabs>
                   </b-col>
                 </b-row>
@@ -424,7 +462,20 @@ export default {
                   GovernmentDate: '',
                   securityforms: []
                 },
+                lockSubmit: false,
                 ddfields: { text: 'text', value: 'value' },
+                library: '',
+                libraryUrl: '',
+                selectedSecurityFormType: '',
+                files: [],
+                securityFormTypes: [
+                  { value: 'NIPR', text: 'NIPR' },
+                  { value: 'SIPR', text: 'SIPR' },
+                  { value: 'DREN', text: 'DREN' },
+                  { value: 'JWICS', text: 'JWICS' },
+                  { value: 'CAC', text: 'CAC' },
+                  { value: 'SCI', text: 'SCI' }
+                ],
                 status: [
                   { text: 'Not Required', value: 'Not Required' },
                   { text: 'Pending Info', value: 'Pending Info' },
@@ -451,7 +502,7 @@ export default {
                   { text: 'Transfer Pending', value: 'Transfer Pending' },
                   { text: 'Renewal', value: 'Renewal' }
                 ],
-                formtype: [
+                sciFormType: [
                   { text: 'N/A', value: 'N/A' },
                   { text: 'Nomination', value: 'Nomination' },
                   { text: 'Transfer', value: 'Transfer' }
@@ -476,7 +527,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 let results = await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -572,7 +623,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -654,7 +705,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker/accounts'
+                  TaskLink: '/security/tracker'
                 }
                 await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -684,6 +735,93 @@ export default {
                 })
               },
               async updateForm(d, tId) {
+                this.lockSubmit = true
+                if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
+                  // first delete all files related to the formTypes
+                  if (d[this.selectedSecurityFormType] && d[this.selectedSecurityFormType].forms && d[this.selectedSecurityFormType].forms.length > 0) {
+                    await this.asyncForEach(d[this.selectedSecurityFormType].forms, async file => {
+                      await Security.dispatch('DeleteForm', file).catch(error => {
+                        const notification = {
+                          type: 'danger',
+                          title: 'Portal Error',
+                          message: error,
+                          push: true
+                        }
+                        this.$store.dispatch('notification/add', notification, {
+                          root: true
+                        })
+                        console.log('ERROR: ' + error.message)
+                      })
+                    })
+                  }
+                  // Clear original form
+                  d[this.selectedSecurityFormType].forms = []
+                  switch (this.selectedSecurityFormType) {
+                    case 'NIPR':
+                      // set the url for the post of file
+                      this.library = 'AccountsNIPR'
+                      this.libraryUrl = url + '/AccountsNIPR/'
+                      break
+                    case 'SIPR':
+                      this.library = 'AccountsSIPR'
+                      this.libraryUrl = url + '/AccountsDREN/'
+                      break
+                    case 'DREN':
+                      this.library = 'AccountsDREN'
+                      this.libraryUrl = url + '/AccountsSIPR/'
+                      break
+                    case 'JWICS':
+                      this.library = 'AccountsJWICS'
+                      this.libraryUrl = url + '/AccountsJWICS/'
+                      break
+                    case 'CAC':
+                      this.library = 'CACForms'
+                      this.libraryUrl = url + '/CACForms/'
+                      break
+                    case 'SCI':
+                      this.library = 'SCIForms'
+                      this.libraryUrl = url + '/SCIForms/'
+                      break
+                  }
+                  // loop and upload all attached files
+                  await this.asyncForEach(this.files, async file => {
+                    let payload = {}
+                    payload.library = vm2.library
+                    let pdfName = 'Completed-' + d.PersonnelId + '-' + d.FirstName + ' ' + d.LastName + '-' + file.fileSelected
+                    let name = pdfName.split('.')[0]
+                    file.fileName = name
+                    payload.file = file.fileSelected
+                    payload.name = name
+                    payload.buffer = file.fileBuffer
+                    let item = await Security.dispatch('uploadForm', payload)
+                    //TO DO: Check if item contains the form Id. The update form could then be deleted
+                    let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+                    let form = await Security.dispatch('getForm', itemlink)
+                    let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+                    payload = form.data.d.__metadata
+                    //payload.file = file.fileSelected
+                    payload.name = pdfName
+                    // payload.IndexNumber = this.IndexNumber
+                    payload.SecurityFormId = d.Id
+                    await Security.dispatch('updateForm', payload)
+                    // First check to see if there is an entry for the PersonnelID in the Security Form List
+                    d[this.selectedSecurityFormType].forms.push({
+                      account: this.selectedSecurityFormType,
+                      id: formId,
+                      library: vm2.library,
+                      name: pdfName,
+                      // task: results.data.d.Id,
+                      href: vm2.libraryUrl + pdfName,
+                      etag: form.data.d.__metadata.etag,
+                      uri: form.data.d.__metadata.uri
+                    })
+                    // then upload files to replace the formType
+
+                    // Replace the files in original form type
+                    //d[this.formTypes].files =
+                    // finally, clear d.files to zero and remove from file uploader
+                  })
+                }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
                 if (payload.NIPR) {
@@ -704,6 +842,7 @@ export default {
                 if (payload.CAC) {
                   payload.CAC = JSON.stringify(payload.CAC)
                 }
+                payload.Active = d.Active ? 'Yes' : 'No'
                 payload.CACValid = d.CACValid
                 payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
                 payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null
@@ -726,6 +865,13 @@ export default {
                     /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
+                    vm2.selectedSecurityFormType = null
+                    let uploadedFiles = document.querySelector('.e-upload-files')
+                    if (uploadedFiles) {
+                      while (uploadedFiles.firstChild) {
+                        uploadedFiles.removeChild(uploadedFiles.firstChild)
+                      }
+                    }
                     const notification = {
                       type: 'success',
                       title: 'Succesfully Updated Security Form',
@@ -747,6 +893,7 @@ export default {
                     })
                     console.log('ERROR: ' + e)
                   })
+                this.lockSubmit = false
                 if (tId) {
                   Todo.dispatch('getTodoById', tId).then(async function(task) {
                     let payload = {
@@ -762,7 +909,44 @@ export default {
                 event.preventDefault()
                 let link = event.currentTarget.dataset.link
                 this.$router.push({ path: link })
+              },
+              async editSecurity(event) {
+                event.preventDefault()
+                let link = event.currentTarget.dataset.link
+                this.$router.push({ path: link })
+              },
+              async onFileSelect(args) {
+                args.filesData.forEach(fileData => {
+                  let file = {}
+                  file.fileSelected = fileData.name
+                  let buffer = vm2.getFileBuffer(fileData.rawFile)
+                  buffer.then(function(buff) {
+                    file.fileBuffer = buff
+                    vm2.files.push(file)
+                  })
+                })
+              },
+              async asyncForEach(array, callback) {
+                for (let index = 0; index < array.length; index++) {
+                  await callback(array[index], index, array)
+                }
+              },
+              getFileBuffer(file) {
+                let p = new Promise(function(resolve, reject) {
+                  var reader = new FileReader()
+                  reader.onloadend = function(e) {
+                    resolve(e.target.result)
+                  }
+                  reader.onerror = function(e) {
+                    reject(e.target.error)
+                  }
+                  reader.readAsArrayBuffer(file)
+                })
+                return p
               }
+            },
+            mounted: async function() {
+              vm2 = this
             }
           })
         }
@@ -795,9 +979,6 @@ export default {
       this.$store.dispatch('support/getAFRLUser')
       this.$store.dispatch('support/getCACSCIUser')
     },
-    actionBegin(args) {
-      console.log(args)
-    },
     actionComplete(args) {
       // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
       if (args.requestType == 'columnstate') {
@@ -811,11 +992,11 @@ export default {
         this.$refs.SecurityGrid.pageSettings = { pageSize: h1 }
       }*/
     },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
+    },
     dataBound: function() {
       this.$refs.SecurityGrid.autoFitColumns()
-    },
-    recordClick: function(args) {
-      console.log(args)
     },
     getData: async function() {
       clearInterval(vm.$options.interval)
@@ -1023,8 +1204,5 @@ export default {
   overflow: hidden;
   width: 10rem;
   display: inline-block;
-}
-.securityDetailHeight {
-  height: 8rem !important;
 }
 </style>

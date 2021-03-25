@@ -74,6 +74,7 @@ const actions = {
   },
   async getSecurityFormByPersonnelId({ state }, payload) {
     let response = await SecurityService.getSecurityFormByPersonnelId(payload, state.digest)
+    console.log('By Personnel: ' + response)
     if (response.length == 0) {
       return response
     } else {
@@ -97,6 +98,7 @@ function formatForms(j) {
     p.push({
       id: j[i]['Id'],
       Id: j[i]['Id'],
+      Active: j[i]['Active'],
       CAC: j[i]['CAC'] ? JSON.parse(j[i]['CAC']) : '', // TODO: sort the CAC forms
       CACValid: j[i]['CACValid'],
       CACIssuedBy: j[i]['CACIssuedBy'],
@@ -136,6 +138,7 @@ function formatForm(j) {
   p = {
     id: j[0]['Id'],
     Id: j[0]['Id'],
+    Active: j[0]['Active'],
     CAC: j[0]['CAC'] ? JSON.parse(j[0]['CAC']) : '',
     CACValid: j[0]['CACValid'],
     CACIssuedBy: j[0]['CACIssuedBy'],

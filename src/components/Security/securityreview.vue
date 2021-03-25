@@ -13,7 +13,7 @@
         <div class="p-1">
           <b-form-row>
             <b-col>
-              <b-button @click="$router.push({ path: '/security/tracker/accounts' })" variant="secondary">Return to Tracker</b-button>
+              <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
             </b-col>
           </b-form-row>
           <b-form-row>
@@ -74,7 +74,7 @@ import Todo from '@/models/Todo'
 import User from '@/models/User'
 
 export default {
-  name: 'SecurityView',
+  name: 'Review Security',
   props: {
     // Switches the form type between NIPR, SIPR, DREN, JWICS, CAC and SCI
     form: {
@@ -408,7 +408,7 @@ export default {
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: vm.form + ' Request',
-            TaskLink: '/security/tracker/accounts'
+            TaskLink: '/security/tracker'
           }
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
@@ -456,7 +456,7 @@ export default {
             push: true
           }
           vm.$store.dispatch('notification/add', notification, { root: true })
-          vm.$router.push({ path: '/security/tracker/accounts' })
+          vm.$router.push({ path: '/security/tracker' })
         })
       })
     }

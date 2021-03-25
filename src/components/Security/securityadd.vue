@@ -445,7 +445,6 @@ export default {
         Company: this.form.Company
       }
       let securityForm = await Security.dispatch('getSecurityFormByPersonnelId', payload)
-      console.log(`Security Form: ${securityForm}`)
       if (securityForm && securityForm.length == 0) {
         // generate an entry for Person
         this.securityForm = await Security.dispatch('addSecurityForm', payload)
@@ -454,7 +453,7 @@ export default {
       }
     },
     closeForm: function() {
-      vm.$router.push({ path: '/security/tracker/accounts' })
+      vm.$router.push({ path: '/security/tracker' })
     },
     onFormSubmit: async function() {
       // VALIDATE SUBK && FORM
@@ -735,6 +734,7 @@ export default {
             forms: cacs
           })
         }
+        payload.Active = this.securityForm.Active ? 'Yes' : 'No'
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
@@ -781,7 +781,10 @@ export default {
             vm.fileBuffer = null
             vm.lockSubmit = false
             // need CAC and SCI clear here as well
-            document.querySelector('.e-upload-file-list').parentElement.removeChild(document.querySelector('.e-upload-file-list'))
+            let uploadedFiles = document.querySelector('.e-upload-files')
+            while (uploadedFiles.firstChild) {
+              uploadedFiles.removeChild(uploadedFiles.firstChild)
+            }
           })
           .catch(error => {
             const notification = {
