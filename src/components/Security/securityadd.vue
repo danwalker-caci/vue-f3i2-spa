@@ -162,7 +162,7 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <!--<b-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"></b-select>-->
-                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :allowFiltering="true" :fields="ddfields" :dataSource="personnel"></ejs-dropdownlist>
+                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :filtering="filtering" :allowFiltering="true" :fields="ddfields" :dataSource="personnel"></ejs-dropdownlist>
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
@@ -323,7 +323,8 @@ export default {
       cacever: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
-      ]
+      ],
+      ddfields: { text: 'text', value: 'value' }
     }
   },
   mounted: async function() {
@@ -352,6 +353,17 @@ export default {
     }
   },
   methods: {
+    filtering: e => {
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      return vm.personnel.filter(o => {
+        Object.keys(o).some(k => {
+          if (typeof o[k] === 'string') {
+            console.log(o[k].toLowerCase())
+            return o[k].toLowerCase().indexOf(e.text.toLowerCase()) !== 1
+          }
+        })
+      })
+    },
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
