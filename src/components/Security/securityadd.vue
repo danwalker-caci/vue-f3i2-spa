@@ -734,6 +734,7 @@ export default {
             forms: cacs
           })
         }
+        payload.Active = this.securityForm.Active ? 'Yes' : 'No'
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
