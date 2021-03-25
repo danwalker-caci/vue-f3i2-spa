@@ -1,15 +1,15 @@
 <template>
   <div>
-    <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton" @click="edit(data)" title="Edit Travel">
+    <b-button v-if="isWPManager || isAdmin" variant="success" class="actionbutton transparent text-white" @click="edit(data)" title="Edit Travel">
       <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
     </b-button>
-    <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
+    <b-button variant="success" class="actionbutton transparent text-white" @click="report(data)" title="Add/Edit Trip Report">
       <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
     </b-button>
-    <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+    <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton transparent text-white" @click="postpone(data)" title="Postpone Travel">
       <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
     </b-button>
-    <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">
+    <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton transparent text-white" @click="cancel(data)" title="Cancel Travel">
       <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
     </b-button>
   </div>

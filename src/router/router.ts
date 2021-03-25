@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ThemeLayout from '@/components/Layout/DashboardLayout.vue'
+// import ThemeLayout from '@/components/Layout/DashboardLayout.vue'
+import ThemeLayout from '@/components/Layout/LayoutTS.vue'
 import home from '@/components/Pages/home.vue'
 
 Vue.use(VueRouter)

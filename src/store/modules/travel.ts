@@ -481,6 +481,45 @@ class Travel extends VuexModule {
       Sort: ''
     }
   ]
+
+  public legenditems?: Array<any> = [
+    {
+      name: 'ReportLate',
+      class: 'travel-ReportLate'
+    },
+    {
+      name: 'ReportDue',
+      class: 'travel-ReportDue'
+    },
+    {
+      name: 'Approved',
+      class: 'travel-Approved'
+    },
+    {
+      name: 'WPMReview',
+      class: 'travel-WPMReview'
+    },
+    {
+      name: 'AFRLReview',
+      class: 'travel-AFRLReview'
+    },
+    {
+      name: 'Completed',
+      class: 'travel-Completed'
+    },
+    {
+      name: 'TripReportReview',
+      class: 'travel-TripReportReview'
+    },
+    {
+      name: 'Postponed',
+      class: 'travel-Postponed'
+    },
+    {
+      name: 'Cancelled',
+      class: 'travel-Cancelled'
+    }
+  ]
   // #endregion STATE
 
   // #region  GETTERS  [TODO: Validate need for getters]
