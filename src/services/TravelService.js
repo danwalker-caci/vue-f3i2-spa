@@ -303,6 +303,23 @@ export default {
     if (payload.comments && payload.comments !== '') {
       body += '<p>' + payload.comments + '</p><p></p>'
     }
+    // add more details
+    body += '<p>Subject: ' + payload.title
+    body += '<p>WorkPlanNumber: ' + payload.workplan
+    body += '<p>Company: ' + payload.company
+    let t = payload.travelers
+    let s = ''
+    for (let i = 0; i < t.length; i++) {
+      if (i == 0) {
+        s += t[i].firstName + ' ' + t[i].lastName
+      } else {
+        s += ', ' + t[i].firstName + ' ' + t[i].lastName
+      }
+    }
+    body += '<p>Travelers: ' + s
+    // build travelers text
+    body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
+    body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
     body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
     let mail = {
@@ -440,6 +457,7 @@ export default {
       Comments: payload[0].Comments,
       Clearance: payload[0].Clearance,
       InternalData: JSON.stringify(payload[0].InternalData),
+      PreApproved: payload[0].PreApproved,
       VisitRequest: payload[0].VisitRequest === 'Yes' ? 'Yes' : 'No',
       EstimatedCost: Number(payload[0].EstimatedCost),
       SecurityAction: payload[0].SecurityAction,

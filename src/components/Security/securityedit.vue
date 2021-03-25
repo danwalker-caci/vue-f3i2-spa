@@ -464,6 +464,7 @@ export default {
       JWICS: {},
       etag: '',
       uri: '',
+      files: [],
       loaded: false,
       library: '',
       libraryUrl: '',
@@ -717,33 +718,33 @@ export default {
         case 'NIPR':
           taskId = this.NIPR.task
           this.NIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var nipr = 0; nipr <= this.NIPR.forms.length; nipr++) {
-            this.deleteForm(this.NIPR.forms[nipr])
-          }
+          await this.asyncForEach(this.NIPR.forms, nipr => {
+            this.deleteForm(nipr)
+          })
           this.NIPR.forms = []
           break
         case 'SIPR':
           taskId = this.SIPR.task
           this.SIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var sipr = 0; sipr <= this.SIPR.forms.length; sipr++) {
-            this.deleteForm(this.SIPR.forms[sipr])
-          }
+          await this.asyncForEach(this.SIPR.forms, sipr => {
+            this.deleteForm(sipr)
+          })
           this.SIPR.forms = []
           break
         case 'DREN':
           taskId = this.DREN.task
           this.DREN.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var dren = 0; dren <= this.DREN.forms.length; dren++) {
-            this.deleteForm(this.DREN.forms[dren])
-          }
+          await this.asyncForEach(this.DREN.forms, dren => {
+            this.deleteForm(dren)
+          })
           this.DREN.forms = []
           break
         case 'JWICS':
           taskId = this.JWICS.task // original taskId\
           this.JWICS.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var jwics = 0; jwics <= this.JWICS.forms.length; jwics++) {
-            this.deleteForm(this.JWICS.forms[jwics])
-          }
+          await this.asyncForEach(this.JWICS.forms, jwics => {
+            this.deleteForm(jwics)
+          })
           this.JWICS.forms = []
           break
       }
@@ -804,6 +805,7 @@ export default {
       })
     },
     async updateForm(tId) {
+      await Security.dispatch('getDigest')
       this.lockSubmit = true
       if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
         // first delete all files related to the formTypes
@@ -937,36 +939,38 @@ export default {
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
       payload.Active = this.Active
-      await Security.dispatch('updateSecurityForm', payload)
-        .then(function(result) {
-          // grab a fresh etag for the record
-          vm.etag = result.headers.etag
-          vm.selectedSecurityFormType = null
-          let uploadedFiles = document.querySelector('.e-upload-files')
-          while (uploadedFiles.firstChild) {
-            uploadedFiles.removeChild(uploadedFiles.firstChild)
-          }
-          const notification = {
-            type: 'success',
-            title: 'Succesfully Updated Security Form',
-            message: 'Updated Security form for ' + this.FirstName + ' ' + this.LastName + ' in ' + this.Company,
-            push: true
-          }
-          vm.$store.dispatch('notification/add', notification, { root: true })
+      payload.etag = this.etag
+      payload.uri = this.uri
+      let result = await Security.dispatch('updateSecurityForm', payload).catch(e => {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
         })
-        .catch(e => {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        })
+        console.log('ERROR: ' + e)
+      })
+      // grab a fresh etag for the record
+      vm.etag = result.headers.etag
+      vm.selectedSecurityFormType = null
+      let uploadedFiles = document.querySelector('.e-upload-files')
+      if (uploadedFiles) {
+        while (uploadedFiles.firstChild) {
+          uploadedFiles.removeChild(uploadedFiles.firstChild)
+        }
+      }
+      const notification = {
+        type: 'success',
+        title: 'Succesfully Updated Security Form',
+        message: 'Updated Security form for ' + this.FirstName + ' ' + this.LastName + ' in ' + this.Company,
+        push: true
+      }
+      vm.$store.dispatch('notification/add', notification, { root: true })
+
       this.lockSubmit = false
       if (tId) {
         Todo.dispatch('getTodoById', tId).then(async function(task) {
