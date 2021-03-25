@@ -867,8 +867,10 @@ export default {
                   })*/
                     vm2.selectedSecurityFormType = null
                     let uploadedFiles = document.querySelector('.e-upload-files')
-                    while (uploadedFiles.firstChild) {
-                      uploadedFiles.removeChild(uploadedFiles.firstChild)
+                    if (uploadedFiles) {
+                      while (uploadedFiles.firstChild) {
+                        uploadedFiles.removeChild(uploadedFiles.firstChild)
+                      }
                     }
                     const notification = {
                       type: 'success',
