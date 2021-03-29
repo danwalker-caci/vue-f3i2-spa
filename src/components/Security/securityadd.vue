@@ -164,7 +164,7 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <!--<b-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"></b-select>-->
-                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :filtering="filtering" :allowFiltering="true" :fields="ddfields" :dataSource="personnel"></ejs-dropdownlist>
+                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :filtering="filtering" :allowFiltering="true" :fields="ddfields" :dataSource="filteredData"></ejs-dropdownlist>
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
@@ -320,6 +320,7 @@ export default {
       lockSubmit: false,
       taskUserId: null,
       securityForm: null,
+      filteredData: [],
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: '',
       cacvalid: [
@@ -344,6 +345,7 @@ export default {
       Company.dispatch('getCompanies').then(function() {
         vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
       })
+      this.filteredData = this.personnel
     } catch (e) {
       // Add user notification and system logging
       const notification = {
@@ -361,14 +363,20 @@ export default {
   methods: {
     filtering: e => {
       // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
-      return vm.personnel.filter(o => {
+      vm.filteredData = vm.personnel.filter(data =>
+        JSON.stringify(data)
+          .toLowerCase()
+          .includes(e.text.toLowerCase())
+      )
+      /*let personnel = vm.personnel.filter(o => {
         Object.keys(o).some(k => {
           if (typeof o[k] === 'string') {
             console.log(o[k].toLowerCase())
             return o[k].toLowerCase().indexOf(e.text.toLowerCase()) !== 1
           }
         })
-      })
+      })*/
+      console.log(vm.filteredData)
     },
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
