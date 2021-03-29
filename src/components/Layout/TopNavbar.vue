@@ -93,8 +93,14 @@
             </b-dropdown-item>
             <b-dropdown-item href="#" @click="ShowActivityLog">
               <div class="row">
-                <font-awesome-icon fas icon="clipbaord-list" class="icon"></font-awesome-icon>
+                <font-awesome-icon fas icon="clipboard-list" class="icon"></font-awesome-icon>
                 <span>Show Activity Log</span>
+              </div>
+            </b-dropdown-item>
+            <b-dropdown-item href="#" onclick="STSNavigate2(event,'/sites/f3i2/_layouts/15/SignOut.aspx');">
+              <div class="row">
+                <font-awesome-icon fas icon="sign-out-alt" class="icon"></font-awesome-icon>
+                <span>Logout</span>
               </div>
             </b-dropdown-item>
           </b-nav-item-dropdown>
