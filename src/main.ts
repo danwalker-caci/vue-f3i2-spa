@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import Global from './global'
-import SideBar from '@/components/SidebarPlugin'
+// import SideBar from '@/components/SidebarPlugin'
 import VueLodash from 'vue-lodash'
 import lodash from 'lodash'
 import VueMoment from 'vue-moment'
@@ -43,7 +43,7 @@ Vue.use(VueMoment, {
 })
 Vue.use(BootstrapVue)
 Vue.use(Global)
-Vue.use(SideBar)
+// Vue.use(SideBar)
 Vue.use(VueLodash, { lodash: lodash })
 Vue.use(crono)
 Vue.use(UploaderPlugin)

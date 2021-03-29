@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import store from '../store'
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
+import { namespace } from 'vuex-class'
 import { TravelItem } from '@/interfaces/TravelItem'
 import { FilterFieldItem } from '@/interfaces/FilterFieldItem'
 import { ObjectItem } from '@/interfaces/ObjectItem'
+import { LegendItem } from '@/interfaces/LegendItem'
 import axios from 'axios'
 import moment from 'moment'
 import _ from 'lodash'
@@ -123,6 +126,7 @@ function getOptions(j: any, field: string): Array<ObjectItem> {
 
 //#endregion FUNCTIONS
 
+const support = namespace('support')
 @Module({ namespaced: true })
 class Travel extends VuexModule {
   // #region  STATE
@@ -482,7 +486,7 @@ class Travel extends VuexModule {
     }
   ]
 
-  public legenditems?: Array<any> = [
+  public legenditems?: Array<LegendItem> = [
     {
       name: 'ReportLate',
       class: 'travel-ReportLate'
@@ -611,6 +615,7 @@ class Travel extends VuexModule {
         that.context.commit('updateTravel', p)
         that.context.commit('updatefilteredTravel', p) // initial set flltered travel as all travel
         that.context.commit('updateLoaded', true)
+        that.context.dispatch('support/setLegendItems', that.legenditems, { root: true })
       }
     }
     getAllTravel('')
@@ -620,6 +625,7 @@ class Travel extends VuexModule {
   @Action
   public async getFilteredTravel(payload: any): Promise<boolean> {
     this.context.commit('updateLoaded', false)
+    const that = this
     let allFilteredTravel: any[] = []
     async function getAllFilteredTravel(turl: string): Promise<void> {
       // console.log("Travel URL: " + turl)
@@ -638,12 +644,12 @@ class Travel extends VuexModule {
         turl = response.data.d.__next
         return getAllFilteredTravel(turl)
       } else {
-        // just a placeholder here. Once the recursion completes the rest of the code will run.
+        that.context.commit('updatefilteredTravel', allFilteredTravel) // initial set flltered travel as all travel
+        that.context.commit('updateLoaded', true)
+        that.context.dispatch('support/setLegendItems', that.legenditems, { root: true })
       }
     }
     getAllFilteredTravel('')
-    this.context.commit('updatefilteredTravel', allFilteredTravel) // initial set flltered travel as all travel
-    this.context.commit('updateLoaded', true)
     return true
   }
 

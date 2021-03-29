@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
 import { UserInt } from '@/interfaces/User'
 import { TodoItem } from '@/interfaces/TodoItem'
@@ -29,11 +30,7 @@ class Users extends VuexModule {
   @Mutation
   public updateTodos(todos: Array<any>): void {
     this.todos = todos
-  }
-
-  @Mutation
-  public updateCount(count: number): void {
-    this.todoCount = count
+    this.todoCount = todos.length
   }
 
   @Mutation
@@ -103,6 +100,7 @@ class Users extends VuexModule {
     let allTodos: any[] = []
     const p: Array<TodoItem> = []
     const userid: number = this.currentUser.userid
+    const that = this
     async function getAllTodos(turl: string): Promise<void> {
       if (turl === '') {
         turl = baseUrl + "/_api/lists/getbytitle('Tasks')/items?"
@@ -130,6 +128,7 @@ class Users extends VuexModule {
             StartDate: moment(j[i]['StartDate']).isValid() ? moment(j[i]['StartDate']).format('MM/DD/YYYY') : '',
             DueDate: moment(j[i]['DueDate']).isValid() ? moment(j[i]['DueDate']).format('MM/DD/YYYY') : '',
             TaskType: j[i]['TaskType'],
+            Body: j[i]['Description'],
             AssignedTo: {
               Title: j[i]['AssignedTo']['Title'],
               Id: j[i]['AssignedTo']['ID'],
@@ -139,11 +138,10 @@ class Users extends VuexModule {
             uri: j[i]['__metadata']['uri']
           })
         }
+        that.context.commit('updateTodos', p)
       }
     }
     getAllTodos('')
-    this.context.commit('updateTodos', p)
-    // this.context.commit("updateCount", p.length)
     return true
   }
 

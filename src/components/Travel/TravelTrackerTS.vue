@@ -85,7 +85,7 @@ import { EventBus } from '../../main'
 import { namespace } from 'vuex-class'
 // import { UserInt } from '../../interfaces/User'
 import { Notification } from '../../interfaces/Notification'
-import { TravelItem } from '../../interfaces/TravelItem'
+// import { LegendItem } from '@/interfaces/LegendItem'
 import { ClickEventArgs } from '@syncfusion/ej2-vue-navigations'
 import { GridComponent, EditSettings, ActionEventArgs, RowDataBoundEventArgs, QueryCellInfoEventArgs, ExcelQueryCellInfoEventArgs } from '@syncfusion/ej2-vue-grids'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze } from '@syncfusion/ej2-vue-grids'
@@ -109,6 +109,45 @@ export default class TravelTracker extends Vue {
   public overlayText?: string = 'Getting Data. Please Wait...'
   public overlayVariant?: string = 'light'
 
+  /* public legenditems?: Array<LegendItem> = [
+    {
+      name: 'ReportLate',
+      class: 'travel-ReportLate'
+    },
+    {
+      name: 'ReportDue',
+      class: 'travel-ReportDue'
+    },
+    {
+      name: 'Approved',
+      class: 'travel-Approved'
+    },
+    {
+      name: 'WPMReview',
+      class: 'travel-WPMReview'
+    },
+    {
+      name: 'AFRLReview',
+      class: 'travel-AFRLReview'
+    },
+    {
+      name: 'Completed',
+      class: 'travel-Completed'
+    },
+    {
+      name: 'TripReportReview',
+      class: 'travel-TripReportReview'
+    },
+    {
+      name: 'Postponed',
+      class: 'travel-Postponed'
+    },
+    {
+      name: 'Cancelled',
+      class: 'travel-Cancelled'
+    }
+  ] */
+
   @support.State
   public contentrect!: DOMRect
 
@@ -126,6 +165,9 @@ export default class TravelTracker extends Vue {
 
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
+
+  /* @support.Action
+  public setLegendItems!: (items: Array<LegendItem>) => void */
 
   public actionsTemplate() {
     return { template: ActionsTemplate }

@@ -13,12 +13,23 @@
             <Sidebar v-if="userloaded"></Sidebar>
           </template>
           <template v-slot:footer>
-            <div class="d-flex bg-black text-white align-items-center p-1">
-              <strong class="mr-auto">Legend</strong>
-              <b-button size="sm" v-b-toggle.legend>Hide</b-button>
-              <b-collapse id="legend" class="m-1">
-                LEGEND WILL GO HERE
-              </b-collapse>
+            <div class="accordion legend" role="tablist" :class="{ 'legend-expanded': legendHeightExpanded }">
+              <b-card no-body>
+                <b-card-header header-tag="header" class="p-1" role="tab">
+                  <b-button @click="setLegend" block size="sm" v-b-toggle.legend-accordion variant="secondary" class="text-center legend-button">Legend<span class="caret legend-caret" :class="{ 'legend-expanded-caret': legendHeightExpanded }"></span></b-button>
+                </b-card-header>
+                <b-collapse id="legend-accordion" accordion="legend-accordion" role="tabpanel">
+                  <b-list-group>
+                    <b-list-group-item v-for="item in legendItems" :key="item.id" :item="item" class="list-group-item-sm">
+                      <b-button block size="sm" class="text-left" :class="item.class">
+                        {{ item.name }}
+                        <font-awesome-icon v-if="item.hasIcon && item.library === 'fas'" fas :icon="item.icon" class="icon float-right ml-1" :class="'text-' + item.iconVariant"></font-awesome-icon>
+                        <font-awesome-icon v-else-if="item.hasIcon && item.library === 'far'" far :icon="item.icon" class="icon float-right ml-1" :class="'text-' + item.iconVariant"></font-awesome-icon>
+                      </b-button>
+                    </b-list-group-item>
+                  </b-list-group>
+                </b-collapse>
+              </b-card>
             </div>
           </template>
         </b-sidebar>
@@ -50,6 +61,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
+import { LegendItem } from '../../interfaces/LegendItem'
 import Header from './HeaderTS.vue'
 import Footer from './FooterTS.vue'
 import Content from './ContentTS.vue'
@@ -69,6 +81,7 @@ const users = namespace('users')
 })
 export default class Layout extends Vue {
   public userloaded?: boolean = false
+  public legendHeightExpanded?: boolean = false
   public interval: any
 
   @users.State
@@ -76,6 +89,9 @@ export default class Layout extends Vue {
 
   @support.State
   public isShown!: boolean
+
+  @support.State
+  public legendItems!: Array<LegendItem>
 
   mounted() {
     this.interval = setInterval(this.waitforit, 1000)
@@ -88,6 +104,24 @@ export default class Layout extends Vue {
       this.userloaded = true
     }
   }
+
+  public getLegend() {
+    let l = String(window.localStorage.getItem('legend'))
+    if (l) {
+      let legend = JSON.parse(l)
+      if (legend) {
+        this.legendHeightExpanded = legend.value
+      }
+    }
+  }
+
+  public setLegend() {
+    this.legendHeightExpanded = !this.legendHeightExpanded
+    var legend = {
+      value: this.legendHeightExpanded
+    }
+    window.localStorage.setItem('legend', JSON.stringify(legend))
+  }
 }
 </script>
 
@@ -96,6 +130,43 @@ export default class Layout extends Vue {
   height: 25px;
   line-height: 25px;
   background-color: #8d1d8d;
+}
+
+.legend {
+  display: block;
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  background-color: black;
+  opacity: 1;
+  height: 50px;
+  /* overflow-y: auto; */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.legend-button {
+  height: 40px;
+}
+
+.legend-expanded {
+  min-height: 300px;
+}
+
+.legend-item {
+  height: 1.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.legend-caret {
+  right: 1.5rem !important;
+}
+
+.legend-expanded-caret {
+  transform: rotate(180deg);
 }
 
 #LoadingBars {
