@@ -1186,7 +1186,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .buttonrow {
   height: 50px;
   justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item

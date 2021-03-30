@@ -21,7 +21,7 @@
                 <b-collapse id="legend-accordion" accordion="legend-accordion" role="tabpanel">
                   <b-list-group>
                     <b-list-group-item v-for="item in legendItems" :key="item.id" :item="item" class="list-group-item-sm">
-                      <b-button block size="sm" class="text-left" :class="item.class">
+                      <b-button block size="sm" class="text-left legend-btn" :class="item.class">
                         {{ item.name }}
                         <font-awesome-icon v-if="item.hasIcon && item.library === 'fas'" fas :icon="item.icon" class="icon float-right ml-1" :class="'text-' + item.iconVariant"></font-awesome-icon>
                         <font-awesome-icon v-else-if="item.hasIcon && item.library === 'far'" far :icon="item.icon" class="icon float-right ml-1" :class="'text-' + item.iconVariant"></font-awesome-icon>
@@ -155,14 +155,31 @@ export default class Layout extends Vue {
   min-height: 300px;
 }
 
-.legend-item {
-  height: 1.5rem;
-  margin-bottom: 0.25rem;
-  font-size: 0.75rem;
+.list-group-item-sm {
+  height: 25px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.legend-btn {
+  height: 25px;
+  line-height: normal;
+  padding: 2px 10px;
 }
 
 .legend-caret {
-  right: 1.5rem !important;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid\9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  margin-top: 0.5rem;
+  position: absolute;
+  right: 15px;
+  transition: 0.15s, ease-in;
 }
 
 .legend-expanded-caret {

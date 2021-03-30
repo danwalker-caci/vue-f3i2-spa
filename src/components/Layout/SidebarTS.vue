@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-1">
                           <span v-if="sublink.badgeId && sublink.badgeId.length > 0" :id="sublink.badgeId" class="badge badge-xs badge-danger sidebar-badge">0</span>
-                          <b-button v-if="sublink.filtertype && sublink.filtertype.length > 0" size="sm" class="actionbutton" v-b-toggle="'filtermenu_' + sublink.filtertype" @click.prevent="return launchfilter(sublink.filtertype)">
+                          <b-button v-if="sublink.filtertype && sublink.filtertype.length > 0" size="sm" class="actionbutton transparent btn-gridfilter" v-b-toggle="'filtermenu_' + sublink.filtertype" @click.prevent="return launchfilter(sublink.filtertype)">
                             <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
                           </b-button>
                         </div>
@@ -126,4 +126,12 @@ export default class Sidebar extends Vue {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.btn-gridfilter {
+  height: 20px;
+  width: 20px;
+  line-height: normal;
+  position: relative;
+  top: -4px;
+}
+</style>

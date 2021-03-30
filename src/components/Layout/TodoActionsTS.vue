@@ -16,7 +16,7 @@ export default {
   methods: {
     goto: function(data) {
       this.$bvModal.hide('Todos')
-      this.$router.push({ path: data.TaskLink, params: { TaskID: this.Id } })
+      this.$router.push({ path: data.TaskLink, params: { TaskID: data.Id, TaskData: data.TaskData } })
     }
   }
 }

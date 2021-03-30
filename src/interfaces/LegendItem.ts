@@ -1,4 +1,5 @@
 interface LegendItem {
+  id: number
   name: string
   class: string
 }

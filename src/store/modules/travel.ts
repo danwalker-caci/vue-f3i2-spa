@@ -488,40 +488,59 @@ class Travel extends VuexModule {
 
   public legenditems?: Array<LegendItem> = [
     {
+      id: 0,
       name: 'ReportLate',
       class: 'travel-ReportLate'
     },
     {
+      id: 1,
       name: 'ReportDue',
       class: 'travel-ReportDue'
     },
     {
+      id: 2,
       name: 'Approved',
       class: 'travel-Approved'
     },
     {
+      id: 3,
       name: 'WPMReview',
       class: 'travel-WPMReview'
     },
     {
+      id: 4,
       name: 'AFRLReview',
       class: 'travel-AFRLReview'
     },
     {
+      id: 5,
       name: 'Completed',
       class: 'travel-Completed'
     },
     {
+      id: 6,
       name: 'TripReportReview',
       class: 'travel-TripReportReview'
     },
     {
+      id: 7,
+      name: 'TripReportRejected',
+      class: 'travel-TripReportRejected'
+    },
+    {
+      id: 8,
       name: 'Postponed',
       class: 'travel-Postponed'
     },
     {
+      id: 9,
       name: 'Cancelled',
       class: 'travel-Cancelled'
+    },
+    {
+      id: 10,
+      name: 'RejectedByWPM',
+      class: 'travel-RejectedByWPM'
     }
   ]
   // #endregion STATE

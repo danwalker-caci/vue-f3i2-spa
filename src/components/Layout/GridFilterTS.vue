@@ -1,5 +1,5 @@
 <template>
-  <b-collapse :id="'filtermenu_' + filtertype" accordion="sidebar-subaccordion" role="tabpanel" class="ml-4" @shown="onShown">
+  <b-collapse :id="'filtermenu_' + filtertype" accordion="sidebar-subaccordion" role="tabpanel" class="filter-menu" @shown="onShown">
     <ul v-if="ready" class="nav">
       <li v-for="field in filterfields" :key="field" class="nav-link nav-filter-item">
         <!-- <div :style="randomstyle">{{ field.DisplayName }}</div> -->
@@ -315,68 +315,22 @@ export default class GridFilter extends Vue {
   }
 
   public async savefilters(filterfields: Array<FilterFieldItem>) {
-    console.log('SAVING USER FILTER')
-    // await this.getDigest()
-    // const fields = JSON.stringify(filterfields)
-    const payload: any = {}
-    // does the user have any settings yet?
-    const data: Array<ObjectItem> = []
-    if (this.currentUser.JSONData !== undefined) {
-      if (this.currentUser.JSONData.length > 0) {
-        // the user has settings
-        const d = this.currentUser.JSONData
-        for (let i = 0; i < d.length; i++) {
-          data.push({
-            text: d[i].text,
-            value: d[i].value
-          })
-        }
-        // Need to determine if the user has saved the filter before. Overwrite if yes or add if no.
-        let overwrite = false
-        const t = this.filtertype + '_filter'
-        for (let i = 0; i < data.length; i++) {
-          console.log('DATA: ' + data[i].text)
-          if (data[i].text == t) {
-            // User has filter so overwrite it
-            console.log('OVERWRITE: ' + t)
-            overwrite = true
-            data[i].value = filterfields
-          }
-        }
-        if (overwrite == true) {
-          // just send the updated data for update
-        } else {
-          // add the filter to the data object and send for update
-          data.push({
-            text: this.filtertype + '_filter',
-            value: filterfields
-          })
-        }
-      } else {
-        // the user has no settings yet. TODO: Add the filter if selected and ensure all settings exist.
-        console.log('CREATING JSONData:')
-        data.push({
-          text: this.filtertype + '_filter',
-          value: filterfields
-        })
-      }
-    } /*  else {
-      console.log("CREATING JSONData:")
-      data.push({
-        text: this.filtertype + "_filter",
-        value: filterfields
-      })
-    } */
-    payload.itemprops = {
-      __metadata: { type: 'SP.Data.PersonnelListItem' },
-      JSONData: JSON.stringify(data)
+    switch (this.filtertype) {
+      case 'personnel':
+        window.localStorage.setItem('TravelFilter', JSON.stringify(this.filterfields))
+        break
+
+      case 'workplans':
+        window.localStorage.setItem('WorkplanFilter', JSON.stringify(this.filterfields))
+        break
+
+      case 'travel':
+        window.localStorage.setItem('PersonnelFilter', JSON.stringify(this.filterfields))
+        break
     }
-    payload.data = data
-    this.updateJSONData(payload)
   }
 
   public async clearFilters() {
-    // TODO: Determine if the saved filter in the personnel item should be deleted or left alone so the user can load the last saved filter whenever they like.
     switch (this.filtertype) {
       case 'personnel':
         this.filterfields = this.$store.state.personnel.filterfields
@@ -392,8 +346,58 @@ export default class GridFilter extends Vue {
     }
   }
 
-  // public async loadfilter() {}
+  public async loadfilter() {
+    let f: string = ''
+    switch (this.filtertype) {
+      case 'personnel':
+        f = String(window.localStorage.getItem('TravelFilter'))
+        break
+
+      case 'workplans':
+        f = String(window.localStorage.getItem('TravelFilter'))
+        break
+
+      case 'travel':
+        f = String(window.localStorage.getItem('TravelFilter'))
+        break
+    }
+    if (f !== '') {
+      this.$bvModal
+        .msgBoxConfirm('Load your saved filter?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'YES',
+          cancelTitle: 'NO',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value => {
+          if (value == true) {
+            vm.filteredtravel = []
+            let flds = JSON.parse(f)
+            setTimeout(() => {
+              vm.filterfields = flds
+              vm.setfilter()
+            }, 250)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.filter-menu {
+  margin-left: -15px;
+  overflow-y: auto;
+}
+.e-label {
+  font-size: 14px !important;
+}
+</style>

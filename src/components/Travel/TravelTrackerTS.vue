@@ -34,7 +34,7 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="actionsTemplate"></e-column>
                     <e-column field="Status" :lockColumn="true" headerText="Status" width="150"></e-column>
-                    <e-column field="Comments" headerText="Purpose" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
+                    <e-column field="Title" headerText="Subject" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
                     <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                     <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                     <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
@@ -59,7 +59,8 @@
                     <e-column field="POCPhone" headerText="POC Phone" textAlign="Left" width="100"></e-column>
                     <e-column field="SecurityAction" headerText="Security Action" textAlign="Left" width="200"></e-column>
                     <e-column field="SecurityActionCompleted" headerText="Security Action Completed" textAlign="Left" width="200" type="date" format="yMd"></e-column>
-                    <!-- <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="TripReportTemplate"></e-column> -->
+                    <e-column field="Comments" headerText="Purpose" textAlign="Left" width="350"></e-column>
+                    <e-column field="TripReport" headerText="Trip Report" textAlign="Left" width="180" :template="tripReportTemplate"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
                   </e-columns>
                 </ejs-grid>
@@ -83,13 +84,12 @@
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { EventBus } from '../../main'
 import { namespace } from 'vuex-class'
-// import { UserInt } from '../../interfaces/User'
 import { Notification } from '../../interfaces/Notification'
-// import { LegendItem } from '@/interfaces/LegendItem'
 import { ClickEventArgs } from '@syncfusion/ej2-vue-navigations'
 import { GridComponent, EditSettings, ActionEventArgs, RowDataBoundEventArgs, QueryCellInfoEventArgs, ExcelQueryCellInfoEventArgs } from '@syncfusion/ej2-vue-grids'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze } from '@syncfusion/ej2-vue-grids'
 import ActionsTemplate from './ActionsTemplate.vue'
+import TripReportTemplate from './TripReportTemplate.vue'
 
 const notify = namespace('notify')
 const support = namespace('support')
@@ -109,50 +109,8 @@ export default class TravelTracker extends Vue {
   public overlayText?: string = 'Getting Data. Please Wait...'
   public overlayVariant?: string = 'light'
 
-  /* public legenditems?: Array<LegendItem> = [
-    {
-      name: 'ReportLate',
-      class: 'travel-ReportLate'
-    },
-    {
-      name: 'ReportDue',
-      class: 'travel-ReportDue'
-    },
-    {
-      name: 'Approved',
-      class: 'travel-Approved'
-    },
-    {
-      name: 'WPMReview',
-      class: 'travel-WPMReview'
-    },
-    {
-      name: 'AFRLReview',
-      class: 'travel-AFRLReview'
-    },
-    {
-      name: 'Completed',
-      class: 'travel-Completed'
-    },
-    {
-      name: 'TripReportReview',
-      class: 'travel-TripReportReview'
-    },
-    {
-      name: 'Postponed',
-      class: 'travel-Postponed'
-    },
-    {
-      name: 'Cancelled',
-      class: 'travel-Cancelled'
-    }
-  ] */
-
   @support.State
   public contentrect!: DOMRect
-
-  /* @users.State
-  public currentUser!: User */
 
   @notify.Action
   public add!: (notification: Notification) => void
@@ -166,11 +124,12 @@ export default class TravelTracker extends Vue {
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
 
-  /* @support.Action
-  public setLegendItems!: (items: Array<LegendItem>) => void */
-
   public actionsTemplate() {
     return { template: ActionsTemplate }
+  }
+
+  public tripReportTemplate() {
+    return { template: TripReportTemplate }
   }
 
   get Digest() {
@@ -190,14 +149,10 @@ export default class TravelTracker extends Vue {
   }
 
   get isSubcontractor() {
-    return this.$store.state.database.users.isSubcontractor
+    return this.$store.state.users.currentUser.isSubcontractor
   }
 
   @Ref('TravelGrid') readonly TravelGrid!: GridComponent
-
-  /* updated() {
-    console.log("TravelTracker Updated: " + this.contentrect.height)
-  } */
 
   created() {
     EventBus.$on('showhide', (data: any) => {

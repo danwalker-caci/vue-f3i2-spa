@@ -76,6 +76,7 @@ a[aria-controls~="menu"] .caret {
   
     .b-sidebar-footer {
       height: 50px !important;
+      z-index: 2500;
     }
   }
 }
@@ -204,7 +205,36 @@ a[aria-controls~="menu"] .caret {
             &:focus,
             &.active{
               .nav-link{
-                background: $warning;
+                background: rgba(255, 255, 255, 0.13);
+              }
+            }
+          }
+          .sidebar-normal{
+            left: 0.5rem;
+          }
+        }
+      }
+    }
+
+    .nav .nav-item {
+      cursor: pointer;
+      [accordion="sidebar-accordion"] ~ div{
+        .nav{
+          .nav-item{
+            .nav-link{
+              background: $azure;
+              padding-left: 55px;
+              text-transform: capitalize;
+              padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+              font-weight: 400;
+              font-size: 0.75rem;
+            }
+
+            &:hover,
+            &:focus,
+            &.active{
+              .nav-link{
+                background: rgba(255, 0, 0, 0.13);
               }
             }
           }
@@ -370,7 +400,7 @@ a[aria-controls~="menu"] .caret {
         &:hover,
         &.router-link-active{
           color: $white;
-          background: $warning;
+          background: $warning !important;
         }
 
         .sidebar-icon {

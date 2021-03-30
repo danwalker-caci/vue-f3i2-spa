@@ -20,6 +20,20 @@ const adminMenu = {
   ]
 }
 
+const taskMenu = {
+  path: '/tasks',
+  component: ThemeLayout,
+  redirect: '/tasks/home',
+  children: [
+    {
+      path: 'home',
+      name: 'Tasks',
+      component: () => import(/* webpackChunkName: "tasks" */ '../components/Tasks/MyTasksTS.vue'),
+      props: true
+    }
+  ]
+}
+
 const travelMenu = {
   path: '/travel',
   component: ThemeLayout,
@@ -397,6 +411,7 @@ const routes = [
     redirect: '/pages/home'
   },
   adminMenu,
+  taskMenu,
   msrMenu,
   financialMenu,
   calendarMenu,
