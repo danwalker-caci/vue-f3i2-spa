@@ -164,7 +164,15 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <!--<b-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"></b-select>-->
-                <ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :filtering="filtering" :allowFiltering="true" :fields="ddfields" :dataSource="filteredData"></ejs-dropdownlist>
+                <!--<ejs-dropdownlist id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :filtering="filtering" :allowFiltering="true" :fields="ddfields" :dataSource="personnel"></ejs-dropdownlist>-->
+                <b-form-input class="search-input" type="search" v-on:click="toggleDropDown()" placeholder="Personnel Filter"> </b-form-input>
+                <b-collapse id="dropDown">
+                  <b-list-group>
+                    <b-list-group-item>
+                      <span v-for="person in filteredData" :key="person.value" class="d-flex justify-content-between" :id="person.value" :click="onPersonnelChange($event)">{{ person.text }}</span>
+                    </b-list-group-item>
+                  </b-list-group>
+                </b-collapse>
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
@@ -320,7 +328,7 @@ export default {
       lockSubmit: false,
       taskUserId: null,
       securityForm: null,
-      filteredData: [],
+      filteredData: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: '',
       cacvalid: [
@@ -345,7 +353,6 @@ export default {
       Company.dispatch('getCompanies').then(function() {
         vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
       })
-      this.filteredData = this.personnel
     } catch (e) {
       // Add user notification and system logging
       const notification = {
@@ -376,7 +383,9 @@ export default {
           }
         })
       })*/
-      console.log(vm.filteredData)
+    },
+    toggleDropDown: () => {
+      this.$root.$emit('bv::toggle::collapse', 'dropDown')
     },
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
@@ -391,6 +400,7 @@ export default {
         payload.company = this.form.Company
         Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
           // Company loaded into state
+          vm.filteredData = vm.personnel
           Personnel.dispatch('getPersonnelByUserAccount', vm.userid).then(function(result) {
             vm.form.PersonnelID = result ? result[0].Id : 'S'
             vm.currentPersonnelID = result ? result[0].Id : ''
@@ -418,15 +428,16 @@ export default {
         if (vm.form.setName === 'Yes') {
           vm.form.PersonnelID = 'S'
         }
+        vm.filteredData = vm.personnel
       })
     },
-    onPersonnelChange: function() {
+    onPersonnelChange: function(e) {
       this.personnel.forEach(person => {
-        if (person.value === vm.form.PersonnelID) {
+        if (person.value === e.target.id) {
           vm.form.Name = person.text
           vm.form.FirstName = person.text.substr(0, person.text.indexOf(' '))
           vm.form.LastName = person.text.substr(person.text.indexOf(' '), person.text.length)
-          vm.form.PersonnelID = person.value
+          vm.form.PersonnelID = e.target.id
           vm.checkSecurityForms()
         }
       })
