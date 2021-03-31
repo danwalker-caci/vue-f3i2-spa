@@ -4,6 +4,9 @@
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-form @submit="onSubmit">
+            <b-row no-gutters class="buttonrow">
+              <GridFilter filtertype="travel"></GridFilter>
+            </b-row>
             <b-row no-gutters class="gridrow">
               <b-overlay :show="filteredtravel.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
@@ -28,7 +31,7 @@
                   :queryCellInfo="formatCell"
                   :excelQueryCellInfo="formatExcelCell"
                   rowHeight="20"
-                  :height="contentrect.height - 125"
+                  :height="contentrect.height - 175"
                   :width="contentrect.width - 5"
                 >
                   <e-columns>
@@ -84,6 +87,7 @@
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { EventBus } from '../../main'
 import { namespace } from 'vuex-class'
+import GridFilter from '../Layout/GridFilter2TS.vue'
 import { Notification } from '../../interfaces/Notification'
 import { ClickEventArgs } from '@syncfusion/ej2-vue-navigations'
 import { GridComponent, EditSettings, ActionEventArgs, RowDataBoundEventArgs, QueryCellInfoEventArgs, ExcelQueryCellInfoEventArgs } from '@syncfusion/ej2-vue-grids'
@@ -100,6 +104,9 @@ let vm: any = null
 
 @Component({
   name: 'TravelTracker',
+  components: {
+    GridFilter
+  },
   provide: {
     grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Freeze]
   }

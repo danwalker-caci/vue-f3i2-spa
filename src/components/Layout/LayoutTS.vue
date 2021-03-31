@@ -8,7 +8,7 @@
     <b-row no-gutter>
       <div v-if="userloaded" class="wrapper" :class="isShown === true ? 'bsidebarOpen' : 'bsidebarClosed'">
         <NotificationContainer />
-        <b-sidebar no-slide no-close-on-route-change v-model="isShown" no-header bg-variant="black" text-variant="white" sidebar-class="bsvSidebar">
+        <b-sidebar no-slide no-close-on-route-change v-model="isShown" no-header bg-variant="black" text-variant="white" sidebar-class="bsvSidebar" z-index="1000">
           <template v-slot:default>
             <Sidebar v-if="userloaded"></Sidebar>
           </template>

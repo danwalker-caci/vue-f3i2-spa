@@ -196,9 +196,9 @@ class Travel extends VuexModule {
       Options: this.status
     },
     {
-      FieldName: 'Comments',
+      FieldName: 'Title',
       Visible: true,
-      DisplayName: 'Purpose',
+      DisplayName: 'Subject',
       Filter: false,
       Control: '',
       DataType: 'Text',
@@ -482,6 +482,17 @@ class Travel extends VuexModule {
       Predicate: 'S',
       FilterValue: '',
       FilterValue2: '',
+      Sort: ''
+    },
+    {
+      FieldName: 'Comments',
+      Visible: true,
+      DisplayName: 'Purpose',
+      Filter: false,
+      Control: '',
+      DataType: 'Text',
+      Predicate: 'S',
+      FilterValue: '',
       Sort: ''
     }
   ]
