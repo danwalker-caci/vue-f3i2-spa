@@ -77,6 +77,7 @@
               <ejs-grid
                 id="ManningGrid"
                 ref="ManningGrid"
+                :load="load"
                 :enablePersistence="false"
                 :dataSource="filtereddata"
                 :allowPaging="true"
@@ -495,6 +496,18 @@ export default {
           break
       }
     },
+    async load() {
+      this.$refs["ManningGrid"].ej2Instances.element.addEventListener('mousedown', function(e) {
+        var instance = this.ej2_instances[0]
+        if (e.target.classList.contains("e-rowcell")) {
+        if (instance.isEdit)
+            instance.endEdit()
+            let index = parseInt(e.target.getAttribute("Index"))
+            instance.selectRow(index)
+            instance.startEdit()
+        }
+      })
+    },
     actionBegin(args) {
       console.log('ACTION BEGIN: ' + args.requestType)
       switch (args.requestType) {
@@ -523,7 +536,40 @@ export default {
     },
     actionComplete(args) {
       console.log('ACTION COMPLETE: ' + args.requestType)
-      if (args.requestType == 'columnstate') {
+      switch (args.requestType) {
+        case 'columnstate' :
+          this.$refs['ManningGrid'].autoFitColumns()
+          break
+        case 'refresh' : 
+          let h1 = 0
+          let h2 = this.$refs.ManningGrid.$el.children[7].children[0].clientHeight // children[7] matches .e-gridconent
+          console.log('CLIENTHEIGHT: ' + h2)
+          h1 = Math.floor(h2 / 20)
+          this.pageSettings.pageSize = h1
+          this.$refs.ManningGrid.pageSettings = { pageSize: h1 }
+          break
+        case 'beginEdit' :
+          console.log(args)
+          // build payload to pass to update function
+          let itemprops = {
+            __metadata: { type: 'SP.Data.ManningListItem' },
+            Title: args.rowData.Title,
+            Number: args.rowData.Number,
+            MasterEffort: args.rowData.MasterEffort,
+            SubEffort: args.rowData.SubEffort,
+            PercentSupport: args.rowData.PercentSupport,
+            FullBurdenedCost: args.rowData.FullBurdenedCost
+          }
+          let payload = {}
+          payload.uri = args.rowData.uri
+          payload.itemprops = itemprops
+          Manning.dispatch('editManningItem', payload).then(function(){
+            // The grid will be updated with the values already so no need to do anything here.
+            // Would we need to update the uri/etag?
+          })
+          break
+      }
+      /*if (args.requestType == 'columnstate') {
         this.$refs['ManningGrid'].autoFitColumns()
       }
       if (args.requestType == 'refresh') {
@@ -534,6 +580,9 @@ export default {
         this.pageSettings.pageSize = h1
         this.$refs.ManningGrid.pageSettings = { pageSize: h1 }
       }
+      if (args.requestType == 'beginEdit') {
+
+      }*/
     },
     dataBound: function() {
       this.$refs.ManningGrid.autoFitColumns()
