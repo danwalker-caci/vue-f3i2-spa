@@ -244,45 +244,61 @@
               </div>
             </b-tab>
             <b-tab title="SCI" class="pt-3">
-              <b-table-simple small responsive>
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>Date Indoctrination Assist Sent</b-th>
-                    <b-th>SCI Access Check Date</b-th>
-                    <b-th>SCI Indoctrination Date</b-th>
-                    <b-th>SCI Form Submitted</b-th>
-                    <b-th>SCI Status</b-th>
-                    <b-th>SCI Form Type</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive>
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>Date Indoctrination Assist Sent</b-th>
+                      <b-th>SCI Access Check Date</b-th>
+                      <b-th>SCI Indoctrination Date</b-th>
+                      <b-th>SCI Form Submitted</b-th>
+                      <b-th>SCI Status</b-th>
+                      <b-th>SCI Form Type</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="this.SCI.forms.length > 0">
+                <span v-if="this.SCI.GovSentDate !== ''" class="p-2">{{ this.SCI.GovSentDate }}</span>
+                <span v-if="this.SCI.GovCompleteDate !== ''" class="p-2">{{ this.SCI.GovCompleteDate }}</span>
+                <span v-if="this.SCI.GovRejectDate !== ''" class="p-2">{{ this.SCI.GovRejectDate }}</span>
+                <span v-if="this.SCI.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.SCI.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="this.SCI.GovCompleteDate === '' && this.SCI.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
               <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -299,38 +315,54 @@
               </div>
             </b-tab>
             <b-tab title="CAC">
-              <b-table-simple small responsive class="pt-3">
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>CAC Status</b-th>
-                    <b-th>CAC Issued By</b-th>
-                    <b-th>CAC Request Date</b-th>
-                    <b-th>CAC Expiration Date</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <!-- REMOVE DEVELOPER OPTION -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive class="pt-3">
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>CAC Status</b-th>
+                      <b-th>CAC Issued By</b-th>
+                      <b-th>CAC Request Date</b-th>
+                      <b-th>CAC Expiration Date</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <!-- REMOVE DEVELOPER OPTION -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="this.CAC.forms.length > 0">
+                <span v-if="this.CAC.GovSentDate !== ''" class="p-2">Government Notified On: {{ this.CAC.GovSentDate }}</span>
+                <span v-if="this.CAC.GovCompleteDate !== ''" class="p-2">Government {{ this.CAC.GovCompleteDate }}</span>
+                <span v-if="this.CAC.GovRejectDate !== ''" class="p-2">Government {{ this.CAC.GovRejectDate }}</span>
+                <span v-if="this.CAC.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'CAC'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.CAC.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="this.CAC.GovCompleteDate === '' && this.CAC.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
               <div v-if="CAC.forms && CAC.forms.length > 0">
                 <div v-for="form in CAC.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -480,7 +512,8 @@ export default {
       ],
       AccountId: '',
       AFRLId: '',
-      SecurityId: '',
+      SCIUserId: [],
+      CACUserId: [],
       ddfields: { text: 'text', value: 'value' },
       status: [
         { text: 'Not Required', value: 'Not Required' },
@@ -525,10 +558,8 @@ export default {
     async getUserIDs() {
       this.AccountId = await this.$store.dispatch('support/getAccountUser')
       this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
-      // console.log(this.$store.state.support.AFRLUserID)
-      // console.log(this.$store.state.support.AccountUserID)
-      // console.log(this.$store.state.support.CACSCIUserID)
+      this.SCIUserId = await this.$store.dispatch('support/getSCIUser')
+      this.CACUserId = await this.$store.dispatch('support/getCACUser')
     },
     async getForms() {
       // Run query to load the form
@@ -634,6 +665,16 @@ export default {
           this.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
           this.JWICS.task = results.data.d.Id
           break
+        case 'CAC':
+          taskId = this.CAC.task // original taskId\
+          this.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.CAC.task = results.data.d.Id
+          break
+        case 'SCI':
+          taskId = this.SCI.task // original taskId\
+          this.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.SCI.task = results.data.d.Id
+          break
       }
       this.updateForm(taskId)
     },
@@ -641,7 +682,7 @@ export default {
       await Security.dispatch('getDigest')
       let type = event.currentTarget.dataset.type,
         taskId,
-        taskUserId = vm.$store.state.support.AccountUserId
+        taskUserId = null
       // get the current item data
       switch (type) {
         case 'NIPR':
@@ -650,6 +691,7 @@ export default {
           for (var nipr = 0; nipr <= this.NIPR.forms.length; nipr++) {
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.NIPR.forms[nipr].href, '_blank')
           }
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'SIPR':
           taskId = this.SIPR.task
@@ -657,6 +699,7 @@ export default {
           for (var sipr = 0; sipr <= this.SIPR.forms.length; sipr++) {
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SIPR.forms[sipr].href, '_blank')
           }
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'DREN':
           taskId = this.DREN.task
@@ -664,6 +707,7 @@ export default {
           for (var dren = 0; dren <= this.DREN.forms.length; dren++) {
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.DREN.forms[dren].href, '_blank')
           }
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'JWICS':
           taskId = this.JWICS.task // original taskId\
@@ -671,6 +715,23 @@ export default {
           for (var jwics = 0; jwics <= this.JWICS.forms.length; jwics++) {
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.JWICS.forms[jwics].href, '_blank')
           }
+          taskUserId = vm.$store.state.support.AccountUserId
+          break
+        case 'CAC':
+          taskId = this.CAC.task // original taskId\
+          this.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var cacs = 0; cacs <= this.CAC.forms.length; cacs++) {
+            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.CAC.forms[cacs].href, '_blank')
+          }
+          taskUserId = vm.$store.state.support.CACUserId
+          break
+        case 'SCI':
+          taskId = this.SCI.task // original taskId\
+          this.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var scis = 0; scis <= this.SCI.forms.length; scis++) {
+            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SCI.forms[scis].href, '_blank')
+          }
+          taskUserId = vm.$store.state.support.SCIUserId
           break
       }
       await this.updateForm(taskId).catch(e => {
@@ -712,7 +773,8 @@ export default {
     async RejectGov(event) {
       await Security.dispatch('getDigest')
       let type = event.currentTarget.dataset.type,
-        taskId
+        taskId,
+        taskUserId = null
       // get the current item data
       switch (type) {
         case 'NIPR':
@@ -722,6 +784,7 @@ export default {
             this.deleteForm(nipr)
           })
           this.NIPR.forms = []
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'SIPR':
           taskId = this.SIPR.task
@@ -730,6 +793,7 @@ export default {
             this.deleteForm(sipr)
           })
           this.SIPR.forms = []
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'DREN':
           taskId = this.DREN.task
@@ -738,6 +802,7 @@ export default {
             this.deleteForm(dren)
           })
           this.DREN.forms = []
+          taskUserId = vm.$store.state.support.AccountUserId
           break
         case 'JWICS':
           taskId = this.JWICS.task // original taskId\
@@ -746,6 +811,25 @@ export default {
             this.deleteForm(jwics)
           })
           this.JWICS.forms = []
+          taskUserId = vm.$store.state.support.AccountUserId
+          break
+        case 'CAC':
+          taskId = this.CAC.task // original taskId\
+          this.CAC.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+          await this.asyncForEach(this.CAC.forms, cacs => {
+            this.deleteForm(cacs)
+          })
+          this.CAC.forms = []
+          taskUserId = vm.$store.state.support.CACUserId
+          break
+        case 'SCI':
+          taskId = this.SCI.task // original taskId\
+          this.SCI.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+          await this.asyncForEach(this.SCI.forms, scis => {
+            this.deleteForm(scis)
+          })
+          this.SCI.forms = []
+          taskUserId = vm.$store.state.support.SCIUserId
           break
       }
       await this.updateForm(taskId).catch(error => {
@@ -760,12 +844,6 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })
-      let taskUserId = null
-      if (type == 'NIPR' || type == 'SIPR' || type == 'DREN' || type == 'JWICS') {
-        taskUserId = vm.$store.state.support.AccountUserId
-      } else {
-        taskUserId = vm.$store.state.support.CACSCIUserId
-      }
       // Notify Accounts Admin or Security via task list
       let payload = {
         Title: 'AFRL Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
