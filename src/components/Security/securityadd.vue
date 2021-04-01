@@ -72,7 +72,7 @@
                 </b-form-invalid-feedback>
               </div>
             </b-form-group>
-            <b-form-group v-if="isSecurity" label="Historical Data: " label-for="formHistorical">
+            <b-form-group v-if="isSecurity && formAccount" label="Historical Data: " label-for="formHistorical">
               <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
             </b-form-group>
           </b-col>
