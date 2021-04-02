@@ -144,7 +144,7 @@ import User from '@/models/User'
 // import Workplan from '@/models/WorkPlan'
 import Manning from '@/models/Manning'
 import { DropDownList } from '@syncfusion/ej2-vue-dropdowns'
-import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow, Resize, Search } from '@syncfusion/ej2-vue-grids'
 
 let me = null
 let meObj = null
@@ -329,7 +329,7 @@ export default {
       pageSettings: { pageSize: 30 },
       editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true, newRowPosition: 'Bottom', mode: 'Normal' },
       // toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport'],
+      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'Search'],
       ActionsTemplate: function() {
         return {
           template: Vue.component('actionsTemplate', {
@@ -867,7 +867,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport, Search, Resize]
   }
 }
 </script>
