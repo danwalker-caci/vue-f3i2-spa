@@ -156,14 +156,20 @@
           <b-col cols="6">
             <b-form-group>
               <b-form-group label="Form submission is for another Person: " label-for="formSetName">
-                <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
               </b-form-group>
             </b-form-group>
           </b-col>
           <b-col cols="6">
+            <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
-                <b-form-select id="formPerson" v-model="form.PersonnelID" @change="onPersonnelChange" :options="personnel"> </b-form-select>
+                <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
+                  <b-dropdown-form><b-form-input id="personnelFiltering" placeholder="Filter..." type="text" @keyup.native="filtering"></b-form-input></b-dropdown-form>
+                  <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
+                </b-dropdown>
+                <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
                 <b-form-invalid-feedback>
                   Select a Person
                 </b-form-invalid-feedback>
@@ -172,7 +178,6 @@
             <div v-if="form.setName === 'No'">
               <b-form-group label="Your Name: " label-for="formPerson">
                 <b-form-input id="formName" v-model="form.Name" disabled />
-                <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
               </b-form-group>
             </div>
           </b-col>
@@ -230,6 +235,7 @@
 </template>
 <script>
 let vm = null
+let timeout = null
 // eslint-disable-next-line no-undef
 let url = _spPageContextInfo.webAbsoluteUrl
 
@@ -295,6 +301,7 @@ export default {
         Company: '',
         Type: null,
         PersonnelID: null,
+        PersonSelect: null,
         setName: 'No',
         Name: null,
         GovSentDate: null,
@@ -319,8 +326,10 @@ export default {
       lockSubmit: false,
       taskUserId: null,
       securityForm: null,
+      filteredData: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: '',
+      person: '',
       cacvalid: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
@@ -328,35 +337,58 @@ export default {
       cacever: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
-      ]
+      ],
+      ddfields: { text: 'text', value: 'value' }
     }
   },
   mounted: async function() {
     vm = this
     // First get current user informaiton
-    try {
-      await Security.dispatch('getDigest')
-      this.checkType()
-      this.getUserIDs()
-      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-      Company.dispatch('getCompanies').then(function() {
-        vm.$options.interval = setInterval(vm.waitForPersonnel, 1000)
+    await Security.dispatch('getDigest')
+    await this.checkType()
+    await this.getUserIDs()
+    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+    await Company.dispatch('getCompanies')
+      .then(function() {
+        vm.$options.interval = setInterval(vm.waitForPersonnel, 750)
       })
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
+      .catch(error => {
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: error.message,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + error.message)
       })
-      console.log('ERROR: ' + e)
-    }
   },
   methods: {
+    filtering: e => {
+      clearTimeout(timeout)
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      timeout = setTimeout(() => {
+        console.log(`Entered Text: ${e.target.value}`)
+        vm.filteredData = vm.personnel.filter(data =>
+          JSON.stringify(data)
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+        )
+      }, 750)
+      /*let personnel = vm.personnel.filter(o => {
+        Object.keys(o).some(k => {
+          if (typeof o[k] === 'string') {
+            console.log(o[k].toLowerCase())
+            return o[k].toLowerCase().indexOf(e.text.toLowerCase()) !== 1
+          }
+        })
+      })*/
+    },
+    loadFilterData: async () => {
+      vm.filteredData = vm.personnel
+    },
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
@@ -369,44 +401,46 @@ export default {
         this.form.Company = this.currentuser[0].Company ? this.currentuser[0].Company : this.companies[0]
         let payload = {}
         payload.company = this.form.Company
-        Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-          // Company loaded into state
-          Personnel.dispatch('getPersonnelByUserAccount', vm.userid).then(function(result) {
-            vm.form.PersonnelID = result ? result[0].Id : 'S'
-            vm.currentPersonnelID = result ? result[0].Id : ''
-            vm.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
-            vm.currentFirstName = result ? result[0].FirstName : ''
-            vm.currentLastName = result ? result[0].LastName : ''
-            vm.form.FirstName = result ? result[0].FirstName : ''
-            vm.form.LastName = result ? result[0].LastName : ''
-            // Pulled from personnel list
-            if (vm.formSCI && result && result[0].SCIFormStatus) {
-              vm.form.SCIStatus = result[0].SCIFormStatus
-              vm.form.CACStatus = result[0].CACStatus
-            }
-            vm.checkSecurityForms()
-          })
-        })
-        clearInterval(vm.$options.interval)
+        await Personnel.dispatch('getPersonnelByCompany', payload)
+        // Company loaded into state
+        let result = await Personnel.dispatch('getPersonnelByUserAccount', this.userid)
+        this.form.PersonnelID = result ? result[0].Id : 'S'
+        this.currentPersonnelID = result ? result[0].Id : ''
+        this.form.Name = result ? result[0].FirstName + ' ' + result[0].LastName : ''
+        this.currentFirstName = result ? result[0].FirstName : ''
+        this.currentLastName = result ? result[0].LastName : ''
+        this.form.FirstName = result ? result[0].FirstName : ''
+        this.form.LastName = result ? result[0].LastName : ''
+        // Pulled from personnel list
+        if (this.formSCI && result && result[0].SCIFormStatus) {
+          this.form.SCIStatus = result[0].SCIFormStatus
+          this.form.CACStatus = result[0].CACStatus
+        }
+        this.filteredData = this.personnel
+        this.checkSecurityForms()
+        clearInterval(this.$options.interval)
       }
     },
     getPersonnelByCompany: async function() {
       let payload = {
         company: this.form.Company
       }
-      await Personnel.dispatch('getPersonnelByCompany', payload).then(function() {
-        if (vm.form.setName === 'Yes') {
-          vm.form.PersonnelID = 'S'
-        }
-      })
+      await Personnel.dispatch('getPersonnelByCompany', payload)
+      if (this.form.setName === 'Yes') {
+        this.form.PersonnelID = 'S'
+      }
+      this.filteredData = this.personnel
     },
-    onPersonnelChange: function() {
+    onPersonnelChange: function(value) {
+      console.log('Personnel Change')
+      console.log(value)
       this.personnel.forEach(person => {
-        if (person.value === vm.form.PersonnelID) {
+        if (person.value === value) {
           vm.form.Name = person.text
           vm.form.FirstName = person.text.substr(0, person.text.indexOf(' '))
           vm.form.LastName = person.text.substr(person.text.indexOf(' '), person.text.length)
-          vm.form.PersonnelID = person.value
+          vm.form.PersonnelID = value
+          vm.person = vm.form.FirstName + ' ' + vm.form.LastName
           vm.checkSecurityForms()
         }
       })
