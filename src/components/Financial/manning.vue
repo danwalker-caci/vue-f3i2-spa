@@ -72,53 +72,56 @@
               Toggle Filters
             </b-button>
           </b-row> -->
-          <b-row no-gutters class="gridrow">
-            <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
-              <ejs-grid
-                id="ManningGrid"
-                ref="ManningGrid"
-                :enablePersistence="false"
-                :dataSource="filtereddata"
-                :allowPaging="true"
-                :pageSettings="pageSettings"
-                :editSettings="editSettings"
-                :toolbar="toolbar"
-                :allowExcelExport="true"
-                :toolbarClick="toolbarClick"
-                :actionBegin="actionBegin"
-                :actionComplete="actionComplete"
-                rowHeight="20"
-                height="100%"
-                width="100%"
-              >
-                <e-columns>
-                  <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                  <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
-                  <e-column field="Number" headerText="Number" width="100"></e-column>
-                  <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
-                  <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
-                  <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
-                  <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
-                  <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
-                  <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
-                  <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
-                  <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
-                  <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
-                  <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
-                  <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
-                  <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
-                  <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                  <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-                </e-columns>
-              </ejs-grid>
-              <template #overlay>
-                <div class="text-center">
-                  <p id="busy-label">{{ overlayText }}</p>
-                </div>
-              </template>
-            </b-overlay>
-          </b-row>
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="ManningGrid"
+                  ref="ManningGrid"
+                  :load="load"
+                  :enablePersistence="false"
+                  :dataSource="filtereddata"
+                  :allowPaging="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  rowHeight="20"
+                  :height="rect.height - 120"
+                  :width="rect.width - 1"
+                >
+                  <e-columns>
+                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
+                    <e-column field="Number" headerText="Number" width="100"></e-column>
+                    <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
+                    <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
+                    <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
+                    <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
+                    <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
+                    <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
+                    <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
+                    <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
+                    <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
+                    <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
+                    <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
+                    <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
+                    <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                    <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
           <!-- <b-row no-gutters class="bg-warning buttonrow">
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center"></b-col>
@@ -495,6 +498,18 @@ export default {
           break
       }
     },
+    async load() {
+      this.$refs["ManningGrid"].ej2Instances.element.addEventListener('mousedown', function(e) {
+        var instance = this.ej2_instances[0]
+        if (e.target.classList.contains("e-rowcell")) {
+        if (instance.isEdit)
+            instance.endEdit()
+            let index = parseInt(e.target.getAttribute("Index"))
+            instance.selectRow(index)
+            instance.startEdit()
+        }
+      })
+    },
     actionBegin(args) {
       console.log('ACTION BEGIN: ' + args.requestType)
       switch (args.requestType) {
@@ -523,7 +538,40 @@ export default {
     },
     actionComplete(args) {
       console.log('ACTION COMPLETE: ' + args.requestType)
-      if (args.requestType == 'columnstate') {
+      switch (args.requestType) {
+        case 'columnstate' :
+          this.$refs['ManningGrid'].autoFitColumns()
+          break
+        case 'refresh' : 
+          let h1 = 0
+          let h2 = this.$refs.ManningGrid.$el.children[7].children[0].clientHeight // children[7] matches .e-gridconent
+          console.log('CLIENTHEIGHT: ' + h2)
+          h1 = Math.floor(h2 / 20)
+          this.pageSettings.pageSize = h1
+          this.$refs.ManningGrid.pageSettings = { pageSize: h1 }
+          break
+        case 'beginEdit' :
+          console.log(args)
+          // build payload to pass to update function
+          let itemprops = {
+            __metadata: { type: 'SP.Data.ManningListItem' },
+            Title: args.rowData.Title,
+            Number: args.rowData.Number,
+            MasterEffort: args.rowData.MasterEffort,
+            SubEffort: args.rowData.SubEffort,
+            PercentSupport: args.rowData.PercentSupport,
+            FullBurdenedCost: args.rowData.FullBurdenedCost
+          }
+          let payload = {}
+          payload.uri = args.rowData.uri
+          payload.itemprops = itemprops
+          Manning.dispatch('editManningItem', payload).then(function(){
+            // The grid will be updated with the values already so no need to do anything here.
+            // Would we need to update the uri/etag?
+          })
+          break
+      }
+      /*if (args.requestType == 'columnstate') {
         this.$refs['ManningGrid'].autoFitColumns()
       }
       if (args.requestType == 'refresh') {
@@ -534,6 +582,12 @@ export default {
         this.pageSettings.pageSize = h1
         this.$refs.ManningGrid.pageSettings = { pageSize: h1 }
       }
+      if (args.requestType == 'beginEdit') {
+
+      }*/
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     dataBound: function() {
       this.$refs.ManningGrid.autoFitColumns()
