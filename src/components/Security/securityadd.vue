@@ -165,7 +165,9 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                  <b-dropdown-item id="formPerson" v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)" @keydown.native="filtering">{{ person.text }}</b-dropdown-item>
+                  <b-dropdown-form><b-form-input id="personnelFiltering" placeholder="Filter..." type="text" @keyup.native="filtering"></b-form-input></b-dropdown-form>
+                  <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
                 </b-dropdown>
                 <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
                 <b-form-invalid-feedback>
@@ -327,6 +329,7 @@ export default {
       filteredData: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: '',
+      person: '',
       cacvalid: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
@@ -364,19 +367,16 @@ export default {
   },
   methods: {
     filtering: e => {
-      console.log(e)
-      e.preventDefault()
-      console.log(`Timeout: ${timeout}`)
       clearTimeout(timeout)
       // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
       timeout = setTimeout(() => {
-        console.log(`Entered Text: ${e}`)
-        vm.filteredData.filter(data =>
+        console.log(`Entered Text: ${e.target.value}`)
+        vm.filteredData = vm.personnel.filter(data =>
           JSON.stringify(data)
             .toLowerCase()
-            .includes(e.text.toLowerCase())
+            .includes(e.target.value.toLowerCase())
         )
-      }, 1000)
+      }, 750)
       /*let personnel = vm.personnel.filter(o => {
         Object.keys(o).some(k => {
           if (typeof o[k] === 'string') {
@@ -439,6 +439,7 @@ export default {
           vm.form.FirstName = person.text.substr(0, person.text.indexOf(' '))
           vm.form.LastName = person.text.substr(person.text.indexOf(' '), person.text.length)
           vm.form.PersonnelID = value
+          vm.person = vm.form.FirstName + ' ' + vm.form.LastName
           vm.checkSecurityForms()
         }
       })
