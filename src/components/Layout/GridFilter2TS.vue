@@ -16,10 +16,10 @@
               <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'asc' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
                 <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
               </b-button> -->
-              <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Down' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortit(field.FieldName, field.DataType, 'desc')">
+              <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'desc' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortit(field.FieldName, field.DataType, 'desc')">
                 <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'Up' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortit(field.FieldName, field.DataType, 'asc')">
+              <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'asc' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortit(field.FieldName, field.DataType, 'asc')">
                 <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
               </b-button>
               <b-collapse class="mt-1" :id="getRef('collapse', field.FieldName)" v-model="field.Filter">
@@ -95,9 +95,15 @@ export default class GridFilter extends Vue {
 
   @Ref('FilterModal') readonly FilterModal!: BModal
 
+  get TravelLoaded() {
+    return this.$store.state.travel.loaded
+  }
+
   public sortfield!: string
   public sortdir!: any
   public sorttype!: any
+  public timeout!: any
+  public loadedFromFilter: boolean = false
 
   @users.State
   public currentUser!: UserInt
@@ -135,9 +141,18 @@ export default class GridFilter extends Vue {
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
 
+  /* created() {
+    // listen for events
+    EventBus.$on('setfilterfromgrid', (data: any) => {
+      this.setfilterfromgrid(data)
+    })
+  } */
+
   mounted() {
     vm = this
     console.log('GRIDFILTER MOUNTED: ' + this.filtertype)
+    // TODO: check if can get saved filters the potential is that the grid is not yet loaded so lets wait for that.
+    this.loadfilters()
   }
 
   public getRef(text: any, idx: any) {
@@ -154,16 +169,19 @@ export default class GridFilter extends Vue {
     switch (this.filtertype) {
       case 'personnel':
         this.filterfields = this.$store.state.personnel.filterfields
+        // this.loadfilters()
         this.filterTitle = 'Personnel Filter'
         break
 
       case 'workplans':
         this.filterfields = this.$store.state.workplan.filterfields
+        // this.loadfilters()
         this.filterTitle = 'Workplan Filter'
         break
 
       case 'travel':
         this.filterfields = this.$store.state.travel.filterfields
+        // this.loadfilters()
         this.filterTitle = 'Travel Filter'
         break
     }
@@ -191,9 +209,7 @@ export default class GridFilter extends Vue {
       }
     }
   }
-  // TODO: Add check to see if loading from save! Some of this is not needed unless loading saved filters!
   public setfilter(filterfields: Array<FilterFieldItem>) {
-    console.log('FILTER: ' + filterfields.length)
     let p: Array<any> = []
     switch (this.filtertype) {
       case 'personnel':
@@ -208,6 +224,7 @@ export default class GridFilter extends Vue {
         p = this.$store.state.travel.travel
         break
     }
+    console.log('FILTER: ' + p.length)
     for (let i = 0; i < filterfields.length; i++) {
       if (this.filterfields[i].Sort !== '') {
         this.sortfield = this.filterfields[i].FieldName
@@ -237,12 +254,12 @@ export default class GridFilter extends Vue {
               // Equals
               if (filterfields[i].DataType == 'Choice') {
                 p = p.filter(search => Vue._.isEqual(search[filterfields[i].FieldName], filterfields[i].Selected))
-              } else {
-                if (filterfields[i].DataType == 'Number') {
-                  p = p.filter(search => search[filterfields[i].FieldName] == filterfields[i].FilterValue)
-                } else {
-                  p = p.filter(search => moment(search[filterfields[i].FieldName]).isSame(moment(filterfields[i].FilterValue), 'day'))
-                }
+              }
+              if (filterfields[i].DataType == 'Number' || filterfields[i].DataType == 'Text') {
+                p = p.filter(search => search[filterfields[i].FieldName] == filterfields[i].FilterValue)
+              }
+              if (filterfields[i].DataType == 'Date') {
+                p = p.filter(search => moment(search[filterfields[i].FieldName]).isSame(moment(filterfields[i].FilterValue), 'day'))
               }
               break
 
@@ -276,37 +293,7 @@ export default class GridFilter extends Vue {
               p = p.filter(search => moment(search[filterfields[i].FieldName]).isBetween(moment(filterfields[i].FilterValue), moment(filterfields[i].FilterValue2)))
               break
           }
-          if (this.sortfield !== '') {
-            // if this is a date field we need to do a bit more work to convert and test for sorting
-            if (filterfields[i].DataType == 'Date') {
-              const f = filterfields[i].FieldName
-              p = Vue._.orderBy(
-                p,
-                function(o) {
-                  return moment(o[f]).format('YYYYMMDD')
-                },
-                this.sortdir
-              )
-            } else {
-              p = Vue._.orderBy(p, this.sortfield, this.sortdir)
-            }
-          }
         }
-      }
-      if (this.filterfields[i].Visible) {
-        const payload: any = {}
-        payload.checked = true
-        payload.displayname = this.filterfields[i].DisplayName
-        payload.type = this.filtertype
-        EventBus.$emit('showhide', payload)
-        /* this.$refs.PersonnelGrid.showColumns(this.filterfields[i].DisplayName)
-        this.$refs.PersonnelGrid.autoFitColumns() */
-      } else {
-        const payload: any = {}
-        payload.checked = false
-        payload.displayname = this.filterfields[i].DisplayName
-        payload.type = this.filtertype
-        EventBus.$emit('showhide', payload)
       }
     }
     // now sort
@@ -325,7 +312,7 @@ export default class GridFilter extends Vue {
     // now filter
     switch (this.filtertype) {
       case 'personnel':
-        this.setFilteredPersonnel(p)
+        // this.setFilteredPersonnel(p)
         break
 
       case 'workplans':
@@ -333,8 +320,27 @@ export default class GridFilter extends Vue {
         break
 
       case 'travel':
+        console.log('FILTERING TRAVEL: ' + p.length)
         this.setFilteredTravel(p)
         break
+    }
+    // now show or hide fields if loading from saved filter
+    if (this.loadedFromFilter) {
+      for (let i = 0; i < vm.filterfields.length; i++) {
+        if (vm.filterfields[i].Visible) {
+          const payload: any = {}
+          payload.checked = true
+          payload.displayname = vm.filterfields[i].DisplayName
+          payload.type = vm.filtertype
+          EventBus.$emit('showhide', payload)
+        } else {
+          const payload: any = {}
+          payload.checked = false
+          payload.displayname = vm.filterfields[i].DisplayName
+          payload.type = vm.filtertype
+          EventBus.$emit('showhide', payload)
+        }
+      }
     }
   }
 
@@ -364,7 +370,7 @@ export default class GridFilter extends Vue {
   public async savefilters(filterfields: Array<FilterFieldItem>) {
     switch (this.filtertype) {
       case 'personnel':
-        window.localStorage.setItem('TravelFilter', JSON.stringify(this.filterfields))
+        window.localStorage.setItem('PersonnelFilter', JSON.stringify(this.filterfields))
         break
 
       case 'workplans':
@@ -372,7 +378,7 @@ export default class GridFilter extends Vue {
         break
 
       case 'travel':
-        window.localStorage.setItem('PersonnelFilter', JSON.stringify(this.filterfields))
+        window.localStorage.setItem('TravelFilter', JSON.stringify(this.filterfields))
         break
     }
   }
@@ -393,22 +399,37 @@ export default class GridFilter extends Vue {
     }
   }
 
-  public async loadfilter() {
-    let f: string = ''
+  public async loadfilters() {
+    console.log('LOAD FILTERS FROM LOCAL STORAGE')
+    // TODO add test to be sure that data is loaded from the correct filtertype
+    let f: any
+    let goon: boolean = false
     switch (this.filtertype) {
       case 'personnel':
-        f = String(window.localStorage.getItem('PersonnelFilter'))
+        /* if (this.PersonnelLoaded) {
+          goon = true
+          f = String(window.localStorage.getItem('PersonnelFilter'))
+        } */
         break
 
       case 'workplans':
-        f = String(window.localStorage.getItem('WorkplanFilter'))
+        /* if (this.WorkplansLoaded) {
+          goon = true
+          f = String(window.localStorage.getItem('WorkplanFilter'))
+        } */
         break
 
-      case 'travel':
-        f = String(window.localStorage.getItem('TravelFilter'))
+      case 'travel': // only supporting travel right now
+        if (this.TravelLoaded) {
+          f = String(window.localStorage.getItem('TravelFilter'))
+          console.log('FILTERFIELDS FROM LOCAL STORAGE: ' + f)
+          this.filterfields = JSON.parse(f)
+        } else {
+          this.timeout = window.setTimeout(this.loadfilters, 500)
+        }
         break
     }
-    if (f !== '') {
+    if (f) {
       this.$bvModal
         .msgBoxConfirm('Load your saved filter?', {
           title: 'Please Confirm',
@@ -423,11 +444,10 @@ export default class GridFilter extends Vue {
         })
         .then(value => {
           if (value == true) {
-            vm.filteredtravel = []
-            let flds = JSON.parse(f)
+            vm.setFilteredTravel([])
             setTimeout(() => {
-              vm.filterfields = flds
-              vm.setfilter()
+              vm.loadedFromFilter = true
+              vm.setfilter(vm.filterfields)
             }, 250)
           }
         })

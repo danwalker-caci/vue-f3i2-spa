@@ -31,7 +31,7 @@
                   :queryCellInfo="formatCell"
                   :excelQueryCellInfo="formatExcelCell"
                   rowHeight="20"
-                  :height="contentrect.height - 175"
+                  :height="contentrect.height - 165"
                   :width="contentrect.width - 5"
                 >
                   <e-columns>
@@ -94,6 +94,8 @@ import { GridComponent, EditSettings, ActionEventArgs, RowDataBoundEventArgs, Qu
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze } from '@syncfusion/ej2-vue-grids'
 import ActionsTemplate from './ActionsTemplate.vue'
 import TripReportTemplate from './TripReportTemplate.vue'
+import { FilterFieldItem } from '@/interfaces/FilterFieldItem'
+import moment from 'moment'
 
 const notify = namespace('notify')
 const support = namespace('support')
@@ -131,6 +133,9 @@ export default class TravelTracker extends Vue {
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
 
+  @travel.Action
+  public setfilterFields!: (fields: Array<FilterFieldItem>) => void
+
   public actionsTemplate() {
     return { template: ActionsTemplate }
   }
@@ -159,7 +164,7 @@ export default class TravelTracker extends Vue {
     return this.$store.state.users.currentUser.isSubcontractor
   }
 
-  @Ref('TravelGrid') readonly TravelGrid!: GridComponent
+  @Ref('TravelGrid') TravelGrid!: GridComponent
 
   created() {
     EventBus.$on('showhide', (data: any) => {
@@ -256,30 +261,30 @@ export default class TravelTracker extends Vue {
   public formatExcelCell(args?: ExcelQueryCellInfoEventArgs) {
     switch (args!.column!.field) {
       case 'Created': {
-        args!.value = this.$moment(args!.value as string).format('MM/DD/YYYY')
+        args!.value = moment(args!.value as string).format('MM/DD/YYYY')
         break
       }
       case 'StartTime': {
-        args!.value = this.$moment(args!.value as string).format('MM/DD/YYYY')
+        args!.value = moment(args!.value as string).format('MM/DD/YYYY')
         break
       }
       case 'EndTime': {
-        args!.value = this.$moment(args!.value as string).format('MM/DD/YYYY')
+        args!.value = moment(args!.value as string).format('MM/DD/YYYY')
         break
       }
       case 'OCONUSApprovedOn': {
-        args!.value = this.$moment(args!.value as string).format('MM/DD/YYYY')
+        args!.value = moment(args!.value as string).format('MM/DD/YYYY')
         break
       }
       case 'SecurityActionCompleted': {
-        args!.value = this.$moment(args!.value as string).format('MM/DD/YYYY')
+        args!.value = moment(args!.value as string).format('MM/DD/YYYY')
         break
       }
     }
   }
 
   public showorhide(e: any) {
-    console.log('SHOW OR HIDE: ' + e)
+    // console.log('SHOW OR HIDE FROM TRAVELTRACKER: ' + e)
     const checked = e.checked
     const displayname = String(e.displayname)
     if (e.type == 'travel') {
@@ -299,7 +304,7 @@ export default class TravelTracker extends Vue {
       p = Vue._.orderBy(
         p,
         function(o: any) {
-          return new vm.$moment(o[e.fieldname]).format('YYYYMMDD')
+          return moment(o[e.fieldname]).format('YYYYMMDD')
         },
         e.direction
       )

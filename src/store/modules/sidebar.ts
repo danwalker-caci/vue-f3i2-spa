@@ -11,9 +11,7 @@ const nurl = baseUrl + "/_api/lists/getbytitle('Navigation')/items?$select=*&$or
 
 function formatNavigation(j: any): Array<SidebarItem> {
   const p: Array<SidebarItem> = []
-  // console out the sidebar item results
-  console.log('SIDEBAR ITEMS FROM AXIOS CALL ' + j)
-  // loop through the items and return something that we hope is correct
+  // loop through the items
   for (let i = 0; i < j.length; i++) {
     // we know that any item that has isMenu set to true is a root item so we are going to set those up first
     if (j[i]['isMenu'] == true) {

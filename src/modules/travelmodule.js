@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 // import Vue from 'vue'
 import Travel from '@/models/Travel'
 import TravelService from '@/services/TravelService.js'

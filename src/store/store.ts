@@ -13,8 +13,8 @@ import Todo from '@/models/Todo'
 import todomodule from '@/modules/todomodule'
 import Event from '@/models/Event'
 import eventmodule from '@/modules/eventmodule'
-// import Travel from '@/models/Travel'
-// import travelmodule from '@/modules/travelmodule'
+import Travel from '@/models/Travel'
+import travelmodule from '@/modules/travelmodule'
 import Personnel from '@/models/Personnel'
 import personnelmodule from '@/modules/personnelmodule'
 import WorkPlan from '@/models/WorkPlan'
@@ -39,7 +39,7 @@ const database = new VuexORM.Database()
 database.register(User, usermodule)
 database.register(Todo, todomodule)
 database.register(Event, eventmodule)
-// database.register(Travel, travelmodule)
+database.register(Travel, travelmodule)
 database.register(Personnel, personnelmodule)
 database.register(WorkPlan, workplanmodule)
 database.register(Manning, manningmodule)

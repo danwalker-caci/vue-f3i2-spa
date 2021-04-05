@@ -594,6 +594,11 @@ class Travel extends VuexModule {
   }
 
   @Mutation
+  public updatefilterFields(fields: Array<FilterFieldItem>): void {
+    this.filterfields = fields
+  }
+
+  @Mutation
   public updateCompanies(companies: Array<ObjectItem>): void {
     this.companies = companies
     this.filterfields[8].Options = companies
@@ -612,6 +617,11 @@ class Travel extends VuexModule {
     })
     this.context.commit('updateDigest', response.data.d.GetContextWebInformation.FormDigestValue)
     return true
+  }
+
+  @Action
+  public setfilterFields(fields: Array<FilterFieldItem>): void {
+    this.context.commit('updatefilterFields', fields)
   }
 
   @Action
