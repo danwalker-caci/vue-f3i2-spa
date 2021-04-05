@@ -190,7 +190,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
-      Active: payload.Active === 'Yes' ? true : false,
+      Active: payload.Active === 'Yes' || payload.Active === true ? true : false,
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
