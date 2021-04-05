@@ -72,54 +72,56 @@
               Toggle Filters
             </b-button>
           </b-row> -->
-          <b-row no-gutters class="gridrow">
-            <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
-              <ejs-grid
-                id="ManningGrid"
-                ref="ManningGrid"
-                :load="load"
-                :enablePersistence="false"
-                :dataSource="filtereddata"
-                :allowPaging="true"
-                :pageSettings="pageSettings"
-                :editSettings="editSettings"
-                :toolbar="toolbar"
-                :allowExcelExport="true"
-                :toolbarClick="toolbarClick"
-                :actionBegin="actionBegin"
-                :actionComplete="actionComplete"
-                rowHeight="20"
-                height="100%"
-                width="100%"
-              >
-                <e-columns>
-                  <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                  <e-column field="Title" headerText="Title" textAlign="Left" width="300"></e-column>
-                  <e-column field="Number" headerText="Number" width="100"></e-column>
-                  <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" width="200" :edit="MEParams"></e-column>
-                  <e-column field="SubEffort" headerText="Sub Effort" width="200" :edit="SEParams"></e-column>
-                  <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" width="200"></e-column>
-                  <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" width="100"></e-column>
-                  <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
-                  <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
-                  <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
-                  <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" width="100"></e-column>
-                  <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" width="150"></e-column>
-                  <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
-                  <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" width="180"></e-column>
-                  <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" width="150" :edit="PSParams"></e-column>
-                  <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                  <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" width="140" type="date" format="yMd"></e-column>
-                  <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-                </e-columns>
-              </ejs-grid>
-              <template #overlay>
-                <div class="text-center">
-                  <p id="busy-label">{{ overlayText }}</p>
-                </div>
-              </template>
-            </b-overlay>
-          </b-row>
+          <b-form @submit="onSubmit">
+            <b-row no-gutters class="gridrow">
+              <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+                <ejs-grid
+                  id="ManningGrid"
+                  ref="ManningGrid"
+                  :load="load"
+                  :enablePersistence="false"
+                  :dataSource="filtereddata"
+                  :allowPaging="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettings"
+                  :toolbar="toolbar"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  rowHeight="20"
+                  :height="rect.height - 120"
+                  :width="rect.width - 1"
+                >
+                  <e-columns>
+                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Title" :visible="false" headerText="Title" textAlign="Left" width="300"></e-column>
+                    <e-column field="Number" :visible="false" headerText="Number" width="100"></e-column>
+                    <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minWidth="50" :edit="MEParams"></e-column>
+                    <e-column field="SubEffort" headerText="Sub Effort" minWidth="75" :edit="SEParams"></e-column>
+                    <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" minWidth="50"></e-column>
+                    <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
+                    <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
+                    <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
+                    <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" minWidth="75"></e-column>
+                    <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" minWidth="75"></e-column>
+                    <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" minWidth="50"></e-column>
+                    <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
+                    <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" minWidth="50" :edit="PSParams"></e-column>
+                    <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" minWidth="40" type="date" format="yMd"></e-column>
+                    <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" minWidth="40" type="date" format="yMd"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                  </e-columns>
+                </ejs-grid>
+                <template #overlay>
+                  <div class="text-center">
+                    <p id="busy-label">{{ overlayText }}</p>
+                  </div>
+                </template>
+              </b-overlay>
+            </b-row>
+          </b-form>
           <!-- <b-row no-gutters class="bg-warning buttonrow">
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center"></b-col>
@@ -142,7 +144,7 @@ import User from '@/models/User'
 // import Workplan from '@/models/WorkPlan'
 import Manning from '@/models/Manning'
 import { DropDownList } from '@syncfusion/ej2-vue-dropdowns'
-import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow } from '@syncfusion/ej2-vue-grids'
+import { Page, Toolbar, Edit, VirtualScroll, ExcelExport, DetailRow, Resize, Search } from '@syncfusion/ej2-vue-grids'
 
 let me = null
 let meObj = null
@@ -184,6 +186,9 @@ export default {
     },
     companies() {
       return Company.getters('DropDown')
+    },
+    rect() {
+      return this.$store.state.support.contentrect
     }
   },
   data: function() {
@@ -324,7 +329,7 @@ export default {
       pageSettings: { pageSize: 30 },
       editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true, newRowPosition: 'Bottom', mode: 'Normal' },
       // toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
-      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
+      toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'Search'],
       ActionsTemplate: function() {
         return {
           template: Vue.component('actionsTemplate', {
@@ -583,6 +588,9 @@ export default {
       if (args.requestType == 'beginEdit') {
 
       }*/
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     dataBound: function() {
       this.$refs.ManningGrid.autoFitColumns()
@@ -859,7 +867,7 @@ export default {
     }
   },
   provide: {
-    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport]
+    grid: [Page, Edit, DetailRow, Toolbar, VirtualScroll, ExcelExport, Search, Resize]
   }
 }
 </script>
