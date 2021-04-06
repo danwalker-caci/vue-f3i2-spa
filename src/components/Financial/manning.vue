@@ -99,7 +99,7 @@
                     <e-column field="Number" :visible="false" headerText="Number" width="100"></e-column>
                     <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minWidth="50" :edit="MEParams"></e-column>
                     <e-column field="SubEffort" headerText="Sub Effort" minWidth="75" :edit="SEParams"></e-column>
-                    <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" minWidth="50"></e-column>
+                    <e-column field="EmployeeID" headerText="EmployeeID" minWidth="50"></e-column>
                     <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
                     <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
                     <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
