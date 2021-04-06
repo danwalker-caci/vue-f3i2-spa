@@ -99,12 +99,12 @@
                     <e-column field="Number" :visible="false" headerText="Number" width="100"></e-column>
                     <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minWidth="50" :edit="MEParams"></e-column>
                     <e-column field="SubEffort" headerText="Sub Effort" minWidth="75" :edit="SEParams"></e-column>
-                    <e-column field="EmployeeID" :visible="false" headerText="EmployeeID" minWidth="50"></e-column>
+                    <e-column field="EmployeeID" headerText="EmployeeID" minWidth="50"></e-column>
                     <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
                     <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
                     <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
                     <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" minWidth="75"></e-column>
-                    <e-column field="FullBurdenedCost" headerText="FullBurdenedCost" textAlign="Left" minWidth="75"></e-column>
+                    <e-column field="FullBurdenedCost" headerText="Monthly Full Burdened Cost" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" minWidth="50"></e-column>
                     <e-column field="Email" :allowEditing="false" :visible="false" headerText="Email" textAlign="Left" width="200"></e-column>
                     <e-column field="Company" :allowEditing="false" headerText="Company" textAlign="Left" minWidth="100"></e-column>
