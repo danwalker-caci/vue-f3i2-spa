@@ -163,12 +163,20 @@ export default {
           class: 'travel-TripReportReview'
         },
         {
+          name: 'TripReportRejected',
+          class: 'travel-TripReportRejected'
+        },
+        {
           name: 'Postponed',
           class: 'travel-Postponed'
         },
         {
           name: 'Cancelled',
           class: 'travel-Cancelled'
+        },
+        {
+          name: 'RejectedByWPM',
+          class: 'travel-RejectedByWPM'
         }
       ]
     }
@@ -177,9 +185,6 @@ export default {
     vm = this
     this.$store.dispatch('support/addActivity', '<div class="bg-info">Travel Calendar Mounted</div>')
     this.company = this.currentuser[0].Company
-    if (console) {
-      console.log('COMPANY: ' + this.company)
-    }
     this.$bvToast.show('busy-toast')
     // Check if user is subcontractor first.
     if (this.isSubcontractor == true) {
@@ -219,9 +224,6 @@ export default {
       return text + '_' + idx
     },
     onPopupOpen: function(args) {
-      if (console) {
-        console.log('Popup Open')
-      }
       try {
         let element = String(args.data.element.className)
         if (element.indexOf('more') <= 0) {
@@ -235,9 +237,6 @@ export default {
       }
     },
     onCellClick: function(args) {
-      /* if (console) {
-        console.log('Cell Clicked: ' + args.requestType)
-      } */
       args.cancel = true
       if (this.moreevents) {
         // do nothing here
@@ -268,9 +267,6 @@ export default {
     },
     onSelect: function(args) {
       args.cancel = true
-      if (console) {
-        console.log('ONSELECT: ' + args.requestType)
-      }
       if (args.requestType === 'cellSelect') {
         let s = args.data.StartTime
         let e = args.data.EndTime
@@ -311,37 +307,6 @@ export default {
       let c = args.data.Status
       c = 'travel-' + c
       args.element.classList.add(c)
-      /* switch (c) {
-        case 'Approved': {
-          args.element.classList.add('bg-orange', 'text-dark')
-          break
-        }
-
-        case 'WPMReview': {
-          args.element.classList.add('bg-blue')
-          break
-        }
-
-        case 'AFRLReview': {
-          args.element.classList.add('bg-cyan')
-          break
-        }
-
-        case 'ReportDue': {
-          args.element.classList.add('bg-yellow', 'text-dark')
-          break
-        }
-
-        case 'ReportLate': {
-          args.element.classList.add('bg-red')
-          break
-        }
-
-        case 'Completed': {
-          args.element.classList.add('bg-green')
-          break
-        }
-      } */
     },
     onEventClick(args) {
       args.cancel = true
@@ -361,76 +326,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-body {
-  padding: 0.5rem !important;
-}
-
-.sorted {
-  color: #04ee04 !important;
-}
-
-.full {
-  width: 100%;
-}
-
-#FilterModal .modal-dialog {
-  margin: 1.75rem 0 auto !important;
-}
-
-#ShowFilters {
-  height: 40px;
-}
-
-.tableHeight {
-  height: calc(100vh - 130px);
-}
-
-#ulFields {
-  list-style-type: none;
-  background-color: white;
-  color: black !important;
-  width: 100%;
-  margin-bottom: 10px;
-  font-size: 16px !important;
-  padding: 10px;
-}
-
-#ulFields li {
-  list-style-type: none;
-  margin-bottom: 5px !important;
-}
-
-.filterform {
-  height: 22px !important;
-  border: 1px solid black !important;
-  border-radius: 4px !important;
-  font-size: 1rem;
-}
-
 .e-time {
   display: none !important;
 }
 
 .e-label {
   font-size: 16px !important;
-}
-
-.detailtable td {
-  font-size: 13px;
-  padding: 4px;
-  width: 800px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#EditTable {
-  font-size: 0.75rem !important;
-}
-
-.table td,
-.table th {
-  padding: 0.15rem !important;
 }
 
 .e-pager {

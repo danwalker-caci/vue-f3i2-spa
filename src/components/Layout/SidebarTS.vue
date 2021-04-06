@@ -45,14 +45,10 @@
                         </div>
                         <div class="col-1">
                           <span v-if="sublink.badgeId && sublink.badgeId.length > 0" :id="sublink.badgeId" class="badge badge-xs badge-danger sidebar-badge">0</span>
-                          <!-- <b-button v-if="sublink.filtertype && sublink.filtertype.length > 0" size="sm" class="actionbutton transparent btn-gridfilter" v-b-toggle="'filtermenu_' + sublink.filtertype" @click.prevent="return launchfilter(sublink.filtertype)">
-                            <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
-                          </b-button> -->
                         </div>
                       </div>
                     </div>
                   </router-link>
-                  <!-- <GridFilter v-if="sublink.filtertype && sublink.filtertype.length > 0" :filtertype="sublink.filtertype"></GridFilter> -->
                 </li>
               </ul>
             </b-collapse>
@@ -112,26 +108,11 @@ export default class Sidebar extends Vue {
   @sidebar.Action
   public getNavigation!: () => Promise<boolean>
 
-  public launchfilter(filtertype: string) {
-    console.log('FILTERING: ' + filtertype)
-    return false
-  }
-
   /** @method - lifecycle hook */
   public mounted(): void {
-    this.getNavigation().then(response => {
-      console.log('NAVIGATION RESPONSE ' + response)
-    })
+    this.getNavigation()
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.btn-gridfilter {
-  height: 20px;
-  width: 20px;
-  line-height: normal;
-  position: relative;
-  top: -4px;
-}
-</style>
+<style lang="scss" scoped></style>

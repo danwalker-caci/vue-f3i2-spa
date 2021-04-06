@@ -584,7 +584,6 @@ class Travel extends VuexModule {
 
   @Mutation
   public updateTravel(travel: Array<TravelItem>): void {
-    console.log('MUTATION updateTravel called with: ' + travel.length + ', ' + typeof travel)
     this.travel = travel
   }
 
@@ -609,7 +608,6 @@ class Travel extends VuexModule {
   //#region ACTIONS
   @Action
   public async getDigest(): Promise<boolean> {
-    console.log('getDigest baseUrl: ' + baseUrl)
     const response = await axios.request({
       url: baseUrl + '/_api/contextinfo',
       method: 'POST',
@@ -633,7 +631,6 @@ class Travel extends VuexModule {
     this.context.commit('updateCompanies', c) // ensure empty collection
     const that = this
     async function getAllTravel(url: string): Promise<void> {
-      // console.log("Travel URL: " + turl)
       if (url === '') {
         url = turl + payload.query // "?$select=*&$orderby=Id desc"
       }
@@ -668,7 +665,6 @@ class Travel extends VuexModule {
     const that = this
     let allFilteredTravel: any[] = []
     async function getAllFilteredTravel(turl: string): Promise<void> {
-      // console.log("Travel URL: " + turl)
       if (turl === '') {
         turl = payload.url
       }

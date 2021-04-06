@@ -82,10 +82,61 @@
         </b-card>
       </b-col>
     </b-row>
+    <b-row class="mb-1">
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">Email Testing</span>
+              <font-awesome-icon fas icon="envelope" class="icon text-danger float-right ml-1"></font-awesome-icon>
+            </h3>
+          </template>
+          <b-card-body>
+            <b-row class="p-0 m-0">
+              <b-form-input v-model="EmailAddress" variant="outline-success" placeholder="Email Address?"></b-form-input>
+            </b-row>
+            <b-row class="p-0 m-0">
+              <b-button ref="EmailTest" variant="success" @click="EmailTest">Email Test</b-button>
+            </b-row>
+          </b-card-body>
+        </b-card>
+      </b-col>
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">EMPTY</span>
+            </h3>
+          </template>
+          <b-card-body> </b-card-body>
+        </b-card>
+      </b-col>
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">EMPTY</span>
+            </h3>
+          </template>
+          <b-card-body> </b-card-body>
+        </b-card>
+      </b-col>
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">EMPTY</span>
+            </h3>
+          </template>
+          <b-card-body> </b-card-body>
+        </b-card>
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 
 <script>
+/* eslint-disable @typescript-eslint/camelcase */
 import Vue from 'vue'
 import MSR from '@/models/MSR'
 import User from '@/models/User'
@@ -101,6 +152,7 @@ if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
 let baseurl = SPCI.webAbsoluteUrl
+let surl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 
 export default {
   name: 'admin',
@@ -171,6 +223,8 @@ export default {
   },
   data: function() {
     return {
+      EmailAddress: null,
+      digest: null,
       UserId: null,
       pageSettings: { pageSize: 30 },
       formheight: 0,
@@ -223,6 +277,45 @@ export default {
     this.$store.dispatch('support/setLegendItems', [])
   },
   methods: {
+    async EmailTest() {
+      const response = await axios.request({
+        url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+        method: 'post',
+        headers: { Accept: 'application/json; odata=verbose' }
+      })
+      this.digest = response.data.d.GetContextWebInformation.FormDigestValue
+
+      let body = '<p>Hello Extranet User,</p><p></p>'
+      body += '<p>This is a test email from the F3I2 Portal.</p><p></p>'
+      body += '<p>Please let someone know that you have received this email.</p><p></p>'
+      let mail = {
+        properties: {
+          __metadata: { type: 'SP.Utilities.EmailProperties' },
+          From: 'F3I-2Portal@caci.com',
+          To: { results: [this.EmailAddress] },
+          CC: { results: ['daniel.walker1@caci.com'] },
+          Body: body,
+          Subject: 'TEST TEST TEST From SharePoint'
+        }
+      }
+      let headers = {
+        'Content-Type': 'application/json;odata=verbose',
+        Accept: 'application/json;odata=verbose',
+        'X-RequestDigest': this.digest,
+        'X-HTTP-Method': 'POST'
+      }
+      let config = {
+        headers: headers
+      }
+      return axios
+        .post(surl, mail, config)
+        .then(function(response) {
+          return response
+        })
+        .catch(function(error) {
+          console.log('TravelService Error Sending Email: ' + error)
+        })
+    },
     async getUserInfo() {
       let payload = {}
       payload.id = Number(this.UserId)

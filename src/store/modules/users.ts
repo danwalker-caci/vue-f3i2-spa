@@ -84,7 +84,6 @@ class Users extends VuexModule {
 
   @Action
   public async getDigest(): Promise<boolean> {
-    console.log('getDigest baseUrl: ' + baseUrl)
     const response = await axios.request({
       url: baseUrl + '/_api/contextinfo',
       method: 'POST',

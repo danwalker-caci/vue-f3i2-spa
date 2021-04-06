@@ -37,7 +37,7 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="actionsTemplate"></e-column>
                     <e-column field="Status" :lockColumn="true" headerText="Status" width="150"></e-column>
-                    <e-column field="Title" headerText="Subject" textAlign="Left" minWidth="150" width="200" maxWidth="300"></e-column>
+                    <e-column field="Title" headerText="Subject" textAlign="Left" minWidth="200" width="300" maxWidth="500"></e-column>
                     <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" width="150"></e-column>
                     <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" width="250"></e-column>
                     <e-column field="IndexNumber" headerText="Index Number" textAlign="Left" width="140"></e-column>
@@ -176,7 +176,6 @@ export default class TravelTracker extends Vue {
   }
 
   mounted() {
-    console.log('TRAVEL MOUNTED')
     vm = this
     this.getDigest()
     const payload: any = {}
@@ -284,7 +283,6 @@ export default class TravelTracker extends Vue {
   }
 
   public showorhide(e: any) {
-    // console.log('SHOW OR HIDE FROM TRAVELTRACKER: ' + e)
     const checked = e.checked
     const displayname = String(e.displayname)
     if (e.type == 'travel') {

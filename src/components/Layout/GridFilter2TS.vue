@@ -54,7 +54,7 @@
           </li>
           <li class="py30">
             <div class="full py30">
-              <b-button size="sm" variant="danger" id="clearfilters" class="float-right ml-1" @click="clearfilters">Clear Filters</b-button>
+              <b-button size="sm" variant="danger" id="clearfilters" class="float-right ml-1" @click="clearfilters()">Clear Filters</b-button>
               <b-button size="sm" variant="success" id="savefilters" class="float-right" @click="savefilters(filterfields)">Save Filters</b-button>
             </div>
           </li>
@@ -141,17 +141,8 @@ export default class GridFilter extends Vue {
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
 
-  /* created() {
-    // listen for events
-    EventBus.$on('setfilterfromgrid', (data: any) => {
-      this.setfilterfromgrid(data)
-    })
-  } */
-
   mounted() {
     vm = this
-    console.log('GRIDFILTER MOUNTED: ' + this.filtertype)
-    // TODO: check if can get saved filters the potential is that the grid is not yet loaded so lets wait for that.
     this.loadfilters()
   }
 
@@ -164,31 +155,27 @@ export default class GridFilter extends Vue {
   }
 
   public onShown() {
-    // console.log('SHOWN')
     // go get the filterfields based on the filtertype prop
     switch (this.filtertype) {
       case 'personnel':
         this.filterfields = this.$store.state.personnel.filterfields
-        // this.loadfilters()
         this.filterTitle = 'Personnel Filter'
         break
 
       case 'workplans':
         this.filterfields = this.$store.state.workplan.filterfields
-        // this.loadfilters()
         this.filterTitle = 'Workplan Filter'
         break
 
       case 'travel':
         this.filterfields = this.$store.state.travel.filterfields
-        // this.loadfilters()
         this.filterTitle = 'Travel Filter'
         break
     }
   }
 
   public showorhide(e: any) {
-    console.log('SHOW OR HIDE: ' + e)
+    // console.log('SHOW OR HIDE: ' + e)
     const payload: any = {}
     payload.checked = e.checked
     payload.displayname = e.event.target.labels[0].innerText
@@ -209,6 +196,7 @@ export default class GridFilter extends Vue {
       }
     }
   }
+
   public setfilter(filterfields: Array<FilterFieldItem>) {
     let p: Array<any> = []
     switch (this.filtertype) {
@@ -224,7 +212,7 @@ export default class GridFilter extends Vue {
         p = this.$store.state.travel.travel
         break
     }
-    console.log('FILTER: ' + p.length)
+    // console.log('FILTER: ' + p.length)
     for (let i = 0; i < filterfields.length; i++) {
       if (this.filterfields[i].Sort !== '') {
         this.sortfield = this.filterfields[i].FieldName
@@ -320,7 +308,7 @@ export default class GridFilter extends Vue {
         break
 
       case 'travel':
-        console.log('FILTERING TRAVEL: ' + p.length)
+        // console.log('FILTERING TRAVEL: ' + p.length)
         this.setFilteredTravel(p)
         break
     }
@@ -383,25 +371,27 @@ export default class GridFilter extends Vue {
     }
   }
 
-  public async clearFilters() {
+  public async clearfilters() {
     switch (this.filtertype) {
       case 'personnel':
+        window.localStorage.removeItem('PersonnelFilter')
         this.filterfields = this.$store.state.personnel.filterfields
         break
 
       case 'workplans':
+        window.localStorage.removeItem('WorkplanFilter')
         this.filterfields = this.$store.state.workplan.filterfields
         break
 
       case 'travel':
+        window.localStorage.removeItem('TravelFilter')
         this.filterfields = this.$store.state.travel.filterfields
         break
     }
   }
 
   public async loadfilters() {
-    console.log('LOAD FILTERS FROM LOCAL STORAGE')
-    // TODO add test to be sure that data is loaded from the correct filtertype
+    // console.log('LOAD FILTERS FROM LOCAL STORAGE')
     let f: any
     let goon: boolean = false
     switch (this.filtertype) {
@@ -422,14 +412,19 @@ export default class GridFilter extends Vue {
       case 'travel': // only supporting travel right now
         if (this.TravelLoaded) {
           f = String(window.localStorage.getItem('TravelFilter'))
-          console.log('FILTERFIELDS FROM LOCAL STORAGE: ' + f)
-          this.filterfields = JSON.parse(f)
+          if (f == null || f == 'null') {
+            // do nothing
+          } else {
+            this.filterfields = JSON.parse(f)
+            goon = true
+            // console.log('FILTERFIELDS FROM LOCAL STORAGE: ' + f + ', FIELDS LENGTH: ' + this.filterfields.length)
+          }
         } else {
           this.timeout = window.setTimeout(this.loadfilters, 500)
         }
         break
     }
-    if (f) {
+    if (goon) {
       this.$bvModal
         .msgBoxConfirm('Load your saved filter?', {
           title: 'Please Confirm',
@@ -452,7 +447,8 @@ export default class GridFilter extends Vue {
           }
         })
         .catch(err => {
-          console.log(err)
+          // console.log(err)
+          // TODO: Add Error Handling Here?
         })
     }
   }
@@ -473,9 +469,6 @@ export default class GridFilter extends Vue {
   position: fixed;
   top: 0;
   left: 0;
-  /* width: 300px; */
-  /* display: flex;
-  flex-direction: column; */
   width: 300px;
   pointer-events: auto;
   background-color: #fff;
