@@ -370,24 +370,21 @@ export default {
       clearTimeout(timeout)
       if (e.keyCode == 13) {
         e.preventDefault()
-      }
-      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
-      timeout = setTimeout(() => {
-        console.log(`Entered Text: ${e.target.value}`)
         vm.filteredData = vm.personnel.filter(data =>
           JSON.stringify(data)
             .toLowerCase()
             .includes(e.target.value.toLowerCase())
         )
-      }, 750)
-      /*let personnel = vm.personnel.filter(o => {
-        Object.keys(o).some(k => {
-          if (typeof o[k] === 'string') {
-            console.log(o[k].toLowerCase())
-            return o[k].toLowerCase().indexOf(e.text.toLowerCase()) !== 1
-          }
-        })
-      })*/
+      } else {
+        // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+        timeout = setTimeout(() => {
+          vm.filteredData = vm.personnel.filter(data =>
+            JSON.stringify(data)
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase())
+          )
+        }, 750)
+      }
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
