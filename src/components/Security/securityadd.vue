@@ -367,10 +367,8 @@ export default {
   },
   methods: {
     filtering: e => {
+      e.preventDefault()
       clearTimeout(timeout)
-      if (e.keyCode == 13) {
-        e.preventDefault()
-      }
       // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
       timeout = setTimeout(() => {
         vm.filteredData = vm.personnel.filter(data =>
@@ -378,7 +376,7 @@ export default {
             .toLowerCase()
             .includes(e.target.value.toLowerCase())
         )
-      }, 750)
+      }, 25)
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
