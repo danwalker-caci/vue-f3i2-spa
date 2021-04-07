@@ -370,21 +370,15 @@ export default {
       clearTimeout(timeout)
       if (e.keyCode == 13) {
         e.preventDefault()
+      }
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      timeout = setTimeout(() => {
         vm.filteredData = vm.personnel.filter(data =>
           JSON.stringify(data)
             .toLowerCase()
             .includes(e.target.value.toLowerCase())
         )
-      } else {
-        // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
-        timeout = setTimeout(() => {
-          vm.filteredData = vm.personnel.filter(data =>
-            JSON.stringify(data)
-              .toLowerCase()
-              .includes(e.target.value.toLowerCase())
-          )
-        }, 750)
-      }
+      }, 750)
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
