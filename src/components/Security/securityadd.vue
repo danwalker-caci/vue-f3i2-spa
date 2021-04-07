@@ -368,6 +368,9 @@ export default {
   methods: {
     filtering: e => {
       clearTimeout(timeout)
+      if (e.keyCode == 13) {
+        e.preventDefault()
+      }
       // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
       timeout = setTimeout(() => {
         console.log(`Entered Text: ${e.target.value}`)
