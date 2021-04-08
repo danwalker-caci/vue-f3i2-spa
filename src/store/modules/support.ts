@@ -1,8 +1,10 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
 import { LegendItem } from '@/interfaces/LegendItem'
+// import { EventBus } from '../../main'
 // import { ThemeName } from '@/themes/theme.types'
 @Module({ namespaced: true })
 class Support extends VuexModule {
+  public rect!: DOMRect
   public isShown?: boolean = true
   public isThemeSelectorShown?: boolean = false
   // public theme: ThemeName = ThemeName.DEFAULT

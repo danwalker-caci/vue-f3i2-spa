@@ -166,15 +166,23 @@ export default class TravelTracker extends Vue {
 
   @Ref('TravelGrid') TravelGrid!: GridComponent
 
+  /** @method - lifecycle hook */
   created() {
+    window.addEventListener('resize', function() {
+      window.location.reload()
+    })
     EventBus.$on('showhide', (data: any) => {
       this.showorhide(data)
     })
     EventBus.$on('sortit', (data: any) => {
       this.sortit(data)
     })
+    EventBus.$on('SidebarVisible', (data: any) => {
+      this.resetGrid(data)
+    })
   }
 
+  /** @method - lifecycle hook */
   mounted() {
     vm = this
     this.getDigest()
@@ -198,6 +206,11 @@ export default class TravelTracker extends Vue {
 
   public onSubmit(event: any) {
     event.preventDefault()
+  }
+
+  public resetGrid(visible: any) {
+    // redraw the grid when the sidebar hides or unhides
+    ;(this.$refs['TravelGrid'] as GridComponent).refresh()
   }
 
   public toolbarClick(args?: ClickEventArgs) {

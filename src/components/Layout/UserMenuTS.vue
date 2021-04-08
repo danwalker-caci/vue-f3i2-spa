@@ -36,7 +36,24 @@
       </span>
     </a>
     <b-collapse id="menu0" accordion="sidebar-accordion" role="tabpanel" class="ml-3">
-      <ul class="nav"></ul>
+      <ul class="nav">
+        <li class="nav-item">
+          <div class="container-fluid m-0 p-0">
+            <div class="row no-gutters">
+              <div class="col-1">
+                <span class="sidebar-icon">
+                  <font-awesome-icon fas icon="envelope" class="icon"></font-awesome-icon>
+                </span>
+              </div>
+              <div class="col-11">
+                <span class="sidebar-text">
+                  {{ currentUser.Email }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
     </b-collapse>
   </li>
 </template>

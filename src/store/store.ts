@@ -6,6 +6,7 @@ import * as notification from '@/store/modules/notification.js'
 import travel from './modules/travel'
 import support from './modules/support'
 import users from './modules/users'
+import contact from './modules/contact'
 import sidebar from './modules/sidebar'
 import User from '@/models/User'
 import usermodule from '@/modules/usermodule'
@@ -57,7 +58,8 @@ export default new Vuex.Store({
     support,
     sidebar,
     notification,
-    travel
+    travel,
+    contact
   },
   plugins: [VuexORM.install(database, { namespace: 'database' })]
 })

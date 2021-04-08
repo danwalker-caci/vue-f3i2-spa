@@ -10,7 +10,7 @@ declare const _spPageContextInfo: any
 
 const baseUrl = _spPageContextInfo.webServerRelativeUrl
 const userurl = baseUrl + '/_api/SP.UserProfiles.PeopleManager/GetMyProperties'
-const idurl = baseUrl + '/_api/Web/CurrentUser?$select=Id'
+const idurl = baseUrl + '/_api/Web/CurrentUser?$select=*'
 const personnelByIdUrl = baseUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=(UserAccount/Id eq "
 const upbidUrl = baseUrl + "/_api/lists/getbytitle('Personnel')/items("
 
@@ -153,7 +153,8 @@ class Users extends VuexModule {
     })
     const id = response.data.d.Id
     const nuser: UserInt = {
-      userid: id
+      userid: id,
+      Email: response.data.d.Email
     }
     this.context.commit('addUser', nuser)
     return nuser
@@ -169,7 +170,7 @@ class Users extends VuexModule {
     const profile = {} as any
     const properties = response.data.d.UserProfileProperties.results
     profile.Account = response.data.d.AccountName
-    profile.Email = response.data.d.Email
+    profile.Email = this.currentUser.Email !== null || this.currentUser.Email !== '' ? this.currentUser.Email : response.data.d.Email
     profile.EmailLink = 'mailto:' + response.data.d.Email
     profile.DisplayName = response.data.d.DisplayName
     for (let i = 0; i < properties.length; i++) {

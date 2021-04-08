@@ -67,6 +67,7 @@
   </b-container>
 </template>
 <script>
+/* eslint-disable @typescript-eslint/no-use-before-define */
 let vm = null
 // eslint-disable-next-line no-undef
 let url = _spPageContextInfo.webAbsoluteUrl

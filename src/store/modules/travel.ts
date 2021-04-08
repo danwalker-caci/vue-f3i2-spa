@@ -127,6 +127,7 @@ function getOptions(j: any, field: string): Array<ObjectItem> {
 //#endregion FUNCTIONS
 
 const support = namespace('support')
+
 @Module({ namespaced: true })
 class Travel extends VuexModule {
   // #region  STATE

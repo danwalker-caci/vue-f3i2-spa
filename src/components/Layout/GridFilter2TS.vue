@@ -141,6 +141,7 @@ export default class GridFilter extends Vue {
   @travel.Action
   public setFilteredTravel!: (payload: any) => Promise<boolean>
 
+  /** @method - lifecycle hook */
   mounted() {
     vm = this
     this.loadfilters()

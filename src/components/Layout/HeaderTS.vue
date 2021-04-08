@@ -16,25 +16,25 @@
       </button>
       <div class="collapse navbar-collapse justify-content-end">
         <b-navbar-nav class="ml-auto hidden-xs">
-          <!-- <b-nav-item-dropdown id="ContactsMenu" right no-caret menu-class="animated bounceInDown">
+          <b-nav-item-dropdown id="ContactsMenu" right no-caret menu-class="animated bounceInDown">
             <template slot="button-content"> <font-awesome-icon fas icon="users" class="cog"></font-awesome-icon>Contacts </template>
-            <b-table-simple id="ContactsTable" v-for="contact in formattedContacts" :key="contact">
+            <b-table-simple id="ContactsTable" v-for="contact in contacts" :key="contact">
               <b-tbody>
                 <b-tr>
                   <b-td rowspan="3" class="px40 p-0 pl-1">
-                    <a :href="contact.email" rel="noopener noreferrer"><font-awesome-icon far icon="envelope" class="icon"></font-awesome-icon></a>
+                    <a :href="contact.Email" rel="noopener noreferrer"><font-awesome-icon far icon="envelope" class="icon"></font-awesome-icon></a>
                   </b-td>
-                  <b-td class="p-0">{{ contact.name }}</b-td>
+                  <b-td class="p-0">{{ contact.Name }}</b-td>
                 </b-tr>
                 <b-tr>
-                  <b-td class="p-0">{{ contact.position }}</b-td>
+                  <b-td class="p-0">{{ contact.Position }}</b-td>
                 </b-tr>
-                <b-tr v-if="contact.phone !== 'Empty'">
-                  <b-td class="p-0">{{ contact.phone }}</b-td>
+                <b-tr v-if="contact.Phone !== 'Empty'">
+                  <b-td class="p-0">{{ contact.Phone }}</b-td>
                 </b-tr>
               </b-tbody>
             </b-table-simple>
-          </b-nav-item-dropdown> -->
+          </b-nav-item-dropdown>
           <b-nav-item-dropdown id="SettingsMenu" right no-caret menu-class="animated bounceInDown">
             <template slot="button-content">
               <font-awesome-icon fas icon="cog" class="cog"></font-awesome-icon>
@@ -95,15 +95,20 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
+// import { EventBus } from '../../main'
 
 const support = namespace('support')
+const contact = namespace('contact')
 
 @Component({
   name: 'Header'
 })
 export default class Header extends Vue {
+  public rect!: DOMRect
+
   get isDeveloper() {
     return this.$store.state.users.currentUser.isDeveloper
   }
@@ -118,10 +123,28 @@ export default class Header extends Vue {
   public isThemeSelectorShown!: boolean
 
   @support.Action
+  public setRect!: (newVal: DOMRect) => void
+
+  @support.Action
   public setThemeSelectorShown!: (newVal: boolean) => void
+
+  @contact.State
+  public loaded!: boolean
+
+  @contact.Action
+  public getContacts!: () => Promise<boolean>
+
+  get contacts() {
+    return this.$store.state.contact.contacts
+  }
 
   toggler() {
     this.setShown(!this.isShown)
+    // recalculate the contentrect
+    const element = document.getElementById('maincontent')!
+    this.rect = element.getBoundingClientRect()
+    this.setRect(this.rect)
+    console.log('CALCULATED CONTENT AREA: HEIGHT: ' + this.rect?.height + ', WIDTH: ' + this.rect?.width)
   }
 
   public ShowThemeSelector() {
@@ -130,6 +153,10 @@ export default class Header extends Vue {
 
   public ShowActivityLog(): void {
     /* Show Activity Log */
+  }
+
+  mounted() {
+    this.getContacts()
   }
 }
 </script>

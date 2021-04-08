@@ -560,4 +560,8 @@ a[aria-controls~="menu"] .caret {
 {
   width: 100vw;
   left: 0;
+
+  .content {
+    width: 100vw;
+  }
 }
