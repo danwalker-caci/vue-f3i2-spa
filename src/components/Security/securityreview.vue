@@ -112,6 +112,7 @@ export default {
       library: '',
       loaded: false,
       securityForms: {},
+      Active: '',
       formTitle: '',
       formName: '',
       formUrl: '',
@@ -151,6 +152,7 @@ export default {
       }
       Security.dispatch('getSecurityFormById', payload)
         .then(function(results) {
+          vm.Active = results.Active
           vm.company = results.Company
           vm.name = results.FirstName + ' ' + results.LastName
           vm.personId = results.PersonnelID
@@ -243,6 +245,7 @@ export default {
         }
       })
       let payload = {
+        Active: this.Active,
         etag: this.etag,
         uri: this.uri
       }
@@ -324,6 +327,7 @@ export default {
           vm.showNotify = false
         }
         let payload = {
+          Active: vm.Active,
           etag: vm.etag,
           uri: vm.uri
         }
@@ -423,10 +427,17 @@ export default {
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
           console.log('New Task ID: ' + newTaskId)
+          let emailPayload = {
+            emails: ['alexie.hazen@caci.com'], // TO DO: Change to Juans email
+            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a>',
+            subject: vm.form + ' Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload)
           // update the securityForms object with the GovSentDate
           vm.securityForms.GovSentDate = vm.$moment().format('MM/DD/YYYY')
           vm.securityForms.task = newTaskId
           let payload = {
+            Active: vm.Active,
             uri: vm.uri,
             etag: vm.etag
           }
