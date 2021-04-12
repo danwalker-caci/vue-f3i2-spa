@@ -781,7 +781,7 @@ export default {
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
-          .then(() => {
+          .then(results => {
             const notification = {
               type: 'success',
               title: 'Succesfully Uploaded Form',
@@ -798,6 +798,7 @@ export default {
               etag: vm.form.etag,
               uri: vm.form.uri
             })
+            vm.form.etag = parseInt(results.headers.etag)
             if (vm.formType === 'account') {
               vm.form.Type = vm.accountOptions[0]
             }
@@ -819,6 +820,7 @@ export default {
             vm.form.LastName = vm.currentLastName
             vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
             vm.form.PersonnelID = vm.currentPersonnelID
+            vm.person = ''
             vm.files = []
             vm.fileSelected = null
             vm.fileBuffer = null
