@@ -202,6 +202,16 @@ input[type=button], input[type=reset], input[type=submit], button {
   border: none;
 }
 
+.e-input-group.e-control-wrapper .e-input-group-icon,
+.e-input-group .e-input-group-icon {
+  min-height: 20px !important;
+}
+
+.e-icon-grightarrow,
+.e-icon-gdownarrow {
+  color: black !important;
+}
+
 /* #region Travel Status Colors */
 
 .travel-Completed {

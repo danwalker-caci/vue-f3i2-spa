@@ -32,7 +32,7 @@
                   :excelQueryCellInfo="formatExcelCell"
                   rowHeight="20"
                   :height="contentrect.height - 165"
-                  :width="contentrect.width - 5"
+                  :width="contentwidth - 5"
                 >
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :lockColumn="true" :template="actionsTemplate"></e-column>
@@ -82,6 +82,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Vue, Ref } from 'vue-property-decorator'
@@ -117,9 +118,6 @@ export default class TravelTracker extends Vue {
   public loaded?: boolean = false
   public overlayText?: string = 'Getting Data. Please Wait...'
   public overlayVariant?: string = 'light'
-
-  @support.State
-  public contentrect!: DOMRect
 
   @notify.Action
   public add!: (notification: Notification) => void
@@ -164,6 +162,14 @@ export default class TravelTracker extends Vue {
     return this.$store.state.users.currentUser.isSubcontractor
   }
 
+  get contentwidth() {
+    return this.$store.state.support.contentwidth
+  }
+
+  get contentrect() {
+    return this.$store.state.support.contentrect
+  }
+
   @Ref('TravelGrid') TravelGrid!: GridComponent
 
   /** @method - lifecycle hook */
@@ -177,7 +183,7 @@ export default class TravelTracker extends Vue {
     EventBus.$on('sortit', (data: any) => {
       this.sortit(data)
     })
-    EventBus.$on('SidebarVisible', (data: any) => {
+    EventBus.$on('SidebarChanged', (data: any) => {
       this.resetGrid(data)
     })
   }
@@ -192,6 +198,11 @@ export default class TravelTracker extends Vue {
       vm.loaded = true
     })
   }
+
+  /** @method - lifecycle hook */
+  /* updated() {
+    console.log('TRAVEL TRACKER UPDATED: WIDTH: ' + this.contentwidth)
+  } */
 
   public rowData?: any = {}
   public newData?: any = {}
@@ -208,9 +219,18 @@ export default class TravelTracker extends Vue {
     event.preventDefault()
   }
 
-  public resetGrid(visible: any) {
+  public resetGrid(width: any) {
     // redraw the grid when the sidebar hides or unhides
-    ;(this.$refs['TravelGrid'] as GridComponent).refresh()
+    const that = this
+    window.setTimeout(function() {
+      console.log('RESET GRID: ' + width)
+      ;(that.$refs['TravelGrid'] as GridComponent).setProperties(
+        {
+          width: width - 5
+        },
+        false
+      )
+    }, 500)
   }
 
   public toolbarClick(args?: ClickEventArgs) {

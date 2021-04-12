@@ -222,7 +222,6 @@
                       <div class="row">
                         <div class="col">Gov Sponsor</div>
                         <div class="col">Estimated Cost</div>
-                        <div class="col">Travel Index</div>
                       </div>
                       <div class="row">
                         <div class="col">
@@ -237,12 +236,6 @@
                             Numbers only
                           </b-form-invalid-feedback>
                         </div>
-                        <!-- <div class="col">
-                          <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" ref="IndexNumber" :state="ValidateMe('IndexNumber')"></b-form-input>
-                          <b-form-invalid-feedback>
-                            11-1111-11 [WP Plus Index #]
-                          </b-form-invalid-feedback>
-                        </div> -->
                       </div>
                       <div class="row">
                         <div class="col-12">Purpose</div>

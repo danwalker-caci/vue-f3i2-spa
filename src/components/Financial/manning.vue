@@ -463,6 +463,7 @@ export default {
     }
   },
   mounted: function() {
+    console.log('MANNING MOUNTED')
     vm = this
     /* flds = this.ddfields
     me = this.mastereffort */

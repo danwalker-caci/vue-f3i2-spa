@@ -1,6 +1,13 @@
 <template>
   <nav class="navbar navbar-expand-lg ">
-    <ThemeSelector />
+    <b-modal id="ActivityLog" ref="ActivityLog" size="xl" centered :header-bg-variant="warning" @close="onModalHide" v-model="Show">
+      <template v-slot:modal-title>Activity Log</template>
+      <b-container fluid class="p-0">
+        <div class="row m-0">
+          <div class="col-12 p-0 activity" v-html="activity"></div>
+        </div>
+      </b-container>
+    </b-modal>
     <div class="container-fluid">
       <div class="navbar-minimize">
         <button class="btn btn-outline btn-fill btn-round btn-icon d-none d-lg-block btn-burger" @click.prevent="toggler">
@@ -75,16 +82,16 @@
                 <span>Site settings</span>
               </div>
             </b-dropdown-item>
-            <!-- <b-dropdown-item href="#" @click="ShowActivityLog">
+            <b-dropdown-item href="#" @click="ShowActivityLog">
               <div class="row">
                 <font-awesome-icon fas icon="clipboard-list" class="icon"></font-awesome-icon>
                 <span>Show Activity Log</span>
               </div>
-            </b-dropdown-item> -->
-            <b-dropdown-item v-if="isDeveloper" href="#" @click.prevent="ShowThemeSelector">
+            </b-dropdown-item>
+            <b-dropdown-item href="#" onclick="STSNavigate2(event,'/sites/f3i2/_layouts/15/SignOut.aspx');">
               <div class="row">
-                <font-awesome-icon fas icon="palette" class="icon"></font-awesome-icon>
-                <span>Theme Selector</span>
+                <font-awesome-icon fas icon="sign-out-alt" class="icon"></font-awesome-icon>
+                <span>Logout</span>
               </div>
             </b-dropdown-item>
           </b-nav-item-dropdown>
@@ -95,6 +102,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
@@ -108,6 +116,7 @@ const contact = namespace('contact')
 })
 export default class Header extends Vue {
   public rect!: DOMRect
+  public Show = false
 
   get isDeveloper() {
     return this.$store.state.users.currentUser.isDeveloper
@@ -125,8 +134,8 @@ export default class Header extends Vue {
   @support.Action
   public setRect!: (newVal: DOMRect) => void
 
-  @support.Action
-  public setThemeSelectorShown!: (newVal: boolean) => void
+  /* @support.Action
+  public setThemeSelectorShown!: (newVal: boolean) => void */
 
   @contact.State
   public loaded!: boolean
@@ -140,19 +149,18 @@ export default class Header extends Vue {
 
   toggler() {
     this.setShown(!this.isShown)
-    // recalculate the contentrect
-    const element = document.getElementById('maincontent')!
-    this.rect = element.getBoundingClientRect()
-    this.setRect(this.rect)
-    console.log('CALCULATED CONTENT AREA: HEIGHT: ' + this.rect?.height + ', WIDTH: ' + this.rect?.width)
   }
 
-  public ShowThemeSelector() {
+  /* public ShowThemeSelector() {
     this.setThemeSelectorShown(!this.isThemeSelectorShown)
-  }
+  } */
 
   public ShowActivityLog(): void {
-    /* Show Activity Log */
+    this.Show = true
+  }
+
+  public onModalHide(): void {
+    this.Show = false
   }
 
   mounted() {

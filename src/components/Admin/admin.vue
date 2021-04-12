@@ -102,34 +102,34 @@
         </b-card>
       </b-col>
       <b-col cols="3">
-        <b-card border-variant="success" text-variant="dark">
+        <!-- <b-card border-variant="success" text-variant="dark">
           <template v-slot:header>
             <h3 class="mb-0">
               <span class="ml-0">EMPTY</span>
             </h3>
           </template>
           <b-card-body> </b-card-body>
-        </b-card>
+        </b-card> -->
       </b-col>
       <b-col cols="3">
-        <b-card border-variant="success" text-variant="dark">
+        <!-- <b-card border-variant="success" text-variant="dark">
           <template v-slot:header>
             <h3 class="mb-0">
               <span class="ml-0">EMPTY</span>
             </h3>
           </template>
           <b-card-body> </b-card-body>
-        </b-card>
+        </b-card> -->
       </b-col>
       <b-col cols="3">
-        <b-card border-variant="success" text-variant="dark">
+        <!-- <b-card border-variant="success" text-variant="dark">
           <template v-slot:header>
             <h3 class="mb-0">
               <span class="ml-0">EMPTY</span>
             </h3>
           </template>
           <b-card-body> </b-card-body>
-        </b-card>
+        </b-card> -->
       </b-col>
     </b-row>
   </b-container>

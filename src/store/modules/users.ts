@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
-import { UserInt } from '@/interfaces/User'
-import { TodoItem } from '@/interfaces/TodoItem'
-import { ObjectItem } from '@/interfaces/ObjectItem'
+import { UserInt } from '../../interfaces/User'
+import { TodoItem } from '../../interfaces/TodoItem'
+import { ObjectItem } from '../../interfaces/ObjectItem'
 import axios from 'axios'
 import moment from 'moment'
 

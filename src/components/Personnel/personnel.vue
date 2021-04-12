@@ -1247,7 +1247,7 @@ export default {
     grid: [Page, Edit, DetailRow, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, Search]
   },
   watch: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     $route(to, from) {
       this.mode = to.params.mode
       switch (this.mode) {
@@ -1280,7 +1280,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .buttonrow {
   height: 50px;
   justify-content: space-between; // parent is flex so this little bit allows us to create a right aligned item if needed
