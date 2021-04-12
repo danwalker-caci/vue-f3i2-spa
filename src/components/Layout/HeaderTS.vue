@@ -46,19 +46,13 @@
             <template slot="button-content">
               <font-awesome-icon fas icon="cog" class="cog"></font-awesome-icon>
             </template>
-            <b-dropdown-item v-if="isDeveloper" href="#" onclick='javascript:SuiteOnClick("GoToCreateNewPage\u0028\u0029")'>
-              <div class="row">
-                <font-awesome-icon far icon="file-alt" class="icon"></font-awesome-icon>
-                <span>Add a page</span>
-              </div>
-            </b-dropdown-item>
-            <b-dropdown-item v-if="isDeveloper" href="#" onclick='javascript:SuiteOnClick("window.location = \u0027javascript:ChangeLayoutMode\u0028false\u0029;\u0027;")'>
+            <b-dropdown-item v-if="isDeveloper" href="#" onclick="ChangeLayoutMode(false)">
               <div class="row">
                 <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
                 <span>Edit page</span>
               </div>
             </b-dropdown-item>
-            <b-dropdown-item v-if="isDeveloper" href="#" onclick='javascript:SuiteOnClick("GoToPage\u0028\u0027\\u002fsites\\u002fF3I2\\u002f_layouts\\u002f15\\u002faddanapp.aspx\u0027\u0029")'>
+            <b-dropdown-item v-if="isDeveloper" href="#" onclick="STSNavigate2(event,'/sites/f3I2/_layouts/addanapp.aspx');">
               <div class="row">
                 <font-awesome-icon far icon="plus-square" class="icon"></font-awesome-icon>
                 <span>Add an app</span>
@@ -70,13 +64,13 @@
                 <span>Design Manager</span>
               </div>
             </b-dropdown-item>
-            <b-dropdown-item v-if="isDeveloper" href="#" onclick='javascript:SuiteOnClick("STSNavigate2\u0028event,\u0027\u002fsites\u002fF3I2\u002f_layouts\u002f15\u002fviewlsts.aspx\u0027\u0029;")'>
+            <b-dropdown-item v-if="isDeveloper" href="#" onclick="STSNavigate2(event,'/sites/f3I2/_layouts/viewlsts.aspx');">
               <div class="row">
                 <font-awesome-icon fas icon="box-open" class="icon"></font-awesome-icon>
                 <span>Site contents</span>
               </div>
             </b-dropdown-item>
-            <b-dropdown-item v-if="isDeveloper" href="#" onclick='javascript:SuiteOnClick("GoToPage\u0028\u0027\\u002fsites\\u002fF3I2\\u002f_layouts\\u002f15\\u002fsettings.aspx\u0027\u0029")'>
+            <b-dropdown-item v-if="isDeveloper" href="#" onclick="STSNavigate2(event,'/sites/f3I2/_layouts/settings.aspx');">
               <div class="row">
                 <font-awesome-icon fas icon="cogs" class="icon"></font-awesome-icon>
                 <span>Site settings</span>
