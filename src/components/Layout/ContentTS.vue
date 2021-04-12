@@ -22,9 +22,6 @@ export default class Content extends Vue {
   public setRect!: () => void
 
   mounted() {
-    /* const element = document.getElementById('maincontent')!
-    this.rect = element.getBoundingClientRect()
-    console.log('CALCULATED CONTENT AREA: HEIGHT: ' + this.rect?.height + ', WIDTH: ' + this.rect?.width) */
     this.setRect()
   }
 }

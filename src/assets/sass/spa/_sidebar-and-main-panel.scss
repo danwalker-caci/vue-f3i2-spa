@@ -104,6 +104,7 @@ a[aria-controls~="menu"] .caret {
   display: block;
   z-index: 1;
   color: #fff;
+  background-color: rgba(0, 0, 0, 0.7);
   font-weight: 200;
 
   .logo-img{
@@ -301,6 +302,7 @@ a[aria-controls~="menu"] .caret {
     display: block;
     top: 0;
     left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
     background-size: cover;
     background-position: center center;
   }
@@ -528,7 +530,7 @@ a[aria-controls~="menu"] .caret {
 
   &:before{
     opacity: .33;
-    background: #000000;
+    background: rgba(0, 0, 0, 0.7);
   }
 }
 
