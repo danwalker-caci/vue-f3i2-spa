@@ -413,14 +413,14 @@ export default {
             TaskLink: '/security/tracker'
           }
           let results = await Todo.dispatch('addTodo', payload)
+          let newTaskId = results.data.d.Id
+          console.log('New Task ID: ' + newTaskId)
           let emailPayload = {
-            emails: ['drew.ahrens@caci.com'],
-            body: 'Please complete or reject the following. \r\nName: ' + vm.name + '\r\nForm: ' + vm.form + ' Request',
+            emails: ['alexie.hazen@caci.com'], // TO DO: Change to Juans email
+            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a>',
             subject: vm.form + ' Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
-          let newTaskId = results.data.d.Id
-          console.log('New Task ID: ' + newTaskId)
           // update the securityForms object with the GovSentDate
           vm.securityForms.GovSentDate = vm.$moment().format('MM/DD/YYYY')
           vm.securityForms.task = newTaskId
