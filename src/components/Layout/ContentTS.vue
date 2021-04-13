@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
@@ -15,9 +14,6 @@ const support = namespace('support')
   name: 'Content'
 })
 export default class Content extends Vue {
-  public rect!: DOMRect
-  public interval: any
-
   @support.Action
   public setRect!: () => void
 

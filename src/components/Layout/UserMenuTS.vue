@@ -62,7 +62,7 @@
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { UserInt } from '../../interfaces/User'
-import { TodoItem } from '../../interfaces/TodoItem'
+// import { TodoItem } from '../../interfaces/TodoItem'
 import { ClickEventArgs } from '@syncfusion/ej2-vue-navigations'
 import { GridComponent } from '@syncfusion/ej2-vue-grids'
 import ActionsTemplate from './TodoActionsTS.vue'
@@ -81,8 +81,8 @@ export default class UserMenu extends Vue {
   @users.State
   public currentUser!: UserInt
 
-  @users.State
-  public todos!: Array<TodoItem>
+  /* @users.State
+  public todos!: Array<TodoItem> */
 
   @users.State
   public todoCount!: number
@@ -91,6 +91,10 @@ export default class UserMenu extends Vue {
 
   get isSubcontractor() {
     return this.$store.state.users.currentUser.isSubcontractor
+  }
+
+  get todos() {
+    return this.$store.state.users.todos
   }
 
   public actionsTemplate() {

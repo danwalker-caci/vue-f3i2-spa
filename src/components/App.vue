@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { UserInt } from '../interfaces/User'
@@ -36,7 +37,7 @@ export default class App extends Vue {
 
   /** @method - lifecycle hook */
   public created(): void {
-    vm = this
+    const that = this
     this.getUserId().then(response => {
       this.userid = response.userid // sets local variable to user id and can be used in ts and js versions
       this.getUserProfile().then(response => {
@@ -46,6 +47,9 @@ export default class App extends Vue {
               this.getTodosByUser().then(response => {
                 if (response) {
                   // call javascript version to populate for still existing javascript modules
+                  window.setInterval(function() {
+                    that.getTodosByUser()
+                  }, 60000)
                   this.getUserIdJS()
                 }
               })

@@ -10,12 +10,6 @@
               <b-button size="sm" class="actionbutton float-right" :class="field.Filter ? null : 'collapsed'" :aria-expanded="field.Filter ? 'true' : 'false'" :aria-controls="getRef('collapse', field.FieldName)" @click="field.Filter = !field.Filter">
                 <font-awesome-icon fas icon="filter" class="icon"></font-awesome-icon>
               </b-button>
-              <!-- <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'desc' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortdown(field.FieldName, field.DataType)">
-                <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'asc' ? 'sorted' : ''" :id="getRef('sortup', field.FieldName)" @click="sortup(field.FieldName, field.DataType)">
-                <font-awesome-icon fas icon="arrow-up" class="icon"></font-awesome-icon>
-              </b-button> -->
               <b-button size="sm" class="actionbutton float-right" :class="field.Sort == 'desc' ? 'sorted' : ''" :id="getRef('sortdown', field.FieldName)" @click="sortit(field.FieldName, field.DataType, 'desc')">
                 <font-awesome-icon fas icon="arrow-down" class="icon"></font-awesome-icon>
               </b-button>
@@ -82,7 +76,6 @@ import moment from 'moment'
 const personnel = namespace('personnel')
 const travel = namespace('travel')
 const users = namespace('users')
-// const support = namespace('support')
 
 let vm: any = null
 
