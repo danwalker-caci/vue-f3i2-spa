@@ -111,6 +111,7 @@ export default {
       library: '',
       loaded: false,
       securityForms: {},
+      Active: '',
       formTitle: '',
       formName: '',
       formUrl: '',
@@ -152,6 +153,7 @@ export default {
       }
       Security.dispatch('getSecurityFormById', payload)
         .then(function(results) {
+          vm.Active = results.Active
           vm.company = results.Company
           vm.name = results.FirstName + ' ' + results.LastName
           vm.personId = results.PersonnelID
@@ -244,6 +246,7 @@ export default {
         }
       })
       let payload = {
+        Active: this.Active,
         etag: this.etag,
         uri: this.uri
       }
@@ -316,6 +319,7 @@ export default {
           vm.showNotify = false
         }
         let payload = {
+          Active: vm.Active,
           etag: vm.etag,
           uri: vm.uri
         }
@@ -419,6 +423,7 @@ export default {
           vm.securityForms.GovSentDate = vm.$moment().format('MM/DD/YYYY')
           vm.securityForms.task = newTaskId
           let payload = {
+            Active: vm.Active,
             uri: vm.uri,
             etag: vm.etag
           }
