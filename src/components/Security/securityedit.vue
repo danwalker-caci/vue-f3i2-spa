@@ -244,45 +244,67 @@
               </div>
             </b-tab>
             <b-tab title="SCI" class="pt-3">
-              <b-table-simple small responsive>
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>Date Indoctrination Assist Sent</b-th>
-                    <b-th>SCI Access Check Date</b-th>
-                    <b-th>SCI Indoctrination Date</b-th>
-                    <b-th>SCI Form Submitted</b-th>
-                    <b-th>SCI Status</b-th>
-                    <b-th>SCI Form Type</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive>
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>Date Indoctrination Assist Sent</b-th>
+                      <b-th>SCI Access Check Date</b-th>
+                      <b-th>SCI Indoctrination Date</b-th>
+                      <b-th>SCI Form Submitted</b-th>
+                      <b-th>SCI Status</b-th>
+                      <b-th>SCI Form Type</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="this.SCI.forms.length > 0">
+                <span v-if="this.SCI.GovSentDate !== ''" class="p-2">{{ this.SCI.GovSentDate }}</span>
+                <span v-if="this.SCI.GovCompleteDate !== ''" class="p-2">{{ this.SCI.GovCompleteDate }}</span>
+                <span v-if="this.SCI.GovRejectDate !== ''" class="p-2">{{ this.SCI.GovRejectDate }}</span>
+                <span v-if="this.SCI.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.SCI.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="this.SCI.GovCompleteDate === '' && this.SCI.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+              </b-row>
               <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -299,38 +321,46 @@
               </div>
             </b-tab>
             <b-tab title="CAC">
-              <b-table-simple small responsive class="pt-3">
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>CAC Status</b-th>
-                    <b-th>CAC Issued By</b-th>
-                    <b-th>CAC Request Date</b-th>
-                    <b-th>CAC Expiration Date</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <!-- REMOVE DEVELOPER OPTION -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive class="pt-3">
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>CAC Status</b-th>
+                      <b-th>CAC Issued By</b-th>
+                      <b-th>CAC Request Date</b-th>
+                      <b-th>CAC Expiration Date</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <!-- REMOVE DEVELOPER OPTION -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+              </b-row>
               <div v-if="CAC.forms && CAC.forms.length > 0">
                 <div v-for="form in CAC.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -370,12 +400,6 @@
                     </b-tr>
                   </b-tbody>
                 </b-table-simple>
-              </b-row>
-              <b-row v-if="showGovRejectForm">
-                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
-                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
-                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
               </b-row>
             </b-tab>
             <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
@@ -727,7 +751,7 @@ export default {
       this.showGovRejectForm = true
       // get the current item data
     },
-    async SubmitGovReject(data) {
+    async SubmitRejectGov(data) {
       if (this.govRejectReason.length <= 10) {
         this.showGovRejectError = true
       } else {
