@@ -6,15 +6,18 @@ if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
 
+let portalemail = ''
 let absurl = SPCI.webAbsoluteUrl
 let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
 let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
+let sendemailurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 //let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
   getFormDigest() {
+    portalemail = store.state.support.portalemail
     return axios.request({
       url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
       method: 'post',
@@ -331,6 +334,35 @@ export default {
       store.dispatch('notification/add', notification, { root: true })
     })
     return response.data.d.results
+  },
+  async sendEmail(payload, digest) {
+    let mail = {
+      properties: {
+        __metadata: { type: 'SP.Utilities.EmailProperties' },
+        From: portalemail,
+        To: { results: payload.emails }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
+        // To: { 'results': ['daniel.walker1@caci.com'] },
+        Body: payload.body,
+        Subject: payload.subject
+      }
+    }
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    return axios
+      .post(sendemailurl, mail, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        console.log('PersonnelService Error Sending Email: ' + error)
+      })
   },
   // TO DO: include type, form id, personnel id and update JSON object
   ApproveForm(payload, digest) {

@@ -295,120 +295,152 @@ export default {
                       </b-tab>
                       <b-tab title="SCI">
                         <div class="width-98">
-                          <b-table-simple small responsive>
-                            <b-thead head-variant="dark">
-                              <b-tr>
-                                <b-th>Date Indoctrination Assist Sent</b-th>
-                                <b-th>SCI Access Check Date</b-th>
-                                <b-th>SCI Indoctrination Date</b-th>
-                                <b-th>SCI Form Submitted</b-th>
-                                <b-th>SCI Status</b-th>
-                                <b-th>SCI Form Type</b-th>
-                                <b-th>Submitted Forms</b-th>
-                                <b-th></b-th>
-                              </b-tr>
-                            </b-thead>
-                            <b-tbody>
-                              <b-tr>
-                                <b-td>
-                                  <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="data.SCIIndoc"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                                </b-td>
-                                <b-td>
-                                  <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
-                                </b-td>
-                                <b-td>
-                                  <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
-                                </b-td>
-                                <b-td>
-                                  <!-- Update Button -->
-                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
-                                </b-td>
-                              </b-tr>
-                            </b-tbody>
-                          </b-table-simple>
-                        </div>
-                      </b-tab>
-                      <b-tab title="CAC">
-                        <div class="width-98">
-                          <b-table-simple small responsive>
-                            <b-thead head-variant="dark">
-                              <b-tr>
-                                <b-th>CAC Status</b-th>
-                                <b-th>CAC Issued By</b-th>
-                                <b-th>CAC Request Date</b-th>
-                                <b-th>CAC Expiration Date</b-th>
-                                <b-th>Submitted Form</b-th>
-                                <b-th></b-th>
-                              </b-tr>
-                            </b-thead>
-                            <b-tbody>
-                              <b-tr>
-                                <b-td>
-                                  <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
-                                </b-td>
-                                <b-td>
-                                  <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="data.CACRequestDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
-                                </b-td>
-                                <b-td>
-                                  <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
-                                </b-td>
-                                <b-td>
-                                  <!-- Update Button -->
-                                  <!-- REMOVE DEVELOPER OPTION -->
-                                  <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
-                                </b-td>
-                              </b-tr>
-                            </b-tbody>
-                          </b-table-simple>
-                          </div>
-                        </b-tab>
-                        <b-tab title="Historical CAC" v-if="data.CACTurnedIn && data.CACExpiredOnDate">
-                          <div class="width-98">
+                          <b-row>
                             <b-table-simple small responsive>
                               <b-thead head-variant="dark">
                                 <b-tr>
-                                  <b-th>Historical CAC Data</b-th>
-                                  <b-th>CAC Status</b-th>
-                                  <b-th>CAC Turned In Location</b-th>
-                                  <b-th>CAC Turned In Date</b-th>
+                                  <b-th>Date Indoctrination Assist Sent</b-th>
+                                  <b-th>SCI Access Check Date</b-th>
+                                  <b-th>SCI Indoctrination Date</b-th>
+                                  <b-th>SCI Form Submitted</b-th>
+                                  <b-th>SCI Status</b-th>
+                                  <b-th>SCI Form Type</b-th>
+                                  <b-th>Submitted Forms</b-th>
+                                  <b-th></b-th>
                                 </b-tr>
                               </b-thead>
                               <b-tbody>
                                 <b-tr>
                                   <b-td>
-                                    Yes
+                                    <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    {{ data.CACStatus }}
+                                    <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    {{ data.CACTurnedIn }}
+                                    <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="data.SCIIndoc"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    {{ data.CACExpiredOnDate }}
+                                    <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                                  </b-td>
+                                  <b-td>
+                                    <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
+                                  </b-td>
+                                  <b-td>
+                                    <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/SCI'">View Forms</b-button>
+                                  </b-td>
+                                  <b-td>
+                                    <!-- Update Button -->
+                                    <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm(data)">Update</b-button>
                                   </b-td>
                                 </b-tr>
                               </b-tbody>
                             </b-table-simple>
-                          </div>
+                          </b-row>
+                          <b-row v-if="data.SCI && data.SCI.forms.length > 0">
+                            <span v-if="data.SCI.GovSentDate !== ''" class="p-2">Government Notified On: {{ data.SCI.GovSentDate }}</span>
+                            <span v-if="data.SCI.GovCompleteDate !== ''" class="p-2">Government {{ data.SCI.GovCompleteDate }}</span>
+                            <span v-if="data.SCI.GovRejectDate !== ''" class="p-2">Government {{ data.SCI.GovRejectDate }}</span>
+                            <span v-if="data.SCI.GovSentDate === ''" class="p-2">
+                              <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                            </span>
+                            <span v-if="data.SCI.GovCompleteDate === ''" class="p-2">
+                              <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                            </span>
+                            <span v-if="data.SCI.GovCompleteDate === '' && data.SCI.GovRejectDate === ''" class="p-2">
+                              <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                            </span>
+                          </b-row>
+                        </div>
+                      </b-tab>
+                      <b-tab title="CAC">
+                        <div class="width-98">
+                          <b-row>
+                            <b-table-simple small responsive>
+                              <b-thead head-variant="dark">
+                                <b-tr>
+                                  <b-th>CAC Status</b-th>
+                                  <b-th>CAC Issued By</b-th>
+                                  <b-th>CAC Request Date</b-th>
+                                  <b-th>CAC Expiration Date</b-th>
+                                  <b-th>Submitted Form</b-th>
+                                  <b-th></b-th>
+                                </b-tr>
+                              </b-thead>
+                              <b-tbody>
+                                <b-tr>
+                                  <b-td>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                                  </b-td>
+                                  <b-td>
+                                    <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
+                                  </b-td>
+                                  <b-td>
+                                    <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="data.CACRequestDate"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
+                                  </b-td>
+                                  <b-td>
+                                    <!-- Update Button -->
+                                    <!-- REMOVE DEVELOPER OPTION -->
+                                    <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="btn-sm" @click="updateForm(data)">Update</b-button>
+                                  </b-td>
+                                </b-tr>
+                              </b-tbody>
+                            </b-table-simple>
+                          </b-row>
+                          <b-row v-if="data.CAC && data.CAC.forms.length > 0">
+                            <span v-if="data.CAC.GovSentDate !== ''" class="p-2">Government Notified On: {{ data.CAC.GovSentDate }}</span>
+                            <span v-if="data.CAC.GovCompleteDate !== ''" class="p-2">Government {{ data.CAC.GovCompleteDate }}</span>
+                            <span v-if="data.CAC.GovRejectDate !== ''" class="p-2">Government {{ data.CAC.GovRejectDate }}</span>
+                            <span v-if="data.CAC.GovSentDate === ''" class="p-2">
+                              <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'CAC'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                            </span>
+                            <span v-if="data.CAC.GovCompleteDate === ''" class="p-2">
+                              <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                            </span>
+                            <span v-if="data.CAC.GovCompleteDate === '' && data.CAC.GovRejectDate === ''" class="p-2">
+                              <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                            </span>
+                          </b-row>
+                        </div>
+                      </b-tab>
+                      <b-tab title="Historical CAC" v-if="data.CACTurnedIn && data.CACExpiredOnDate">
+                        <div class="width-98">
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>Historical CAC Data</b-th>
+                                <b-th>CAC Status</b-th>
+                                <b-th>CAC Turned In Location</b-th>
+                                <b-th>CAC Turned In Date</b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <b-tr>
+                                <b-td>
+                                  Yes
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACStatus }}
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACTurnedIn }}
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACExpiredOnDate }}
+                                </b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
+                        </div>
                       </b-tab>
                       <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
                         <div class="width-98">
@@ -541,6 +573,12 @@ export default {
                   })
                   console.log('ERROR: ' + error.message)
                 })
+                let emailPayload = {
+                  emails: [this.$store.state.support.AFRLUserEmail],
+                  body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + data.FirstName + ' ' + data.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + data.id + '">Edit ' + data.FirstName + ' ' + data.LastName + '</a>',
+                  subject: type + ' Request'
+                }
+                await Security.dispatch('sendEmail', emailPayload)
                 // Update the task to the new one for AFRL
                 // get the current item data
                 switch (type) {
