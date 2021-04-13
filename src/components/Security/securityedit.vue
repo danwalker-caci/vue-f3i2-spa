@@ -347,28 +347,36 @@
               </div>
             </b-tab>
             <b-tab title="Historical CAC" v-if="CACTurnedIn && CACExpiredOnDate">
-              <b-table-simple small responsive class="pt-3">
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>CAC Status</b-th>
-                    <b-th>CAC Turned In Location</b-th>
-                    <b-th>CAC Turned In Date</b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      {{ CACStatus }}
-                    </b-td>
-                    <b-td>
-                      {{ CACTurnedIn }}
-                    </b-td>
-                    <b-td>
-                      {{ CACExpiredOnDate }}
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive class="pt-3">
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>CAC Status</b-th>
+                      <b-th>CAC Turned In Location</b-th>
+                      <b-th>CAC Turned In Date</b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        {{ CACStatus }}
+                      </b-td>
+                      <b-td>
+                        {{ CACTurnedIn }}
+                      </b-td>
+                      <b-td>
+                        {{ CACExpiredOnDate }}
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+              </b-row>
             </b-tab>
             <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
               <div class="width-98">
@@ -462,6 +470,10 @@ export default {
       SIPR: {},
       DREN: {},
       JWICS: {},
+      showGovRejectForm: false,
+      showGovRejectError: false,
+      govRejectReason: '',
+      govRejectType: '',
       etag: '',
       uri: '',
       files: [],
@@ -709,86 +721,120 @@ export default {
       })
       // Remove the button and display current Date
     },
-    async RejectGov(event) {
+    async RejectGov(data, event) {
       await Security.dispatch('getDigest')
-      let type = event.currentTarget.dataset.type,
-        taskId
+      this.govRejectType = event.currentTarget.dataset.type
+      this.showGovRejectForm = true
       // get the current item data
-      switch (type) {
-        case 'NIPR':
-          taskId = this.NIPR.task
-          this.NIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.NIPR.forms, nipr => {
-            this.deleteForm(nipr)
-          })
-          this.NIPR.forms = []
-          break
-        case 'SIPR':
-          taskId = this.SIPR.task
-          this.SIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.SIPR.forms, sipr => {
-            this.deleteForm(sipr)
-          })
-          this.SIPR.forms = []
-          break
-        case 'DREN':
-          taskId = this.DREN.task
-          this.DREN.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.DREN.forms, dren => {
-            this.deleteForm(dren)
-          })
-          this.DREN.forms = []
-          break
-        case 'JWICS':
-          taskId = this.JWICS.task // original taskId\
-          this.JWICS.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.JWICS.forms, jwics => {
-            this.deleteForm(jwics)
-          })
-          this.JWICS.forms = []
-          break
-      }
-      await this.updateForm(taskId).catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + error.message)
-      })
-      let taskUserId = null
-      if (type == 'NIPR' || type == 'SIPR' || type == 'DREN' || type == 'JWICS') {
-        taskUserId = vm.$store.state.support.AccountUserId
+    },
+    async SubmitGovReject(data) {
+      if (this.govRejectReason.length <= 10) {
+        this.showGovRejectError = true
       } else {
-        taskUserId = vm.$store.state.support.CACSCIUserId
-      }
-      // Notify Accounts Admin or Security via task list
-      let payload = {
-        Title: 'AFRL Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-        //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-        AssignedToId: taskUserId,
-        Description: 'AFRL reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request. Please notify the original submitter.',
-        IsMilestone: false,
-        PercentComplete: 0,
-        TaskType: type + ' Request',
-        TaskLink: '/security/tracker'
-      }
-      await Todo.dispatch('addTodo', payload).catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
+        let taskId = ''
+        switch (this.govRejectType) {
+          case 'NIPR':
+            taskId = data.NIPR.task
+            data.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.NIPR.GovRejectReason = this.govRejectReason
+            for (var nipr = 0; nipr <= data.NIPR.forms.length; nipr++) {
+              this.deleteForm(data.NIPR.forms[nipr])
+            }
+            data.NIPR.forms = []
+            break
+          case 'SIPR':
+            taskId = data.SIPR.task
+            data.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.SIPR.GovRejectReason = this.govRejectReason
+            for (var sipr = 0; sipr <= data.SIPR.forms.length; sipr++) {
+              this.deleteForm(data.SIPR.forms[sipr])
+            }
+            data.SIPR.forms = []
+            break
+          case 'DREN':
+            taskId = data.DREN.task
+            data.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.DREN.GovRejectReason = this.govRejectReason
+            for (var dren = 0; dren <= data.DREN.forms.length; dren++) {
+              this.deleteForm(data.DREN.forms[dren])
+            }
+            data.DREN.forms = []
+            break
+          case 'JWICS':
+            taskId = data.JWICS.task // original taskId\
+            data.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.JWICS.GovRejectReason = this.govRejectReason
+            for (var jwics = 0; jwics <= data.JWICS.forms.length; jwics++) {
+              this.deleteForm(data.JWICS.forms[jwics])
+            }
+            data.JWICS.forms = []
+            break
+          case 'SCI':
+            taskId = data.SCI.task // original taskId\
+            data.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.SCI.GovRejectReason = this.govRejectReason
+            for (var sci = 0; sci <= data.SCI.forms.length; sci++) {
+              this.deleteForm(data.SCI.forms[sci])
+            }
+            data.SCI.forms = []
+            break
+          case 'CAC':
+            taskId = data.CAC.task // original taskId\
+            data.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            data.CAC.GovRejectReason = this.govRejectReason
+            for (var cac = 0; cac <= data.CAC.forms.length; cac++) {
+              this.deleteForm(data.CAC.forms[cac])
+            }
+            data.CAC.forms = []
+            break
         }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+        await this.updateForm(data, taskId).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
         })
-        console.log('ERROR: ' + error.message)
-      })
+        // Reset Reject form
+        this.showGovRejectError = false
+        this.showGovRejectForm = false
+        this.govRejectReason = ''
+        this.govRejectType = ''
+        let taskUserId = null
+        if (this.govRejectType == 'NIPR' || this.govRejectType == 'SIPR' || this.govRejectType == 'DREN' || this.govRejectType == 'JWICS') {
+          taskUserId = vm.$store.state.support.AccountUserId
+        } else {
+          taskUserId = vm.$store.state.support.CACSCIUserId
+        }
+        // Notify Accounts Admin or Security via task list
+        let payload = {
+          Title: 'AFRL Reject ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request',
+          //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+          AssignedToId: taskUserId,
+          Description: 'AFRL reject ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request. Please notify the original submitter.',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: this.govRejectType + ' Request',
+          TaskLink: '/security/tracker'
+        }
+        await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+      }
     },
     async deleteForm(payload) {
       await Security.dispatch('DeleteForm', payload).catch(error => {

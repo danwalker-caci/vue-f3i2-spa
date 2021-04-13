@@ -297,7 +297,7 @@ export default {
                             <p class="pr-2 pl-2">Please enter the reason for rework:</p>
                             <b-form-textarea id="GovReworkReason" v-model="GovReworkReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="GovReworkReason.length >= 10"></b-form-textarea>
                             <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="danger-outline" class="btn-sm" @click="SubmitRejectGov(data)">Rework</b-button>
+                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
                           </b-row>
                         </div>
                       </b-tab>
@@ -366,7 +366,7 @@ export default {
                             <p class="pr-2 pl-2">Please enter the reason for rework:</p>
                             <b-form-textarea id="GovReworkReason" v-model="GovReworkReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="GovReworkReason.length >= 10"></b-form-textarea>
                             <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="danger-outline" class="btn-sm" @click="SubmitRejectGov(data)">Rework</b-button>
+                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
                           </b-row>
                         </div>
                       </b-tab>
@@ -428,7 +428,7 @@ export default {
                             <p class="pr-2 pl-2">Please enter the reason for rework:</p>
                             <b-form-textarea id="GovReworkReason" v-model="GovReworkReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="GovReworkReason.length >= 10"></b-form-textarea>
                             <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="danger-outline" class="btn-sm" @click="SubmitRejectGov(data)">Rework</b-button>
+                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
                           </b-row>
                         </div>
                       </b-tab>
@@ -701,7 +701,7 @@ export default {
                 vm2.showGovReject = true
                 // get the current item data
               },
-              async submitGovReject(data) {
+              async SubmitGovReject(data) {
                 if (vm2.GovRejectReason.length <= 10) {
                   vm2.showGovRejectError = true
                 } else {
