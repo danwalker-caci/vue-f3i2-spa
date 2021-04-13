@@ -57,6 +57,7 @@ class Users extends VuexModule {
     this.currentUser.FirstName = data.FirstName
     this.currentUser.LastName = data.LastName
     this.currentUser.JSONData = data.JSONData
+    this.currentUser.Company = data.Company
   }
 
   @Mutation
@@ -198,13 +199,16 @@ class Users extends VuexModule {
       }
     }
     const url = personnelByIdUrl + this.currentUser.userid + ')'
+    console.log('GETTING USER INFO FROM PERSONNEL LIST: ' + url)
     response = await axios.get(url, {
       headers: {
         accept: 'application/json;odata=verbose'
       }
     })
     const results = response.data.d.results
+    console.log('RESULTS FROM PERSONNEL QUERY: ' + results)
     profile.recordid = results[0].Id
+    profile.Company = results[0].Company
     if (results[0].JSONData && results[0].JSONData.length > 0) {
       profile.JSONData = JSON.parse(results[0].JSONData) as Array<ObjectItem>
     } else {

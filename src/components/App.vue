@@ -21,7 +21,7 @@ let vm: any
 export default class App extends Vue {
   // mixing javascript and typescript calls for getting user informatiuon
 
-  public userid!: number
+  public userid = 0
 
   @users.Action
   public getUserId!: () => Promise<UserInt>
@@ -37,6 +37,7 @@ export default class App extends Vue {
 
   /** @method - lifecycle hook */
   public created(): void {
+    vm = this
     const that = this
     this.getUserId().then(response => {
       this.userid = response.userid // sets local variable to user id and can be used in ts and js versions
@@ -44,13 +45,13 @@ export default class App extends Vue {
         if (response === true) {
           this.getUserPermissions(this.userid).then(response => {
             if (response) {
+              this.getUserIdJS()
               this.getTodosByUser().then(response => {
                 if (response) {
                   // call javascript version to populate for still existing javascript modules
                   window.setInterval(function() {
                     that.getTodosByUser()
                   }, 60000)
-                  this.getUserIdJS()
                 }
               })
             } else {
