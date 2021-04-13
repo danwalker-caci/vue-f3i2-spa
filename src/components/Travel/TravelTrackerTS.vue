@@ -199,11 +199,6 @@ export default class TravelTracker extends Vue {
     })
   }
 
-  /** @method - lifecycle hook */
-  /* updated() {
-    console.log('TRAVEL TRACKER UPDATED: WIDTH: ' + this.contentwidth)
-  } */
-
   public rowData?: any = {}
   public newData?: any = {}
   public pageSettings?: any = { pageSize: 30 }
