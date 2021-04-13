@@ -106,12 +106,14 @@ export default {
       SCIForms: url + '/SCIForms/',
       AccountId: '',
       AFRLId: '',
-      SecurityId: '',
+      SCIUserId: null,
+      CACUserId: null,
       authorId: '',
       libraryUrl: '',
       library: '',
       loaded: false,
       securityForms: {},
+      Active: '',
       formTitle: '',
       formName: '',
       formUrl: '',
@@ -141,10 +143,8 @@ export default {
     getUserIDs: async function() {
       this.AccountId = await this.$store.dispatch('support/getAccountUser')
       this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
-      // console.log(this.$store.state.support.AFRLUserID)
-      // console.log(this.$store.state.support.AccountUserID)
-      // console.log(this.$store.state.support.CACSCIUserID)
+      this.SCIUserId = await this.$store.dispatch('support/getSCIUser')
+      this.CACUserId = await this.$store.dispatch('support/getCACUser')
     },
     getForms: async function() {
       // Run query to load the form
@@ -153,6 +153,7 @@ export default {
       }
       Security.dispatch('getSecurityFormById', payload)
         .then(function(results) {
+          vm.Active = results.Active
           vm.company = results.Company
           vm.name = results.FirstName + ' ' + results.LastName
           vm.personId = results.PersonnelID
@@ -245,6 +246,7 @@ export default {
         }
       })
       let payload = {
+        Active: this.Active,
         etag: this.etag,
         uri: this.uri
       }
@@ -268,8 +270,8 @@ export default {
           payload.SCI = JSON.stringify(vm.securityForms)
           break
       }
-      try {
-        await Security.dispatch('updateSecurityForm', payload).then(results => {
+      await Security.dispatch('updateSecurityForm', payload)
+        .then(results => {
           //console.log('Update Security Results: ' + JSON.stringify(results))
           //vm.uri = results.header.uri
           vm.etag = results.headers.etag
@@ -286,19 +288,28 @@ export default {
             vm.showNotify = true
           }
         })
-      } catch (e) {
-        // Add user notification and system logging
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+        .catch(e => {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
         })
-        console.log('ERROR: ' + e)
-      }
+      // Check if all of the approve buttons have been clicked and then mark the related task as complete.
+      /*Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+        payload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: task.Id
+        }
+        Todo.dispatch('completeTodo', payload)
+      })*/
     },
     rejectForm: async function(info) {
       // Delete form from doc library
@@ -317,6 +328,7 @@ export default {
           vm.showNotify = false
         }
         let payload = {
+          Active: vm.Active,
           etag: vm.etag,
           uri: vm.uri
         }
@@ -416,10 +428,17 @@ export default {
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
           console.log('New Task ID: ' + newTaskId)
+          let emailPayload = {
+            emails: ['alexie.hazen@caci.com'], // TO DO: Change to Juans email
+            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a>',
+            subject: vm.form + ' Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload)
           // update the securityForms object with the GovSentDate
           vm.securityForms.GovSentDate = vm.$moment().format('MM/DD/YYYY')
           vm.securityForms.task = newTaskId
           let payload = {
+            Active: vm.Active,
             uri: vm.uri,
             etag: vm.etag
           }

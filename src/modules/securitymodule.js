@@ -32,6 +32,10 @@ const actions = {
     let response = await SecurityService.getFormByTypeId(state, payload)
     return response.data.d
   },
+  async sendEmail({ state }, payload) {
+    let response = await SecurityService.sendEmail(payload, state.digest)
+    return response
+  },
   async getForms({ state }, payload) {
     let response = await SecurityService.getForms(state, payload)
     return formatForms(response)
