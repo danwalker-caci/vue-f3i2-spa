@@ -73,6 +73,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="NIPR.GovRejectReason">
+                <p class="pr-2 pl-2">NIPR Rejection Reason: {{ NIPR.GovRejectReason }}</p>
+              </b-row>
               <div v-if="NIPR.forms && NIPR.forms.length > 0">
                 <div v-for="form in NIPR.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -125,6 +128,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="SIPR.GovRejectReason">
+                <p class="pr-2 pl-2">SIPR Rejection Reason: {{ SIPR.GovRejectReason }}</p>
+              </b-row>
               <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -177,6 +183,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="DREN.GovRejectReason">
+                <p class="pr-2 pl-2">DREN Rejection Reason: {{ DREN.GovRejectReason }}</p>
+              </b-row>
               <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -228,6 +237,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="JWICS.GovRejectReason">
+                <p class="pr-2 pl-2">JWICS Rejection Reason: {{ JWICS.GovRejectReason }}</p>
+              </b-row>
               <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -305,6 +317,9 @@
                 <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
                 <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
               </b-row>
+              <b-row v-if="SCI.GovRejectReason">
+                <p class="pr-2 pl-2">SCI Rejection Reason: {{ SCI.GovRejectReason }}</p>
+              </b-row>
               <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
                   <b-form-row class="p-1">
@@ -360,6 +375,9 @@
                 <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
                 <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
                 <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+              </b-row>
+              <b-row v-if="CAC.GovRejectReason">
+                <p class="pr-2 pl-2">CAC Rejection Reason: {{ CAC.GovRejectReason }}</p>
               </b-row>
               <div v-if="CAC.forms && CAC.forms.length > 0">
                 <div v-for="form in CAC.forms" :key="form.id">
