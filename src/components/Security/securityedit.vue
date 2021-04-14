@@ -74,7 +74,7 @@
                 </b-tbody>
               </b-table-simple>
               <b-row v-if="NIPR.GovRejectReason">
-                <p class="pr-2 pl-2">NIPR Rejection Reason: {{ NIPR.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">NIPR Rejection Reason:</span> {{ NIPR.GovRejectReason }}</p>
               </b-row>
               <div v-if="NIPR.forms && NIPR.forms.length > 0">
                 <div v-for="form in NIPR.forms" :key="form.id">
@@ -129,7 +129,7 @@
                 </b-tbody>
               </b-table-simple>
               <b-row v-if="SIPR.GovRejectReason">
-                <p class="pr-2 pl-2">SIPR Rejection Reason: {{ SIPR.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">SIPR Rejection Reason:</span> {{ SIPR.GovRejectReason }}</p>
               </b-row>
               <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
@@ -184,7 +184,7 @@
                 </b-tbody>
               </b-table-simple>
               <b-row v-if="DREN.GovRejectReason">
-                <p class="pr-2 pl-2">DREN Rejection Reason: {{ DREN.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">DREN Rejection Reason:</span> {{ DREN.GovRejectReason }}</p>
               </b-row>
               <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
@@ -238,7 +238,7 @@
                 </b-tbody>
               </b-table-simple>
               <b-row v-if="JWICS.GovRejectReason">
-                <p class="pr-2 pl-2">JWICS Rejection Reason: {{ JWICS.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">JWICS Rejection Reason:</span> {{ JWICS.GovRejectReason }}</p>
               </b-row>
               <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
@@ -297,28 +297,28 @@
                   </b-tbody>
                 </b-table-simple>
               </b-row>
-              <b-row v-if="this.SCI.forms.length > 0">
-                <span v-if="this.SCI.GovSentDate !== ''" class="p-2">{{ this.SCI.GovSentDate }}</span>
-                <span v-if="this.SCI.GovCompleteDate !== ''" class="p-2">{{ this.SCI.GovCompleteDate }}</span>
-                <span v-if="this.SCI.GovRejectDate !== ''" class="p-2">{{ this.SCI.GovRejectDate }}</span>
-                <span v-if="this.SCI.GovSentDate === ''" class="p-2">
+              <b-row v-if="SCI.forms && SCI.forms.length > 0">
+                <span v-if="SCI.GovSentDate !== ''" class="p-2">{{ SCI.GovSentDate }}</span>
+                <span v-if="SCI.GovCompleteDate !== ''" class="p-2">{{ SCI.GovCompleteDate }}</span>
+                <span v-if="SCI.GovRejectDate !== ''" class="p-2">{{ SCI.GovRejectDate }}</span>
+                <span v-if="SCI.GovSentDate === ''" class="p-2">
                   <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
                 </span>
                 <span v-if="this.SCI.GovCompleteDate === ''" class="p-2">
                   <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
                 </span>
-                <span v-if="this.SCI.GovCompleteDate === '' && this.SCI.GovRejectDate === ''" class="p-2">
+                <span v-if="SCI.GovCompleteDate === '' && SCI.GovRejectDate === ''" class="p-2">
                   <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
                 </span>
               </b-row>
               <b-row v-if="showGovRejectForm">
-                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
                 <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
                 <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
                 <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
               </b-row>
               <b-row v-if="SCI.GovRejectReason">
-                <p class="pr-2 pl-2">SCI Rejection Reason: {{ SCI.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ SCI.GovRejectReason }}</p>
               </b-row>
               <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
@@ -370,14 +370,28 @@
                   </b-tbody>
                 </b-table-simple>
               </b-row>
+              <b-row v-if="CAC.forms && CAC.forms.length > 0">
+                <span v-if="CAC.GovSentDate !== ''" class="p-2">{{ CAC.GovSentDate }}</span>
+                <span v-if="CAC.GovCompleteDate !== ''" class="p-2">{{ CAC.GovCompleteDate }}</span>
+                <span v-if="CAC.GovRejectDate !== ''" class="p-2">{{ CAC.GovRejectDate }}</span>
+                <span v-if="CAC.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'CAC'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.CAC.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="CAC.GovCompleteDate === '' && CAC.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
               <b-row v-if="showGovRejectForm">
-                <p class="pr-2 pl-2">Please enter the reason for rework:</p>
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
                 <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
                 <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
                 <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
               </b-row>
               <b-row v-if="CAC.GovRejectReason">
-                <p class="pr-2 pl-2">CAC Rejection Reason: {{ CAC.GovRejectReason }}</p>
+                <p class="pr-3 pl-3"><span class="font-weight-bold">CAC Rejection Reason:</span> {{ CAC.GovRejectReason }}</p>
               </b-row>
               <div v-if="CAC.forms && CAC.forms.length > 0">
                 <div v-for="form in CAC.forms" :key="form.id">
