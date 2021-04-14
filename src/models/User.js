@@ -12,6 +12,7 @@ export default class User extends Model {
       userid: 0,
       company: '',
       usergroups: [],
+      Email: null,
       isPM: false,
       isSecurity: false,
       isDeveloper: false,

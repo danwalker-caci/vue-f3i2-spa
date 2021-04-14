@@ -271,8 +271,6 @@ export default {
             { text: 'Trip Report Due', value: 'ReportDue' },
             { text: 'Trip Report Review', value: 'TripReportReview' },
             { text: 'AFRLReview', value: 'AFRLReview' },
-            { text: 'ATPRequested', value: 'ATPRequested' },
-            { text: 'ATPApproved', value: 'ATPApproved' },
             { text: 'Completed', value: 'Completed' }
           ]
         },
@@ -656,12 +654,24 @@ export default {
           class: 'travel-TripReportReview'
         },
         {
+          name: 'TripReportRejected',
+          class: 'travel-TripReportRejected'
+        },
+        {
           name: 'Postponed',
           class: 'travel-Postponed'
         },
         {
           name: 'Cancelled',
           class: 'travel-Cancelled'
+        },
+        {
+          name: 'RejectedByWPM',
+          class: 'travel-RejectedByWPM'
+        },
+        {
+          name: 'Denied',
+          class: 'travel-Denied'
         }
       ],
       TravelersTemplate: function() {
@@ -714,18 +724,25 @@ export default {
           template: Vue.component('actionsTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager || isAdmin" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
-                <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button class="actionbutton transparent text-white" @click="report(data)" v-b-tooltip.hover.v-dark title="Add/Edit Trip Report">
-                <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="postpone(data)" v-b-tooltip.hover.v-dark title="Postpone Travel">
-                <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="cancel(data)" v-b-tooltip.hover.v-dark title="Cancel Travel">
-                <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
-              </b-button>
+              <div v-if="data.Status == 'RejectedByWPM'" style="float: left;">
+                <b-button v-if="data.CreatedBy.indexOf(currentuser[0].Email) > 0" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
+                  <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
+                </b-button>
+              </div>
+              <div>
+                <b-button v-if="isWPManager || isAdmin" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
+                  <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
+                </b-button>
+                <b-button class="actionbutton transparent text-white" @click="report(data)" v-b-tooltip.hover.v-dark title="Add/Edit Trip Report">
+                  <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
+                </b-button>
+                <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="postpone(data)" v-b-tooltip.hover.v-dark title="Postpone Travel">
+                  <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
+                </b-button>
+                <b-button v-if="isWPManager || isAdmin || isPM" class="actionbutton transparent text-white" @click="cancel(data)" v-b-tooltip.hover.v-dark title="Cancel Travel">
+                  <font-awesome-icon far icon="plane-slash" class="icon"></font-awesome-icon>
+                </b-button>
+              </div>
             </div>`,
             data: function() {
               return {
@@ -747,6 +764,9 @@ export default {
               },
               isAFRL() {
                 return User.getters('isAFRL')
+              },
+              currentuser() {
+                return User.getters('CurrentUser')
               }
             },
             methods: {

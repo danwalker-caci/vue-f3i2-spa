@@ -7,7 +7,7 @@ if (window._spPageContextInfo) {
 let portalemail = 'F3I-2Portal@caci.com'
 let baseUrl = SPCI.webServerRelativeUrl
 let userurl = baseUrl + '/_api/SP.UserProfiles.PeopleManager/GetMyProperties'
-let idurl = baseUrl + '/_api/Web/CurrentUser?$select=Id'
+let idurl = baseUrl + '/_api/Web/CurrentUser?$select=*'
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 
 export default {

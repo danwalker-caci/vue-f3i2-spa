@@ -44,6 +44,18 @@ const actions = {
     })
     return response
   },
+  async getDelegates() {
+    TravelService.getDelegates()
+      .then(response => {
+        console.log('GET DELEGATE RESPONSE: ' + response)
+        Travel.commit(state => {
+          state.delegates = formatDelegates(response)
+        })
+      })
+      .catch(error => {
+        console.log('There was an error: ', error.response)
+      })
+  },
   async getTRIPS() {
     TravelService.getAllTrips()
       .then(response => {
@@ -219,6 +231,28 @@ const actions = {
   }
 }
 
+function formatDelegates(j) {
+  let p = []
+  for (let i = 0; i < j.length; i++) {
+    p.push({
+      Id: j[i]['User']['ID'],
+      EMail: j[i]['User']['EMail'],
+      Name: j[i]['User']['Name'],
+      Delegates: []
+    })
+  }
+  for (let i = 0; i < j.length; i++) {
+    let m = j[i]['Delegates']['results']
+    for (let k = 0; k < m.length; k++) {
+      p[i].Delegates.push({
+        Id: m[k]['ID'],
+        EMail: m[k]['EMail'],
+        Name: m[k]['Name']
+      })
+    }
+  }
+  return p
+}
 function formatTrip(j) {
   let p = {}
   let start = moment(j[0]['StartDate']).isValid() ? moment(j[0]['StartDate']) : ''
@@ -301,6 +335,7 @@ function formatTrip(j) {
 function formatTravel(j) {
   let p = []
   for (let i = 0; i < j.length; i++) {
+    let createdby = j[i]['Author']['ID'] + ', ' + j[i]['Author']['Name'] + ', ' + j[i]['Author']['Title'] + ', ' + j[i]['Author']['EMail']
     let start = moment(j[i]['StartDate']).isValid() ? moment(j[i]['StartDate']) : ''
     let end = moment(j[i]['EndDate']).isValid() ? moment(j[i]['EndDate']) : ''
     let actioncompleted = moment(j[i]['SecurityActionCompleted']).isValid() ? moment(j[i]['SecurityActionCompleted']) : ''
@@ -343,6 +378,7 @@ function formatTravel(j) {
       Subject: j[i]['Title'] !== null ? String(j[i]['Title']) : '',
       Status: j[i]['Status'] !== null ? String(j[i]['Status']) : '',
       Created: created,
+      CreatedBy: createdby,
       StartTime: start,
       EndTime: end,
       WorkPlan: j[i]['WorkPlan'] !== null ? String(j[i]['WorkPlan']) : '',

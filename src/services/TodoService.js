@@ -30,7 +30,7 @@ export default {
       Title: payload.Title,
       AssignedToId: {
         __metadata: { type: 'Collection(Edm.Int32)' },
-        results: [payload.AssignedToId]
+        results: Array.isArray(payload.AssignedToId) ? payload.AssignedToId : [payload.AssignedToId]
       },
       Body: payload.Description,
       //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
@@ -39,6 +39,7 @@ export default {
       PercentComplete: payload.PercentComplete,
       TaskType: payload.TaskType,
       TaskLink: payload.TaskLink,
+      TaskInfo: payload.TaskInfo,
       TaskData: payload.TaskData !== null || payload.TaskData !== undefined ? JSON.stringify(payload.TaskData) : ''
     }
     try {

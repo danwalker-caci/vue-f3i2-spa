@@ -23,7 +23,8 @@ let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
-geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
+geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author&$orderby=Id desc'
+let delegateurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Delegates')/items?$select=*,User/Title,User/ID,User/Name,User/EMail,Delegates/Title,Delegates/ID,Delegates/Name,Delegates/EMail&$expand=User,Delegates"
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
 // let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
 let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
@@ -87,11 +88,20 @@ export default {
     }
     return getAllTrips('', company)
   },
+  async getDelegates() {
+    let response = await axios.get(delegateurl, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
+    let results = response.data.d.results
+    return results
+  },
   async getAllTrips() {
     let allTrips = []
     async function getAllTrips(purl) {
       if (purl === null) {
-        purl = url
+        purl = geturl
       }
       let response = await axios.get(purl, {
         headers: {
@@ -268,7 +278,7 @@ export default {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: [payload.email] },
+        To: { results: payload.email }, // removed array designator as the payload will already contain it
         Body: body,
         Subject: 'F3I2Portal - New Travel Request Added To SharePoint'
       }

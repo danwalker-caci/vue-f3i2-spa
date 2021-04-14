@@ -11,7 +11,6 @@
             <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
             <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
             <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
-            <!-- <e-column headerText="Task Link" textAlign="Left" width="300" :template="LinkTemplate"></e-column> -->
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
             <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
