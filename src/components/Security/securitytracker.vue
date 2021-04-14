@@ -451,34 +451,34 @@ export default {
                         </div>
                       </b-tab>
                       <b-tab title="Historical CAC" v-if="data.CACTurnedIn && data.CACExpiredOnDate">
-                          <div class="width-98">
-                            <b-table-simple small responsive>
-                              <b-thead head-variant="dark">
-                                <b-tr>
-                                  <b-th>Historical CAC Data</b-th>
-                                  <b-th>CAC Status</b-th>
-                                  <b-th>CAC Turned In Location</b-th>
-                                  <b-th>CAC Turned In Date</b-th>
-                                </b-tr>
-                              </b-thead>
-                              <b-tbody>
-                                <b-tr>
-                                  <b-td>
-                                    Yes
-                                  </b-td>
-                                  <b-td>
-                                    {{ data.CACStatus }}
-                                  </b-td>
-                                  <b-td>
-                                    {{ data.CACTurnedIn }}
-                                  </b-td>
-                                  <b-td>
-                                    {{ data.CACExpiredOnDate }}
-                                  </b-td>
-                                </b-tr>
-                              </b-tbody>
-                            </b-table-simple>
-                          </div>
+                        <div class="width-98">
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>Historical CAC Data</b-th>
+                                <b-th>CAC Status</b-th>
+                                <b-th>CAC Turned In Location</b-th>
+                                <b-th>CAC Turned In Date</b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <b-tr>
+                                <b-td>
+                                  Yes
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACStatus }}
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACTurnedIn }}
+                                </b-td>
+                                <b-td>
+                                  {{ data.CACExpiredOnDate }}
+                                </b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
+                        </div>
                       </b-tab>
                       <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
                         <div class="width-98">
@@ -615,6 +615,12 @@ export default {
                   })
                   console.log('ERROR: ' + error.message)
                 })
+                let emailPayload = {
+                  emails: [this.$store.state.support.AFRLUserEmail],
+                  body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + data.FirstName + ' ' + data.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + data.id + '">Edit ' + data.FirstName + ' ' + data.LastName + '</a>',
+                  subject: type + ' Request'
+                }
+                await Security.dispatch('sendEmail', emailPayload)
                 // Update the task to the new one for AFRL
                 // get the current item data
                 switch (type) {
