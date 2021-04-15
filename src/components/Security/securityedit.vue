@@ -645,7 +645,7 @@ export default {
         console.log('ERROR: ' + error.message)
       })
       let emailPayload = {
-        emails: ['alexie.hazen@caci.com'],
+        emails: [this.$store.state.support.AFRLUserEmail],
         body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.Id + '">Edit ' + this.FirstName + ' ' + this.LastName + '</a>',
         subject: type + ' Request'
       }

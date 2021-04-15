@@ -428,7 +428,7 @@ export default {
           let newTaskId = results.data.d.Id
           console.log('New Task ID: ' + newTaskId)
           let emailPayload = {
-            emails: ['alexie.hazen@caci.com'], // TO DO: Change to Juans email
+            emails: [this.$store.state.support.AFRLUserEmail], // TO DO: Change to Juans email
             body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a>',
             subject: vm.form + ' Request'
           }
