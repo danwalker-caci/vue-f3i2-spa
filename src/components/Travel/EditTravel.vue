@@ -222,7 +222,6 @@
                       <div class="row">
                         <div class="col">Gov Sponsor</div>
                         <div class="col">Estimated Cost</div>
-                        <div class="col">Travel Index</div>
                       </div>
                       <div class="row">
                         <div class="col">
@@ -237,12 +236,6 @@
                             Numbers only
                           </b-form-invalid-feedback>
                         </div>
-                        <!-- <div class="col">
-                          <b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" ref="IndexNumber" :state="ValidateMe('IndexNumber')"></b-form-input>
-                          <b-form-invalid-feedback>
-                            11-1111-11 [WP Plus Index #]
-                          </b-form-invalid-feedback>
-                        </div> -->
                       </div>
                       <div class="row">
                         <div class="col-12">Purpose</div>
@@ -443,6 +436,18 @@
                                 <b-form-checkbox v-model="travelmodel.InternalData.PreApproved" value="Yes" unchecked-value="No" switch></b-form-checkbox>
                               </b-col>
                             </b-row>
+                            <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
+                              <b-col cols="4">Reject</b-col>
+                              <b-col cols="8">
+                                <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch @change="RejectChanged"></b-form-checkbox>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.Rejected == 'Yes'" class="mb-1">
+                              <b-col cols="4">Reject Reason</b-col>
+                              <b-col cols="8">
+                                <b-form-textarea class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.RejectedComments"></b-form-textarea>
+                              </b-col>
+                            </b-row>
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Request Authorization To Proceed</b-col>
                               <b-col v-if="isWPManager" cols="8">
@@ -453,6 +458,12 @@
                               <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
                               <b-col v-if="isWPManager" cols="8">
                                 <b-form-checkbox v-model="travelmodel.InternalData.ApprovalRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Granted'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
+                              <b-col v-if="isWPManager" cols="8">
+                                <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select>
                               </b-col>
                             </b-row>
                           </b-tab>
@@ -561,6 +572,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import { EventBus } from '../../main'
+import Todo from '@/models/Todo'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
 import Personnel from '@/models/Personnel'
@@ -639,12 +651,17 @@ export default {
     },
     isTravelApprover() {
       return User.getters('isTravelApprover')
+    },
+    govTrvlApprovers() {
+      return this.$store.state.database.travel.govapprovers
     }
   },
   mounted: function() {
     console.log('EditTravel Mounted')
     try {
+      Todo.dispatch('getDigest')
       Travel.dispatch('getDigest')
+      Travel.dispatch('getGetGovTrvlApprovers')
     } catch (e) {
       // Add user notification and system logging
       const notification = {
@@ -745,7 +762,10 @@ export default {
           Status: 'WPMReview',
           PreApproved: 'No',
           OCONUSTravel: 'No',
+          Rejected: 'No',
+          RejectedComments: '',
           ApprovalRequested: 'No',
+          ApproverSelected: '',
           Approval: '',
           ApprovedBy: '',
           ApprovedOn: '',
@@ -1405,6 +1425,11 @@ export default {
     deleteme: function(idx) {
       this.travelmodel.Travelers.splice(idx, 1)
     },
+    RejectChanged: function(checked) {
+      if (checked) {
+        this.travelmodel.InternalData.Rejected = 'Yes'
+      }
+    },
     DeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
@@ -1467,12 +1492,55 @@ export default {
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
       }
-      if (this.travelmodel.InternalData.ApprovalRequested == 'Yes') {
-        status = 'AFRLReview'
-        this.travelmodel.InternalData.Status = 'AFRLReview'
+      if (this.travelmodel.InternalData.Rejected == 'Yes') {
+        status = 'RejectedByWPM'
+        this.travelmodel.InternalData.Status = 'RejectedByWPM'
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.id = vm.travelmodel.id
+        payload.email = vm.travelmodel.CreatedByEmail
+        payload.title = 'Travel Request Rejected By WPM'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = vm.travelmodel.InternalData.RejectedComments
+        try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Travel Request Rejected By WPM',
+            AssignedToId: [vm.travelmodel.CreatedBy],
+            Description: 'Please make the requested updates to the travel and resubmit.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'RejectedByWPM',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          Todo.dispatch('addTodo', taskpayload)
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      }
+      if (this.travelmodel.InternalData.ApprovalRequested == 'Yes') {
+        let approverselected = vm.travelmodel.InternalData.ApproverSelected
+        approverselected = approverselected.split(',')
+        status = 'AFRLReview'
+        vm.travelmodel.InternalData.Status = 'AFRLReview'
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = approverselected[1]
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
@@ -1481,6 +1549,25 @@ export default {
         payload.end = vm.travelmodel.EndTime
         payload.review = 'Travel Approval'
         try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'New Travel Approval Request',
+            AssignedToId: [approverselected[0]],
+            Description: 'Please review the trip request an approve/deny as applicable.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'AFRLReview',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function(response) {
+            console.log('DELETE TASKS RESPONSE: ' + response)
+            Todo.dispatch('addTodo', taskpayload)
+          })
+          /* Todo.dispatch('addTodo', taskpayload) */
           Travel.dispatch('EditTripEmail', payload)
         } catch (e) {
           // Add user notification and system logging
@@ -1687,11 +1774,12 @@ export default {
         let response = await Travel.dispatch('editTrip', event)
         this.$store.dispatch('support/addActivity', '<div class="bg-success">EditTravel - Edit Trip completed</div>')
         this.$store.dispatch('support/addActivity', '<div class="bg-secondary">' + response.toString() + '</div>')
-        if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
+        this.$router.push({ name: 'Travel Tracker' })
+        /* if (this.$router.currentRoute.params.back !== undefined || this.$router.currentRoute.params.back !== null) {
           this.$router.push({ name: this.$router.currentRoute.params.back })
         } else {
           this.$router.push({ name: 'Travel Tracker' }) // default
-        }
+        } */
       } catch (e) {
         // Add user notification and system logging
         const notification = {

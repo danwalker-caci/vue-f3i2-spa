@@ -44,6 +44,10 @@ const actions = {
     })
     return response
   },
+  async getGetGovTrvlApprovers({ state }) {
+    let response = await TravelService.getGovTrvlApprovers()
+    state.govapprovers = formatGovApprovers(response.data.d.results)
+  },
   async getDelegates() {
     TravelService.getDelegates()
       .then(response => {
@@ -253,6 +257,18 @@ function formatDelegates(j) {
   }
   return p
 }
+
+function formatGovApprovers(j) {
+  let p = []
+  for (let i = 0; i < j.length; i++) {
+    p.push({
+      text: j[i]['Title'],
+      value: j[i]['Id'] + ',' + j[i]['Email']
+    })
+  }
+  return p
+}
+
 function formatTrip(j) {
   let p = {}
   let start = moment(j[0]['StartDate']).isValid() ? moment(j[0]['StartDate']) : ''
@@ -296,7 +312,7 @@ function formatTrip(j) {
   p.Subject = j[0]['Title'] !== null ? String(j[0]['Title']) : ''
   p.Status = j[0]['Status'] !== null ? String(j[0]['Status']) : ''
   p.Created = created
-  p.CreatedBy = j[0]['Author']['Title']
+  p.CreatedBy = j[0]['Author']['ID']
   p.CreatedByEmail = j[0]['Author']['EMail']
   p.StartTime = start
   p.EndTime = end
