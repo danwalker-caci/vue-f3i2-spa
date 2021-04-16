@@ -233,7 +233,7 @@ export default {
     body += '<p>Subject: ' + payload.Subject + '</p>'
     body += '<p>Clearance Required: ' + payload.Clearance + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/DevA.aspx#/travel/page/edit?id=' + id + '">Travel</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + id + '">Travel</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -282,7 +282,7 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/DevA.aspx#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -316,15 +316,15 @@ export default {
   EditTripEmail(state, digest, payload) {
     // send email to workplan manager regarding state of trip. Reminder of specific actions
     let body = ''
-    /* if (payload.review && payload.review !== '') {
-      body += '<p>Forward to AFRL for review of ' + payload.review + '</p><p></p>'
-    } */
     if (payload.comments && payload.comments !== '') {
       body += '<p>' + payload.comments + '</p><p></p>'
     }
     // add more details
     body += '<p>Subject: ' + payload.title
     body += '<p>WorkPlanNumber: ' + payload.workplan
+    if (payload.indexnumber !== null || payload.indexnumber !== '') {
+      body += '<p>IndexNumber: ' + payload.indexnumber
+    }
     body += '<p>Company: ' + payload.company
     let t = payload.travelers
     let s = ''
@@ -340,7 +340,7 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/DevA.aspx#/travel/page/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },

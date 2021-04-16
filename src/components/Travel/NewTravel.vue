@@ -1017,7 +1017,7 @@ export default {
     },
     async onModalSave() {
       // Update the trip information in SharePoint.
-      Workplan.dispatch('getDigest')
+      // Workplan.dispatch('getDigest')
       let event = []
       let start = this.$moment(this.travelmodel.StartTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
       let end = this.$moment(this.travelmodel.EndTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')

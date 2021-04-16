@@ -652,6 +652,9 @@ export default {
     isTravelApprover() {
       return User.getters('isTravelApprover')
     },
+    delegates() {
+      return this.$store.state.database.travel.delegates
+    },
     govTrvlApprovers() {
       return this.$store.state.database.travel.govapprovers
     }
@@ -661,6 +664,7 @@ export default {
     try {
       Todo.dispatch('getDigest')
       Travel.dispatch('getDigest')
+      Travel.dispatch('getDelegates')
       Travel.dispatch('getGetGovTrvlApprovers')
     } catch (e) {
       // Add user notification and system logging
@@ -1437,6 +1441,8 @@ export default {
         this.travelmodel.InternalData.Approval = 'Denied'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
+        this.travelmodel.InternalData.DeniedOn = this.$moment().format('MM/DD/YYYY')
       }
     },
     ApprovedChanged: function(checked) {
@@ -1446,6 +1452,8 @@ export default {
         this.travelmodel.InternalData.Approval = 'Approved'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
+        this.travelmodel.InternalData.ApprovedOn = this.$moment().format('MM/DD/YYYY')
       }
     },
     ATPDeniedChanged: function(checked) {
@@ -1454,6 +1462,8 @@ export default {
         // Reset the ATP request to no
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.ATPDeniedBy = this.currentuser[0]['Email']
+        this.travelmodel.InternalData.ATPDeniedOn = this.$moment().format('MM/DD/YYYY')
       }
     },
     ATPChanged: function(checked) {
@@ -1462,6 +1472,8 @@ export default {
         // Reset the ATP request to no
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.GrantedBy = this.currentuser[0]['Email']
+        this.travelmodel.InternalData.GrantedOn = this.$moment().format('MM/DD/YYYY')
       }
     },
     async verifyModalSave() {
@@ -1543,6 +1555,7 @@ export default {
         payload.email = approverselected[1]
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
         payload.start = vm.travelmodel.StartTime
@@ -1563,8 +1576,7 @@ export default {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
           }
-          Todo.dispatch('completeTodosByQuery', deletepayload).then(function(response) {
-            console.log('DELETE TASKS RESPONSE: ' + response)
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
             Todo.dispatch('addTodo', taskpayload)
           })
           /* Todo.dispatch('addTodo', taskpayload) */
@@ -1645,17 +1657,50 @@ export default {
         status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
+        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['ID'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['ID'])
+            }
+          }
+        }
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
-        payload.title = vm.travelmodel.Subject
+        payload.id = vm.travelmodel.id
+        payload.email = vm.travelmodel.InternalData.CreatedByEmail
+        payload.title = 'OCONUS Travel Authorization To Proceed Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
         payload.start = vm.travelmodel.StartTime
         payload.end = vm.travelmodel.EndTime
-        payload.comments = 'OCONUS Travel Authorization To Proceed Denied'
+        payload.comments = vm.travelmodel.InternalData.ATPDenialComments
         try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'OCONUS Travel Authorization To Proceed Denied',
+            AssignedToId: taskid,
+            Description: 'Please Review The Request.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'TravelDenied',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
           Travel.dispatch('EditTripEmail', payload)
         } catch (e) {
           // Add user notification and system logging
@@ -1672,6 +1717,7 @@ export default {
         }
       }
       if (this.travelmodel.InternalData.Approval == 'Approved') {
+        // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
@@ -1681,10 +1727,11 @@ export default {
           this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
         }
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
-        payload.title = vm.travelmodel.Subject
+        payload.id = vm.travelmodel.id
+        payload.email = vm.travelmodel.CreatedByEmail
+        payload.title = 'Travel Request Approved'
         payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
         payload.start = vm.travelmodel.StartTime
@@ -1711,17 +1758,50 @@ export default {
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ATPRequested = 'No'
+        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['ID'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['ID'])
+            }
+          }
+        }
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
-        payload.title = vm.travelmodel.Subject
+        payload.id = vm.travelmodel.id
+        payload.email = vm.travelmodel.InternalData.ManagerEmail
+        payload.title = 'Travel Request Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
         payload.start = vm.travelmodel.StartTime
         payload.end = vm.travelmodel.EndTime
-        payload.comments = 'Travel Denied'
+        payload.comments = vm.travelmodel.InternalData.DenialComments
         try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Travel Request Denied',
+            AssignedToId: taskid,
+            Description: 'Please Review The Request.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'TravelDenied',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
           Travel.dispatch('EditTripEmail', payload)
         } catch (e) {
           // Add user notification and system logging

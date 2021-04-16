@@ -1,35 +1,51 @@
 <template>
-  <div class="formdiv">
-    <b-container class="p-0">
-      <b-row no-gutters class="bg-warning text-black formheader">
-        <b-col cols="4" class="p-0 text-center"></b-col>
-        <b-col cols="4" class="p-0 text-center">Upload Trip Report</b-col>
-        <b-col cols="4" class="p-0 text-right"></b-col>
-      </b-row>
-      <b-row no-gutters class="bg-white formbody">
-        <table class="mt-1">
-          <tbody>
-            <tr class="text-center bg-warning text-white">
-              <th>Upload Trip Report [This replaces any existing trip report]</th>
-            </tr>
-            <tr>
-              <td><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="col p-0 text-right">
-                  <b-button-group class="mt-2">
-                    <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalHide">Cancel</b-button>
-                    <b-button variant="success" ref="btnOk" class="ml-2" @click="onModalSave">Submit</b-button>
-                  </b-button-group>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </b-row>
-    </b-container>
-  </div>
+  <b-container fluid class="contentHeight m-0 p-0">
+    <b-row no-gutters class="contentHeight">
+      <b-col cols="12" class="m-0 p-0">
+        <b-container fluid class="contentHeight m-0 p-0">
+          <b-row no-gutters class="bg-white contentHeight">
+            <b-col id="FrameColumn" cols="9" class="reportframe"></b-col>
+            <b-col v-if="isWPManager" cols="3">
+              <b-row class="m-2 p-0">
+                <span class="mx-auto" style="width: 200px;">
+                  Approve/Reject Trip Report
+                </span>
+              </b-row>
+              <b-row class="m-2 p-0">
+                <b-form-group class="mx-auto" style="width: 200px;">
+                  <b-form-checkbox class="float-left ml-1" v-model="travelmodel.TripReportApproval" value="Approved" @change="ApprovedChanged">Approve</b-form-checkbox>
+                  <b-form-checkbox class="float-left ml-3" v-model="travelmodel.TripReportRejected" value="Denied" @change="DeniedChanged">Reject</b-form-checkbox>
+                </b-form-group>
+              </b-row>
+              <b-row v-if="travelmodel.TripReportRejected == 'Yes'" class="m-2 p-0">
+                <b-form-textarea rows="8" class="mx-auto" style="width: 95%;" v-model="travelmodel.TripReportRejectedComments" placeholder="Rejection Comments"></b-form-textarea>
+              </b-row>
+              <b-row class="m-2 p-0">
+                <b-button-group class="mx-auto" style="width: 200px;">
+                  <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
+                  <b-button variant="success" ref="btnOk" class="ml-2" @click="onWPMSubmit">Submit</b-button>
+                </b-button-group>
+              </b-row>
+            </b-col>
+            <b-col v-else cols="3">
+              <b-row class="m-2 p-0">
+                <span class="mx-auto text-center" style="width: 95%;">
+                  Upload Trip Report [Replaces existing trip report]
+                </span>
+              </b-row>
+              <b-row class="m-2 p-0"><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></b-row>
+              <b-row class="m-2 p-0">
+                <b-button-group class="mx-auto" style="width: 200px;">
+                  <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
+                  <b-button variant="success" ref="btnOk" class="ml-2" @click="onSubmit">Submit</b-button>
+                </b-button-group>
+              </b-row>
+            </b-col>
+          </b-row>
+        </b-container>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -76,14 +92,22 @@ export default {
     },
     isDeveloper() {
       return User.getters('isDeveloper')
+    },
+    isWPManager() {
+      return User.getters('isWPManager')
+    },
+    delegates() {
+      return this.$store.state.database.travel.delegates
     }
   },
   mounted: function() {
     vm = this
     let payload = {}
     payload.id = vm.TripId
+    this.today = this.$moment().format('YYYY-MM-DD')
     try {
       Todo.dispatch('getDigest')
+      Travel.dispatch('getDelegates')
       Travel.dispatch('getTripById', payload).then(function() {
         vm.$options.interval = setInterval(vm.waitForTrip, 1000)
       })
@@ -110,13 +134,21 @@ export default {
         id: 0,
         Status: '',
         TripReport: '',
+        TripReportLink: '',
+        TripReportApproval: 'No',
+        TripReportRejected: 'No',
+        TripReportRejectedComments: '',
+        EndTime: '',
         IndexNumber: '',
         WPNumber: '',
+        CreatedBy: '',
         CreatedByEmail: '',
         etag: '',
         uri: ''
       },
-      ManagerID: null
+      ManagerID: null,
+      ManagerEmail: null,
+      today: null
     }
   },
   methods: {
@@ -127,21 +159,101 @@ export default {
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
         this.travelmodel.TripReport = this.selectedtrip.TripReport
+        this.travelmodel.TripReportLink = this.selectedtrip.TripReportLink
+        this.travelmodel.EndTime = this.$moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.IndexNumber = this.selectedtrip.IndexNumber
         this.travelmodel.WPNumber = this.selectedtrip.WorkPlanNumber
+        this.travelmodel.CreatedBy = this.selectedtrip.CreatedBy
         this.travelmodel.CreatedByEmail = this.selectedtrip.CreatedByEmail
         this.travelmodel.etag = this.selectedtrip.etag
         this.travelmodel.uri = this.selectedtrip.uri
         if (this.travelmodel.WPNumber !== '') {
           let manager = await Workplan.dispatch('getManagerByWPNumber', this.travelmodel.WPNumber)
           this.ManagerID = manager[0]['Manager']['ID']
+          this.ManagerEmail = manager[0]['Manager']['Email']
+        }
+        if (this.isWPManager && this.travelmodel.TripReportLink !== '') {
+          // create iframe and set iframe source to trip report
+          let iframe = document.createElement('iframe')
+          iframe.style.width = '100%'
+          iframe.style.height = '100%'
+          iframe.id = 'TripReportFrame'
+          iframe.src = this.travelmodel.TripReportLink + '?isDlg=1'
+          document.getElementById('FrameColumn').appendChild(iframe)
         }
       }
     },
-    onModalHide: function() {
+    ApprovedChanged: function(checked) {
+      console.log('ApprovedChanged: ' + checked)
+      if (checked) {
+        this.travelmodel.TripReportApproval = 'Yes'
+        this.travelmodel.TripReportRejected = 'No'
+      }
+    },
+    DeniedChanged: function(checked) {
+      console.log('DeniedChanged: ' + checked)
+      if (checked) {
+        this.travelmodel.TripReportApproval = 'No'
+        this.travelmodel.TripReportRejected = 'Yes'
+      }
+    },
+    onCancel: function() {
       this.$router.push({ name: 'Travel Tracker' })
     },
-    async onModalSave() {
+    async onWPMSubmit() {
+      // perform actions based on approval or denial. Task should be cleared in either case. Update trip status.
+      // trip status will be either ReportDue or ReportLate
+      // is the report approved or rejected
+      if (this.travelmodel.TripReportRejected == 'Yes') {
+        // rejected so update status and send notification to submitter
+        let status = 'ReportDue'
+        let end = this.$moment(this.travelmodel.EndTime)
+        let today = this.$moment()
+        let diff = today.diff(end, 'days')
+        console.log('DIFF: ' + diff)
+        if (diff > 7) {
+          status = 'ReportLate'
+        }
+        let event = []
+        event.push({
+          Status: status,
+          etag: vm.travelmodel.etag,
+          uri: vm.travelmodel.uri
+        })
+        let taskpayload = {
+          Title: 'Trip Report Rejected By WPM',
+          AssignedToId: [vm.travelmodel.CreatedBy],
+          Description: 'Please make the requested updates to the report and resubmit.',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: status,
+          TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+          TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+        }
+        let deletepayload = {
+          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+        }
+        Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+          Todo.dispatch('addTodo', taskpayload).then(function() {
+            Travel.dispatch('editTripReport', event).then(function() {
+              vm.$router.push({ name: 'Travel Tracker' })
+            })
+          })
+        })
+      } else {
+        // approved so update status to completed. No tasks should exist so clear out any existing tasks
+        let event = []
+        event.push({
+          Status: 'Completed',
+          etag: vm.travelmodel.etag,
+          uri: vm.travelmodel.uri
+        })
+        Travel.dispatch('editTripReport', event).then(function() {
+          vm.$router.push({ name: 'Travel Tracker' })
+        })
+      }
+    },
+    async onSubmit() {
       // perform upload and refresh the page
       try {
         let response = await Travel.dispatch('getDigest')
@@ -173,7 +285,6 @@ export default {
             uri: vm.travelmodel.uri
           })
           Travel.dispatch('editTripReport', event).then(function() {
-            // Reload tracker
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
             // Create task for WP Manager to approve reject trip report
             let taskdata = {
@@ -182,7 +293,22 @@ export default {
               IndexNumber: vm.travelmodel.IndexNumber,
               CreatedByEmail: vm.travelmodel.CreatedByEmail
             }
-            payload = {
+            // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+            let emailto = []
+            let taskid = []
+            emailto.push(vm.ManagerEmail)
+            for (let i = 0; i < vm.delegates.length; i++) {
+              if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
+                // add the delegates to the email and task array
+                taskid.push(vm.delegates[i]['ID'])
+                let j = vm.delegates[i]['Delegates']
+                for (let k = 0; k < j.length; k++) {
+                  emailto.push(j[k]['EMail'])
+                  taskid.push(j[k]['ID'])
+                }
+              }
+            }
+            let taskpayload = {
               Title: 'Approve/Reject Trip Report',
               AssignedToId: vm.ManagerID,
               Description: 'Approve or Reject Trip Report',
@@ -190,10 +316,16 @@ export default {
               PercentComplete: 0,
               TaskType: 'Trip Report Review',
               TaskLink: library + vm.fileSelected,
+              TaskInfo: 'Type:TripReportData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber,
               TaskData: taskdata
             }
-            Todo.dispatch('addTodo', payload).then(function() {
-              vm.$router.push({ name: 'Travel Tracker' })
+            let deletepayload = {
+              url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+            }
+            Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+              Todo.dispatch('addTodo', taskpayload).then(function() {
+                vm.$router.push({ name: 'Travel Tracker' })
+              })
             })
           })
         })
@@ -201,7 +333,7 @@ export default {
         // Add user notification and system logging
         const notification = {
           type: 'danger',
-          title: 'Portal Error',
+          title: 'Error',
           message: e,
           push: true
         }
@@ -216,6 +348,28 @@ export default {
       let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
       buffer.then(function(buff) {
         vm.fileBuffer = buff
+        // create frame with buffered file assuming it is a PDF and display
+        document.getElementById('FrameColumn').innerHTML = ''
+        if (String(vm.fileSelected).indexOf('.pdf') > 0) {
+          let blob = new Blob([buff], { type: 'application/pdf' })
+          let link = window.URL.createObjectURL(blob)
+          let iframe = document.createElement('iframe')
+          iframe.style.width = '100%'
+          iframe.style.height = '100%'
+          iframe.id = 'TripReportFrame'
+          iframe.src = link
+          document.getElementById('FrameColumn').appendChild(iframe)
+        }
+        if (String(vm.fileSelected).indexOf('.docx') > 0) {
+          let blob = new Blob([buff], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          let link = window.URL.createObjectURL(blob)
+          let iframe = document.createElement('iframe')
+          iframe.style.width = '100%'
+          iframe.style.height = '100%'
+          iframe.id = 'TripReportFrame'
+          iframe.src = link
+          document.getElementById('FrameColumn').appendChild(iframe)
+        }
       })
     },
     getFileBuffer(file) {
@@ -236,10 +390,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.formheader {
-  height: 50px !important;
-  color: white;
-  vertical-align: middle;
-  line-height: 50px !important;
+.reportframe {
+  background-color: #aaaaaa;
+  border-right: 2px solid black;
 }
 </style>

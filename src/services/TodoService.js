@@ -172,13 +172,18 @@ export default {
       this.completeTodo(results[i]['Id'], results[i]['__metadata']['uri'], results[i]['__metadata']['etag'], digest).then(function() {
         // update counter
         d += 1
+        if (c == d) {
+          // all tasks should be removed for this
+          return true
+        }
       })
     }
-    if (c == d) {
+    /* if (c == d) {
       // all tasks should be removed for this
       return true
     } else {
       return false
-    }
+    } */
+    return false
   }
 }

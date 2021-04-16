@@ -343,6 +343,7 @@ function formatTrip(j) {
   p.SecurityActionCompleted = actioncompleted
   p.EstimatedCost = j[0]['EstimatedCost'] !== null ? String(j[0]['EstimatedCost']) : ''
   p.IndexNumber = j[0]['IndexNumber'] !== null ? String(j[0]['IndexNumber']) : ''
+  p.TripReportLink = j[0]['TripReport'] !== null ? String(j[0]['TripReport']['Url']) : ''
   p.etag = j[0]['__metadata']['etag']
   p.uri = j[0]['__metadata']['uri']
   return p
