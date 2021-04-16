@@ -1443,7 +1443,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.DeniedOn = moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.DeniedOn = moment().format('YYYY-MM-DD')
       }
     },
     ApprovedChanged: function(checked) {
@@ -1454,7 +1454,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.ApprovedOn = moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.ApprovedOn = moment().format('YYYY-MM-DD')
       }
     },
     ATPDeniedChanged: function(checked) {
@@ -1464,7 +1464,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ATPDeniedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.ATPDeniedOn = moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.ATPDeniedOn = moment().format('YYYY-MM-DD')
       }
     },
     ATPChanged: function(checked) {
@@ -1474,7 +1474,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.GrantedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.GrantedOn = moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.GrantedOn = moment().format('YYYY-MM-DD')
       }
     },
     async verifyModalSave() {
