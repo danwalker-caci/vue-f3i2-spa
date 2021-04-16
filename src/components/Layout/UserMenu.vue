@@ -113,6 +113,11 @@ export default {
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>
+            <div v-else-if="data.TaskType == 'gov-reject'">
+              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
+                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>
             <div v-else>
               <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
