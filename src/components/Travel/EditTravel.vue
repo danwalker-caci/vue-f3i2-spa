@@ -570,6 +570,7 @@
 
 <script>
 import Vue from 'vue'
+import moment from 'moment'
 import axios from 'axios'
 import { EventBus } from '../../main'
 import Todo from '@/models/Todo'
@@ -784,7 +785,7 @@ export default {
           ATPDeniedOn: '',
           ATPDenialComments: '',
           ManagerEmail: '',
-          date: this.$moment().format('MM/DD/YYYY')
+          date: moment().format('MM/DD/YYYY')
         },
         VisitRequest: '',
         SecurityAction: '',
@@ -917,13 +918,13 @@ export default {
         this.travelmodel.OCONUS = this.selectedtrip.InternalData.OCONUSTravel
         this.travelmodel.OCONUSLocation = this.selectedtrip.OCONUSLocation
         this.travelmodel.OCONUSApprovedBy = this.selectedtrip.OCONUSApprovedBy
-        this.travelmodel.OCONUSApprovedOn = this.$moment(this.selectedtrip.OCONUSApprovedOn).format('YYYY-MM-DD')
+        this.travelmodel.OCONUSApprovedOn = moment(this.selectedtrip.OCONUSApprovedOn).format('YYYY-MM-DD')
         this.travelmodel.OCONUSApprovedEmail = this.selectedtrip.OCONUSApprovedEmail
         this.travelmodel.PreApproved = this.selectedtrip.InternalData.PreApproved
         this.travelmodel.Company = this.selectedtrip.Company
         this.travelmodel.Subject = this.selectedtrip.Subject
-        this.travelmodel.StartTime = this.$moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
-        this.travelmodel.EndTime = this.$moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
+        this.travelmodel.StartTime = moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
+        this.travelmodel.EndTime = moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.TravelFrom = this.selectedtrip.TravelFrom
         this.travelmodel.TravelTo = this.selectedtrip.TravelTo
         this.travelmodel.Sponsor = this.selectedtrip.Sponsor
@@ -935,7 +936,7 @@ export default {
         this.travelmodel.Clearance = this.selectedtrip.Clearance
         this.travelmodel.VisitRequest = this.selectedtrip.VisitRequest
         this.travelmodel.SecurityAction = this.selectedtrip.SecurityAction
-        this.travelmodel.SecurityActionCompleted = this.$moment(this.selectedtrip.SecurityActionCompleted).format('YYYY-MM-DD')
+        this.travelmodel.SecurityActionCompleted = moment(this.selectedtrip.SecurityActionCompleted).format('YYYY-MM-DD')
         this.travelmodel.EstimatedCost = this.selectedtrip.EstimatedCost
         this.travelmodel.IndexNumber = this.selectedtrip.IndexNumber
         this.travelmodel.Travelers = giraffe.length > 0 ? giraffe : []
@@ -1088,14 +1089,14 @@ export default {
           break
 
         case 'start':
-          ret = this.$moment(this.travelmodel.StartTime).isValid() ? true : false
+          ret = moment(this.travelmodel.StartTime).isValid() ? true : false
           break
 
         case 'end':
           // Check to ensure that the end date is valid and not before the start date
-          this.BadEndDate = this.$moment(this.travelmodel.EndTime).isValid() ? false : true
-          if (this.$moment(this.travelmodel.StartTime).isValid() && this.$moment(this.travelmodel.EndTime).isValid()) {
-            this.EndBeforeStart = this.$moment(this.travelmodel.EndTime).isBefore(this.travelmodel.StartTime) ? true : false
+          this.BadEndDate = moment(this.travelmodel.EndTime).isValid() ? false : true
+          if (moment(this.travelmodel.StartTime).isValid() && moment(this.travelmodel.EndTime).isValid()) {
+            this.EndBeforeStart = moment(this.travelmodel.EndTime).isBefore(this.travelmodel.StartTime) ? true : false
           }
           ret = this.BadEndDate === true || this.EndBeforeStart === true ? false : true
           break
@@ -1442,7 +1443,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.DeniedOn = this.$moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.DeniedOn = moment().format('MM/DD/YYYY')
       }
     },
     ApprovedChanged: function(checked) {
@@ -1453,7 +1454,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.ApprovedOn = this.$moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.ApprovedOn = moment().format('MM/DD/YYYY')
       }
     },
     ATPDeniedChanged: function(checked) {
@@ -1463,7 +1464,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ATPDeniedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.ATPDeniedOn = this.$moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.ATPDeniedOn = moment().format('MM/DD/YYYY')
       }
     },
     ATPChanged: function(checked) {
@@ -1473,7 +1474,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.GrantedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.GrantedOn = this.$moment().format('MM/DD/YYYY')
+        this.travelmodel.InternalData.GrantedOn = moment().format('MM/DD/YYYY')
       }
     },
     async verifyModalSave() {
@@ -1495,9 +1496,9 @@ export default {
       // Update the trip information in SharePoint.
       // Need to calculate the status based on current state of selected fields
       let event = []
-      let start = this.$moment(this.travelmodel.StartTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
-      let end = this.$moment(this.travelmodel.EndTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
-      let securityactioncompleted = this.$moment(this.travelmodel.SecurityActionCompleted).isValid() ? this.$moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
+      let start = moment(this.travelmodel.StartTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
+      let end = moment(this.travelmodel.EndTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
+      let securityactioncompleted = moment(this.travelmodel.SecurityActionCompleted).isValid() ? moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
       if (this.travelmodel.InternalData.PreApproved == 'Yes') {
@@ -1817,7 +1818,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      this.travelmodel.InternalData.date = this.$moment().format('MM/DD/YYYY')
+      this.travelmodel.InternalData.date = moment().format('MM/DD/YYYY')
 
       event.push({
         Subject: this.travelmodel.Subject,
