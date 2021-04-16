@@ -438,6 +438,7 @@ export default {
   },
   data: function() {
     return {
+      Id: '',
       Active: '',
       PersonnelId: '',
       Name: '',
@@ -551,6 +552,7 @@ export default {
       })
       this.etag = result.etag
       this.uri = result.uri
+      this.Id = result.Id
       this.Active = result.Active ? 'Yes' : 'No'
       this.FirstName = result.FirstName
       this.LastName = result.LastName
@@ -611,6 +613,12 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })
+      let emailPayload = {
+        emails: [this.$store.state.support.AFRLUserEmail],
+        body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.Id + '">Edit ' + this.FirstName + ' ' + this.LastName + '</a>',
+        subject: type + ' Request'
+      }
+      await Security.dispatch('sendEmail', emailPayload)
       // Update the task to the new one for AFRL
       // get the current item data
       switch (type) {
