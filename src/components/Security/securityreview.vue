@@ -44,10 +44,10 @@
           <!-- Loop through the type of account and each of the forms. -->
           <div v-if="loaded && securityForms.forms.length > 0">
             <div v-for="form in securityForms.forms" :key="form.id">
-              <b-form-row class="p-1">
+              <b-form-row class="p-1" v-if="form.href">
                 <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
               </b-form-row>
-              <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === ''">
+              <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === '' && securityForms.GovRejectDate === ''">
                 <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                   <b-col cols="10"></b-col>
                   <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
@@ -55,10 +55,18 @@
                     <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
                   </b-col>
                 </b-form-row>
+                <b-form-row v-if="showDenial" class="pl-2 pr-2">
+                  <p class="font-weight-bold">FSO Denial Reason:</p>
+                  <b-textarea id="fsoDenial" v-model="fsoDenialInput" :state="fsoDenialInput.length >= 20" placeholder="Please enter at least 20 characters..." rows="2" max-rows="4"></b-textarea>
+                  <p class="text-danger" v-show="showDenialError">Please fill out a valid reason for rejection.</p>
+                  <b-button variant="outline-primary" class="mt-2" @click="submitRejection(form)">Submit</b-button>
+                </b-form-row>
+                <b-form-row class="pl-2 pr-2" v-if="form.rejectReason && form.rejectReason !== ''">
+                  <p><span class="font-weight-bold">FSO Rejection Reason: </span>{{ form.rejectReason }}</p>
+                </b-form-row>
               </div>
             </div>
           </div>
-
           <!-- Add a Notify Government button -->
           <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1" @click="NotifyGov">Notify Government</b-button>
         </div>
@@ -126,6 +134,9 @@ export default {
       showNotify: false,
       totalForms: '',
       rejectedForm: false,
+      fsoDenialInput: '',
+      showDenial: false,
+      showDenialError: false,
       etag: '',
       uri: ''
     }
@@ -302,100 +313,123 @@ export default {
         console.log('ERROR: ' + e)
       }
     },
-    rejectForm: async function(info) {
-      // Delete form from doc library
-      let payload = {
-        id: info.id,
-        library: info.library,
-        name: info.name,
-        uri: info.uri,
-        etag: info.etag
-      }
-      Security.dispatch('DeleteForm', payload).then(async function() {
-        // Need to update the SecurityForms Types with the deleted ID
-        vm.totalForms--
-        vm.rejectedForm = true
-        if (vm.totalForms === 0) {
-          vm.showNotify = false
-        }
+    rejectForm: async function() {
+      this.showDenial = true
+    },
+    submitRejection: async function(info) {
+      if (!(this.fsoDenialInput.length > 20)) {
+        this.showDenialError = true
+      } else {
+        // Delete form from doc library
         let payload = {
-          Active: vm.Active,
-          etag: vm.etag,
-          uri: vm.uri
+          id: info.id,
+          library: info.library,
+          name: info.name,
+          uri: info.uri,
+          etag: info.etag
         }
-        let index = 0
-        vm.securityForms.forms.forEach((type, i) => {
-          if (info.id === type.id) {
-            index = i
-            // Pop it off the freaking Types
+        Security.dispatch('DeleteForm', payload).then(async function() {
+          // Need to update the SecurityForms Types with the deleted ID
+          vm.totalForms--
+          vm.rejectedForm = true
+          if (vm.totalForms === 0) {
+            vm.showNotify = false
+          }
+          let payload = {
+            Active: vm.Active,
+            etag: vm.etag,
+            uri: vm.uri
+          }
+          //let index = 0
+          vm.securityForms.forms.forEach(type => {
+            if (info.id === type.id) {
+              //index = i
+              vm.authorId = type.submitterId
+              type.name = ''
+              type.href = ''
+              type.etag = ''
+              type.uri = ''
+              type.rejectReason = vm.fsoDenialInput
+            }
+          })
+          //vm.securityForms.forms.splice(index, 1)
+          switch (vm.form) {
+            case 'NIPR':
+              payload.NIPR = JSON.stringify(vm.securityForms)
+              break
+            case 'SIPR':
+              payload.SIPR = JSON.stringify(vm.securityForms)
+              break
+            case 'DREN':
+              payload.DREN = JSON.stringify(vm.securityForms)
+              break
+            case 'JWICS':
+              payload.JWICS = JSON.stringify(vm.securityForms)
+              break
+            case 'CAC':
+              payload.CAC = JSON.stringify(vm.securityForms)
+              break
+            case 'SCI':
+              payload.SCI = JSON.stringify(vm.securityForms)
+              break
+          }
+          try {
+            await Security.dispatch('updateSecurityForm', payload).then(results => {
+              vm.etag = results.headers.etag
+            })
+            await Todo.dispatch('getDispatch')
+            // Add task for whoever created the original form
+            payload = {
+              Title: 'Correct ' + vm.name,
+              AssignedToId: vm.authorId, // TO DO: send to original Submitter
+              Description: 'Correct ' + vm.name + ' by uploading a form.',
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: vm.form + ' Request',
+              TaskLink: '/security/' + vm.form
+            }
+            // Complete related task
+            Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
+              payload = {
+                etag: task.__metadata.etag,
+                uri: task.__metadata.uri,
+                id: task.Id
+              }
+              Todo.dispatch('completeTodo', payload)
+            })
+            const notification = {
+              type: 'success',
+              title: 'Rejected Form',
+              message: 'Rejected ' + vm.form + ' form for ' + vm.name,
+              push: true
+            }
+            vm.$store.dispatch('notification/add', notification, { root: true })
+          } catch (e) {
+            // Add user notification and system logging
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: e,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + e)
           }
         })
-        vm.securityForms.forms.splice(index, 1)
-        switch (vm.form) {
-          case 'NIPR':
-            payload.NIPR = JSON.stringify(vm.securityForms)
-            break
-          case 'SIPR':
-            payload.SIPR = JSON.stringify(vm.securityForms)
-            break
-          case 'DREN':
-            payload.DREN = JSON.stringify(vm.securityForms)
-            break
-          case 'JWICS':
-            payload.JWICS = JSON.stringify(vm.securityForms)
-            break
-          case 'CAC':
-            payload.CAC = JSON.stringify(vm.securityForms)
-            break
-          case 'SCI':
-            payload.SCI = JSON.stringify(vm.securityForms)
-            break
+        let userProfile = await User.dispatch('getUserById', { id: vm.authorId })
+        console.log(userProfile)
+        let emailPayload = {
+          emails: ['drew.ahrens@caci.com'],
+          body: '<h3>CACI FSO has Rejected your Request</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><p>Reason: ' + this.fsoDenialInput + '</p>',
+          subject: 'FSO Rejected ' + this.form + ' Request'
         }
-        try {
-          await Security.dispatch('updateSecurityForm', payload).then(results => {
-            vm.etag = results.headers.etag
-          })
-          await Todo.dispatch('getDispatch')
-          // Add task for whoever created the original form
-          payload = {
-            Title: 'Correct ' + info.name,
-            AssignedToId: vm.authorId, // Hardcoding the Security Group
-            Description: 'Correct ' + info.name + ' by uploading a form.',
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: vm.form + ' Request',
-            TaskLink: '/security/' + vm.form
-          }
-          // Complete related task
-          Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
-            payload = {
-              etag: task.__metadata.etag,
-              uri: task.__metadata.uri,
-              id: task.Id
-            }
-            Todo.dispatch('completeTodo', payload)
-          })
-          const notification = {
-            type: 'success',
-            title: 'Rejected Form',
-            message: 'Rejected ' + vm.form + ' form for ' + info.name,
-            push: true
-          }
-          vm.$store.dispatch('notification/add', notification, { root: true })
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-      })
+        await Security.dispatch('sendEmail', emailPayload)
+        this.fsoDenialInput = ''
+        this.showDenialError = false
+        this.showDenial = false
+      }
     },
     NotifyGov: async function() {
       Todo.dispatch('getTodoById', vm.taskId).then(async function(task) {

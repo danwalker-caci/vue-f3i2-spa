@@ -614,7 +614,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               break
             case 'SIPR':
@@ -626,7 +627,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               break
             case 'DREN':
@@ -638,7 +640,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               break
             case 'JWICS':
@@ -650,7 +653,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               break
             case 'CAC':
@@ -661,7 +665,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
@@ -682,7 +687,8 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentPersonnelID
               })
               payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
               payload.SCIStatus = 'CACI Review'
