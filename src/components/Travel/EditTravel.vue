@@ -112,7 +112,8 @@
                       <div class="row">
                         <div class="col-4">Company</div>
                         <div class="col-4">WorkPlan</div>
-                        <div class="col-4">Index #</div>
+                        <div class="col-4" v-if="!isAuthor">Index #</div>
+                        <div class="col-4" v-else></div>
                       </div>
                       <div class="row">
                         <div v-if="isSubcontractor" class="col-4">
@@ -131,7 +132,7 @@
                           </b-form-invalid-feedback>
                         </div>
                         <div class="col-4">
-                          <b-input-group>
+                          <b-input-group v-if="!isAuthor">
                             <b-form-input disabled class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" :state="ValidateMe('IndexNumber')" ref="IndexNumber"></b-form-input>
                             <b-input-group-append v-if="travelmodel.WorkPlanNumber != ''">
                               <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
@@ -735,6 +736,7 @@ export default {
       InvalidMessage: 'Not all fields are filled out correctly.',
       headerBgVariant: 'dark',
       showApprovalHelp: false,
+      isAuthor: false,
       travelmodel: {
         id: 0,
         Status: '',
@@ -945,6 +947,9 @@ export default {
         this.travelmodel.CreatedByEmail = this.selectedtrip.CreatedByEmail
         this.travelmodel.etag = this.selectedtrip.etag
         this.travelmodel.uri = this.selectedtrip.uri
+        if (this.travelmodel.CreatedByEmail.indexOf(this.currentuser[0].Email) >= 0) {
+          this.isAuthor = true
+        }
         this.$bvToast.hide('form-toast')
         // personnel are filtered by company
         let payload = {}
