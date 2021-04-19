@@ -439,7 +439,8 @@
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                               <b-col cols="4">Reject</b-col>
                               <b-col cols="8">
-                                <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch @change="RejectChanged"></b-form-checkbox>
+                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch @change="RejectChanged"></b-form-checkbox> -->
+                                <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch></b-form-checkbox>
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Rejected == 'Yes'" class="mb-1">
@@ -460,7 +461,7 @@
                                 <b-form-checkbox v-model="travelmodel.InternalData.ApprovalRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Granted'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
                                 <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select>
@@ -1361,9 +1362,6 @@ export default {
           console.log('Error Getting Index Numbers: ' + error)
         })
     },
-    onCompanySelected: function() {
-      // TODO: Validate if this should drive the selection of workplans and personnel
-    },
     VisitRequest(checked) {
       this.travelmodel.VisitRequest = checked ? true : false
     },
@@ -1430,11 +1428,11 @@ export default {
     deleteme: function(idx) {
       this.travelmodel.Travelers.splice(idx, 1)
     },
-    RejectChanged: function(checked) {
+    /* RejectChanged: function(checked) {
       if (checked) {
         this.travelmodel.InternalData.Rejected = 'Yes'
       }
-    },
+    }, */
     DeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
@@ -1504,13 +1502,16 @@ export default {
       if (this.travelmodel.InternalData.PreApproved == 'Yes') {
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
+        this.travelmodel.InternalData.Approval = 'Approved'
       }
       if (this.travelmodel.InternalData.Rejected == 'Yes') {
         status = 'RejectedByWPM'
         this.travelmodel.InternalData.Status = 'RejectedByWPM'
+        this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.Approval = ''
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = vm.travelmodel.CreatedByEmail
+        payload.email = [vm.travelmodel.CreatedByEmail]
         payload.title = 'Travel Request Rejected By WPM'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
@@ -1530,7 +1531,12 @@ export default {
             TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
             TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
           }
-          Todo.dispatch('addTodo', taskpayload)
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
           Travel.dispatch('EditTripEmail', payload)
         } catch (e) {
           // Add user notification and system logging
@@ -1553,7 +1559,7 @@ export default {
         vm.travelmodel.InternalData.Status = 'AFRLReview'
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = approverselected[1]
+        payload.email = [approverselected[1]]
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
@@ -1600,8 +1606,8 @@ export default {
         status = 'AFRLReview'
         this.travelmodel.InternalData.Status = 'AFRLReview'
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.InternalData.ManagerEmail]
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
@@ -1629,8 +1635,8 @@ export default {
         status = 'WPMReview'
         this.travelmodel.InternalData.Status = 'WPMReview'
         let payload = {}
-        payload.id = this.TripId
-        payload.email = this.travelmodel.InternalData.ManagerEmail
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.InternalData.ManagerEmail]
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
@@ -1665,17 +1671,17 @@ export default {
         for (let i = 0; i < vm.delegates.length; i++) {
           if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
             // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['ID'])
+            taskid.push(vm.delegates[i]['Id'])
             let j = vm.delegates[i]['Delegates']
             for (let k = 0; k < j.length; k++) {
               emailto.push(j[k]['EMail'])
-              taskid.push(j[k]['ID'])
+              taskid.push(j[k]['Id'])
             }
           }
         }
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = vm.travelmodel.InternalData.CreatedByEmail
+        payload.email = emailto
         payload.title = 'OCONUS Travel Authorization To Proceed Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
@@ -1729,7 +1735,7 @@ export default {
         }
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = vm.travelmodel.CreatedByEmail
+        payload.email = [vm.travelmodel.CreatedByEmail]
         payload.title = 'Travel Request Approved'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
@@ -1766,17 +1772,17 @@ export default {
         for (let i = 0; i < vm.delegates.length; i++) {
           if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
             // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['ID'])
+            taskid.push(vm.delegates[i]['Id'])
             let j = vm.delegates[i]['Delegates']
             for (let k = 0; k < j.length; k++) {
               emailto.push(j[k]['EMail'])
-              taskid.push(j[k]['ID'])
+              taskid.push(j[k]['Id'])
             }
           }
         }
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = vm.travelmodel.InternalData.ManagerEmail
+        payload.email = emailto
         payload.title = 'Travel Request Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber

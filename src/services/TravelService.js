@@ -345,7 +345,7 @@ export default {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: [payload.email] },
+        To: { results: payload.email },
         Body: body,
         Subject: payload.title
       }
