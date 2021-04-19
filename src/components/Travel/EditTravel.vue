@@ -112,7 +112,7 @@
                       <div class="row">
                         <div class="col-4">Company</div>
                         <div class="col-4">WorkPlan</div>
-                        <div class="col-4" v-if="!isAuthor">Index #</div>
+                        <div class="col-4" v-if="isWPManager">Index #</div>
                         <div class="col-4" v-else></div>
                       </div>
                       <div class="row">
@@ -131,8 +131,8 @@
                             Please Select A WorkPlan
                           </b-form-invalid-feedback>
                         </div>
-                        <div class="col-4">
-                          <b-input-group v-if="!isAuthor">
+                        <div class="col-4" v-if="isWPManager">
+                          <b-input-group>
                             <b-form-input disabled class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" :state="ValidateMe('IndexNumber')" ref="IndexNumber"></b-form-input>
                             <b-input-group-append v-if="travelmodel.WorkPlanNumber != ''">
                               <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
@@ -140,6 +140,7 @@
                             </b-input-group-append>
                           </b-input-group>
                         </div>
+                        <div class="col-4" v-else></div>
                       </div>
                       <div class="row">
                         <div class="col-6">Start Date</div>
