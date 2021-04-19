@@ -434,14 +434,20 @@
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                               <b-col cols="4">PreApproved</b-col>
                               <b-col cols="8">
-                                <b-form-checkbox v-model="travelmodel.InternalData.PreApproved" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.PreApproved" name="preapproved-radios" value="Yes">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.PreApproved" name="preapproved-radios" value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.PreApproved" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                               <b-col cols="4">Reject</b-col>
                               <b-col cols="8">
-                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch @change="RejectChanged"></b-form-checkbox> -->
-                                <b-form-checkbox v-model="travelmodel.InternalData.Rejected" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.Rejected" name="reject-radios" value="Yes">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.Rejected" name="reject-radios" value="No">No</b-form-radio>
+                                </b-form-radio-group>
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Rejected == 'Yes'" class="mb-1">
@@ -453,13 +459,21 @@
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Request Authorization To Proceed</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-checkbox v-model="travelmodel.InternalData.ATPRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.ATPRequested" name="atprequest-radios" value="Yes">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.ATPRequested" name="atprequest-radios" value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.ATPRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Granted'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-checkbox v-model="travelmodel.InternalData.ApprovalRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios" value="Yes">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios" value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.ApprovalRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
@@ -474,61 +488,69 @@
                               <font-awesome-icon fas icon="cog" class="icon"></font-awesome-icon>
                               Government Approvals
                             </template>
-                            <b-row v-if="travelmodel.InternalData.ATPRequested == 'Yes' || travelmodel.InternalData.ATP != ''" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATPRequested == 'Yes'" class="mb-1">
                               <b-col cols="4">Authorization To Proceed</b-col>
                               <b-col cols="8">
-                                <b-form-group>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.ATP" name="atprequest-radios" value="Yes" @change="ATPChanged">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.ATP" name="atprequest-radios" value="No" @change="ATPDeniedChanged">No</b-form-radio>
+                                </b-form-radio-group>
+                                <!-- <b-form-group>
                                   <b-form-checkbox class="float-left ml-1" v-model="travelmodel.InternalData.ATP" value="Granted" @change="ATPChanged">Grant</b-form-checkbox>
                                   <b-form-checkbox class="float-left ml-3" v-model="travelmodel.InternalData.ATP" value="Denied" @change="ATPDeniedChanged">Deny</b-form-checkbox>
-                                </b-form-group>
+                                </b-form-group> -->
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ATP == 'Granted'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
                               <b-col cols="4">Authorization Granted By</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ATPGrantedBy"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ATP == 'Granted'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
                               <b-col cols="4">Authorization Granted On</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ATPGrantedOn" type="date"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ATP == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATP == 'No'" class="mb-1">
                               <b-col cols="4">Authorization Denied By</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ATPDeniedBy"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ATP == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATP == 'No'" class="mb-1">
                               <b-col cols="4">Authorization Denied On</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ATPDeniedOn" type="date"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ATP == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ATP == 'No'" class="mb-1">
                               <b-col cols="4">Authorization Denial Comments</b-col>
                               <b-col cols="8"><b-form-textarea class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ATPDenialComments"></b-form-textarea></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes' || travelmodel.InternalData.Approval != ''" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes' || travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
                               <b-col cols="4">Approval</b-col>
                               <b-col cols="8">
-                                <b-form-group>
+                                <b-form-radio-group>
+                                  <b-form-radio v-model="travelmodel.InternalData.Approval" name="approval-radios" value="Yes" @change="ApprovedChanged">Yes</b-form-radio>
+                                  <b-form-radio v-model="travelmodel.InternalData.Approval" name="approval-radios" value="No" @change="DeniedChanged">No</b-form-radio>
+                                </b-form-radio-group>
+                                <!-- <b-form-group>
                                   <b-form-checkbox class="float-left ml-1" v-model="travelmodel.InternalData.Approval" value="Approved" @change="ApprovedChanged">Approve</b-form-checkbox>
                                   <b-form-checkbox class="float-left ml-3" v-model="travelmodel.InternalData.Approval" value="Denied" @change="DeniedChanged">Deny</b-form-checkbox>
-                                </b-form-group>
+                                </b-form-group> -->
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.Approval == 'Approved'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.Approval == 'Yes'" class="mb-1">
                               <b-col cols="4">Travel Approved By</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ApprovedBy"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.Approval == 'Approved'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.Approval == 'Yes'" class="mb-1">
                               <b-col cols="4">Travel Approved On</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedOn" type="date"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.Approval == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denied By</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.DeniedBy"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.Approval == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denied On</b-col>
                               <b-col cols="8"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.DeniedOn" type="date"></b-form-input></b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.Approval == 'Denied'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denial Comments</b-col>
                               <b-col cols="8"><b-form-textarea class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.DenialComments"></b-form-textarea></b-col>
                             </b-row>
@@ -559,7 +581,7 @@
             <div class="col-4 p-0 text-right">
               <b-button-group class="mt-2">
                 <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onModalHide">Cancel</b-button>
-                <b-button v-if="formValid && isTravelApprover" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
+                <b-button v-if="formValid" variant="success" ref="btnOk" class="ml-2" @click="verifyModalSave">Submit</b-button>
                 <a ref="EmailLink" href="#" v-show="false">Email</a>
               </b-button-group>
             </div>
@@ -829,6 +851,7 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo', 'IndexNumber'],
+      fieldsFirstTabAuthor: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
       fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments'],
       fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
@@ -1154,9 +1177,17 @@ export default {
     validateFirstTab: function() {
       // check all the fields in the first tab to see that they are properly validated
       let valid = true
-      for (let i = 0; i < this.fieldsFirstTab.length; i++) {
-        if (this.$refs[this.fieldsFirstTab[i]].state === false) {
-          valid = false
+      if (this.isAuthor == true) {
+        for (let i = 0; i < this.fieldsFirstTabAuthor.length; i++) {
+          if (this.$refs[this.fieldsFirstTab[i]].state === false) {
+            valid = false
+          }
+        }
+      } else {
+        for (let i = 0; i < this.fieldsFirstTab.length; i++) {
+          if (this.$refs[this.fieldsFirstTab[i]].state === false) {
+            valid = false
+          }
         }
       }
       return valid
@@ -1441,30 +1472,28 @@ export default {
     DeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
-        // Reset the ATP request to no
-        this.travelmodel.InternalData.Approval = 'Denied'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.DeniedOn = moment().format('YYYY-MM-DD')
+        this.travelmodel.InternalData.ApprovedBy = ''
+        this.travelmodel.InternalData.ApprovedOn = ''
       }
     },
     ApprovedChanged: function(checked) {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
-        // Reset the ATP request to no
-        this.travelmodel.InternalData.Approval = 'Approved'
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.ApprovedOn = moment().format('YYYY-MM-DD')
+        this.travelmodel.InternalData.DeniedBy = ''
+        this.travelmodel.InternalData.DeniedOn = ''
       }
     },
     ATPDeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
-        // Reset the ATP request to no
-        this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ATPDeniedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.ATPDeniedOn = moment().format('YYYY-MM-DD')
@@ -1473,8 +1502,6 @@ export default {
     ATPChanged: function(checked) {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
-        // Reset the ATP request to no
-        this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.GrantedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.GrantedOn = moment().format('YYYY-MM-DD')
@@ -1636,7 +1663,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.ATP == 'Granted') {
+      if (this.travelmodel.InternalData.ATP == 'Yes') {
         status = 'WPMReview'
         this.travelmodel.InternalData.Status = 'WPMReview'
         let payload = {}
@@ -1665,7 +1692,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.ATP == 'Denied') {
+      if (this.travelmodel.InternalData.ATP == 'No') {
         status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
@@ -1728,7 +1755,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.Approval == 'Approved') {
+      if (this.travelmodel.InternalData.Approval == 'Yes') {
         // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
@@ -1765,7 +1792,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.Approval == 'Denied') {
+      if (this.travelmodel.InternalData.Approval == 'No') {
         status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
