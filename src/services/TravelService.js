@@ -315,6 +315,10 @@ export default {
   },
   EditTripEmail(state, digest, payload) {
     // send email to workplan manager regarding state of trip. Reminder of specific actions
+    let linktext = 'Edit Travel Request'
+    if (payload.linktext) {
+      linktext = payload.linktext
+    }
     let body = ''
     if (payload.comments && payload.comments !== '') {
       body += '<p>' + payload.comments + '</p><p></p>'
@@ -340,7 +344,7 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },

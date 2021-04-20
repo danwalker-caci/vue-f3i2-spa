@@ -416,7 +416,34 @@
                     <b-form>
                       <b-card no-body>
                         <b-tabs class="tabArea" card>
-                          <b-tab class="mtab" active>
+                          <b-tab v-if="travelmodel.Status == 'Denied'" class="mtab" active>
+                            <template slot="title">
+                              <font-awesome-icon fas icon="times-circle" class="icon"></font-awesome-icon>
+                              Denied
+                            </template>
+                            <b-row v-if="travelmodel.InternalData.Status == 'Denied'" class="mb-1">
+                              <b-col cols="4">Denied Reason</b-col>
+                              <b-col cols="8">
+                                <b-form-textarea class="form-control-sm form-control-travel" readonly v-model="travelmodel.InternalData.DenialComments"></b-form-textarea>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.Status == 'Denied'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Denied For Non Admin Reasons</b-col>
+                              <b-col v-if="isWPManager" cols="8">
+                                <b-form-radio-group v-model="travelmodel.InternalData.DeniedForNonAdmin" name="deniedfornonadmin-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.DeniedForNonAdmin == 'No'" class="mb-1">
+                              <b-col cols="4">Required Corrections</b-col>
+                              <b-col cols="8">
+                                <b-form-textarea rows="6" v-model="travelmodel.InternalData.RequiredCorrections"></b-form-textarea>
+                              </b-col>
+                            </b-row>
+                          </b-tab>
+                          <b-tab v-if="travelmodel.Status != 'Denied'" class="mtab" active>
                             <template slot="title">
                               <font-awesome-icon fas icon="cog" class="icon"></font-awesome-icon>
                               CACI Approvals
@@ -435,19 +462,27 @@
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                               <b-col cols="4">PreApproved</b-col>
                               <b-col cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.PreApproved" name="preapproved-radios" value="Yes">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.PreApproved" name="preapproved-radios" value="No">No</b-form-radio>
+                                <b-form-radio-group v-model="travelmodel.InternalData.PreApproved" name="preapproved-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
                                 </b-form-radio-group>
-                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.PreApproved" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
+                              <b-col v-if="isWPManager" cols="8">
+                                <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes' && travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
                               <b-col cols="4">Reject</b-col>
                               <b-col cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.Rejected" name="reject-radios" value="Yes">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.Rejected" name="reject-radios" value="No">No</b-form-radio>
+                                <b-form-radio-group v-model="travelmodel.InternalData.Rejected" name="reject-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
@@ -460,21 +495,10 @@
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Request Authorization To Proceed</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.ATPRequested" name="atprequest-radios" value="Yes">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.ATPRequested" name="atprequest-radios" value="No">No</b-form-radio>
+                                <b-form-radio-group v-model="travelmodel.InternalData.ATPRequested" name="atprequest-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
                                 </b-form-radio-group>
-                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.ATPRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
-                              </b-col>
-                            </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
-                              <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
-                              <b-col v-if="isWPManager" cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios" value="Yes">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios" value="No">No</b-form-radio>
-                                </b-form-radio-group>
-                                <!-- <b-form-checkbox v-model="travelmodel.InternalData.ApprovalRequested" value="Yes" unchecked-value="No" switch></b-form-checkbox> -->
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
@@ -484,7 +508,7 @@
                               </b-col>
                             </b-row>
                           </b-tab>
-                          <b-tab class="mtab">
+                          <b-tab v-if="travelmodel.Status != 'Denied'" class="mtab">
                             <template slot="title">
                               <font-awesome-icon fas icon="cog" class="icon"></font-awesome-icon>
                               Government Approvals
@@ -492,14 +516,10 @@
                             <b-row v-if="travelmodel.InternalData.ATPRequested == 'Yes'" class="mb-1">
                               <b-col cols="4">Authorization To Proceed</b-col>
                               <b-col cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.ATP" name="atprequest-radios" value="Yes" @change="ATPChanged">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.ATP" name="atprequest-radios" value="No" @change="ATPDeniedChanged">No</b-form-radio>
+                                <b-form-radio-group v-model="travelmodel.InternalData.ATP" name="atprequest-radios">
+                                  <b-form-radio value="Yes" @change="ATPChanged">Yes</b-form-radio>
+                                  <b-form-radio value="No" @change="ATPDeniedChanged">No</b-form-radio>
                                 </b-form-radio-group>
-                                <!-- <b-form-group>
-                                  <b-form-checkbox class="float-left ml-1" v-model="travelmodel.InternalData.ATP" value="Granted" @change="ATPChanged">Grant</b-form-checkbox>
-                                  <b-form-checkbox class="float-left ml-3" v-model="travelmodel.InternalData.ATP" value="Denied" @change="ATPDeniedChanged">Deny</b-form-checkbox>
-                                </b-form-group> -->
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
@@ -525,14 +545,10 @@
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes' || travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
                               <b-col cols="4">Approval</b-col>
                               <b-col cols="8">
-                                <b-form-radio-group>
-                                  <b-form-radio v-model="travelmodel.InternalData.Approval" name="approval-radios" value="Yes" @change="ApprovedChanged">Yes</b-form-radio>
-                                  <b-form-radio v-model="travelmodel.InternalData.Approval" name="approval-radios" value="No" @change="DeniedChanged">No</b-form-radio>
+                                <b-form-radio-group v-model="travelmodel.InternalData.Approval" name="approval-radios">
+                                  <b-form-radio value="Yes" @change="ApprovedChanged">Yes</b-form-radio>
+                                  <b-form-radio value="No" @change="DeniedChanged">No</b-form-radio>
                                 </b-form-radio-group>
-                                <!-- <b-form-group>
-                                  <b-form-checkbox class="float-left ml-1" v-model="travelmodel.InternalData.Approval" value="Approved" @change="ApprovedChanged">Approve</b-form-checkbox>
-                                  <b-form-checkbox class="float-left ml-3" v-model="travelmodel.InternalData.Approval" value="Denied" @change="DeniedChanged">Deny</b-form-checkbox>
-                                </b-form-group> -->
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Approval == 'Yes'" class="mb-1">
@@ -687,62 +703,65 @@ export default {
   },
   mounted: function() {
     console.log('EditTravel Mounted')
-    try {
-      Todo.dispatch('getDigest')
-      Travel.dispatch('getDigest')
-      Travel.dispatch('getDelegates')
-      Travel.dispatch('getGetGovTrvlApprovers')
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
-    this.company = this.currentuser[0].Company
-    vm = this
-    try {
-      let payload = {}
-      if (this.$route) {
-        let idx = this.$route.query.id
-        console.log('idx: ' + idx)
-        if (idx === undefined || idx === null) {
-          console.log('TEST B')
-          payload.id = vm.TripId
-        } else {
-          console.log('TEST A')
-          payload.id = idx
+    this.$nextTick(function() {
+      try {
+        Todo.dispatch('getDigest')
+        Travel.dispatch('getDigest')
+        Travel.dispatch('getDelegates')
+        Travel.dispatch('getGetGovTrvlApprovers')
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
         }
-        console.log('PAYLOAD ID: ' + payload.id)
-      } else {
-        payload.id = vm.TripId
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
       }
-      Travel.dispatch('getTripById', payload).then(function() {
-        vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-      })
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
+      this.company = this.currentuser[0].Company
+      vm = this
+      try {
+        let payload = {}
+        if (this.$route) {
+          let idx = this.$route.query.id
+          console.log('idx: ' + idx)
+          if (idx === undefined || idx === null) {
+            console.log('TEST B')
+            payload.id = vm.TripId
+          } else {
+            console.log('TEST A')
+            payload.id = idx
+          }
+          console.log('PAYLOAD ID: ' + payload.id)
+        } else {
+          payload.id = vm.TripId
+        }
+        Travel.dispatch('getTripById', payload).then(function() {
+          vm.$options.interval = setInterval(vm.waitForTrip, 1000)
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
       }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
+    })
   },
   data: function() {
     return {
       busyTitle: 'Getting Trip Data. Please Wait.',
+      actionselected: false,
       company: null,
       searchinput: '',
       newindex: null,
@@ -795,6 +814,8 @@ export default {
           OCONUSTravel: 'No',
           Rejected: 'No',
           RejectedComments: '',
+          DeniedForNonAdmin: '',
+          RequiredCorrections: '',
           ApprovalRequested: 'No',
           ApproverSelected: '',
           Approval: '',
@@ -1465,14 +1486,11 @@ export default {
     deleteme: function(idx) {
       this.travelmodel.Travelers.splice(idx, 1)
     },
-    /* RejectChanged: function(checked) {
-      if (checked) {
-        this.travelmodel.InternalData.Rejected = 'Yes'
-      }
-    }, */
     DeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
+        /* this.travelmodel.Status = 'Denied'
+        this.travelmodel.InternalData.Status = 'Denied' */
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
@@ -1484,6 +1502,8 @@ export default {
     ApprovedChanged: function(checked) {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
+        /* this.travelmodel.Status = 'Approved'
+        this.travelmodel.InternalData.Status = 'Approved' */
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
@@ -1532,12 +1552,18 @@ export default {
       let securityactioncompleted = moment(this.travelmodel.SecurityActionCompleted).isValid() ? moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
-      if (this.travelmodel.InternalData.PreApproved == 'Yes') {
+      if (this.isAuthor) {
+        this.actionselected = true
+      }
+      if (this.travelmodel.InternalData.PreApproved == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
-        this.travelmodel.InternalData.Approval = 'Approved'
+        this.travelmodel.InternalData.Approval = 'Yes'
       }
-      if (this.travelmodel.InternalData.Rejected == 'Yes') {
+      if (this.travelmodel.InternalData.Rejected == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('REJECTED')
         status = 'RejectedByWPM'
         this.travelmodel.InternalData.Status = 'RejectedByWPM'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
@@ -1585,7 +1611,57 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.ApprovalRequested == 'Yes') {
+      if (this.travelmodel.InternalData.DeniedForNonAdmin == 'No' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('DENIEDFORNONADMIN')
+        this.travelmodel.Status = 'Denied'
+        this.travelmodel.InternalData.Status = 'Denied'
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.title = 'Please Correct Travel Request'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = vm.travelmodel.InternalData.RequiredCorrections
+        try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Travel Request Correction Required',
+            AssignedToId: [vm.travelmodel.CreatedBy],
+            Description: 'Please make the requested updates to the travel and resubmit.\n' + vm.travelmodel.InternalData.RequiredCorrections,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'Denied',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      }
+      if (this.travelmodel.InternalData.ApprovalRequested == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('APPROVALREQUESTED')
         let approverselected = vm.travelmodel.InternalData.ApproverSelected
         approverselected = approverselected.split(',')
         status = 'AFRLReview'
@@ -1600,13 +1676,14 @@ export default {
         payload.travelers = vm.travelmodel.Travelers
         payload.start = vm.travelmodel.StartTime
         payload.end = vm.travelmodel.EndTime
+        payload.linktext = 'Approve or Reject Travel Request'
         payload.review = 'Travel Approval'
         try {
           // create task and send emails
           let taskpayload = {
             Title: 'New Travel Approval Request',
             AssignedToId: [approverselected[0]],
-            Description: 'Please review the trip request an approve/deny as applicable.',
+            Description: 'Please review the trip request and approve/deny as applicable.',
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: 'AFRLReview',
@@ -1635,7 +1712,9 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.ATPRequested == 'Yes') {
+      if (this.travelmodel.InternalData.ATPRequested == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('ATPREQUESTED')
         status = 'AFRLReview'
         this.travelmodel.InternalData.Status = 'AFRLReview'
         let payload = {}
@@ -1665,6 +1744,8 @@ export default {
         }
       }
       if (this.travelmodel.InternalData.ATP == 'Yes') {
+        this.actionselected = true
+        console.log('ATP YES')
         status = 'WPMReview'
         this.travelmodel.InternalData.Status = 'WPMReview'
         let payload = {}
@@ -1693,7 +1774,9 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.ATP == 'No') {
+      if (this.travelmodel.InternalData.ATP == 'No' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('ATP NO')
         status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
@@ -1756,7 +1839,9 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.Approval == 'Yes') {
+      if (this.travelmodel.InternalData.Approval == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('APPROVALYES')
         // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
@@ -1793,7 +1878,9 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
-      if (this.travelmodel.InternalData.Approval == 'No') {
+      if (this.travelmodel.InternalData.Approval == 'No' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('APPROVALNO')
         status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         this.travelmodel.InternalData.ApprovalRequested = 'No'

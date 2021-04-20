@@ -555,6 +555,8 @@ export default {
           OCONUSTravel: 'No',
           Rejected: 'No',
           RejectedComments: '',
+          DeniedForNonAdmin: '',
+          RequiredCorrections: '',
           ApprovalRequested: 'No',
           ApproverSelected: '',
           Approval: '',
