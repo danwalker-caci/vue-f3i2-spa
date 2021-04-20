@@ -324,7 +324,7 @@ export default {
                                     <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
@@ -373,7 +373,7 @@ export default {
                               <b-tbody>
                                 <b-tr>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
@@ -953,6 +953,20 @@ export default {
                 let link = event.currentTarget.dataset.link
                 this.$router.push({ path: link })
               },
+              async statusChange(data) {
+                if (data.SCIStatus === 'Not Required' || data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info' || data.SCIStatus === 'Pending Info') {
+                  await Todo.dispatch('getDigest')
+                  let task = await Todo.dispatch('getTaskById', data.taskId)
+                  let taskCompletePayload = {
+                    etag: task.etag,
+                    uri: task.uri,
+                    id: data.taskId
+                  }
+                  await Todo.dispatch('completeTodo', taskCompletePayload)
+                  data.taskId = null
+                  this.updateForm(data, null)
+                }
+              },
               async onFileSelect(args) {
                 args.filesData.forEach(fileData => {
                   let file = {}
@@ -1120,6 +1134,7 @@ export default {
     },
     toolbarClick: function(args) {
       if (args.item.id === 'SecurityGrid_excelexport') {
+        this.$refs.SecurityGrid.refresh()
         // 'Grid_excelexport' -> Grid component id + _ + toolbar item name
         // prolly need to loop through the security forms and format the data into strings
         this.$refs.SecurityGrid.getColumns()[1].visible = true

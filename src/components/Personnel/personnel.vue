@@ -246,9 +246,12 @@ import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
+import Todo from '@/models/Todo'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
+// eslint-disable-next-line no-undef
+let url = _spPageContextInfo.webAbsoluteUrl
 
 export default {
   name: 'personnel',
@@ -818,6 +821,13 @@ export default {
     newOk: async function() {
       await Personnel.dispatch('getDigest')
       await Security.dispatch('getDigest')
+      let payload = {
+        group: 'CAC Security'
+      }
+      await Security.dispatch('getSecurityGroup', payload)
+      payload.group = 'SCI Security'
+      await Security.dispatch('getSecurityGroup', payload)
+      await Todo.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -866,9 +876,78 @@ export default {
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,
               Company: vm.newData.Company,
-              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
+              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              DISSCheck: 'No'
             }
-            await Security.dispatch('addSecurityForm', payload)
+            //First add the Security entry
+            let security = await Security.dispatch('addSecurityForm', payload)
+            // then get the task users and emails sorted
+            let securityTaskUsers = []
+            let securityTaskEmail = []
+            // Combining both SCI and CAC groups
+            vm.$store.state.database.security.cacgroup.forEach(user => {
+              if (user && !securityTaskUsers.some(e => e.Id === user.Id)) {
+                securityTaskUsers.push(user.Id)
+                securityTaskEmail.push(user.Email)
+              }
+            })
+            vm.$store.state.database.security.scigroup.forEach(user => {
+              if (user && !securityTaskUsers.some(e => e.Id === user.Id)) {
+                securityTaskUsers.push(user.Id)
+                securityTaskEmail.push(user.Email)
+              }
+            })
+            console.log(securityTaskUsers)
+            // Add the task
+            let taskPayload = {
+              Title: 'New Personnel added: ' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              //AssignedToId: vm.userid, // Hardcoding the Security Group
+              AssignedToId: securityTaskUsers, // Need to get everyone in the Security Group
+              Description: 'New Personnel added ' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: 'PersonnelAdded',
+              TaskLink: '/security/edit/' + security.data.d.Id
+            }
+            results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+              const notification = {
+                type: 'danger',
+                title: 'Portal Error',
+                message: error.message,
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, {
+                root: true
+              })
+              console.log('ERROR: ' + error.message)
+            })
+            // Update the previously added security form with the task id to be completed when a status changes.
+            let securityPayload = {
+              Id: security.data.d.Id,
+              etag: security.data.d.__metadata.etag,
+              uri: security.data.d.__metadata.uri,
+              taskId: results.data.d.Id
+            }
+            await Security.dispatch('updateSecurityForm', securityPayload)
+            let emailPayload = {
+              body:
+                '<p></p>New Personnel Added: ' +
+                vm.newData.FirstName +
+                ' ' +
+                vm.newData.LastName +
+                '.</p><p>Please Review in the portal at <a href="' +
+                url +
+                '/security/edit/' +
+                security.data.d.Id +
+                '">Edit ' +
+                vm.newData.FirstName +
+                ' ' +
+                vm.newData.LastName +
+                '</a></p><p><b>Please copy and paste the link into a modern browser such as Google Chrome if that is not your default.</b></p>',
+              subject: '(TEST) F3I-2 New Personnel Added',
+              emails: ['drew.ahrens@caci.com']
+            }
+            await Personnel.dispatch('sendEmail', emailPayload)
             vm.hideme('NewModal', 'refresh')
           })
         } catch (e) {

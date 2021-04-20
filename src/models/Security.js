@@ -6,7 +6,12 @@ export default class Security extends Model {
   static state = {
     digest: null,
     loaded: false,
-    securityforms: []
+    securityforms: [],
+    securitygroup: [],
+    accountgroup: [],
+    afrlgroup: [],
+    cacgroup: [],
+    scigroup: []
   }
 
   static fields() {
