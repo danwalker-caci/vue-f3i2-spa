@@ -537,8 +537,7 @@ export default {
       // console.log(this.$store.state.support.AccountUserID)
       // console.log(this.$store.state.support.CACSCIUserID)
     },
-    async DISSCheckChange() {
-      console.log('Diss Check Change')
+    async dissCheckChange() {
       if (this.DISSCheck === 'Yes') {
         this.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
       } else {
@@ -589,7 +588,7 @@ export default {
       this.CACValid = result.CACValid
       this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : ''
       this.CACTurnedIn = result.CACTurnedIn
-      this.DISSCheck = result.DISSCheck == 'Yes' ? true : false
+      this.DISSCheck = result.DISSCheck
       this.DISSCheckDate = this.$moment(result.DISSCheckDate).isValid() ? this.$moment(result.DISSCheckDate).format('MM/DD/YYYY') : ''
       this.NIPR = result.NIPR
       this.SIPR = result.SIPR

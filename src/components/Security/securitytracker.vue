@@ -506,6 +506,7 @@ export default {
                 libraryUrl: '',
                 selectedSecurityFormType: '',
                 files: [],
+                DISSCheckDate: null,
                 securityFormTypes: [
                   { value: 'NIPR', text: 'NIPR' },
                   { value: 'SIPR', text: 'SIPR' },
@@ -552,11 +553,10 @@ export default {
                 data.SCIStatus = 'SSO Processed'
               },
               async dissCheckChange(data) {
-                console.log('Performing Diss Check Change')
-                if (data.DISSCheck === 'Yes') {
-                  data.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
+                if (data === 'Yes') {
+                  vm2.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
                 } else {
-                  data.DISSCheckDate = null
+                  vm2.DISSCheckDate = null
                 }
               },
               async NotifyGov(data, e) {
@@ -901,8 +901,8 @@ export default {
                 payload.CACExpiredOnDate = d.CACExpiredOnDate ? d.CACExpiredOnDate : null
                 payload.CACTurnedIn = d.CACTurnedIn
                 payload.CACIssuedBy = d.CACIssuedBy
-                payload.DISSCheck = d.DISSCheck == 'Yes' ? true : false
-                payload.DISSCheckDate = d.DISSCheckDate ? d.DISSCheckDate : null
+                payload.DISSCheck = d.DISSCheck
+                payload.DISSCheckDate = vm2.DISSCheckDate ? vm2.DISSCheckDate : null
                 payload.PRDueDate = d.PRDueDate ? d.PRDueDate : null
                 payload.CEDate = d.CEDate ? d.CEDate : null
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate
