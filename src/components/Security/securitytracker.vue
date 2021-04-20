@@ -461,7 +461,7 @@ export default {
                               <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
                             </b-col>
                           </b-row>
-                          <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
+                          <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper || isAFRL" ref="updateFiles" variant="success" :data-id="data.Id" class="float-right btn-sm mt-2" @click="updateForm(data)">Upload Completed Forms</b-button>
                         </div>
                       </b-tab>
                     </b-tabs>

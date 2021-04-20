@@ -75,8 +75,11 @@
               </b-table-simple>
               <div v-if="NIPR.forms && NIPR.forms.length > 0">
                 <div v-for="form in NIPR.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
                   <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                       <b-col cols="10"></b-col>
@@ -127,8 +130,11 @@
               </b-table-simple>
               <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
                   <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
@@ -179,8 +185,11 @@
               </b-table-simple>
               <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
                   <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
@@ -230,8 +239,11 @@
               </b-table-simple>
               <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
                   <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                     <b-col cols="10"></b-col>
