@@ -1555,6 +1555,13 @@ export default {
         this.travelmodel.InternalData.Approval = 'Yes'
       }
 
+      if (this.isAuthor == true && this.actionselected == false) {
+        // the author should only be able to edit if the status is Denied or RejectedByWPM
+        this.actionselected = true
+        status = 'WPMReview'
+        this.travelmodel.InternalData.Status = 'WPMReview'
+      }
+
       if (this.travelmodel.InternalData.DeniedForNonAdmin == 'No' && this.actionselected == false) {
         this.actionselected = true
         console.log('DENIEDFORNONADMIN')
@@ -1822,13 +1829,6 @@ export default {
           })
           console.log('ERROR: ' + e)
         }
-      }
-
-      if (this.isAuthor == true && this.actionselected == false) {
-        // the author should only be able to edit if the status is Denied or RejectedByWPM
-        this.actionselected = true
-        status = 'WPMReview'
-        this.travelmodel.InternalData.Status = 'WPMReview'
       }
 
       if (this.travelmodel.InternalData.ATPRequested == 'Yes' && this.actionselected == false) {
