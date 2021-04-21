@@ -724,7 +724,7 @@ export default {
           template: Vue.component('actionsTemplate', {
             template: `
             <div>
-              <div v-if="data.Status == 'RejectedByWPM'" style="float: left;">
+              <div v-if="data.Status == 'RejectedByWPM' || data.Status == 'Denied'" style="float: left;">
                 <b-button v-if="data.CreatedBy.indexOf(currentuser[0].Email) > 0" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
                   <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
                 </b-button>

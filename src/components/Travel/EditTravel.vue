@@ -1548,67 +1548,13 @@ export default {
       let securityactioncompleted = moment(this.travelmodel.SecurityActionCompleted).isValid() ? moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
-      if (this.isAuthor == true) {
-        this.actionselected = true
-        status = 'WPMReview'
-        this.travelmodel.InternalData.Status = 'WPMReview'
-      }
-      if (this.travelmodel.InternalData.PreApproved == 'Yes' && this.actionselected == false) {
+      if (this.travelmodel.InternalData.PreApproved == 'Yes') {
         this.actionselected = true
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
       }
-      if (this.travelmodel.InternalData.Rejected == 'Yes' && this.actionselected == false) {
-        this.actionselected = true
-        console.log('REJECTED')
-        status = 'RejectedByWPM'
-        this.travelmodel.InternalData.Status = 'RejectedByWPM'
-        this.travelmodel.InternalData.ApprovalRequested = 'No'
-        this.travelmodel.InternalData.Approval = ''
-        let payload = {}
-        payload.id = vm.travelmodel.id
-        payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = 'Travel Request Rejected By WPM'
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        payload.comments = vm.travelmodel.InternalData.RejectedComments
-        try {
-          // create task and send emails
-          let taskpayload = {
-            Title: 'Travel Request Rejected By WPM',
-            AssignedToId: [vm.travelmodel.CreatedBy],
-            Description: 'Please make the requested updates to the travel and resubmit.',
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: 'RejectedByWPM',
-            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
-            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
-          }
-          let deletepayload = {
-            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
-          }
-          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-            Todo.dispatch('addTodo', taskpayload)
-          })
-          Travel.dispatch('EditTripEmail', payload)
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-      }
+
       if (this.travelmodel.InternalData.DeniedForNonAdmin == 'No' && this.actionselected == false) {
         this.actionselected = true
         console.log('DENIEDFORNONADMIN')
@@ -1657,6 +1603,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
+
       if (this.travelmodel.InternalData.Approval == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         console.log('APPROVALYES')
@@ -1696,6 +1643,7 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
+
       if (this.travelmodel.InternalData.Approval == 'No' && this.actionselected == false) {
         this.actionselected = true
         console.log('APPROVALNO')
@@ -1762,6 +1710,58 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
+
+      if (this.travelmodel.InternalData.Rejected == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('REJECTED')
+        status = 'RejectedByWPM'
+        this.travelmodel.InternalData.Status = 'RejectedByWPM'
+        this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.Approval = ''
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.title = 'Travel Request Rejected By WPM'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = vm.travelmodel.InternalData.RejectedComments
+        try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Travel Request Rejected By WPM',
+            AssignedToId: [vm.travelmodel.CreatedBy],
+            Description: 'Please make the requested updates to the travel and resubmit.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'RejectedByWPM',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      }
+
       if (this.travelmodel.InternalData.ApprovalRequested == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         console.log('APPROVALREQUESTED')
@@ -1823,6 +1823,14 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
+
+      if (this.isAuthor == true && this.actionselected == false) {
+        // the author should only be able to edit if the status is Denied or RejectedByWPM
+        this.actionselected = true
+        status = 'WPMReview'
+        this.travelmodel.InternalData.Status = 'WPMReview'
+      }
+
       if (this.travelmodel.InternalData.ATPRequested == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         console.log('ATPREQUESTED')
