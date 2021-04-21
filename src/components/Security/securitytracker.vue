@@ -1430,11 +1430,10 @@ export default {
         this.$refs.SecurityGrid.getColumns()[27].visible = true
         this.$refs.SecurityGrid.getColumns()[28].visible = true
         this.$refs.SecurityGrid.getColumns()[29].visible = true
-        this.$refs.SecurityGrid.getColumns()[30].visible = true
+        this.$refs.SecurityGrid.getColumns()[30].visible = false
         this.$refs.SecurityGrid.getColumns()[31].visible = false
         this.$refs.SecurityGrid.getColumns()[32].visible = false
         this.$refs.SecurityGrid.getColumns()[33].visible = false
-        this.$refs.SecurityGrid.getColumns()[34].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
