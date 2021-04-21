@@ -123,8 +123,8 @@ export default {
     }
     return getAllTodos(null, id)
   },
-  completeTodo(id, uri, etag, digest) {
-    // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
+  async completeTodo(id, uri, etag, digest) {
+    console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
     let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
     if (uri !== null || uri !== undefined) {
       taskurl = uri

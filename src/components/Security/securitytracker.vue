@@ -56,6 +56,7 @@
                     <e-column field="JWICAccount" headerText="JWIC Account" :visible="false" textAlign="Left"></e-column>
                     <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="taskId" headerText="Task Id" :visible="false" textAlign="Left"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
@@ -324,7 +325,7 @@ export default {
                                     <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :select="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
@@ -373,7 +374,7 @@ export default {
                               <b-tbody>
                                 <b-tr>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :select="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
@@ -499,6 +500,7 @@ export default {
                 library: '',
                 libraryUrl: '',
                 selectedSecurityFormType: '',
+                statusesUpdated: false,
                 files: [],
                 securityFormTypes: [
                   { value: 'NIPR', text: 'NIPR' },
@@ -860,6 +862,17 @@ export default {
                     // finally, clear d.files to zero and remove from file uploader
                   })
                 }
+                if (this.statusesUpdated && d.taskId) {
+                  await Todo.dispatch('getDigest')
+                  let task = await Todo.dispatch('getTodoById', d.taskId)
+                  let taskCompletePayload = {
+                    etag: task.__metadata.etag,
+                    uri: task.__metadata.uri,
+                    id: d.taskId
+                  }
+                  await Todo.dispatch('completeTodo', taskCompletePayload)
+                  d.taskId = null
+                }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
                 if (payload.NIPR) {
@@ -896,6 +909,7 @@ export default {
                 payload.SCIFormType = d.SCIFormType
                 payload.SCIFormSubmitted = d.SCIFormSubmitted ? d.SCIFormSubmitted : null
                 payload.SCIStatus = d.SCIStatus
+                payload.taskId = d.taskId
                 await Security.dispatch('updateSecurityForm', payload)
                   .then(function(result) {
                     // grab a fresh etag for the record
@@ -903,6 +917,7 @@ export default {
                     /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
+                    vm2.statusesUpdated = false
                     vm2.selectedSecurityFormType = null
                     let uploadedFiles = document.querySelector('.e-upload-files')
                     if (uploadedFiles) {
@@ -954,17 +969,10 @@ export default {
                 this.$router.push({ path: link })
               },
               async statusChange(data) {
-                if (data.SCIStatus === 'Not Required' || data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info' || data.SCIStatus === 'Pending Info') {
-                  await Todo.dispatch('getDigest')
-                  let task = await Todo.dispatch('getTaskById', data.taskId)
-                  let taskCompletePayload = {
-                    etag: task.etag,
-                    uri: task.uri,
-                    id: data.taskId
-                  }
-                  await Todo.dispatch('completeTodo', taskCompletePayload)
-                  data.taskId = null
-                  this.updateForm(data, null)
+                if (data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') {
+                  this.statusesUpdated = true
+                } else if (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info') {
+                  this.statusesUpdated = true
                 }
               },
               async onFileSelect(args) {
@@ -1006,23 +1014,25 @@ export default {
     }
   },
   mounted: async function() {
-    vm = this
-    // First get current user informaiton
-    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    /*const notification = {
-      type: 'info',
-      title: 'Getting Data',
-      message: 'Getting Security Information. Please wait...',
-      push: false
-    }
-    this.$store.dispatch('notification/add', notification, { root: true })*/
-    await Security.dispatch('getDigest')
-    await Todo.dispatch('getDigest')
-    if (this.userloaded) {
-      this.getData()
-    } else {
-      vm.$options.interval = setInterval(vm.getData, 500)
-    }
+    this.$nextTick(async () => {
+      vm = this
+      // First get current user informaiton
+      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+      /*const notification = {
+        type: 'info',
+        title: 'Getting Data',
+        message: 'Getting Security Information. Please wait...',
+        push: false
+      }
+      this.$store.dispatch('notification/add', notification, { root: true })*/
+      await Security.dispatch('getDigest')
+      await Todo.dispatch('getDigest')
+      if (this.userloaded) {
+        this.getData()
+      } else {
+        vm.$options.interval = setInterval(vm.getData, 500)
+      }
+    })
     // get all of the entries from the SecurityForms list - Might need to check if Subcontractor and then only load related the related personnel list
   },
   methods: {
@@ -1167,6 +1177,7 @@ export default {
         this.$refs.SecurityGrid.getColumns()[28].visible = false
         this.$refs.SecurityGrid.getColumns()[29].visible = false
         this.$refs.SecurityGrid.getColumns()[30].visible = false
+        this.$refs.SecurityGrid.getColumns()[31].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {

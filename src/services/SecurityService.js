@@ -174,6 +174,7 @@ export default {
     itemprops.PRDueDate = payload.PRDueDate
     itemprops.CEDueDate = payload.CEDueDate
     itemprops.SCIIndoc = payload.SCIIndoc
+    itemprops.taskId = payload.taskId
     return axios
       .post(endpoint, itemprops, config)
       .then(function(response) {
@@ -225,7 +226,8 @@ export default {
       CEDate: payload.CEDate,
       SCIFormType: payload.SCIFormType,
       SCIFormSubmitted: payload.SCIFormSubmitted,
-      SCIIndoc: payload.SCIIndoc
+      SCIIndoc: payload.SCIIndoc,
+      taskId: payload.taskId
     }
     if (payload.NIPR) {
       itemprops.NIPR = payload.NIPR

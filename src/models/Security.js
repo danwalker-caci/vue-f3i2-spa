@@ -44,6 +44,7 @@ export default class Security extends Model {
       SIPR: this.attr(''),
       DREN: this.attr(''),
       JWICS: this.attr(''),
+      taskId: this.attr(''),
       etag: this.attr(null),
       uri: this.attr(null)
     }

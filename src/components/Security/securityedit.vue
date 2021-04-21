@@ -210,7 +210,7 @@
                       <span v-if="JWICS.GovSentDate !== ''">{{ JWICS.GovSentDate }}</span>
                       <span v-if="JWICS.GovSentDate == ''">
                         <!-- Should only show if in Security Group -->
-                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @input="NotifyGov($event)">Notify Government</b-button>
                         <span v-if="!isSecurity">Processing</span>
                       </span>
                     </b-td>
@@ -271,7 +271,7 @@
                       <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
                     </b-td>
                     <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                      <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
                     </b-td>
                     <b-td>
                       <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
@@ -312,7 +312,7 @@
                 <b-tbody>
                   <b-tr>
                     <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                      <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
                     </b-td>
                     <b-td>
                       <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
@@ -463,6 +463,7 @@ export default {
       SIPR: {},
       DREN: {},
       JWICS: {},
+      taskId: '',
       etag: '',
       uri: '',
       files: [],
@@ -470,6 +471,7 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
+      statusesUpdated: false,
       selectedSecurityFormType: '',
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
@@ -517,10 +519,12 @@ export default {
     }
   },
   mounted: async function() {
-    vm = this
-    await Security.dispatch('getDigest')
-    await this.getUserIDs()
-    await this.getForms()
+    this.$nextTick(async () => {
+      vm = this
+      await Security.dispatch('getDigest')
+      await this.getUserIDs()
+      await this.getForms()
+    })
   },
   methods: {
     async getUserIDs() {
@@ -579,11 +583,19 @@ export default {
       this.SIPR = result.SIPR
       this.DREN = result.DREN
       this.JWICS = result.JWICS
+      this.taskId = result.taskId
       await Security.dispatch('getDigest')
       this.loaded = true
     },
     AssistDateChange() {
       this.SCIStatus = 'SSO Processed'
+    },
+    async statusChange() {
+      if (this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      } else if (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      }
     },
     async NotifyGov(e) {
       await Security.dispatch('getDigest')
@@ -912,6 +924,17 @@ export default {
           // finally, clear d.files to zero and remove from file uploader
         })
       }
+      if (this.statusesUpdated && this.taskId) {
+        await Todo.dispatch('getDigest')
+        let task = await Todo.dispatch('getTodoById', this.taskId)
+        let taskCompletePayload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: this.taskId
+        }
+        await Todo.dispatch('completeTodo', taskCompletePayload)
+        this.taskId = null
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -947,6 +970,7 @@ export default {
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
       payload.Active = this.Active
+      payload.taskId = this.taskId
       payload.etag = this.etag
       payload.uri = this.uri
       let result = await Security.dispatch('updateSecurityForm', payload).catch(e => {
@@ -981,6 +1005,7 @@ export default {
 
       this.lockSubmit = false
       if (tId) {
+        console.log(tId)
         Todo.dispatch('getTodoById', tId).then(async function(task) {
           let payload = {
             etag: task.__metadata.etag,

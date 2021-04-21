@@ -165,6 +165,7 @@ function formatForms(j) {
       SCIIndoc: moment(j[i]['SCIIndoc']).isValid() ? moment(j[i]['SCIIndoc']) : '',
       PRDueDate: moment(j[i]['PRDueDate']).isValid() ? moment(j[i]['PRDueDate']) : '',
       CEDate: moment(j[i]['CEDate']).isValid() ? moment(j[i]['CEDate']) : '',
+      taskId: j[i]['taskId'],
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
@@ -206,6 +207,7 @@ function formatForm(j) {
     SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
     PRDueDate: moment(j[0]['PRDueDate']).isValid() ? moment(j[0]['PRDueDate']) : '',
     CEDate: moment(j[0]['CEDate']).isValid() ? moment(j[0]['CEDate']) : '',
+    taskId: j[0]['taskId'],
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']
