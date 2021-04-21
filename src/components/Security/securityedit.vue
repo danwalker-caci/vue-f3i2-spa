@@ -343,7 +343,7 @@
                         <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
                       </b-td>
                       <b-td>
-                        <b-form-checkbox id="dissCheck" v-model="DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
+                        <b-form-checkbox :disable="!isSecurity" id="dissCheck" v-model="DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
                       </b-td>
                       <b-td>
                         <!-- Update Button -->
@@ -517,6 +517,7 @@ export default {
       CACExpiredOnDate: '',
       DISSCheck: 'No',
       DISSCheckDate: null,
+      DISSCheckChanged: false,
       NIPR: {},
       SIPR: {},
       DREN: {},
@@ -525,7 +526,7 @@ export default {
       showGovRejectError: false,
       govRejectReason: '',
       govRejectType: '',
-      taskId: '',
+      taskId: null,
       etag: '',
       uri: '',
       files: [],
@@ -588,6 +589,7 @@ export default {
   methods: {
     async dissCheckChange() {
       if (this.DISSCheck === 'Yes') {
+        this.DISSCheckChanged = true
         this.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
       } else {
         this.DISSCheckDate = null
@@ -1183,6 +1185,17 @@ export default {
       if (this.statusesUpdated && this.taskId) {
         await Todo.dispatch('getDigest')
         let task = await Todo.dispatch('getTodoById', this.taskId)
+        let taskCompletePayload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: this.taskId
+        }
+        await Todo.dispatch('completeTodo', taskCompletePayload)
+        this.taskId = null
+      }
+      if (this.DISSCheckChanged && this.CAC.dissCheckTask) {
+        await Todo.dispatch('getDigest')
+        let task = await Todo.dispatch('getTodoById', this.CAC.dissCheckTask)
         let taskCompletePayload = {
           etag: task.__metadata.etag,
           uri: task.__metadata.uri,

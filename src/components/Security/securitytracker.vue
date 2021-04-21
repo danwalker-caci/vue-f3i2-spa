@@ -430,7 +430,7 @@ export default {
                                     <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <b-form-checkbox id="dissCheck" v-model="data.DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
+                                    <b-form-checkbox :disable="!isSecurity" id="dissCheck" v-model="data.DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
                                   </b-td>
                                   <b-td>
                                     <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
@@ -574,6 +574,7 @@ export default {
                 selectedSecurityFormType: '',
                 statusesUpdated: false,
                 files: [],
+                DISSCheckChanged: false,
                 DISSCheckDate: null,
                 securityFormTypes: [
                   { value: 'NIPR', text: 'NIPR' },
@@ -622,6 +623,7 @@ export default {
               },
               async dissCheckChange(data) {
                 if (data === 'Yes') {
+                  vm2.DISSCheckChanged = true
                   vm2.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
                 } else {
                   vm2.DISSCheckDate = null
@@ -1120,6 +1122,17 @@ export default {
                   })
                 }
                 if (this.statusesUpdated && d.taskId) {
+                  await Todo.dispatch('getDigest')
+                  let task = await Todo.dispatch('getTodoById', d.taskId)
+                  let taskCompletePayload = {
+                    etag: task.__metadata.etag,
+                    uri: task.__metadata.uri,
+                    id: d.taskId
+                  }
+                  await Todo.dispatch('completeTodo', taskCompletePayload)
+                  d.taskId = null
+                }
+                if (this.DISSCheckChanged && d.taskId) {
                   await Todo.dispatch('getDigest')
                   let task = await Todo.dispatch('getTodoById', d.taskId)
                   let taskCompletePayload = {

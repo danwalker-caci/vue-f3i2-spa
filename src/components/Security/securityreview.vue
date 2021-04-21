@@ -301,7 +301,10 @@ export default {
           vm.$store.dispatch('notification/add', notification, { root: true })
           vm.totalForms--
           if (vm.totalForms === 0 && !vm.rejectedForm) {
-            vm.showNotify = true
+            // belay the sucker
+            setTimeout(() => {
+              vm.showNotify = true
+            }, 1000)
           }
         })
       } catch (e) {

@@ -336,6 +336,7 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
+      taskId: null,
       taskUserId: [],
       taskEmail: [],
       securityForm: null,
@@ -515,6 +516,7 @@ export default {
         this.lockSubmit = true
         let payload = {}
         let group = []
+        let dissResults = ''
         switch (this.form.Type) {
           case 'NIPR':
             // set the url for the post of file
@@ -785,7 +787,7 @@ export default {
             TaskType: vm.form.Type + ' Request',
             TaskLink: '/security/edit/' + this.securityForm.Id
           }
-          results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+          dissResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
             const notification = {
               type: 'danger',
               title: 'Portal Error',
@@ -856,10 +858,12 @@ export default {
             GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
+            dissCheckTask: dissResults.data ? dissResults.data.d.Id : '',
             forms: cacs
           })
         }
         payload.Active = this.securityForm.Active ? 'Yes' : 'No'
+        payload.taskId = this.taskId
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
