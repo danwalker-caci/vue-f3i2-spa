@@ -30,7 +30,7 @@ export default {
       Title: payload.Title,
       AssignedToId: {
         __metadata: { type: 'Collection(Edm.Int32)' },
-        results: [payload.AssignedToId]
+        results: Array.isArray(payload.AssignedToId) ? payload.AssignedToId : [payload.AssignedToId]
       },
       Body: payload.Description,
       //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
@@ -123,8 +123,8 @@ export default {
     }
     return getAllTodos(null, id)
   },
-  completeTodo(id, uri, etag, digest) {
-    // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
+  async completeTodo(id, uri, etag, digest) {
+    console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
     let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
     if (uri !== null || uri !== undefined) {
       taskurl = uri

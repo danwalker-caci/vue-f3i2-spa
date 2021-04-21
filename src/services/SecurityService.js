@@ -13,6 +13,7 @@ let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
 let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
 let sendemailurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
+let securitygroupurl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('$GROUP')/users"
 //let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
 
 export default {
@@ -23,6 +24,16 @@ export default {
       method: 'post',
       headers: { Accept: 'application/json; odata=verbose' }
     })
+  },
+  async getSecurityGroups(state, payload) {
+    const response = await axios({
+      method: 'GET',
+      url: securitygroupurl.replace('$GROUP', payload.group),
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
   },
   async getForm(state, uri) {
     const response = await axios({
@@ -163,6 +174,7 @@ export default {
     itemprops.PRDueDate = payload.PRDueDate
     itemprops.CEDueDate = payload.CEDueDate
     itemprops.SCIIndoc = payload.SCIIndoc
+    itemprops.taskId = payload.taskId
     return axios
       .post(endpoint, itemprops, config)
       .then(function(response) {
@@ -216,7 +228,8 @@ export default {
       CEDate: payload.CEDate,
       SCIFormType: payload.SCIFormType,
       SCIFormSubmitted: payload.SCIFormSubmitted,
-      SCIIndoc: payload.SCIIndoc
+      SCIIndoc: payload.SCIIndoc,
+      taskId: payload.taskId
     }
     if (payload.NIPR) {
       itemprops.NIPR = payload.NIPR
@@ -363,7 +376,7 @@ export default {
         return response
       })
       .catch(function(error) {
-        console.log('PersonnelService Error Sending Email: ' + error)
+        console.log('SecurityService Error Sending Email: ' + error)
       })
   },
   // TO DO: include type, form id, personnel id and update JSON object

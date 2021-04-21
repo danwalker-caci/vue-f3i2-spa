@@ -228,7 +228,7 @@
                       <span v-if="JWICS.GovSentDate !== ''">{{ JWICS.GovSentDate }}</span>
                       <span v-if="JWICS.GovSentDate == ''">
                         <!-- Should only show if in Security Group -->
-                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @input="NotifyGov($event)">Notify Government</b-button>
                         <span v-if="!isSecurity">Processing</span>
                       </span>
                     </b-td>
@@ -296,7 +296,7 @@
                         <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
                       </b-td>
                       <b-td>
-                        <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
                       </b-td>
                       <b-td>
                         <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
@@ -332,20 +332,6 @@
               <b-row v-if="SCI.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ SCI.GovRejectReason }}</p>
               </b-row>
-              <div v-if="SCI.forms && SCI.forms.length > 0">
-                <div v-for="form in SCI.forms" :key="form.id">
-                  <b-form-row class="p-1">
-                    <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
-                  </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
-                </div>
-              </div>
             </b-tab>
             <b-tab title="CAC">
               <b-row>
@@ -363,7 +349,7 @@
                   <b-tbody>
                     <b-tr>
                       <b-td>
-                        <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
                       </b-td>
                       <b-td>
                         <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
@@ -409,20 +395,6 @@
               <b-row v-if="CAC.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">CAC Rejection Reason:</span> {{ CAC.GovRejectReason }}</p>
               </b-row>
-              <div v-if="CAC.forms && CAC.forms.length > 0">
-                <div v-for="form in CAC.forms" :key="form.id">
-                  <b-form-row class="p-1">
-                    <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
-                  </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
-                </div>
-              </div>
             </b-tab>
             <b-tab title="Historical CAC" v-if="CACTurnedIn && CACExpiredOnDate">
               <b-row>
@@ -549,6 +521,7 @@ export default {
       showGovRejectError: false,
       govRejectReason: '',
       govRejectType: '',
+      taskId: '',
       etag: '',
       uri: '',
       files: [],
@@ -556,6 +529,7 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
+      statusesUpdated: false,
       selectedSecurityFormType: '',
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
@@ -603,10 +577,12 @@ export default {
     }
   },
   mounted: async function() {
-    vm = this
-    await Security.dispatch('getDigest')
-    await this.getUserIDs()
-    await this.getForms()
+    this.$nextTick(async () => {
+      vm = this
+      await Security.dispatch('getDigest')
+      await this.getUserIDs()
+      await this.getForms()
+    })
   },
   methods: {
     async getUserIDs() {
@@ -674,11 +650,19 @@ export default {
       this.SIPR = result.SIPR
       this.DREN = result.DREN
       this.JWICS = result.JWICS
+      this.taskId = result.taskId
       await Security.dispatch('getDigest')
       this.loaded = true
     },
     AssistDateChange() {
       this.SCIStatus = 'SSO Processed'
+    },
+    async statusChange() {
+      if (this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      } else if (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      }
     },
     async NotifyGov(e) {
       await Security.dispatch('getDigest')
@@ -1056,6 +1040,17 @@ export default {
           // finally, clear d.files to zero and remove from file uploader
         })
       }
+      if (this.statusesUpdated && this.taskId) {
+        await Todo.dispatch('getDigest')
+        let task = await Todo.dispatch('getTodoById', this.taskId)
+        let taskCompletePayload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: this.taskId
+        }
+        await Todo.dispatch('completeTodo', taskCompletePayload)
+        this.taskId = null
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -1093,6 +1088,7 @@ export default {
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
       payload.Active = this.Active
+      payload.taskId = this.taskId
       payload.etag = this.etag
       payload.uri = this.uri
       let result = await Security.dispatch('updateSecurityForm', payload).catch(e => {
@@ -1127,6 +1123,7 @@ export default {
 
       this.lockSubmit = false
       if (tId) {
+        console.log(tId)
         Todo.dispatch('getTodoById', tId).then(async function(task) {
           let payload = {
             etag: task.__metadata.etag,

@@ -8,6 +8,21 @@ const getters = {
   },
   SecurityForms: state => {
     return state.securityforms
+  },
+  SecurityGroup: state => {
+    return state.securitygroup
+  },
+  AFRLGroup: state => {
+    return state.afrlgroup
+  },
+  AccountGroup: state => {
+    return state.accountgroup
+  },
+  CACGroup: state => {
+    return state.cacgroup
+  },
+  SCIGroup: state => {
+    return state.scigroup
   }
 }
 
@@ -22,6 +37,28 @@ const actions = {
       .catch(error => {
         console.log('There was an error getting digest data: ', error.response)
       })
+  },
+  async getSecurityGroup({ state }, payload) {
+    let response = await SecurityService.getSecurityGroups(state, payload)
+    Security.commit(state => {
+      switch (payload.group) {
+        case 'AFRL Security':
+          state.afrlgroup = formatGroup(response.data.d.results)
+          break
+        case 'Account Security':
+          state.accountgroup = formatGroup(response.data.d.results)
+          break
+        case 'CAC Security':
+          state.cacgroup = formatGroup(response.data.d.results)
+          break
+        case 'SCI Security':
+          state.scigroup = formatGroup(response.data.d.results)
+          break
+        case 'SecurityOfficers':
+          state.securitygroup = formatGroup(response.data.d.results)
+          break
+      }
+    })
   },
   async getForm({ state }, uri) {
     let response = await SecurityService.getForm(state, uri)
@@ -130,6 +167,7 @@ function formatForms(j) {
       SCIIndoc: moment(j[i]['SCIIndoc']).isValid() ? moment(j[i]['SCIIndoc']) : '',
       PRDueDate: moment(j[i]['PRDueDate']).isValid() ? moment(j[i]['PRDueDate']) : '',
       CEDate: moment(j[i]['CEDate']).isValid() ? moment(j[i]['CEDate']) : '',
+      taskId: j[i]['taskId'],
       Title: j[i]['Title'],
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
@@ -173,9 +211,27 @@ function formatForm(j) {
     SCIIndoc: moment(j[0]['SCIIndoc']).isValid() ? moment(j[0]['SCIIndoc']) : '',
     PRDueDate: moment(j[0]['PRDueDate']).isValid() ? moment(j[0]['PRDueDate']) : '',
     CEDate: moment(j[0]['CEDate']).isValid() ? moment(j[0]['CEDate']) : '',
+    taskId: j[0]['taskId'],
     Title: j[0]['Title'],
     etag: j[0]['__metadata']['etag'],
     uri: j[0]['__metadata']['uri']
+  }
+  return p
+}
+
+function formatGroup(j) {
+  let p = []
+  console.log(j.length)
+  for (var i = 0; i < j.length; i++) {
+    console.log(j[i]['Id'])
+    p.push({
+      Id: j[i]['Id'],
+      Email: j[i]['Email'],
+      LoginName: j[i]['LoginName'],
+      UserId: j[i]['UserId'],
+      PrincipleType: j[i]['PrincipleType'],
+      Title: j[i]['Title']
+    })
   }
   return p
 }
