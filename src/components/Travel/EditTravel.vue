@@ -1553,6 +1553,38 @@ export default {
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
+
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.title = 'Travel Request Approved'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = 'Travel Approved'
+        try {
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Travel.dispatch('EditTripEmail', payload)
+          })
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
       }
 
       if (this.isAuthor == true && this.actionselected == false) {
@@ -1660,8 +1692,8 @@ export default {
         // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
-        this.travelmodel.InternalData.ApprovalRequested = 'No'
-        this.travelmodel.InternalData.ATPRequested = 'No'
+        // this.travelmodel.InternalData.ApprovalRequested = 'No'
+        // this.travelmodel.InternalData.ATPRequested = 'No'
         if (this.travelmodel.InternalData.OCONUSTravel == 'Yes') {
           this.travelmodel.OCONUSApprovedBy = this.travelmodel.InternalData.ApprovedBy
           this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
@@ -1678,7 +1710,12 @@ export default {
         payload.end = vm.travelmodel.EndTime
         payload.comments = 'Travel Approved'
         try {
-          Travel.dispatch('EditTripEmail', payload)
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Travel.dispatch('EditTripEmail', payload)
+          })
         } catch (e) {
           // Add user notification and system logging
           const notification = {
