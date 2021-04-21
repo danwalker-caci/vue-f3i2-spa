@@ -1560,6 +1560,49 @@ export default {
         this.actionselected = true
         status = 'WPMReview'
         this.travelmodel.InternalData.Status = 'WPMReview'
+
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.InternalData.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.InternalData.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['ID'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['ID'])
+            }
+          }
+        }
+        console.log('EMAILS: ' + emailto.toString())
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = emailto
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        // create task and send emails
+        let taskpayload = {
+          Title: 'Approve or Deny Travel Request',
+          AssignedToId: taskid,
+          Description: 'Please Review The Trip',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'WPMReview',
+          TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+          TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+        }
+        let deletepayload = {
+          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+        }
+        Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+          Todo.dispatch('addTodo', taskpayload)
+        })
+        Travel.dispatch('EditTripEmail', payload)
       }
 
       if (this.travelmodel.InternalData.DeniedForNonAdmin == 'No' && this.actionselected == false) {
