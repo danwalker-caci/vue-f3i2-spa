@@ -749,6 +749,7 @@ export default {
           this.CAC.task = results.data.d.Id
           break
       }
+      this.Active = true
       this.updateForm(taskId)
     },
     async CompleteGov(event) {

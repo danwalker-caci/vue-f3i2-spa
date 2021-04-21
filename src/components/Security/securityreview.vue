@@ -255,6 +255,9 @@ export default {
     },
     approveForm: async function(info) {
       // Post Approval data
+      this.fsoDenialInput = ''
+      this.showDenialError = false
+      this.showDenial = false
       this.securityForms.forms.forEach(form => {
         if (form.id === info.id) {
           form.status = 'Approved'
