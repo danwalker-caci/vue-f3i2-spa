@@ -273,7 +273,7 @@ export default {
     let headers = null
     switch (action) {
       case 'edit': {
-        url = payload.uri
+        let eurl = payload.uri ? payload.uri : url
         headers = {
           'Content-Type': 'application/json;odata=verbose',
           Accept: 'application/json;odata=verbose',
@@ -342,17 +342,7 @@ export default {
         }
 
         try {
-          await axios.post(url, itemprops, config)
-          // go get the data for the saved item to return back to the user
-          return axios
-            .get(url, {
-              headers: {
-                accept: 'application/json;odata=verbose'
-              }
-            })
-            .then(function(response) {
-              return response
-            })
+          await axios.post(eurl, itemprops, config)
         } catch (error) {
           console.log('PersonnelService Error Updating Personnel: ' + error)
         }
@@ -390,16 +380,6 @@ export default {
           return axios.post(url, itemprops2, config2).then(function(response) {
             return response
           })
-          // go get the data for the saved item to return back to the user
-          /*return axios
-            .get(url, {
-              headers: {
-                accept: 'application/json;odata=verbose'
-              }
-            })
-            .then(function(response) {
-              return response
-            })*/
         } catch (error) {
           console.log('PersonnelService Error Updating Personnel: ' + error)
         }
