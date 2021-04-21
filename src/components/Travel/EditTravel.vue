@@ -1550,6 +1550,8 @@ export default {
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
       if (this.isAuthor == true) {
         this.actionselected = true
+        status = 'WPMReview'
+        this.travelmodel.InternalData.Status = 'WPMReview'
       }
       if (this.travelmodel.InternalData.PreApproved == 'Yes' && this.actionselected == false) {
         this.actionselected = true
