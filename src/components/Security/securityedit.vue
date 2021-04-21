@@ -795,7 +795,9 @@ export default {
       if (this.govRejectReason.length <= 10) {
         this.showGovRejectError = true
       } else {
-        let taskId = ''
+        let taskId = '',
+          emails = [],
+          taskUserId = null
         switch (this.govRejectType) {
           case 'NIPR':
             taskId = data.NIPR.task
@@ -805,6 +807,8 @@ export default {
               this.deleteForm(data.NIPR.forms[nipr])
             }
             data.NIPR.forms = []
+            emails.push(this.$store.state.support.AccountUserEmail)
+            taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'SIPR':
             taskId = data.SIPR.task
@@ -814,6 +818,8 @@ export default {
               this.deleteForm(data.SIPR.forms[sipr])
             }
             data.SIPR.forms = []
+            emails.push(this.$store.state.support.AccountUserEmail)
+            taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'DREN':
             taskId = data.DREN.task
@@ -823,6 +829,8 @@ export default {
               this.deleteForm(data.DREN.forms[dren])
             }
             data.DREN.forms = []
+            emails.push(this.$store.state.support.AccountUserEmail)
+            taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'JWICS':
             taskId = data.JWICS.task // original taskId\
@@ -832,6 +840,8 @@ export default {
               this.deleteForm(data.JWICS.forms[jwics])
             }
             data.JWICS.forms = []
+            emails.push(this.$store.state.support.AccountUserEmail)
+            taskUserId = vm.$store.state.support.AccountUserId
             break
           case 'SCI':
             taskId = data.SCI.task // original taskId\
@@ -841,6 +851,8 @@ export default {
               this.deleteForm(data.SCI.forms[sci])
             }
             data.SCI.forms = []
+            emails.push(this.$store.state.support.CACSCIUserEmail)
+            taskUserId = vm.$store.state.support.CACSCIUserId
             break
           case 'CAC':
             taskId = data.CAC.task // original taskId\
@@ -850,6 +862,8 @@ export default {
               this.deleteForm(data.CAC.forms[cac])
             }
             data.CAC.forms = []
+            emails.push(this.$store.state.support.CACSCIUserEmail)
+            taskUserId = vm.$store.state.support.CACSCIUserId
             break
         }
         await this.updateForm(data, taskId).catch(error => {
@@ -864,26 +878,15 @@ export default {
           })
           console.log('ERROR: ' + error.message)
         })
-        // Reset Reject form
-        this.showGovRejectError = false
-        this.showGovRejectForm = false
-        this.govRejectReason = ''
-        this.govRejectType = ''
-        let taskUserId = null
-        if (this.govRejectType == 'NIPR' || this.govRejectType == 'SIPR' || this.govRejectType == 'DREN' || this.govRejectType == 'JWICS') {
-          taskUserId = vm.$store.state.support.AccountUserId
-        } else {
-          taskUserId = vm.$store.state.support.CACSCIUserId
-        }
         // Notify Accounts Admin or Security via task list
         let payload = {
-          Title: 'AFRL Reject ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request',
+          Title: 'Government Rejection: ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request',
           //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
           AssignedToId: taskUserId,
-          Description: 'AFRL reject ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request. Please notify the original submitter.',
+          Description: 'Reason: ' + this.govRejectReason,
           IsMilestone: false,
           PercentComplete: 0,
-          TaskType: this.govRejectType + ' Request',
+          TaskType: 'gov-reject',
           TaskLink: '/security/tracker'
         }
         await Todo.dispatch('addTodo', payload).catch(error => {
@@ -897,6 +900,18 @@ export default {
             root: true
           })
           console.log('ERROR: ' + error.message)
+        })
+        let emailPayload = {
+          emails: ['drew.ahrens@caci.com'], // TO DO: push the original submitters email in there.
+          body: '<h3>Government Rejected </h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
+          subject: this.govRejectType + ' Request'
+        }
+        await Security.dispatch('sendEmail', emailPayload).then(() => {
+          // Reset Reject form
+          vm.showGovRejectError = false
+          vm.showGovRejectForm = false
+          vm.govRejectReason = ''
+          vm.govRejectType = ''
         })
       }
     },

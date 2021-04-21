@@ -729,7 +729,9 @@ export default {
                 if (vm2.GovRejectReason.length <= 10) {
                   vm2.showGovRejectError = true
                 } else {
-                  let taskId = ''
+                  let taskId = '',
+                    emails = [],
+                    taskUserId = null
                   switch (vm2.GovRejectType) {
                     case 'NIPR':
                       taskId = data.NIPR.task
@@ -739,6 +741,8 @@ export default {
                         this.deleteForm(data.NIPR.forms[nipr])
                       }
                       data.NIPR.forms = []
+                      taskUserId = vm.$store.state.support.AccountUserId
+                      emails.push(vm.$store.state.support.AccountUserEmail)
                       break
                     case 'SIPR':
                       taskId = data.SIPR.task
@@ -748,6 +752,8 @@ export default {
                         this.deleteForm(data.SIPR.forms[sipr])
                       }
                       data.SIPR.forms = []
+                      taskUserId = vm.$store.state.support.AccountUserId
+                      emails.push(vm.$store.state.support.AccountUserEmail)
                       break
                     case 'DREN':
                       taskId = data.DREN.task
@@ -757,6 +763,8 @@ export default {
                         this.deleteForm(data.DREN.forms[dren])
                       }
                       data.DREN.forms = []
+                      taskUserId = vm.$store.state.support.AccountUserId
+                      emails.push(vm.$store.state.support.AccountUserEmail)
                       break
                     case 'JWICS':
                       taskId = data.JWICS.task // original taskId\
@@ -766,6 +774,8 @@ export default {
                         this.deleteForm(data.JWICS.forms[jwics])
                       }
                       data.JWICS.forms = []
+                      taskUserId = vm.$store.state.support.AccountUserId
+                      emails.push(vm.$store.state.support.AccountUserEmail)
                       break
                     case 'SCI':
                       taskId = data.SCI.task // original taskId\
@@ -775,6 +785,8 @@ export default {
                         this.deleteForm(data.SCI.forms[sci])
                       }
                       data.SCI.forms = []
+                      taskUserId = vm.$store.state.support.CACSCIUserId
+                      emails.push(vm.$store.state.support.CACSCIUserEmail)
                       break
                     case 'CAC':
                       taskId = data.CAC.task // original taskId\
@@ -784,6 +796,8 @@ export default {
                         this.deleteForm(data.CAC.forms[cac])
                       }
                       data.CAC.forms = []
+                      taskUserId = vm.$store.state.support.CACSCIUserId
+                      emails.push(vm.$store.state.support.CACSCIUserEmail)
                       break
                   }
                   await this.updateForm(data, taskId).catch(error => {
@@ -798,26 +812,15 @@ export default {
                     })
                     console.log('ERROR: ' + error.message)
                   })
-                  // Reset Reject form
-                  vm2.showGovRejectError = false
-                  vm2.showGovReject = false
-                  vm2.GovRejectReason = ''
-                  vm2.GovRejectType = ''
-                  let taskUserId = null
-                  if (vm2.GovRejectType == 'NIPR' || vm2.GovRejectType == 'SIPR' || vm2.GovRejectType == 'DREN' || vm2.GovRejectType == 'JWICS') {
-                    taskUserId = vm.$store.state.support.AccountUserId
-                  } else {
-                    taskUserId = vm.$store.state.support.CACSCIUserId
-                  }
                   // Notify Accounts Admin or Security via task list
                   let payload = {
-                    Title: 'AFRL Reject ' + data.FirstName + ' ' + data.LastName + ' ' + vm2.GovRejectType + ' Request',
+                    Title: 'Government Reject ' + data.FirstName + ' ' + data.LastName + ' ' + vm2.GovRejectType + ' Request',
                     //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
                     AssignedToId: taskUserId,
-                    Description: 'AFRL reject ' + data.FirstName + ' ' + data.LastName + ' ' + vm2.GovRejectType + ' Request. Please notify the original submitter.',
+                    Description: 'Reason: ' + vm2.GovRejectReason,
                     IsMilestone: false,
                     PercentComplete: 0,
-                    TaskType: vm2.GovRejectType + ' Request',
+                    TaskType: 'gov-reject',
                     TaskLink: '/security/tracker'
                   }
                   await Todo.dispatch('addTodo', payload).catch(error => {
@@ -831,6 +834,19 @@ export default {
                       root: true
                     })
                     console.log('ERROR: ' + error.message)
+                  })
+                  let emailPayload = {
+                    // emails: emails // TO DO: push original submitters email into the emails array
+                    emails: ['drew.ahrens@caci.com'],
+                    body: '<h3>Government Rejected Submission</h3> <p>Name: ' + data.FirstName + ' ' + data.LastName + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
+                    subject: 'Rejection of ' + vm2.GovRejectType + ' Request'
+                  }
+                  await Security.dispatch('sendEmail', emailPayload).then(() => {
+                    // Reset Reject form
+                    vm2.showGovRejectError = false
+                    vm2.showGovReject = false
+                    vm2.GovRejectReason = ''
+                    vm2.GovRejectType = ''
                   })
                 }
               },
