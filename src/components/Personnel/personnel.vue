@@ -307,6 +307,12 @@ export default {
     userloaded() {
       return User.getters('Loaded')
     },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
+    },
     rect() {
       return this.$store.state.support.contentrect
     }
@@ -577,71 +583,74 @@ export default {
   },
   mounted: async function() {
     vm = this
-    if (this.companies.length === 0) {
-      await Company.dispatch('getCompanies')
-    }
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
-    this.company = this.currentuser[0].Company
-    Personnel.dispatch('getDigest')
-    Security.dispatch('getDigest')
-    Workplan.dispatch('getWorkplans')
-      .then(function() {
-        if (vm.isSubcontractor && vm.company) {
-          let payload = {}
-          payload.company = vm.company
-          Personnel.dispatch('getPersonnelByCompany', payload)
-            .then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
-            .catch(e => {
-              // vm.handleError(e)
-              console.log('getPersonnelByCompany ERROR: ' + e)
-            })
-        } else {
-          Personnel.dispatch('getPersonnel')
-            .then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
-            .catch(e => {
-              // vm.handleError(e)
-              console.log('getPersonnel ERROR: ' + e)
-            })
-        }
-      })
-      .catch(e => {
-        // Add user notification and system logging
-        // vm.handleError(e)
-        console.log('getWorkplans ERROR: ' + e)
-      })
-    if (vm.mode === 'edit') {
-      // Don't show all of the records until after the form is submitted
-      vm.approvalOnly = true
-      vm.PersonnelId = this.id
+    this.$nextTick(async () => {
+      if (this.companies.length === 0) {
+        await Company.dispatch('getCompanies')
+      }
+      this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
+      this.company = this.currentuser[0].Company
+      Personnel.dispatch('getDigest')
+      Security.dispatch('getDigest')
+      Security.dispatch('getSecurityGroups')
       Workplan.dispatch('getWorkplans')
         .then(function() {
-          Personnel.dispatch('getPersonnelAllValuesById', vm.id)
-            .then(person => {
-              let modData = {}
-              if (person[0].Modification && person[0].Modification.length > 0) {
-                modData = JSON.parse(person[0].Modification)
-                modData.uri = person[0].uri
-                modData.etag = person[0].etag
-                modData.Id = person[0].Id
-                vm.oldData = person[0]
-                vm.showOldData = true
-              } else {
-                modData = person[0]
-              }
-              vm.editRow(modData)
-            })
-            .catch(e => {
-              vm.handleError(e)
-            })
+          if (vm.isSubcontractor && vm.company) {
+            let payload = {}
+            payload.company = vm.company
+            Personnel.dispatch('getPersonnelByCompany', payload)
+              .then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+              .catch(e => {
+                // vm.handleError(e)
+                console.log('getPersonnelByCompany ERROR: ' + e)
+              })
+          } else {
+            Personnel.dispatch('getPersonnel')
+              .then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+              .catch(e => {
+                // vm.handleError(e)
+                console.log('getPersonnel ERROR: ' + e)
+              })
+          }
         })
         .catch(e => {
-          vm.handleError(e)
+          // Add user notification and system logging
+          // vm.handleError(e)
+          console.log('getWorkplans ERROR: ' + e)
         })
-    }
+      if (vm.mode === 'edit') {
+        // Don't show all of the records until after the form is submitted
+        vm.approvalOnly = true
+        vm.PersonnelId = this.id
+        Workplan.dispatch('getWorkplans')
+          .then(function() {
+            Personnel.dispatch('getPersonnelAllValuesById', vm.id)
+              .then(person => {
+                let modData = {}
+                if (person[0].Modification && person[0].Modification.length > 0) {
+                  modData = JSON.parse(person[0].Modification)
+                  modData.uri = person[0].uri
+                  modData.etag = person[0].etag
+                  modData.Id = person[0].Id
+                  vm.oldData = person[0]
+                  vm.showOldData = true
+                } else {
+                  modData = person[0]
+                }
+                vm.editRow(modData)
+              })
+              .catch(e => {
+                vm.handleError(e)
+              })
+          })
+          .catch(e => {
+            vm.handleError(e)
+          })
+      }
+    })
   },
   methods: {
     handleError: function(e) {
@@ -821,12 +830,6 @@ export default {
     newOk: async function() {
       await Personnel.dispatch('getDigest')
       await Security.dispatch('getDigest')
-      let payload = {
-        group: 'CAC Security'
-      }
-      await Security.dispatch('getSecurityGroup', payload)
-      payload.group = 'SCI Security'
-      await Security.dispatch('getSecurityGroup', payload)
       await Todo.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
@@ -885,19 +888,18 @@ export default {
             let securityTaskUsers = []
             let securityTaskEmail = []
             // Combining both SCI and CAC groups
-            vm.$store.state.database.security.cacgroup.forEach(user => {
-              if (user && !securityTaskUsers.some(e => e.Id === user.Id)) {
+            vm.cacgroup.forEach(user => {
+              if (user && !securityTaskUsers.includes(user.Id)) {
                 securityTaskUsers.push(user.Id)
                 securityTaskEmail.push(user.Email)
               }
             })
-            vm.$store.state.database.security.scigroup.forEach(user => {
-              if (user && !securityTaskUsers.some(e => e.Id === user.Id)) {
+            vm.scigroup.forEach(user => {
+              if (user && !securityTaskUsers.includes(user.Id)) {
                 securityTaskUsers.push(user.Id)
                 securityTaskEmail.push(user.Email)
               }
             })
-            console.log(securityTaskUsers)
             // Add the task
             let taskPayload = {
               Title: 'New Personnel added: ' + vm.newData.FirstName + ' ' + vm.newData.LastName,
@@ -943,9 +945,9 @@ export default {
                 vm.newData.FirstName +
                 ' ' +
                 vm.newData.LastName +
-                '</a></p><p><b>Please copy and paste the link into a modern browser such as Google Chrome if that is not your default.</b></p>',
-              subject: '(TEST) F3I-2 New Personnel Added',
-              emails: ['drew.ahrens@caci.com']
+                '</a></p><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+              subject: '(F3I-2 Portal) New Personnel Added',
+              emails: securityTaskEmail
             }
             await Personnel.dispatch('sendEmail', emailPayload)
             vm.hideme('NewModal', 'refresh')

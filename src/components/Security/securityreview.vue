@@ -68,7 +68,7 @@
             </div>
           </div>
           <!-- Add a Notify Government button -->
-          <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1" @click="NotifyGov">Notify Government</b-button>
+          <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1 float-right" @click="NotifyGov">Notify Government</b-button>
         </div>
       </b-card>
     </div>
@@ -100,6 +100,18 @@ export default {
     },
     isSecurity() {
       return User.getters('isSecurity')
+    },
+    afrlgroup() {
+      return Security.getters('AFRLGroup')
+    },
+    accountgroup() {
+      return Security.getters('AccountGroup')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
     }
   },
   data: function() {
@@ -111,9 +123,7 @@ export default {
       AccountsJWICSForms: url + '/AccountsJWICS/',
       CACForms: url + '/CACForms/',
       SCIForms: url + '/SCIForms/',
-      AccountId: '',
-      AFRLId: '',
-      SecurityId: '',
+      AFRLGroup: [],
       authorId: '',
       libraryUrl: '',
       library: '',
@@ -143,20 +153,14 @@ export default {
   },
   mounted: async function() {
     vm = this
-    await Security.dispatch('getDigest')
-    await this.getUserIDs()
-    await this.checkType()
-    await this.getForms()
+    this.$nextTick(async () => {
+      await Security.dispatch('getDigest')
+      if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
+      await this.checkType()
+      await this.getForms()
+    })
   },
   methods: {
-    getUserIDs: async function() {
-      this.AccountId = await this.$store.dispatch('support/getAccountUser')
-      this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
-      // console.log(this.$store.state.support.AFRLUserID)
-      // console.log(this.$store.state.support.AccountUserID)
-      // console.log(this.$store.state.support.CACSCIUserID)
-    },
     getForms: async function() {
       // Run query to load the form
       let payload = {
@@ -195,7 +199,7 @@ export default {
           vm.taskId = vm.securityForms.task
           // Format the Created column using moment
           vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-          vm.totalForms = vm.securityForms.length
+          vm.totalForms = vm.securityForms.forms.length
           // need to check the response for the direct url to the document
           vm.loaded = true
         })
@@ -424,7 +428,7 @@ export default {
           let emailPayload = {
             emails: [userProfile.data.d.Email],
             body: '<h3>CACI FSO has Rejected your Request</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><p>Reason: ' + vm.fsoDenialInput + '</p>',
-            subject: 'FSO Rejected ' + vm.form + ' Request'
+            subject: '(F3I-2 Portal) FSO Rejected ' + vm.form + ' Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
           vm.fsoDenialInput = ''
@@ -448,11 +452,16 @@ export default {
           id: task.Id
         }
         Todo.dispatch('completeTodo', payload).then(async function() {
-          // add new task for AFRL user
-          console.log(vm.AFRLId)
+          // add new task for AFRL users
+          let afrlTask = []
+          let afrlEmail = []
+          vm.afrlgroup.forEach(user => {
+            afrlTask.push(user.Id)
+            afrlEmail.push(user.Email)
+          })
           payload = {
             Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
-            AssignedToId: vm.AFRLId, // need to get Juan
+            AssignedToId: afrlTask,
             Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
             IsMilestone: false,
             PercentComplete: 0,
@@ -461,11 +470,10 @@ export default {
           }
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
-          console.log('New Task ID: ' + newTaskId)
           let emailPayload = {
-            emails: [this.$store.state.support.AFRLUserEmail], // TO DO: Change to Juans email
-            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a>',
-            subject: vm.form + ' Request'
+            emails: afrlEmail,
+            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.formId + '">Edit ' + vm.name + '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            subject: '(F3I-2 Portal) ' + vm.form + ' Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
           // update the securityForms object with the GovSentDate

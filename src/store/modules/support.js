@@ -10,13 +10,6 @@ export const state = {
   loaded: false,
   activity: '',
   portalemail: 'F3I-2Portal@caci.com',
-  // TO DO: Place these in a setting list to be looked up.
-  AFRLUserEmail: 'juan.esparza@us.af.mil',
-  AFRLUserId: null,
-  AccountUserEmail: 'monica.dennis@caci.com',
-  AccountUserId: null,
-  CACSCIUserEmail: 'Michele.Blackburn@caci.com',
-  CACSCIUserId: null,
   contentrect: {}
 }
 
@@ -39,15 +32,6 @@ export const mutations = {
     } else {
       state.activity += '<br/>' + activity
     }
-  },
-  SET_ACCOUNTID(state, accountid) {
-    state.AccountUserId = accountid
-  },
-  SET_AFRLID(state, afrlid) {
-    state.AFRLUserId = afrlid
-  },
-  SET_CACSCIID(state, cacsciid) {
-    state.CACSCIUserId = cacsciid
   }
 }
 
@@ -94,21 +78,6 @@ export const actions = {
   },
   setContentRect({ commit }, values) {
     commit('SET_CONTENTRECT', values)
-  },
-  async getAccountUser({ commit }) {
-    let response = await SupportService.getUserIdByEmail(state.AccountUserEmail)
-    commit('SET_ACCOUNTID', response.data.d.results[0].Id)
-    return response.data.d.results[0].Id
-  },
-  async getAFRLUser({ commit }) {
-    let response = await SupportService.getUserIdByEmail(state.AFRLUserEmail)
-    commit('SET_AFRLID', response.data.d.results[0].Id)
-    return response.data.d.results[0].Id
-  },
-  async getCACSCIUser({ commit }) {
-    let response = await SupportService.getUserIdByEmail(state.CACSCIUserEmail)
-    commit('SET_CACSCIID', response.data.d.results[0].Id)
-    return response.data.d.results[0].Id
   }
 }
 
@@ -121,14 +90,5 @@ export const getters = {
   },
   getPortalEmail(state) {
     return state.portalemail
-  },
-  getAccountUserId(state) {
-    return state.AccountUserId
-  },
-  getCACSCIUserId(state) {
-    return state.CACSCIUserId
-  },
-  getAFRLUserId(state) {
-    return state.AFRLUserId
   }
 }

@@ -84,13 +84,6 @@
                   <b-form-row class="p-1" v-else-if="form.rejectReason">
                     <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                      <b-col cols="10"></b-col>
-                      <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                        <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                        <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                      </b-col>
-                    </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -142,13 +135,6 @@
                   <b-form-row class="p-1" v-else-if="form.rejectReason">
                     <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -200,13 +186,6 @@
                   <b-form-row class="p-1" v-else-if="form.rejectReason">
                     <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -257,13 +236,6 @@
                   <b-form-row class="p-1" v-else-if="form.rejectReason">
                     <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
                 </div>
               </div>
             </b-tab>
@@ -332,6 +304,16 @@
               <b-row v-if="SCI.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ SCI.GovRejectReason }}</p>
               </b-row>
+              <div v-if="SCI.forms && SCI.forms.length > 0">
+                <div v-for="form in SCI.forms" :key="form.id">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
+                    <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
+                </div>
+              </div>
             </b-tab>
             <b-tab title="CAC">
               <b-row>
@@ -390,11 +372,21 @@
                 <p class="pr-3 pl-3">Please enter the reason for rework:</p>
                 <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
                 <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
               </b-row>
               <b-row v-if="CAC.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">CAC Rejection Reason:</span> {{ CAC.GovRejectReason }}</p>
               </b-row>
+              <div v-if="NIPR.forms && NIPR.forms.length > 0">
+                <div v-for="form in NIPR.forms" :key="form.id">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
+                    <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                  </b-form-row>
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
+                </div>
+              </div>
             </b-tab>
             <b-tab title="Historical CAC" v-if="CACTurnedIn && CACExpiredOnDate">
               <b-row>
@@ -484,6 +476,18 @@ export default {
     isDeveloper() {
       return User.getters('isDeveloper')
     },
+    afrlgroup() {
+      return Security.getters('AFRLGroup')
+    },
+    accountgroup() {
+      return Security.getters('AccountGroup')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
+    },
     rect() {
       return this.$store.state.support.contentrect
     }
@@ -539,9 +543,6 @@ export default {
         { value: 'CAC', text: 'CAC' },
         { value: 'SCI', text: 'SCI' }
       ],
-      AccountId: '',
-      AFRLId: '',
-      SecurityId: '',
       ddfields: { text: 'text', value: 'value' },
       status: [
         { text: 'Not Required', value: 'Not Required' },
@@ -580,19 +581,11 @@ export default {
     this.$nextTick(async () => {
       vm = this
       await Security.dispatch('getDigest')
-      await this.getUserIDs()
+      if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
       await this.getForms()
     })
   },
   methods: {
-    async getUserIDs() {
-      this.AccountId = await this.$store.dispatch('support/getAccountUser')
-      this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
-      // console.log(this.$store.state.support.AFRLUserID)
-      // console.log(this.$store.state.support.AccountUserID)
-      // console.log(this.$store.state.support.CACSCIUserID)
-    },
     async dissCheckChange() {
       if (this.DISSCheck === 'Yes') {
         this.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
@@ -668,8 +661,15 @@ export default {
       await Security.dispatch('getDigest')
       let type = e.currentTarget.dataset.type,
         taskId,
-        taskUserId = vm.$store.state.support.AFRLUserId
-      // Add a task for the designated government employee for review
+        taskUserId = [],
+        taskEmail = []
+
+      let afrlgroup = this.afrlgroup
+      afrlgroup.forEach(user => {
+        taskUserId.push(user.Id)
+        taskEmail.push(user.Email)
+      })
+      // Add a task for the designated government employees for review
       let payload = {
         Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
         //AssignedToId: vm.userid, // Hardcode to Juan
@@ -693,9 +693,24 @@ export default {
         console.log('ERROR: ' + error.message)
       })
       let emailPayload = {
-        emails: [this.$store.state.support.AFRLUserEmail],
-        body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.Id + '">Edit ' + this.FirstName + ' ' + this.LastName + '</a>',
-        subject: type + ' Request'
+        emails: taskEmail,
+        body:
+          '<h3>Please complete or reject the following.</h3> <p>Name: ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</p><p>Form: ' +
+          type +
+          ' Request</p><br/><a href="' +
+          url +
+          '/Pages/Home.aspx#/security/edit/' +
+          this.Id +
+          '">Edit ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+        subject: '(F3I-2 Portal) ' + type + ' Request'
       }
       await Security.dispatch('sendEmail', emailPayload)
       // Update the task to the new one for AFRL
@@ -721,6 +736,16 @@ export default {
           this.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
           this.JWICS.task = results.data.d.Id
           break
+        case 'SCI':
+          taskId = this.SCI.task
+          this.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.SCI.task = results.data.d.Id
+          break
+        case 'CAC':
+          taskId = this.CAC.task
+          this.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.CAC.task = results.data.d.Id
+          break
       }
       this.updateForm(taskId)
     },
@@ -728,36 +753,83 @@ export default {
       await Security.dispatch('getDigest')
       let type = event.currentTarget.dataset.type,
         taskId,
-        taskUserId = vm.$store.state.support.AccountUserId
+        submitterId = [],
+        submitterEmail = [],
+        taskUserId = [],
+        taskEmail = [],
+        group = []
+
       // get the current item data
       switch (type) {
         case 'NIPR':
           taskId = this.NIPR.task
           this.NIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var nipr = 0; nipr <= this.NIPR.forms.length; nipr++) {
+          for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+            if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+              submitterId.push(this.NIPR.forms[nipr].submitterId)
+              submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.NIPR.forms[nipr].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'SIPR':
           taskId = this.SIPR.task
           this.SIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var sipr = 0; sipr <= this.SIPR.forms.length; sipr++) {
+          for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+            if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+              submitterId.push(this.SIPR.forms[sipr].submitterId)
+              submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SIPR.forms[sipr].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'DREN':
           taskId = this.DREN.task
           this.DREN.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var dren = 0; dren <= this.DREN.forms.length; dren++) {
+          for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+            if (!submitterId.includes(this.DREN.forms[dren])) {
+              submitterId.push(this.DREN.forms[dren].submitterId)
+              submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.DREN.forms[dren].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'JWICS':
           taskId = this.JWICS.task // original taskId\
           this.JWICS.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var jwics = 0; jwics <= this.JWICS.forms.length; jwics++) {
+          for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+            if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+              submitterId.push(this.JWICS.forms[jwics].submitterId)
+              submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.JWICS.forms[jwics].href, '_blank')
           }
+          group = this.accountgroup
+          break
+        case 'SCI':
+          taskId = this.SCI.task // original taskId\
+          this.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+            if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+              submitterId.push(this.SCI.forms[sci].submitterId)
+              submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+            }
+          }
+          group = this.scigroup
+          break
+        case 'CAC':
+          taskId = this.CAC.task // original taskId\
+          this.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+            if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+              submitterId.push(this.CAC.forms[cac].submitterId)
+              submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+            }
+          }
+          group = this.cacgroup
           break
       }
       await this.updateForm(taskId).catch(e => {
@@ -773,13 +845,19 @@ export default {
         })
         console.log('ERROR: ' + e.message)
       })
+      group.forEach(user => {
+        taskUserId.push(user.Id)
+        taskEmail.push(user.Email)
+      })
+      taskUserId.concat(submitterId)
+      taskEmail.concat(submitterEmail)
       let payload = {
         Title: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
         AssignedToId: taskUserId,
-        Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request. Please notify the original submitter.',
+        Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request.',
         IsMilestone: false,
         PercentComplete: 0,
-        TaskType: type + ' Request',
+        TaskType: 'gov-complete',
         TaskLink: '/security/tracker'
       }
       await Todo.dispatch('addTodo', payload).catch(error => {
@@ -794,6 +872,33 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })
+      let emailPayload = {
+        emails: taskEmail,
+        body:
+          '<h3>AFRL Completed ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          ' ' +
+          type +
+          ' Request</h3> <p>Name: ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</p><p>Form: ' +
+          type +
+          ' Request</p><br/><a href="' +
+          url +
+          '/Pages/Home.aspx#/security/edit/' +
+          this.Id +
+          '">Edit ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+        subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
+      }
+      await Security.dispatch('sendEmail', emailPayload)
       // Remove the button and display current Date
     },
     async RejectGov(data, event) {
@@ -802,82 +907,111 @@ export default {
       this.showGovRejectForm = true
       // get the current item data
     },
-    async SubmitRejectGov(data) {
+    async SubmitRejectGov() {
       if (this.govRejectReason.length <= 10) {
         this.showGovRejectError = true
       } else {
         let taskId = '',
-          emails = [],
-          taskUserId = null
+          submitterId = [],
+          submitterEmail = [],
+          taskUserId = [],
+          taskEmail = [],
+          group = []
+
         switch (this.govRejectType) {
           case 'NIPR':
-            taskId = data.NIPR.task
-            data.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.NIPR.GovRejectReason = this.govRejectReason
-            for (var nipr = 0; nipr <= data.NIPR.forms.length; nipr++) {
-              this.deleteForm(data.NIPR.forms[nipr])
+            taskId = this.NIPR.task
+            group = this.accountgroup
+            submitterId = this.NIPR.submitterId
+            this.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.NIPR.GovRejectReason = this.govRejectReason
+            for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+              if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+                submitterId.push(this.NIPR.forms[nipr].submitterId)
+                submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+              }
+              this.deleteForm(this.NIPR.forms[nipr])
             }
-            data.NIPR.forms = []
-            emails.push(this.$store.state.support.AccountUserEmail)
-            taskUserId = vm.$store.state.support.AccountUserId
+            this.NIPR.forms = []
             break
           case 'SIPR':
-            taskId = data.SIPR.task
-            data.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.SIPR.GovRejectReason = this.govRejectReason
-            for (var sipr = 0; sipr <= data.SIPR.forms.length; sipr++) {
-              this.deleteForm(data.SIPR.forms[sipr])
+            taskId = this.SIPR.task
+            group = this.accountgroup
+            submitterId = this.SIPR.submitterId
+            this.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.SIPR.GovRejectReason = this.govRejectReason
+            for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+              // Getting all of the original submitters for notification
+              if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+                submitterId.push(this.SIPR.forms[sipr].submitterId)
+                submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+              }
+              this.deleteForm(this.SIPR.forms[sipr])
             }
-            data.SIPR.forms = []
-            emails.push(this.$store.state.support.AccountUserEmail)
-            taskUserId = vm.$store.state.support.AccountUserId
+            this.SIPR.forms = []
             break
           case 'DREN':
-            taskId = data.DREN.task
-            data.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.DREN.GovRejectReason = this.govRejectReason
-            for (var dren = 0; dren <= data.DREN.forms.length; dren++) {
-              this.deleteForm(data.DREN.forms[dren])
+            taskId = this.DREN.task
+            group = this.accountgroup
+            submitterId = this.DREN.submitterId
+            this.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.DREN.GovRejectReason = this.govRejectReason
+            for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+              if (!submitterId.includes(this.DREN.forms[dren].submitterId)) {
+                submitterId.push(this.DREN.forms[dren].submitterId)
+                submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+              }
+              this.deleteForm(this.DREN.forms[dren])
             }
-            data.DREN.forms = []
-            emails.push(this.$store.state.support.AccountUserEmail)
-            taskUserId = vm.$store.state.support.AccountUserId
+            this.DREN.forms = []
             break
           case 'JWICS':
-            taskId = data.JWICS.task // original taskId\
-            data.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.JWICS.GovRejectReason = this.govRejectReason
-            for (var jwics = 0; jwics <= data.JWICS.forms.length; jwics++) {
-              this.deleteForm(data.JWICS.forms[jwics])
+            taskId = this.JWICS.task // original taskId\
+            group = this.accountgroup
+            submitterId = this.JWICS.submitterId
+            this.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.JWICS.GovRejectReason = this.govRejectReason
+            for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+              if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+                submitterId.push(this.JWICS.forms[jwics].submitterId)
+                submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+              }
+              this.deleteForm(this.JWICS.forms[jwics])
             }
-            data.JWICS.forms = []
-            emails.push(this.$store.state.support.AccountUserEmail)
-            taskUserId = vm.$store.state.support.AccountUserId
+            this.JWICS.forms = []
             break
           case 'SCI':
-            taskId = data.SCI.task // original taskId\
-            data.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.SCI.GovRejectReason = this.govRejectReason
-            for (var sci = 0; sci <= data.SCI.forms.length; sci++) {
-              this.deleteForm(data.SCI.forms[sci])
+            taskId = this.SCI.task // original taskId\
+            group = this.scigroup
+            submitterId = this.SCI.submitterId
+            this.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.SCI.GovRejectReason = this.govRejectReason
+            for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+              if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+                submitterId.push(this.SCI.forms[sci].submitterId)
+                submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+              }
+              this.deleteForm(this.SCI.forms[sci])
             }
-            data.SCI.forms = []
-            emails.push(this.$store.state.support.CACSCIUserEmail)
-            taskUserId = vm.$store.state.support.CACSCIUserId
+            this.SCI.forms = []
             break
           case 'CAC':
-            taskId = data.CAC.task // original taskId\
-            data.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            data.CAC.GovRejectReason = this.govRejectReason
-            for (var cac = 0; cac <= data.CAC.forms.length; cac++) {
-              this.deleteForm(data.CAC.forms[cac])
+            taskId = this.CAC.task // original taskId\
+            group = this.cacgroup
+            submitterId = this.CAC.submitterId
+            this.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.CAC.GovRejectReason = this.govRejectReason
+            for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+              if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+                submitterId.push(this.CAC.forms[cac].submitterId)
+                submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+              }
+              this.deleteForm(this.CAC.forms[cac])
             }
-            data.CAC.forms = []
-            emails.push(this.$store.state.support.CACSCIUserEmail)
-            taskUserId = vm.$store.state.support.CACSCIUserId
+            this.CAC.forms = []
             break
         }
-        await this.updateForm(data, taskId).catch(error => {
+        await this.updateForm(taskId).catch(error => {
           const notification = {
             type: 'danger',
             title: 'Portal Error',
@@ -889,9 +1023,15 @@ export default {
           })
           console.log('ERROR: ' + error.message)
         })
+        group.forEach(user => {
+          taskUserId.push(user.Id)
+          taskEmail.push(user.Email)
+        })
+        taskUserId.concat(submitterId)
+        taskEmail.concat(submitterEmail)
         // Notify Accounts Admin or Security via task list
         let payload = {
-          Title: 'Government Rejection: ' + data.FirstName + ' ' + data.LastName + ' ' + this.govRejectType + ' Request',
+          Title: 'Government Rejection: ' + this.FirstName + ' ' + this.LastName + ' ' + this.govRejectType + ' Request',
           //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
           AssignedToId: taskUserId,
           Description: 'Reason: ' + this.govRejectReason,
@@ -913,9 +1053,9 @@ export default {
           console.log('ERROR: ' + error.message)
         })
         let emailPayload = {
-          emails: ['drew.ahrens@caci.com'], // TO DO: push the original submitters email in there.
-          body: '<h3>Government Rejected </h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
-          subject: this.govRejectType + ' Request'
+          emails: taskEmail, // TO DO: push the original submitters email in there.
+          body: '<h3>Government Rejected Submission</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
+          subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
         }
         await Security.dispatch('sendEmail', emailPayload).then(() => {
           // Reset Reject form

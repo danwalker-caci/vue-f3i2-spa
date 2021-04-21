@@ -276,6 +276,18 @@ export default {
     },
     isSecurity() {
       return User.getters('isSecurity')
+    },
+    afrlgroup() {
+      return Security.getters('AFRLGroup')
+    },
+    accountgroup() {
+      return Security.getters('AccountGroup')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
     }
   },
   data: function() {
@@ -324,7 +336,8 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
-      taskUserId: null,
+      taskUserId: [],
+      taskEmail: [],
       securityForm: null,
       filteredData: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
@@ -338,32 +351,35 @@ export default {
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
       ],
+      securityGroups: ['Account Security', 'AFRL Security', 'CAC Security', 'SCI Security'],
       ddfields: { text: 'text', value: 'value' }
     }
   },
   mounted: async function() {
     vm = this
-    // First get current user informaiton
-    await Security.dispatch('getDigest')
-    await this.checkType()
-    await this.getUserIDs()
-    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    await Company.dispatch('getCompanies')
-      .then(function() {
-        vm.$options.interval = setInterval(vm.waitForPersonnel, 750)
-      })
-      .catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+    this.$nextTick(async () => {
+      // First get current user informaiton
+      await Security.dispatch('getDigest')
+      if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
+      await vm.checkType()
+      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+      await Company.dispatch('getCompanies')
+        .then(function() {
+          vm.$options.interval = setInterval(vm.waitForPersonnel, 750)
         })
-        console.log('ERROR: ' + error.message)
-      })
+        .catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+    })
   },
   methods: {
     filtering: e => {
@@ -380,11 +396,6 @@ export default {
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
-    },
-    getUserIDs: async function() {
-      this.$store.dispatch('support/getAccountUser')
-      this.$store.dispatch('support/getAFRLUser')
-      this.$store.dispatch('support/getCACSCIUser')
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -503,45 +514,44 @@ export default {
         // Add post to correct document library with required MetaData
         this.lockSubmit = true
         let payload = {}
+        let group = []
         switch (this.form.Type) {
           case 'NIPR':
             // set the url for the post of file
             this.library = 'AccountsNIPR'
             this.libraryUrl = this.AccountsNIPRForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
-            this.taskEmail = vm.$store.state.support.AccountUserEmail
+            group = this.accountgroup
             break
           case 'SIPR':
             this.library = 'AccountsSIPR'
             this.libraryUrl = this.AccountsSIPRForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
-            this.taskEmail = vm.$store.state.support.AccountUserEmail
+            group = this.accountgroup
             break
           case 'DREN':
             this.library = 'AccountsDREN'
             this.libraryUrl = this.AccountsDRENForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
-            this.taskEmail = vm.$store.state.support.AccountUserEmail
+            group = this.accountgroup
             break
           case 'JWICS':
             this.library = 'AccountsJWICS'
             this.libraryUrl = this.AccountsJWICSForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
-            this.taskEmail = vm.$store.state.support.AccountUserEmail
+            group = this.accountgroup
             break
           case 'CAC':
             this.library = 'CACForms'
             this.libraryUrl = this.CACForms
-            this.taskUserId = vm.$store.state.support.CACSCIUserId
-            this.taskEmail = vm.$store.state.support.CACSCIUserEmail
+            group = this.cacgroup
             break
           case 'SCI':
             this.library = 'SCIForms'
             this.libraryUrl = this.SCIForms
-            this.taskUserId = vm.$store.state.support.CACSCIUserId
-            this.taskEmail = vm.$store.state.support.CACSCIUserEmail
+            group = this.scigroup
             break
         }
+        group.forEach(user => {
+          this.taskUserId.push(user.Id)
+          this.taskEmail.push(user.Email)
+        })
         payload.library = this.library
         payload.Company = vm.form.Company
         payload.PersonnelID = vm.form.PersonnelID
@@ -622,6 +632,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               break
@@ -636,6 +647,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               break
@@ -650,6 +662,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               break
@@ -664,6 +677,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               break
@@ -677,6 +691,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               payload.CACValid = vm.form.CACValid
@@ -701,6 +716,7 @@ export default {
                 etag: form.data.d.__metadata.etag,
                 uri: form.data.d.__metadata.uri,
                 submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
                 rejectReason: ''
               })
               payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
@@ -739,6 +755,23 @@ export default {
             })
             console.log('ERROR: ' + error.message)
           })
+          let emailPayload = {
+            emails: this.taskEmail,
+            body:
+              '<h3>Please approve or reject the following.</h3><p>Name: ' +
+              vm.form.Name +
+              '</p><p>Form: ' +
+              vm.form.Type +
+              ' Request</p><br/><a href="' +
+              url +
+              '/Pages/Home.aspx#/security/edit/' +
+              vm.securityForm.Id +
+              '">Edit ' +
+              vm.form.Name +
+              '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            subject: '(F3I-2 Portal) Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name
+          }
+          await Security.dispatch('sendEmail', emailPayload)
         }
         if (this.form.Type === 'CAC' && this.securityForm.DISSCheck == 'No') {
           // Send a notification to the CAC folks to perform the DISS Check
@@ -766,9 +799,9 @@ export default {
           })
           let emailPayload = {
             //emails: [this.taskEmail],
-            emails: ['drew.ahrens@caci.com'],
+            emails: this.taskEmail,
             body: '<h3>Please perform a DISS check for the following.</h3> <p>Name: ' + this.form.Name + '</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.securityForm.Id + '">Edit ' + this.form.Name + '</a>',
-            subject: 'F3I-2 DISS Check Request'
+            subject: '(F3I-2 Portal) DISS Check Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
         }
@@ -863,6 +896,7 @@ export default {
               vm.form.SCIType = ''
               vm.form.SCIStatus = ''
             }
+            vm.form.Historical = 'No'
             vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
             vm.form.setName = 'No'
             vm.form.FirstName = vm.currentFirstName
