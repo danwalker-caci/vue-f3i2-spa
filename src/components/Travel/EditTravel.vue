@@ -1657,6 +1657,111 @@ export default {
           console.log('ERROR: ' + e)
         }
       }
+      if (this.travelmodel.InternalData.Approval == 'Yes' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('APPROVALYES')
+        // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
+        status = 'Approved'
+        this.travelmodel.InternalData.Status = 'Approved'
+        this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.ATPRequested = 'No'
+        if (this.travelmodel.InternalData.OCONUSTravel == 'Yes') {
+          this.travelmodel.OCONUSApprovedBy = this.travelmodel.InternalData.ApprovedBy
+          this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
+        }
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.title = 'Travel Request Approved'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = 'Travel Approved'
+        try {
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      }
+      if (this.travelmodel.InternalData.Approval == 'No' && this.actionselected == false) {
+        this.actionselected = true
+        console.log('APPROVALNO')
+        status = 'Denied'
+        this.travelmodel.InternalData.Status = 'Denied'
+        this.travelmodel.InternalData.ApprovalRequested = 'No'
+        this.travelmodel.InternalData.ATPRequested = 'No'
+        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['Id'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['Id'])
+            }
+          }
+        }
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = emailto
+        payload.title = 'Travel Request Denied'
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.indexnumber = vm.travelmodel.IndexNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        payload.comments = vm.travelmodel.InternalData.DenialComments
+        try {
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Travel Request Denied',
+            AssignedToId: taskid,
+            Description: 'Please Review The Request.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'TravelDenied',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
+          Travel.dispatch('EditTripEmail', payload)
+        } catch (e) {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        }
+      }
       if (this.travelmodel.InternalData.ApprovalRequested == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         console.log('APPROVALREQUESTED')
@@ -1816,111 +1921,6 @@ export default {
           // create task and send emails
           let taskpayload = {
             Title: 'OCONUS Travel Authorization To Proceed Denied',
-            AssignedToId: taskid,
-            Description: 'Please Review The Request.',
-            IsMilestone: false,
-            PercentComplete: 0,
-            TaskType: 'TravelDenied',
-            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
-            TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
-          }
-          let deletepayload = {
-            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
-          }
-          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-            Todo.dispatch('addTodo', taskpayload)
-          })
-          Travel.dispatch('EditTripEmail', payload)
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-      }
-      if (this.travelmodel.InternalData.Approval == 'Yes' && this.actionselected == false) {
-        this.actionselected = true
-        console.log('APPROVALYES')
-        // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
-        status = 'Approved'
-        this.travelmodel.InternalData.Status = 'Approved'
-        this.travelmodel.InternalData.ApprovalRequested = 'No'
-        this.travelmodel.InternalData.ATPRequested = 'No'
-        if (this.travelmodel.InternalData.OCONUSTravel == 'Yes') {
-          this.travelmodel.OCONUSApprovedBy = this.travelmodel.InternalData.ApprovedBy
-          this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
-        }
-        let payload = {}
-        payload.id = vm.travelmodel.id
-        payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = 'Travel Request Approved'
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.indexnumber = vm.travelmodel.IndexNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        payload.comments = 'Travel Approved'
-        try {
-          Travel.dispatch('EditTripEmail', payload)
-        } catch (e) {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
-      }
-      if (this.travelmodel.InternalData.Approval == 'No' && this.actionselected == false) {
-        this.actionselected = true
-        console.log('APPROVALNO')
-        status = 'Denied'
-        this.travelmodel.InternalData.Status = 'Denied'
-        this.travelmodel.InternalData.ApprovalRequested = 'No'
-        this.travelmodel.InternalData.ATPRequested = 'No'
-        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
-        let emailto = []
-        let taskid = []
-        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
-        for (let i = 0; i < vm.delegates.length; i++) {
-          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
-            // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['Id'])
-            let j = vm.delegates[i]['Delegates']
-            for (let k = 0; k < j.length; k++) {
-              emailto.push(j[k]['EMail'])
-              taskid.push(j[k]['Id'])
-            }
-          }
-        }
-        let payload = {}
-        payload.id = vm.travelmodel.id
-        payload.email = emailto
-        payload.title = 'Travel Request Denied'
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.indexnumber = vm.travelmodel.IndexNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        payload.comments = vm.travelmodel.InternalData.DenialComments
-        try {
-          // create task and send emails
-          let taskpayload = {
-            Title: 'Travel Request Denied',
             AssignedToId: taskid,
             Description: 'Please Review The Request.',
             IsMilestone: false,
