@@ -798,32 +798,34 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
-    this.company = this.currentuser[0].Company
-    if (console) {
-      console.log('COMPANY: ' + this.company)
-    }
-    try {
-      if (this.isSubcontractor == true) {
-        if (this.company !== null) {
-          let payload = {}
-          payload.company = this.company
-          Travel.dispatch('getTripsByCompany', payload).then(function() {
+    this.$nextTick(function() {
+      this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
+      this.company = this.currentuser[0].Company
+      if (console) {
+        console.log('COMPANY: ' + this.company)
+      }
+      try {
+        if (this.isSubcontractor == true) {
+          if (this.company !== null) {
+            let payload = {}
+            payload.company = this.company
+            Travel.dispatch('getTripsByCompany', payload).then(function() {
+              vm.$options.interval = setInterval(vm.waitForEvents, 1000)
+            })
+          } else {
+            this.overlayText = 'You are not assigned a company in the portal. Please contact us...'
+            this.overlayVariant = 'warning'
+          }
+        } else {
+          Travel.dispatch('getTRIPS').then(function() {
             vm.$options.interval = setInterval(vm.waitForEvents, 1000)
           })
-        } else {
-          this.overlayText = 'You are not assigned a company in the portal. Please contact us...'
-          this.overlayVariant = 'warning'
         }
-      } else {
-        Travel.dispatch('getTRIPS').then(function() {
-          vm.$options.interval = setInterval(vm.waitForEvents, 1000)
-        })
+      } catch (e) {
+        this.overlayText = 'There was an error getting travel. Please try again and contact us if it continues.'
+        this.overlayVariant = 'danger'
       }
-    } catch (e) {
-      this.overlayText = 'There was an error getting travel. Please try again and contact us if it continues.'
-      this.overlayVariant = 'danger'
-    }
+    })
   },
   beforeDestroy() {
     this.$store.dispatch('support/setLegendItems', [])
