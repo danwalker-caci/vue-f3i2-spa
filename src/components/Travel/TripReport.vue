@@ -102,28 +102,30 @@ export default {
   },
   mounted: function() {
     vm = this
-    let payload = {}
-    payload.id = vm.TripId
-    this.today = this.$moment().format('YYYY-MM-DD')
-    try {
-      Todo.dispatch('getDigest')
-      Travel.dispatch('getDelegates')
-      Travel.dispatch('getTripById', payload).then(function() {
-        vm.$options.interval = setInterval(vm.waitForTrip, 1000)
-      })
-    } catch (e) {
-      // Add user notification and system logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
+    this.$nextTick(function() {
+      let payload = {}
+      payload.id = vm.TripId
+      this.today = this.$moment().format('YYYY-MM-DD')
+      try {
+        Todo.dispatch('getDigest')
+        Travel.dispatch('getDelegates')
+        Travel.dispatch('getTripById', payload).then(function() {
+          vm.$options.interval = setInterval(vm.waitForTrip, 1000)
+        })
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
       }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
+    })
   },
   data: function() {
     return {

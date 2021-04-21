@@ -504,7 +504,7 @@
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select>
+                                <b-form-select multiple select-size="8" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select>
                               </b-col>
                             </b-row>
                           </b-tab>
@@ -1489,8 +1489,6 @@ export default {
     DeniedChanged: function(checked) {
       console.log('DeniedChanged: ' + checked)
       if (checked) {
-        /* this.travelmodel.Status = 'Denied'
-        this.travelmodel.InternalData.Status = 'Denied' */
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.DeniedBy = this.currentuser[0]['Email']
@@ -1502,8 +1500,6 @@ export default {
     ApprovedChanged: function(checked) {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
-        /* this.travelmodel.Status = 'Approved'
-        this.travelmodel.InternalData.Status = 'Approved' */
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
@@ -1552,7 +1548,7 @@ export default {
       let securityactioncompleted = moment(this.travelmodel.SecurityActionCompleted).isValid() ? moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
-      if (this.isAuthor) {
+      if (this.isAuthor == true) {
         this.actionselected = true
       }
       if (this.travelmodel.InternalData.PreApproved == 'Yes' && this.actionselected == false) {
@@ -1662,13 +1658,21 @@ export default {
       if (this.travelmodel.InternalData.ApprovalRequested == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         console.log('APPROVALREQUESTED')
+        let approverids = []
+        let approveremails = []
         let approverselected = vm.travelmodel.InternalData.ApproverSelected
-        approverselected = approverselected.split(',')
+        // approverselected control is multiselect so selected users will be in an array
+        for (let i = 0; i < approverselected.length; i++) {
+          let a = approverselected[i].split(',')
+          approverids.push(a[0])
+          approveremails.push(a[1])
+        }
+        // approverselected = approverselected.split(',')
         status = 'AFRLReview'
         vm.travelmodel.InternalData.Status = 'AFRLReview'
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = [approverselected[1]]
+        payload.email = approveremails
         payload.title = vm.travelmodel.Subject
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
@@ -1682,7 +1686,7 @@ export default {
           // create task and send emails
           let taskpayload = {
             Title: 'New Travel Approval Request',
-            AssignedToId: [approverselected[0]],
+            AssignedToId: approverids,
             Description: 'Please review the trip request and approve/deny as applicable.',
             IsMilestone: false,
             PercentComplete: 0,
