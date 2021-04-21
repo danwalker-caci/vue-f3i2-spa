@@ -207,6 +207,8 @@ export default {
       CACExpiredOnDate: payload.CACExpiredOnDate,
       CACTurnedIn: payload.CACTurnedIn,
       CACStatus: payload.CACStatus,
+      DISSCheck: payload.DISSCheck === 'Yes' ? true : false,
+      DISSCheckDate: payload.DISSCheckDate,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
       SCIIndocAssistDate: payload.SCIIndocAssistDate,

@@ -344,6 +344,7 @@
                       <b-th>CAC Issued By</b-th>
                       <b-th>CAC Request Date</b-th>
                       <b-th>CAC Expiration Date</b-th>
+                      <b-th>CAC DISS Check</b-th>
                       <b-th></b-th>
                     </b-tr>
                   </b-thead>
@@ -360,6 +361,9 @@
                       </b-td>
                       <b-td>
                         <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <b-form-checkbox id="dissCheck" v-model="DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
                       </b-td>
                       <b-td>
                         <!-- Update Button -->
@@ -523,6 +527,8 @@ export default {
       CACIssuedBy: '',
       CACValid: '',
       CACExpiredOnDate: '',
+      DISSCheck: 'No',
+      DISSCheckDate: null,
       NIPR: {},
       SIPR: {},
       DREN: {},
@@ -599,6 +605,13 @@ export default {
       // console.log(this.$store.state.support.AccountUserID)
       // console.log(this.$store.state.support.CACSCIUserID)
     },
+    async dissCheckChange() {
+      if (this.DISSCheck === 'Yes') {
+        this.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
+      } else {
+        this.DISSCheckDate = null
+      }
+    },
     async getForms() {
       // Run query to load the form
       console.log(this.id)
@@ -643,6 +656,8 @@ export default {
       this.CACValid = result.CACValid
       this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : ''
       this.CACTurnedIn = result.CACTurnedIn
+      this.DISSCheck = result.DISSCheck
+      this.DISSCheckDate = this.$moment(result.DISSCheckDate).isValid() ? this.$moment(result.DISSCheckDate).format('MM/DD/YYYY') : ''
       this.NIPR = result.NIPR
       this.SIPR = result.SIPR
       this.DREN = result.DREN
@@ -1054,6 +1069,8 @@ export default {
       payload.CACExpiredOnDate = this.CACExpiredOnDate ? this.CACExpiredOnDate : null
       payload.CACTurnedIn = this.CACTurnedIn
       payload.CACIssuedBy = this.CACIssuedBy
+      payload.DISSCheck = this.DISSCheck
+      payload.DISSCheckDate = this.DISSCheckDate ? this.DISSCheckDate : null
       payload.PRDueDate = this.PRDueDate ? this.PRDueDate : null
       payload.CEDate = this.CEDate ? this.CEDate : null
       payload.SCIAccessCheckDate = this.SCIAccessCheckDate

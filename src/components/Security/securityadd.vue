@@ -509,31 +509,37 @@ export default {
             this.library = 'AccountsNIPR'
             this.libraryUrl = this.AccountsNIPRForms
             this.taskUserId = vm.$store.state.support.AccountUserId
+            this.taskEmail = vm.$store.state.support.AccountUserEmail
             break
           case 'SIPR':
             this.library = 'AccountsSIPR'
             this.libraryUrl = this.AccountsSIPRForms
             this.taskUserId = vm.$store.state.support.AccountUserId
+            this.taskEmail = vm.$store.state.support.AccountUserEmail
             break
           case 'DREN':
             this.library = 'AccountsDREN'
             this.libraryUrl = this.AccountsDRENForms
             this.taskUserId = vm.$store.state.support.AccountUserId
+            this.taskEmail = vm.$store.state.support.AccountUserEmail
             break
           case 'JWICS':
             this.library = 'AccountsJWICS'
             this.libraryUrl = this.AccountsJWICSForms
             this.taskUserId = vm.$store.state.support.AccountUserId
+            this.taskEmail = vm.$store.state.support.AccountUserEmail
             break
           case 'CAC':
             this.library = 'CACForms'
             this.libraryUrl = this.CACForms
             this.taskUserId = vm.$store.state.support.CACSCIUserId
+            this.taskEmail = vm.$store.state.support.CACSCIUserEmail
             break
           case 'SCI':
             this.library = 'SCIForms'
             this.libraryUrl = this.SCIForms
             this.taskUserId = vm.$store.state.support.CACSCIUserId
+            this.taskEmail = vm.$store.state.support.CACSCIUserEmail
             break
         }
         payload.library = this.library
@@ -550,34 +556,34 @@ export default {
 
         // Push original forms into an array to prevent being overwritten
         if (this.securityForm.NIPR && this.securityForm.NIPR.length > 0) {
-          this.securityForm.NIPR.forEach(nipr => {
+          this.securityForm.NIPR.forms.forEach(nipr => {
             niprs.push(nipr)
           })
         }
         if (this.securityForm.JWICS && this.securityForm.JWICS.length > 0) {
-          this.securityForm.JWICS.forEach(jwic => {
+          this.securityForm.JWICS.forms.forEach(jwic => {
             jwics.push(jwic)
           })
         }
         if (this.securityForm.DREN && this.securityForm.DREN.length > 0) {
-          this.securityForm.DREN.forEach(dren => {
+          this.securityForm.DREN.forms.forEach(dren => {
             drens.push(dren)
           })
         }
         if (this.securityForm.SIPR && this.securityForm.SIPR.length > 0) {
-          this.securityForm.SIPR.forEach(sipr => {
+          this.securityForm.SIPR.forms.forEach(sipr => {
             siprs.push(sipr)
           })
         }
         // Don't overwrite SCI
         if (this.securityForm.SCI && this.securityForm.SCI.length > 0) {
-          this.securityForm.SCI.forEach(sci => {
+          this.securityForm.SCI.forms.forEach(sci => {
             scis.push(sci)
           })
         }
         // Don't overwrite CAC
         if (this.securityForm.CAC && this.securityForm.CAC.length > 0) {
-          this.securityForm.SCI.forEach(cac => {
+          this.securityForm.CAC.forms.forEach(cac => {
             cacs.push(cac)
           })
         }
@@ -666,6 +672,7 @@ export default {
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
+              payload.DISSCheck = vm.securityForm.DISSCheck
               if (vm.form.CACValid === 'Yes') {
                 payload.CACStatus = 'Non-F3I2 CAC'
               } else {
@@ -720,6 +727,38 @@ export default {
             })
             console.log('ERROR: ' + error.message)
           })
+        }
+        if (this.form.Type === 'CAC' && this.securityForm.DISSCheck == 'No') {
+          // Send a notification to the CAC folks to perform the DISS Check
+          let taskPayload = {
+            Title: 'Perform DISS Check for ' + vm.form.Name,
+            //AssignedToId: vm.userid, // Hardcoding the Security Group
+            AssignedToId: this.taskUserId,
+            Description: 'Perform DISS Check for ' + vm.form.Name,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form.Type + ' Request',
+            TaskLink: '/security/edit/' + this.securityForm.Id
+          }
+          results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          let emailPayload = {
+            //emails: [this.taskEmail],
+            emails: ['drew.ahrens@caci.com'],
+            body: '<h3>Please perform a DISS check for the following.</h3> <p>Name: ' + this.form.Name + '</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.securityForm.Id + '">Edit ' + this.form.Name + '</a>',
+            subject: 'F3I-2 DISS Check Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload)
         }
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({

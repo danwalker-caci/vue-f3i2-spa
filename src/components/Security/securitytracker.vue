@@ -44,6 +44,8 @@
                     <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="CACExpirationDate" headerText="CAC Expiration Date" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="CACIssuedBy" headerText="CAC Issued By" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="DISSCheck" headerText="DISS Check" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="DISSCheckDate" headerText="DISS Check Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="NIPRAccount" headerText="NIPR Account" :visible="false" textAlign="Left"></e-column>
                     <e-column field="NIPRGovSentDate" headerText="NIPR Gov Sent Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="NIPRGovCompleteDate" headerText="NIPR Gov Complete Date" :visible="false" textAlign="Left"></e-column>
@@ -395,6 +397,7 @@ export default {
                                   <b-th>CAC Issued By</b-th>
                                   <b-th>CAC Request Date</b-th>
                                   <b-th>CAC Expiration Date</b-th>
+                                  <b-th>DISS Check</b-th>
                                   <b-th>Submitted Form</b-th>
                                   <b-th></b-th>
                                 </b-tr>
@@ -412,6 +415,9 @@ export default {
                                   </b-td>
                                   <b-td>
                                     <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="data.CACExpirationDate"></ejs-datepicker>
+                                  </b-td>
+                                  <b-td>
+                                    <b-form-checkbox id="dissCheck" v-model="data.DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
                                   </b-td>
                                   <b-td>
                                     <b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/CAC'">View Forms</b-button>
@@ -542,6 +548,7 @@ export default {
                 libraryUrl: '',
                 selectedSecurityFormType: '',
                 files: [],
+                DISSCheckDate: null,
                 securityFormTypes: [
                   { value: 'NIPR', text: 'NIPR' },
                   { value: 'SIPR', text: 'SIPR' },
@@ -586,6 +593,13 @@ export default {
             methods: {
               AssistDateChange(data) {
                 data.SCIStatus = 'SSO Processed'
+              },
+              async dissCheckChange(data) {
+                if (data === 'Yes') {
+                  vm2.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
+                } else {
+                  vm2.DISSCheckDate = null
+                }
               },
               async NotifyGov(data, e) {
                 await Security.dispatch('getDigest')
@@ -979,6 +993,8 @@ export default {
                 payload.CACExpiredOnDate = d.CACExpiredOnDate ? d.CACExpiredOnDate : null
                 payload.CACTurnedIn = d.CACTurnedIn
                 payload.CACIssuedBy = d.CACIssuedBy
+                payload.DISSCheck = d.DISSCheck
+                payload.DISSCheckDate = vm2.DISSCheckDate ? vm2.DISSCheckDate : null
                 payload.PRDueDate = d.PRDueDate ? d.PRDueDate : null
                 payload.CEDate = d.CEDate ? d.CEDate : null
                 payload.SCIAccessCheckDate = d.SCIAccessCheckDate
@@ -1241,9 +1257,11 @@ export default {
         this.$refs.SecurityGrid.getColumns()[25].visible = true
         this.$refs.SecurityGrid.getColumns()[26].visible = true
         this.$refs.SecurityGrid.getColumns()[27].visible = true
-        this.$refs.SecurityGrid.getColumns()[28].visible = false
-        this.$refs.SecurityGrid.getColumns()[29].visible = false
+        this.$refs.SecurityGrid.getColumns()[28].visible = true
+        this.$refs.SecurityGrid.getColumns()[29].visible = true
         this.$refs.SecurityGrid.getColumns()[30].visible = false
+        this.$refs.SecurityGrid.getColumns()[31].visible = false
+        this.$refs.SecurityGrid.getColumns()[32].visible = false
         let data = []
         this.securityforms.forEach(sf => {
           let CurrentData = {
@@ -1264,6 +1282,8 @@ export default {
             CACRequestDate: this.$moment(sf.CACRequestDate).isValid() ? this.$moment(sf.CACRequestDate).format('MM/DD/YYYY') : '',
             CACExpirationDate: this.$moment(sf.CACExpirationDate).isValid() ? this.$moment(sf.CACExpirationDate).format('MM/DD/YYYY') : '',
             CACIssuedBy: sf.CACIssuedBy,
+            DISSCheck: sf.DISSCheck,
+            DISSCheckDate: this.$moment(sf.DISSCheckDate).isValid() ? this.$moment(sf.DISSCheckDate).format('MM/DD/YYYY') : '',
             NIPRAccount: sf.NIPR && sf.NIPR.GovSentDate !== '' && sf.NIPR.GovCompleteDate !== '' ? 'Yes' : '',
             NIPRGovSentDate: sf.NIPR && sf.NIPR.GovSentDate !== '' ? (sf.NIPR.GovSentDate === 'N/A' ? sf.NIPR.GovSentDate : this.$moment(sf.NIPR.GovSentDate).isValid() ? this.$moment(sf.NIPR.GovSentDate).format('MM/DD/YYYY') : '') : '',
             NIPRGovCompleteDate: sf.NIPR && sf.NIPR.GovCompleteDate !== '' ? (sf.NIPR.GovCompleteDate === 'N/A' ? sf.NIPR.GovCompleteDate : this.$moment(sf.NIPR.GovCompleteDate).isValid() ? this.$moment(sf.NIPR.GovCompleteDate).format('MM/DD/YYYY') : '') : '',
@@ -1277,32 +1297,6 @@ export default {
             JWICGovSentDate: sf.JWICS && sf.JWICS.GovSentDate !== '' ? (sf.JWICS.GovSentDate === 'N/A' ? sf.JWICS.GovSentDate : this.$moment(sf.JWICS.GovSentDate).isValid() ? this.$moment(sf.JWICS.GovSentDate).format('MM/DD/YYYY') : '') : '',
             JWICGovCompleteDate: sf.JWICS && sf.JWICS.GovCompleteDate !== '' ? (sf.JWICS.GovCompleteDate === 'N/A' ? sf.JWICS.GovCompleteDate : this.$moment(sf.JWICS.GovCompleteDate).isValid() ? this.$moment(sf.JWICS.GovCompleteDate).format('MM/DD/YYYY') : '') : ''
           }
-          /*if (sf.Accounts && sf.Accounts.length > 0) {
-            sf.Accounts.forEach(a => {
-              switch (a.account) {
-                case 'NIPR':
-                  CurrentData.NIPRAccount = 'Yes'
-                  CurrentData.NIPRGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.NIPRGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                  break
-                case 'SIPR':
-                  CurrentData.SIPRAccount = 'Yes'
-                  CurrentData.SIPRGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.SIPRGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                  break
-                case 'DREN':
-                  CurrentData.DRENAccount = 'Yes'
-                  CurrentData.DRENGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.DRENGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                  break
-                case 'JWICS':
-                  CurrentData.JWICAccount = 'Yes'
-                  CurrentData.JWICGovSentDate = a.GovSentDate === 'N/A' ? a.GovSentDate : this.$moment(a.GovSentDate).isValid() ? this.$moment(a.GovSentDate).format('MM/DD/YYYY') : ''
-                  CurrentData.JWICGovCompleteDate = a.GovCompleteDate === 'N/A' ? a.GovCompleteDate : this.$moment(a.GovCompleteDate).isValid() ? this.$moment(a.GovCompleteDate).format('MM/DD/YYYY') : ''
-                  break
-              }
-            })
-          }*/
           data.push(CurrentData)
         })
         let excelExportProperties = {
