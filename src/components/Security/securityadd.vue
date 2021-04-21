@@ -620,7 +620,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               break
             case 'SIPR':
@@ -632,7 +634,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               break
             case 'DREN':
@@ -644,7 +648,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               break
             case 'JWICS':
@@ -656,7 +662,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               break
             case 'CAC':
@@ -667,7 +675,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
@@ -689,7 +699,9 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                rejectReason: ''
               })
               payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
               payload.SCIStatus = 'CACI Review'
@@ -885,7 +897,7 @@ export default {
         // Post to the SecurityForms list with the FirstName, LastName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
       }
     },
-    async onFileSelect(args) {
+    onFileSelect: async function(args) {
       args.filesData.forEach(fileData => {
         let file = {}
         file.fileSelected = fileData.name
@@ -896,7 +908,7 @@ export default {
         })
       })
     },
-    async asyncForEach(array, callback) {
+    asyncForEach: async function(array, callback) {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array)
       }
