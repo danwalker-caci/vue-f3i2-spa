@@ -231,7 +231,7 @@ export default {
       taskId: payload.taskId
     }
     if (payload.DISSCheck) {
-      itemprops.DISSCheck = payload.DISSCheck === 'Yes' ? true : false,
+      itemprops.DISSCheck = payload.DISSCheck === 'Yes' ? true : false
     }
     if (payload.NIPR) {
       itemprops.NIPR = payload.NIPR
