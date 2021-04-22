@@ -435,15 +435,15 @@
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Status == 'Denied'" class="mb-1">
-                              <b-col v-if="isWPManager" cols="4">Denied For Non Admin Reasons</b-col>
+                              <b-col v-if="isWPManager" cols="4">Denied For Admin Reasons</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-radio-group v-model="travelmodel.InternalData.DeniedForNonAdmin" name="deniedfornonadmin-radios">
+                                <b-form-radio-group v-model="travelmodel.InternalData.DeniedForAdmin" name="DeniedForAdmin-radios">
                                   <b-form-radio value="Yes">Yes</b-form-radio>
                                   <b-form-radio value="No">No</b-form-radio>
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.DeniedForNonAdmin == 'No'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.DeniedForAdmin == 'Yes'" class="mb-1">
                               <b-col cols="4">Required Corrections</b-col>
                               <b-col cols="8">
                                 <b-form-textarea rows="6" v-model="travelmodel.InternalData.RequiredCorrections"></b-form-textarea>
@@ -475,7 +475,7 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.PreApproved == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
+                            <b-row class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
                               <b-col v-if="isWPManager" cols="8">
                                 <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
@@ -484,7 +484,7 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
+                            <b-row class="mb-1">
                               <b-col cols="4">Reject</b-col>
                               <b-col cols="8">
                                 <b-form-radio-group v-model="travelmodel.InternalData.Rejected" name="reject-radios">
@@ -511,7 +511,8 @@
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <b-form-select multiple select-size="8" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select>
+                                <!-- <b-form-select multiple select-size="8" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select> -->
+                                <b-form-checkbox-group v-model="travelmodel.InternalData.ApproverSelected" stacked :options="govTrvlApprovers" name="selectedapprovers"></b-form-checkbox-group>
                               </b-col>
                             </b-row>
                           </b-tab>
@@ -822,10 +823,10 @@ export default {
           OCONUSLocation: '',
           Rejected: '',
           RejectedComments: '',
-          DeniedForNonAdmin: '',
+          DeniedForAdmin: '',
           RequiredCorrections: '',
           ApprovalRequested: '',
-          ApproverSelected: '',
+          ApproverSelected: [],
           Approval: '',
           ApprovedBy: '',
           ApprovedOn: '',
@@ -1357,6 +1358,40 @@ export default {
             }
             this.formValid = fv
             break
+
+          case 5:
+            fv = true
+            if (newidx > oldidx) {
+              let valid = this.validateFirstTab()
+              if (!valid) {
+                event.preventDefault()
+                this.tabInvalid = true
+                fv = false
+              } else {
+                let valid = this.validateSecondTab()
+                if (!valid) {
+                  event.preventDefault()
+                  this.tabInvalid = true
+                  fv = false
+                } else {
+                  let valid = this.validateThirdTab()
+                  if (!valid) {
+                    event.preventDefault()
+                    this.tabInvalid = true
+                    fv = false
+                  } else {
+                    let valid = this.validateFourthTab()
+                    if (!valid) {
+                      event.preventDefault()
+                      this.tabInvalid = true
+                      fv = false
+                    }
+                  }
+                }
+              }
+            }
+            this.formValid = fv
+            break
         }
       }
     },
@@ -1596,58 +1631,60 @@ export default {
       }
 
       if (this.isAuthor == true && this.actionselected == false) {
-        // the author should only be able to edit if the status is Denied or RejectedByWPM
-        this.actionselected = true
-        status = 'WPMReview'
-        this.travelmodel.InternalData.Status = 'WPMReview'
+        if (!this.isWPManager) {
+          // the author should only be able to edit if the status is Denied or RejectedByWPM
+          this.actionselected = true
+          status = 'WPMReview'
+          this.travelmodel.InternalData.Status = 'WPMReview'
 
-        let emailto = []
-        let taskid = []
-        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
-        for (let i = 0; i < vm.delegates.length; i++) {
-          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
-            // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['Id'])
-            let j = vm.delegates[i]['Delegates']
-            for (let k = 0; k < j.length; k++) {
-              emailto.push(j[k]['EMail'])
-              taskid.push(j[k]['Id'])
+          let emailto = []
+          let taskid = []
+          emailto.push(vm.travelmodel.InternalData.ManagerEmail)
+          for (let i = 0; i < vm.delegates.length; i++) {
+            if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
+              // add the delegates to the email and task array
+              taskid.push(vm.delegates[i]['Id'])
+              let j = vm.delegates[i]['Delegates']
+              for (let k = 0; k < j.length; k++) {
+                emailto.push(j[k]['EMail'])
+                taskid.push(j[k]['Id'])
+              }
             }
           }
+          console.log('EMAILS: ' + emailto.toString())
+          let payload = {}
+          payload.id = vm.travelmodel.id
+          payload.email = emailto
+          payload.title = vm.travelmodel.Subject
+          payload.workplan = vm.travelmodel.WorkPlanNumber
+          payload.company = vm.travelmodel.Company
+          payload.travelers = vm.travelmodel.Travelers
+          payload.start = vm.travelmodel.StartTime
+          payload.end = vm.travelmodel.EndTime
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Approve or Deny Travel Request',
+            AssignedToId: taskid,
+            Description: 'Please Review The Trip',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'WPMReview',
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload)
+          })
+          Travel.dispatch('EditTripEmail', payload)
         }
-        console.log('EMAILS: ' + emailto.toString())
-        let payload = {}
-        payload.id = vm.travelmodel.id
-        payload.email = emailto
-        payload.title = vm.travelmodel.Subject
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        // create task and send emails
-        let taskpayload = {
-          Title: 'Approve or Deny Travel Request',
-          AssignedToId: taskid,
-          Description: 'Please Review The Trip',
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: 'WPMReview',
-          TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
-          TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
-        }
-        let deletepayload = {
-          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
-        }
-        Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-          Todo.dispatch('addTodo', taskpayload)
-        })
-        Travel.dispatch('EditTripEmail', payload)
       }
 
-      if (this.travelmodel.InternalData.DeniedForNonAdmin == 'No' && this.actionselected == false) {
+      if (this.travelmodel.InternalData.DeniedForAdmin == 'Yes' && this.actionselected == false) {
         this.actionselected = true
-        console.log('DENIEDFORNONADMIN')
+        console.log('DeniedForAdmin')
         this.travelmodel.Status = 'Denied'
         this.travelmodel.InternalData.Status = 'Denied'
         let payload = {}
@@ -1700,8 +1737,6 @@ export default {
         // TODO: Validate if a user should get a task here for approved travel. Currently not creating one
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
-        // this.travelmodel.InternalData.ApprovalRequested = 'No'
-        // this.travelmodel.InternalData.ATPRequested = 'No'
         if (this.travelmodel.InternalData.OCONUSTravel == 'Yes') {
           this.travelmodel.OCONUSApprovedBy = this.travelmodel.InternalData.ApprovedBy
           this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
@@ -2107,7 +2142,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .helpHide {
   margin: 1rem;
 }

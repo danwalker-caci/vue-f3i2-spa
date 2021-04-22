@@ -7,19 +7,38 @@
             <b-col id="FrameColumn" cols="9" class="reportframe"></b-col>
             <b-col v-if="isWPManager" cols="3">
               <b-row class="m-2 p-0">
+                <span class="mx-auto text-center" style="width: 95%;">
+                  Upload Trip Report [Replaces existing trip report]
+                </span>
+              </b-row>
+              <b-row class="m-2 p-0"><ejs-uploader id="fileuploadwpm" name="UploadFilesWPM" :selected="onFileSelect" :multiple="false"></ejs-uploader></b-row>
+              <!-- <b-row class="m-2 p-0">
+                <b-button-group class="mx-auto" style="width: 200px;">
+                  <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
+                  <b-button variant="success" ref="btnOk" class="ml-2" @click="onSubmit">Submit</b-button>
+                </b-button-group>
+              </b-row> -->
+              <b-row class="m-2 p-0">
                 <span class="mx-auto" style="width: 200px;">
-                  Approve/Reject Trip Report
+                  Approve Trip Report
                 </span>
               </b-row>
               <b-row class="m-2 p-0">
-                <b-form-group class="mx-auto" style="width: 200px;">
+                <b-form-radio-group v-model="travelmodel.TripReportApproval" name="approve-radios">
+                  <b-form-radio value="Yes">Yes</b-form-radio>
+                  <b-form-radio value="No">No</b-form-radio>
+                </b-form-radio-group>
+                <!-- <b-form-group class="mx-auto" style="width: 200px;">
                   <b-form-checkbox class="float-left ml-1" v-model="travelmodel.TripReportApproval" value="Approved" @change="ApprovedChanged">Approve</b-form-checkbox>
                   <b-form-checkbox class="float-left ml-3" v-model="travelmodel.TripReportRejected" value="Denied" @change="DeniedChanged">Reject</b-form-checkbox>
-                </b-form-group>
+                </b-form-group> -->
               </b-row>
-              <b-row v-if="travelmodel.TripReportRejected == 'Yes'" class="m-2 p-0">
+              <b-row v-if="travelmodel.TripReportApproval == 'No'" class="m-2 p-0">
                 <b-form-textarea rows="8" class="mx-auto" style="width: 95%;" v-model="travelmodel.TripReportRejectedComments" placeholder="Rejection Comments"></b-form-textarea>
               </b-row>
+              <!-- <b-row v-if="travelmodel.TripReportApproval == 'Yes'" class="mb-1">
+                <b-form-checkbox-group v-model="travelmodel.Notifications" stacked :options="govTrvlApprovers" name="selectedapprover-radios"></b-form-checkbox-group>
+              </b-row> -->
               <b-row class="m-2 p-0">
                 <b-button-group class="mx-auto" style="width: 200px;">
                   <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
@@ -98,6 +117,9 @@ export default {
     },
     delegates() {
       return this.$store.state.database.travel.delegates
+    },
+    govTrvlApprovers() {
+      return this.$store.state.database.travel.govapprovers
     }
   },
   mounted: function() {
@@ -108,7 +130,9 @@ export default {
       this.today = this.$moment().format('YYYY-MM-DD')
       try {
         Todo.dispatch('getDigest')
+        Travel.dispatch('getDigest')
         Travel.dispatch('getDelegates')
+        Travel.dispatch('getGetGovTrvlApprovers')
         Travel.dispatch('getTripById', payload).then(function() {
           vm.$options.interval = setInterval(vm.waitForTrip, 1000)
         })
@@ -137,8 +161,7 @@ export default {
         Status: '',
         TripReport: '',
         TripReportLink: '',
-        TripReportApproval: 'No',
-        TripReportRejected: 'No',
+        TripReportApproval: '',
         TripReportRejectedComments: '',
         EndTime: '',
         IndexNumber: '',
@@ -185,7 +208,7 @@ export default {
         }
       }
     },
-    ApprovedChanged: function(checked) {
+    /* ApprovedChanged: function(checked) {
       console.log('ApprovedChanged: ' + checked)
       if (checked) {
         this.travelmodel.TripReportApproval = 'Yes'
@@ -198,61 +221,108 @@ export default {
         this.travelmodel.TripReportApproval = 'No'
         this.travelmodel.TripReportRejected = 'Yes'
       }
-    },
+    }, */
     onCancel: function() {
       this.$router.push({ name: 'Travel Tracker' })
     },
     async onWPMSubmit() {
-      // perform actions based on approval or denial. Task should be cleared in either case. Update trip status.
-      // trip status will be either ReportDue or ReportLate
-      // is the report approved or rejected
-      if (this.travelmodel.TripReportRejected == 'Yes') {
-        // rejected so update status and send notification to submitter
-        let status = 'ReportDue'
-        let end = this.$moment(this.travelmodel.EndTime)
-        let today = this.$moment()
-        let diff = today.diff(end, 'days')
-        console.log('DIFF: ' + diff)
-        if (diff > 7) {
-          status = 'ReportLate'
-        }
-        let event = []
-        event.push({
-          Status: status,
-          etag: vm.travelmodel.etag,
-          uri: vm.travelmodel.uri
-        })
-        let taskpayload = {
-          Title: 'Trip Report Rejected By WPM',
-          AssignedToId: [vm.travelmodel.CreatedBy],
-          Description: 'Please make the requested updates to the report and resubmit.',
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: status,
-          TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
-          TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
-        }
-        let deletepayload = {
-          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
-        }
-        Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-          Todo.dispatch('addTodo', taskpayload).then(function() {
-            Travel.dispatch('editTripReport', event).then(function() {
-              vm.$router.push({ name: 'Travel Tracker' })
-            })
+      // is the WPM submitting or approving an existing report
+      if (this.fileSelected != null) {
+        // WPM Role is submitting a TripReport so submit report and set status to Completed
+        let response = await Travel.dispatch('getDigest')
+        let digest = response.data.d.GetContextWebInformation.FormDigestValue
+        console.log('WPMSubmit DIGEST: ' + digest)
+        let name = this.fileSelected.split('.')[0]
+        this.fileName = name
+        let payload = {}
+        payload.file = this.fileSelected
+        payload.name = name
+        payload.id = this.TripId
+        payload.buffer = this.fileBuffer
+        payload.digest = digest
+        let item = await Travel.dispatch('uploadTripReport', payload)
+        let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+        console.log('WPMSubmit itemlink: ' + itemlink)
+        let report = await Travel.dispatch('getReportItem', itemlink)
+        payload = report.data.d.__metadata
+        console.log('WPMSubmit report payload: ' + payload)
+        payload.file = this.fileSelected
+        payload.name = name
+        payload.IndexNumber = this.travelmodel.IndexNumber
+        Travel.dispatch('updateReportItem', payload).then(function() {
+          // Refresh trip with trip report data
+          console.log('WPMSubmit ReportItemUpdated')
+          vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
+          let event = []
+          event.push({
+            name: vm.fileName,
+            Status: 'Completed',
+            TripReport: library + vm.fileSelected,
+            etag: vm.travelmodel.etag,
+            uri: vm.travelmodel.uri
+          })
+          /* let notificationemails = []
+          let notificationselected = vm.travelmodel.Notifications
+          for (let i = 0; i < notificationselected.length; i++) {
+            let a = notificationselected[i].split(',')
+            notificationemails.push(a[1])
+          } */
+          Travel.dispatch('editTripReport', event).then(function() {
+            vm.$router.push({ name: 'Travel Tracker' })
           })
         })
       } else {
-        // approved so update status to completed. No tasks should exist so clear out any existing tasks
-        let event = []
-        event.push({
-          Status: 'Completed',
-          etag: vm.travelmodel.etag,
-          uri: vm.travelmodel.uri
-        })
-        Travel.dispatch('editTripReport', event).then(function() {
-          vm.$router.push({ name: 'Travel Tracker' })
-        })
+        // perform actions based on approval or denial. Task should be cleared in either case. Update trip status.
+        // trip status will be either ReportDue or ReportLate
+        // is the report approved or rejected
+        if (this.travelmodel.TripReportApproval == 'No') {
+          // rejected so update status and send notification to submitter
+          let status = 'ReportDue'
+          let end = this.$moment(this.travelmodel.EndTime)
+          let today = this.$moment()
+          let diff = today.diff(end, 'days')
+          console.log('DIFF: ' + diff)
+          if (diff > 7) {
+            status = 'ReportLate'
+          }
+          let event = []
+          event.push({
+            Status: status,
+            etag: vm.travelmodel.etag,
+            uri: vm.travelmodel.uri
+          })
+          let taskpayload = {
+            Title: 'Trip Report Rejected By WPM',
+            AssignedToId: [vm.travelmodel.CreatedBy],
+            Description: 'Please make the requested updates to the report and resubmit.',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: status,
+            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+          }
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Todo.dispatch('addTodo', taskpayload).then(function() {
+              Travel.dispatch('editTripReport', event).then(function() {
+                vm.$router.push({ name: 'Travel Tracker' })
+              })
+            })
+          })
+        } else {
+          // approved so update status to completed.
+          let event = []
+          event.push({
+            Status: 'Completed',
+            etag: vm.travelmodel.etag,
+            uri: vm.travelmodel.uri
+          })
+          Travel.dispatch('editTripReport', event).then(function() {
+            vm.$router.push({ name: 'Travel Tracker' })
+          })
+        }
       }
     },
     async onSubmit() {
