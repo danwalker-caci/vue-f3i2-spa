@@ -904,7 +904,7 @@ export default {
       await Security.dispatch('sendEmail', emailPayload)
       // Remove the button and display current Date
     },
-    async RejectGov(data, event) {
+    async RejectGov(event) {
       await Security.dispatch('getDigest')
       this.govRejectType = event.currentTarget.dataset.type
       this.showGovRejectForm = true
