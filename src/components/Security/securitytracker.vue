@@ -780,7 +780,7 @@ export default {
                     group = this.scigroup
                     break
                   case 'CAC':
-                    taskId = this.CAC.task // original taskId\
+                    taskId = data.CAC.task // original taskId\
                     data.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                     for (var cac = 0; cac < data.CAC.forms.length; cac++) {
                       if (!submitterId.includes(data.CAC.forms[cac].submitterId)) {
@@ -1163,7 +1163,7 @@ export default {
                 if (payload.CAC) {
                   payload.CAC = JSON.stringify(payload.CAC)
                 }
-                payload.Active = d.Active ? 'Yes' : 'No'
+                payload.Active = true
                 payload.CACValid = d.CACValid
                 payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
                 payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null

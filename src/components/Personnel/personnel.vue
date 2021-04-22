@@ -874,7 +874,7 @@ export default {
           this.newData.Active = 'Yes'
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
             let payload = {
-              Active: 'Yes',
+              Active: true,
               PersonnelID: results.data.d.Id,
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,

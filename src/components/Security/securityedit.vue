@@ -1241,7 +1241,7 @@ export default {
       payload.SCIFormType = this.SCIFormType
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
-      payload.Active = this.Active
+      payload.Active = true
       payload.taskId = this.taskId
       payload.etag = this.etag
       payload.uri = this.uri

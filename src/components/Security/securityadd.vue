@@ -775,7 +775,7 @@ export default {
           }
           await Security.dispatch('sendEmail', emailPayload)
         }
-        if (this.form.Type === 'CAC' && this.securityForm.DISSCheck == 'No') {
+        if (this.form.Type === 'CAC' && this.securityForm.DISSCheck === 'No') {
           // Send a notification to the CAC folks to perform the DISS Check
           let taskPayload = {
             Title: 'Perform DISS Check for ' + vm.form.Name,
@@ -862,7 +862,7 @@ export default {
             forms: cacs
           })
         }
-        payload.Active = this.securityForm.Active ? 'Yes' : 'No'
+        payload.Active = true
         payload.taskId = this.taskId
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri

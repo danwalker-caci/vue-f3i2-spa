@@ -134,7 +134,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
-      Active: payload.Active === 'Yes' ? true : false,
+      Active: true,
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -219,7 +219,6 @@ export default {
       CACExpiredOnDate: payload.CACExpiredOnDate,
       CACTurnedIn: payload.CACTurnedIn,
       CACStatus: payload.CACStatus,
-      DISSCheck: payload.DISSCheck === 'Yes' ? true : false,
       DISSCheckDate: payload.DISSCheckDate,
       SCIAccessCheckDate: payload.SCIAccessCheckDate,
       SCIStatus: payload.SCIStatus,
@@ -230,6 +229,9 @@ export default {
       SCIFormSubmitted: payload.SCIFormSubmitted,
       SCIIndoc: payload.SCIIndoc,
       taskId: payload.taskId
+    }
+    if (payload.DISSCheck) {
+      itemprops.DISSCheck = payload.DISSCheck === 'Yes' ? true : false,
     }
     if (payload.NIPR) {
       itemprops.NIPR = payload.NIPR
