@@ -801,7 +801,7 @@ export default {
               FirstName: vm.rowData.FirstName,
               LastName: vm.rowData.LastName,
               Company: vm.rowData.Company,
-              Active: vm.rowData.Active
+              Active: vm.rowData.Active === 'No' ? false : true
             }
             let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
             securityPayload.etag = securityInfo.etag
@@ -871,10 +871,8 @@ export default {
         }
       } else {
         try {
-          this.newData.Active = 'Yes'
           Personnel.dispatch('addPerson', this.newData).then(async function(results) {
             let payload = {
-              Active: true,
               PersonnelID: results.data.d.Id,
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,

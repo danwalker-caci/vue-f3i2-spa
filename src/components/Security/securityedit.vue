@@ -617,7 +617,7 @@ export default {
       this.etag = result.etag
       this.uri = result.uri
       this.Id = result.Id
-      this.Active = result.Active ? 'Yes' : 'No'
+      this.Active = result.Active
       this.FirstName = result.FirstName
       this.LastName = result.LastName
       this.Name = result.FirstName + ' ' + result.LastName

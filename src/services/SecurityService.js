@@ -133,8 +133,7 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
-      //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
-      Active: true,
+      Active: true, // Set the person to be active for all adds.
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
@@ -205,7 +204,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.SecurityListItem' },
       //__metadata: { type: 'SP.Data.TestSecurityFormsListItem' },
-      Active: payload.Active === 'Yes' || payload.Active === true ? true : false,
+      Active: payload.Active,
       Title: payload.Title,
       PersonnelID: payload.PersonnelID,
       PersonName: payload.PersonName,
