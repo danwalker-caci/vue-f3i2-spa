@@ -1194,7 +1194,7 @@ export default {
         await Todo.dispatch('completeTodo', taskCompletePayload)
         this.taskId = null
       }
-      if (this.DISSCheckChanged && this.CAC.dissCheckTask) {
+      if (this.DISSCheckChanged && this.CAC.dissCheckTask && this.CAC.dissCheckTask !== '') {
         await Todo.dispatch('getDigest')
         let task = await Todo.dispatch('getTodoById', this.CAC.dissCheckTask)
         let taskCompletePayload = {
@@ -1202,8 +1202,9 @@ export default {
           uri: task.__metadata.uri,
           id: this.taskId
         }
-        await Todo.dispatch('completeTodo', taskCompletePayload)
-        this.taskId = null
+        await Todo.dispatch('completeTodo', taskCompletePayload).then(() => {
+          vm.CAC.dissCheckTask = ''
+        })
       }
       let payload = {}
       if (this.NIPR) {

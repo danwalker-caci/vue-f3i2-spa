@@ -1132,16 +1132,17 @@ export default {
                   await Todo.dispatch('completeTodo', taskCompletePayload)
                   d.taskId = null
                 }
-                if (this.DISSCheckChanged && d.taskId) {
+                if (this.DISSCheckChanged && d.CAC.dissCheckTask && d.CAC.dissCheckTask !== '') {
                   await Todo.dispatch('getDigest')
-                  let task = await Todo.dispatch('getTodoById', d.taskId)
+                  let task = await Todo.dispatch('getTodoById', d.CAC.dissCheckTask)
                   let taskCompletePayload = {
                     etag: task.__metadata.etag,
                     uri: task.__metadata.uri,
                     id: d.taskId
                   }
-                  await Todo.dispatch('completeTodo', taskCompletePayload)
-                  d.taskId = null
+                  await Todo.dispatch('completeTodo', taskCompletePayload).then(() => {
+                    d.CAC.dissCheckTask = ''
+                  })
                 }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
