@@ -434,7 +434,7 @@
                     <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
                   </b-col>
                 </b-row>
-                <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="float-right btn-sm mt-2" @click="updateForm()">Upload Completed Forms</b-button>
+                <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper || isAFRL" ref="updateCAC" variant="success" class="float-right btn-sm mt-2" @click="updateForm()">Upload Completed Forms</b-button>
               </div>
             </b-tab>
           </b-tabs>
