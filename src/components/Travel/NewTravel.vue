@@ -78,18 +78,25 @@
                     <b-form>
                       <div class="row">
                         <div class="col-6">OCONUS</div>
-                        <div v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="col-6">OCONUS Location</div>
+                        <div v-if="travelmodel.OCONUS == 'Yes'" class="col-6">OCONUS Location</div>
                         <div v-else class="col-6"></div>
                       </div>
                       <div class="row">
                         <div class="col-6">
-                          <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox>
+                          <!-- <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox> -->
+                          <b-form-radio-group v-model="travelmodel.OCONUS" name="oconus-radios" :options="yesno" :state="ValidateMe('OCONUS')" @change="onOCONUSSelected">
+                            <b-form-invalid-feedback :state="ValidateMe('OCONUS')">
+                              Must Select OCONUS Yes or No
+                            </b-form-invalid-feedback>
+                          </b-form-radio-group>
                         </div>
-                        <div v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="col-6">
-                          <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select>
-                          <b-form-invalid-feedback>
-                            Must Select OCONUS Location
-                          </b-form-invalid-feedback>
+                        <div v-if="travelmodel.OCONUS == 'Yes'" class="col-6">
+                          <!-- <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select> -->
+                          <b-form-radio-group v-model="travelmodel.OCONUSLocation" :options="locations" name="location-radios" :state="ValidateMe('LOCATION')">
+                            <b-form-invalid-feedback :state="ValidateMe('LOCATION')">
+                              Must Select OCONUS Location
+                            </b-form-invalid-feedback>
+                          </b-form-radio-group>
                         </div>
                         <div v-else class="col-6"></div>
                       </div>
@@ -532,8 +539,8 @@ export default {
         WorkPlanText: '',
         WorkPlanNumber: '',
         OriginalWorkPlanNumber: '',
-        OCONUS: 'Select...',
-        OCONUSLocation: 'Select...',
+        OCONUS: '',
+        OCONUSLocation: '',
         WorkPlanData: '',
         Company: '',
         Subject: '',
@@ -652,12 +659,10 @@ export default {
         { value: 'TSSCI', text: 'TS/SCI' }
       ],
       yesno: [
-        { value: 'Select...', text: 'Select...' },
-        { value: 'No', text: 'No' },
-        { value: 'Yes', text: 'Yes' }
+        { value: 'Yes', text: 'Yes' },
+        { value: 'No', text: 'No' }
       ],
       locations: [
-        { value: 'Select...', text: 'Select...' },
         { value: 'Germany', text: 'Germany' },
         { value: 'Korea', text: 'Korea' }
       ],
@@ -680,19 +685,21 @@ export default {
     /* ---------------------------------------------------------------------------------------------------------------- End Base Events ---------------------------------------------------------------------------- */
     /* ---------------------------------------------------------------------------------------------------------------- Validation Events -------------------------------------------------------------------------- */
     ValidateMe: function(control) {
+      console.log('VALIDATION: ' + control)
       let phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/
       let emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
       let ret = false
       switch (control) {
-        case 'O':
+        case 'OCONUS':
           if (this.travelmodel.OCONUS == 'Yes' || this.travelmodel.OCONUS == 'No') {
             ret = true
           }
           break
 
-        case 'OL':
+        case 'LOCATION':
           if (this.travelmodel.OCONUS == 'Yes') {
-            if (this.travelmodel.OCONUSLocation != 'Select...') {
+            console.log('LOCATION LENGTH: ' + this.travelmodel.OCONUSLocation.length)
+            if (this.travelmodel.OCONUSLocation.length > 2) {
               ret = true
             }
           } else {
@@ -935,7 +942,7 @@ export default {
     },
     onOCONUSSelected: function() {
       // TODO: Maybe show location area from here
-      if (this.travelmodel.InternalData.OCONUSTravel == 'Yes') {
+      if (this.travelmodel.OCONUS == 'Yes') {
         this.fieldsFirstTab.push('OCONUSLocation')
       } else {
         // if the user accidentally selected yes and then changes it, we have to remove location from the validation array
