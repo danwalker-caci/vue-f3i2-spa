@@ -407,6 +407,7 @@
 
 <script>
 import User from '@/models/User'
+import Todo from '@/models/Todo'
 import Travel from '@/models/Travel'
 import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
@@ -414,6 +415,11 @@ import Company from '@/models/Company'
 import { Toolbar as RTEToolbar, Link, Image, Count, HtmlEditor, QuickToolbar, Table } from '@syncfusion/ej2-vue-richtexteditor'
 import { Page, Sort, Filter, Edit, Resize, Reorder, ColumnMenu, Toolbar, Search } from '@syncfusion/ej2-vue-grids'
 
+/* let SPCI = null
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
+let baseurl = SPCI.webAbsoluteUrl */
 let vm = null
 
 export default {
@@ -455,11 +461,15 @@ export default {
     },
     portalemail() {
       return this.$store.state.support.portalemail
+    },
+    delegates() {
+      return this.$store.state.database.travel.delegates
     }
   },
   mounted: function() {
     vm = this // Setting up page specific handle to 'this' which represents the vue component. Used in promise functions as they will have their on 'this'.
     Travel.dispatch('getDigest')
+    Travel.dispatch('getDelegates')
     this.company = this.currentuser[0].Company
     let payload = {}
     payload.company = this.company
@@ -541,16 +551,21 @@ export default {
         Clearance: 'None',
         InternalData: {
           Status: 'WPMReview',
-          PreApproved: 'No',
-          OCONUSTravel: 'No',
-          ApprovalRequested: 'No',
+          PreApproved: '',
+          OCONUSTravel: '',
+          Rejected: '',
+          RejectedComments: '',
+          DeniedForNonAdmin: '',
+          RequiredCorrections: '',
+          ApprovalRequested: '',
+          ApproverSelected: '',
           Approval: '',
           ApprovedBy: '',
           ApprovedOn: '',
           DeniedBy: '',
           DeniedOn: '',
           DenialComments: '',
-          ATPRequested: 'No',
+          ATPRequested: '',
           ATP: '',
           ATPGrantedBy: '',
           ATPGrantedOn: '',
@@ -1004,7 +1019,7 @@ export default {
     },
     async onModalSave() {
       // Update the trip information in SharePoint.
-      Workplan.dispatch('getDigest')
+      // Workplan.dispatch('getDigest')
       let event = []
       let start = this.$moment(this.travelmodel.StartTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
       let end = this.$moment(this.travelmodel.EndTime).format('YYYY-MM-DD[T]HH:MM:[00Z]')
@@ -1040,22 +1055,50 @@ export default {
         let response = await Travel.dispatch('addTrip', event)
         let id = response.data.d.Id
         let payload = {}
-        payload.uri = this.wpuri
+        /* payload.uri = this.wpuri
         payload.etag = this.wpetag
         payload.index = this.newindex
-        Workplan.dispatch('updateIndex', payload)
+        Workplan.dispatch('updateIndex', payload) */
         if (this.emailRequired) {
           Travel.dispatch('sendEmail', id).then(function() {
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent Security Email</div>')
+            // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+            let emailto = []
+            let taskid = []
+            emailto.push(vm.ManagerEmail)
+            for (let i = 0; i < vm.delegates.length; i++) {
+              if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
+                // add the delegates to the email and task array
+                taskid.push(vm.delegates[i]['ID'])
+                let j = vm.delegates[i]['Delegates']
+                for (let k = 0; k < j.length; k++) {
+                  emailto.push(j[k]['EMail'])
+                  taskid.push(j[k]['ID'])
+                }
+              }
+            }
+            console.log('EMAILS: ' + emailto.toString())
             let payload = {}
             payload.id = id
-            payload.email = vm.ManagerEmail
+            payload.email = emailto
             payload.title = vm.travelmodel.Subject
             payload.workplan = vm.travelmodel.WorkPlanNumber
             payload.company = vm.travelmodel.Company
             payload.travelers = vm.travelmodel.Travelers
             payload.start = vm.travelmodel.StartTime
             payload.end = vm.travelmodel.EndTime
+            // create task and send emails
+            let taskpayload = {
+              Title: 'Approve or Deny Travel Request',
+              AssignedToId: taskid,
+              Description: 'Please Review The Trip',
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: 'WPMReview',
+              TaskLink: '/travel/page/edit?id=' + id,
+              TaskInfo: 'Type:TravelData, TrvlID:' + id + ', IN:' + vm.travelmodel.IndexNumber
+            }
+            Todo.dispatch('addTodo', taskpayload)
             Travel.dispatch('NewTripEmail', payload).then(function() {
               vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
               if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
@@ -1066,15 +1109,43 @@ export default {
             })
           })
         }
+        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['Id'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['Id'])
+            }
+          }
+        }
+        console.log('EMAILS: ' + emailto.toString())
         payload = {}
         payload.id = id
-        payload.email = this.ManagerEmail
+        payload.email = emailto
         payload.title = this.travelmodel.Subject
         payload.workplan = this.travelmodel.WorkPlanNumber
         payload.company = this.travelmodel.Company
         payload.travelers = this.travelmodel.Travelers
         payload.start = this.travelmodel.StartTime
         payload.end = this.travelmodel.EndTime
+        // create task and send emails
+        let taskpayload = {
+          Title: 'Approve or Deny Travel Request',
+          AssignedToId: taskid,
+          Description: 'Please Review The Trip',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'WPMReview',
+          TaskLink: '/travel/page/edit?id=' + id,
+          TaskInfo: 'Type:TravelData, TrvlID:' + id + ', IN:' + vm.travelmodel.IndexNumber
+        }
+        Todo.dispatch('addTodo', taskpayload)
         Travel.dispatch('NewTripEmail', payload).then(function() {
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
           if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {

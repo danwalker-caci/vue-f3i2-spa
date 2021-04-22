@@ -23,10 +23,12 @@ let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
-geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author'
+geturl += '?$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author&$orderby=Id desc'
+let delegateurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Delegates')/items?$select=*,User/Title,User/ID,User/Name,User/EMail,Delegates/Title,Delegates/ID,Delegates/Name,Delegates/EMail&$expand=User,Delegates"
 let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripReports')/RootFolder/Files/Add"
 // let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
 let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
+let GovTrvlApproversUrl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('AFRL Travel Approvers')/users"
 /* #endregion */
 
 export default {
@@ -37,6 +39,14 @@ export default {
       headers: { Accept: 'application/json; odata=verbose' }
     })
     portalemail = store.state.support.portalemail
+    return response
+  },
+  async getGovTrvlApprovers() {
+    let response = await axios.get(GovTrvlApproversUrl, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
     return response
   },
   async getTripsForLateReport() {
@@ -87,11 +97,20 @@ export default {
     }
     return getAllTrips('', company)
   },
+  async getDelegates() {
+    let response = await axios.get(delegateurl, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
+    let results = response.data.d.results
+    return results
+  },
   async getAllTrips() {
     let allTrips = []
     async function getAllTrips(purl) {
       if (purl === null) {
-        purl = url
+        purl = geturl
       }
       let response = await axios.get(purl, {
         headers: {
@@ -214,7 +233,7 @@ export default {
     body += '<p>Subject: ' + payload.Subject + '</p>'
     body += '<p>Clearance Required: ' + payload.Clearance + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + id + '">Travel</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + id + '">Travel</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -263,12 +282,12 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: [payload.email] },
+        To: { results: payload.email }, // removed array designator as the payload will already contain it
         Body: body,
         Subject: 'F3I2Portal - New Travel Request Added To SharePoint'
       }
@@ -296,16 +315,20 @@ export default {
   },
   EditTripEmail(state, digest, payload) {
     // send email to workplan manager regarding state of trip. Reminder of specific actions
-    let body = ''
-    if (payload.review && payload.review !== '') {
-      body += '<p>Forward to AFRL for review of ' + payload.review + '</p><p></p>'
+    let linktext = 'Edit Travel Request'
+    if (payload.linktext) {
+      linktext = payload.linktext
     }
+    let body = ''
     if (payload.comments && payload.comments !== '') {
       body += '<p>' + payload.comments + '</p><p></p>'
     }
     // add more details
     body += '<p>Subject: ' + payload.title
     body += '<p>WorkPlanNumber: ' + payload.workplan
+    if (payload.indexnumber !== null || payload.indexnumber !== '') {
+      body += '<p>IndexNumber: ' + payload.indexnumber
+    }
     body += '<p>Company: ' + payload.company
     let t = payload.travelers
     let s = ''
@@ -321,18 +344,18 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">Edit Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: [payload.email] },
+        To: { results: payload.email },
         Body: body,
-        Subject: 'Travel Request Updated'
+        Subject: payload.title
       }
     }
-    store.dispatch('support/addActivity', '<div class="bg-info">TravelService NewTripEmail TO: ' + payload.email + '</div>')
-    store.dispatch('support/addActivity', '<div class="bg-info">TravelService NewTripEmail body: ' + body + '</div>')
+    store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail TO: ' + payload.email + '</div>')
+    store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail body: ' + body + '</div>')
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',

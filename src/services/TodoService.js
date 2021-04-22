@@ -30,7 +30,7 @@ export default {
       Title: payload.Title,
       AssignedToId: {
         __metadata: { type: 'Collection(Edm.Int32)' },
-        results: [payload.AssignedToId]
+        results: Array.isArray(payload.AssignedToId) ? payload.AssignedToId : [payload.AssignedToId]
       },
       Body: payload.Description,
       //StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
@@ -39,6 +39,7 @@ export default {
       PercentComplete: payload.PercentComplete,
       TaskType: payload.TaskType,
       TaskLink: payload.TaskLink,
+      TaskInfo: payload.TaskInfo,
       TaskData: payload.TaskData !== null || payload.TaskData !== undefined ? JSON.stringify(payload.TaskData) : ''
     }
     try {
@@ -123,8 +124,8 @@ export default {
     }
     return getAllTodos(null, id)
   },
-  completeTodo(id, uri, etag, digest) {
-    // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
+  async completeTodo(id, uri, etag, digest) {
+    console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
     let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items"
     if (uri !== null || uri !== undefined) {
       taskurl = uri
@@ -151,5 +152,38 @@ export default {
       .catch(function(error) {
         console.log('TodoService Error Updating Todo: ' + error)
       })
+  },
+  async completeTodosByQuery(payload, digest) {
+    // get todos based on the query and set their status to complete using payload and digest
+    let taskurl = payload.url
+    console.log('TASKURL: ' + taskurl)
+    const response = await axios({
+      method: 'GET',
+      url: taskurl,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    // loop the tasks and complete them
+    let results = response.data.d.results
+    let c = results.length
+    let d = 0
+    for (let i = 0; i < results.length; i++) {
+      this.completeTodo(results[i]['Id'], results[i]['__metadata']['uri'], results[i]['__metadata']['etag'], digest).then(function() {
+        // update counter
+        d += 1
+        if (c == d) {
+          // all tasks should be removed for this
+          return true
+        }
+      })
+    }
+    /* if (c == d) {
+      // all tasks should be removed for this
+      return true
+    } else {
+      return false
+    } */
+    return false
   }
 }

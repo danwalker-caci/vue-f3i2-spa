@@ -9,6 +9,8 @@ export default class Travel extends Model {
     testtrips: [],
     testtripsloaded: false,
     afrltrips: [],
+    delegates: [],
+    govapprovers: [],
     trip: {},
     loaded: false,
     triploaded: false,
@@ -59,6 +61,7 @@ export default class Travel extends Model {
       TripReport: this.attr(''),
       TripReportLink: this.attr(''),
       Created: this.attr(''),
+      CreatedBy: this.attr(''),
       InternalData: this.attr(''),
       etag: this.attr(null), // Used for updating
       uri: this.attr(null) // Used for updating

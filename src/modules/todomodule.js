@@ -73,6 +73,15 @@ const actions = {
       console.log('There was an error completing your todo: ', error.response)
     })
   },
+  completeTodosByQuery({ state }, payload) {
+    return TodoService.completeTodosByQuery(payload, state.digest)
+    .then(response => {
+      return response
+    })
+    .catch(error => {
+      console.log('There was an error completing the todos: ', error.response)
+    })
+  },
   addTodo: async function({ state }, payload) {
     let digest = state.digest ? state.digest : payload.digest
     let response = await TodoService.addTodo(payload, digest)

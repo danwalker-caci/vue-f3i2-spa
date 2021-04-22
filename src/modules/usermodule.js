@@ -73,8 +73,9 @@ const actions = {
     UserService.getUserId()
       .then(response => {
         User.commit(state => {
-          // if (console) { console.log('USER ID: ' + response.data.d.Id) }
+          if (console) { console.log('USER EMAIL: ' + response.data.d.Email) }
           state.userid = response.data.d.Id
+          state.Email = response.data.d.Email
         })
         return response.data.d
       })
@@ -94,7 +95,7 @@ const actions = {
     let response = await UserService.getPickerUserId(usr)
     return response
   },
-  async getUserProfile() {
+  async getUserProfile({state}) {
     UserService.getUserProfile()
       .then(async (response) => {
         if (console) {
@@ -107,7 +108,7 @@ const actions = {
         profile.Account = response.data.d.AccountName
         profile.PictureUrl = response.data.d.PictureUrl
         profile.PersonalUrl = response.data.d.PersonalUrl
-        profile.Email = response.data.d.Email
+        profile.Email = state.Email !== null || state.Email !== '' ? state.Email : response.data.d.Email
         profile.EmailLink = 'mailto:' + response.data.d.Email
         profile.DisplayName = response.data.d.DisplayName
         for (let i = 0; i < properties.length; i++) {

@@ -163,12 +163,24 @@ export default {
           class: 'travel-TripReportReview'
         },
         {
+          name: 'TripReportRejected',
+          class: 'travel-TripReportRejected'
+        },
+        {
           name: 'Postponed',
           class: 'travel-Postponed'
         },
         {
           name: 'Cancelled',
           class: 'travel-Cancelled'
+        },
+        {
+          name: 'RejectedByWPM',
+          class: 'travel-RejectedByWPM'
+        },
+        {
+          name: 'Denied',
+          class: 'travel-Denied'
         }
       ]
     }

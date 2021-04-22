@@ -11,7 +11,6 @@
             <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
             <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
             <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
-            <!-- <e-column headerText="Task Link" textAlign="Left" width="300" :template="LinkTemplate"></e-column> -->
             <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
             <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
             <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -112,11 +111,6 @@ export default {
               </b-button>
               <b-button class="actionbutton" variant="danger" @click="rejectme(data)" title="Reject">
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
-              </b-button>
-            </div>
-            <div v-else-if="data.TaskType == 'gov-reject'">
-              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
-                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>
             <div v-else>
