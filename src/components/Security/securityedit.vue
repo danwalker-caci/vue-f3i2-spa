@@ -75,16 +75,12 @@
               </b-table-simple>
               <div v-if="NIPR.forms && NIPR.forms.length > 0">
                 <div v-for="form in NIPR.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                      <b-col cols="10"></b-col>
-                      <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                        <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                        <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                      </b-col>
-                    </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
@@ -127,16 +123,12 @@
               </b-table-simple>
               <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
@@ -179,16 +171,12 @@
               </b-table-simple>
               <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
@@ -210,7 +198,7 @@
                       <span v-if="JWICS.GovSentDate !== ''">{{ JWICS.GovSentDate }}</span>
                       <span v-if="JWICS.GovSentDate == ''">
                         <!-- Should only show if in Security Group -->
-                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                        <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @input="NotifyGov($event)">Notify Government</b-button>
                         <span v-if="!isSecurity">Processing</span>
                       </span>
                     </b-td>
@@ -230,119 +218,161 @@
               </b-table-simple>
               <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
             <b-tab title="SCI" class="pt-3">
-              <b-table-simple small responsive>
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>Date Indoctrination Assist Sent</b-th>
-                    <b-th>SCI Access Check Date</b-th>
-                    <b-th>SCI Indoctrination Date</b-th>
-                    <b-th>SCI Form Submitted</b-th>
-                    <b-th>SCI Status</b-th>
-                    <b-th>SCI Form Type</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive>
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>Date Indoctrination Assist Sent</b-th>
+                      <b-th>SCI Access Check Date</b-th>
+                      <b-th>SCI Indoctrination Date</b-th>
+                      <b-th>SCI Form Submitted</b-th>
+                      <b-th>SCI Status</b-th>
+                      <b-th>SCI Form Type</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateSCI" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="SCI.forms && SCI.forms.length > 0">
+                <span v-if="SCI.GovSentDate !== ''" class="p-2">{{ SCI.GovSentDate }}</span>
+                <span v-if="SCI.GovCompleteDate !== ''" class="p-2">{{ SCI.GovCompleteDate }}</span>
+                <span v-if="SCI.GovRejectDate !== ''" class="p-2">{{ SCI.GovRejectDate }}</span>
+                <span v-if="SCI.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.SCI.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="SCI.GovCompleteDate === '' && SCI.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov(data)">Submit</b-button>
+              </b-row>
+              <b-row v-if="SCI.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ SCI.GovRejectReason }}</p>
+              </b-row>
               <div v-if="SCI.forms && SCI.forms.length > 0">
                 <div v-for="form in SCI.forms" :key="form.id">
-                  <b-form-row class="p-1">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
             <b-tab title="CAC">
-              <b-table-simple small responsive class="pt-3">
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>CAC Status</b-th>
-                    <b-th>CAC Issued By</b-th>
-                    <b-th>CAC Request Date</b-th>
-                    <b-th>CAC Expiration Date</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" :fields="ddfields"></ejs-dropdownlist>
-                    </b-td>
-                    <b-td>
-                      <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
-                    </b-td>
-                    <b-td>
-                      <!-- Update Button -->
-                      <!-- REMOVE DEVELOPER OPTION -->
-                      <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
-              <div v-if="CAC.forms && CAC.forms.length > 0">
-                <div v-for="form in CAC.forms" :key="form.id">
-                  <b-form-row class="p-1">
+              <b-row>
+                <b-table-simple small responsive class="pt-3">
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>CAC Status</b-th>
+                      <b-th>CAC Issued By</b-th>
+                      <b-th>CAC Request Date</b-th>
+                      <b-th>CAC Expiration Date</b-th>
+                      <b-th>CAC DISS Check</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        <ejs-dropdownlist :disable="!isSecurity" v-model="CACStatus" :dataSource="cacstatus" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
+                      </b-td>
+                      <b-td>
+                        <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="CACIssuedBy"></b-form-input>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker id="cacRequestDate" :disable="!isSecurity" v-model="CACRequestDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <ejs-datepicker :disable="!isSecurity" id="formCACExpirationDate" v-model="CACExpirationDate"></ejs-datepicker>
+                      </b-td>
+                      <b-td>
+                        <b-form-checkbox :disable="!isSecurity" id="dissCheck" v-model="DISSCheck" value="Yes" unchecked-value="No" @change="dissCheckChange" switch></b-form-checkbox>
+                      </b-td>
+                      <b-td>
+                        <!-- Update Button -->
+                        <!-- REMOVE DEVELOPER OPTION -->
+                        <b-button :disabled="lockSubmit" v-if="isSecurity || isDeveloper" ref="updateCAC" variant="success" class="btn-sm" @click="updateForm()">Update</b-button>
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row v-if="CAC.forms && CAC.forms.length > 0">
+                <span v-if="CAC.GovSentDate !== ''" class="p-2">{{ CAC.GovSentDate }}</span>
+                <span v-if="CAC.GovCompleteDate !== ''" class="p-2">{{ CAC.GovCompleteDate }}</span>
+                <span v-if="CAC.GovRejectDate !== ''" class="p-2">{{ CAC.GovRejectDate }}</span>
+                <span v-if="CAC.GovSentDate === ''" class="p-2">
+                  <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'CAC'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+                </span>
+                <span v-if="this.CAC.GovCompleteDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+                </span>
+                <span v-if="CAC.GovCompleteDate === '' && CAC.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+                </span>
+              </b-row>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="primary-outline" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+              </b-row>
+              <b-row v-if="CAC.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">CAC Rejection Reason:</span> {{ CAC.GovRejectReason }}</p>
+              </b-row>
+              <div v-if="NIPR.forms && NIPR.forms.length > 0">
+                <div v-for="form in NIPR.forms" :key="form.id">
+                  <b-form-row class="p-1" v-if="form.href !== ''">
                     <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
                   </b-form-row>
-                  <!--<b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                    <b-col cols="10"></b-col>
-                    <b-col cols="2" v-if="isSecurity" v-bind:id="form.id">
-                      <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                      <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                    </b-col>
-                  </b-form-row>-->
+                  <b-form-row class="p-1" v-else-if="form.rejectReason">
+                    <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                  </b-form-row>
                 </div>
               </div>
             </b-tab>
@@ -432,6 +462,18 @@ export default {
     isDeveloper() {
       return User.getters('isDeveloper')
     },
+    afrlgroup() {
+      return Security.getters('AFRLGroup')
+    },
+    accountgroup() {
+      return Security.getters('AccountGroup')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
+    },
     rect() {
       return this.$store.state.support.contentrect
     }
@@ -459,10 +501,18 @@ export default {
       CACIssuedBy: '',
       CACValid: '',
       CACExpiredOnDate: '',
+      DISSCheck: 'No',
+      DISSCheckDate: null,
+      DISSCheckChanged: false,
       NIPR: {},
       SIPR: {},
       DREN: {},
       JWICS: {},
+      showGovRejectForm: false,
+      showGovRejectError: false,
+      govRejectReason: '',
+      govRejectType: '',
+      taskId: null,
       etag: '',
       uri: '',
       files: [],
@@ -470,6 +520,7 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
+      statusesUpdated: false,
       selectedSecurityFormType: '',
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
@@ -479,9 +530,6 @@ export default {
         { value: 'CAC', text: 'CAC' },
         { value: 'SCI', text: 'SCI' }
       ],
-      AccountId: '',
-      AFRLId: '',
-      SecurityId: '',
       ddfields: { text: 'text', value: 'value' },
       status: [
         { text: 'Not Required', value: 'Not Required' },
@@ -517,19 +565,21 @@ export default {
     }
   },
   mounted: async function() {
-    vm = this
-    await Security.dispatch('getDigest')
-    await this.getUserIDs()
-    await this.getForms()
+    this.$nextTick(async () => {
+      vm = this
+      await Security.dispatch('getDigest')
+      if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
+      await this.getForms()
+    })
   },
   methods: {
-    async getUserIDs() {
-      this.AccountId = await this.$store.dispatch('support/getAccountUser')
-      this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
-      // console.log(this.$store.state.support.AFRLUserID)
-      // console.log(this.$store.state.support.AccountUserID)
-      // console.log(this.$store.state.support.CACSCIUserID)
+    async dissCheckChange() {
+      if (this.DISSCheck === 'Yes') {
+        this.DISSCheckChanged = true
+        this.DISSCheckDate = this.$moment().format('MM/DD/YYYY')
+      } else {
+        this.DISSCheckDate = null
+      }
     },
     async getForms() {
       // Run query to load the form
@@ -575,22 +625,39 @@ export default {
       this.CACValid = result.CACValid
       this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : ''
       this.CACTurnedIn = result.CACTurnedIn
+      this.DISSCheck = result.DISSCheck
+      this.DISSCheckDate = this.$moment(result.DISSCheckDate).isValid() ? this.$moment(result.DISSCheckDate).format('MM/DD/YYYY') : ''
       this.NIPR = result.NIPR
       this.SIPR = result.SIPR
       this.DREN = result.DREN
       this.JWICS = result.JWICS
+      this.taskId = result.taskId
       await Security.dispatch('getDigest')
       this.loaded = true
     },
     AssistDateChange() {
       this.SCIStatus = 'SSO Processed'
     },
+    async statusChange() {
+      if (this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      } else if (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info') {
+        this.statusesUpdated = true
+      }
+    },
     async NotifyGov(e) {
       await Security.dispatch('getDigest')
       let type = e.currentTarget.dataset.type,
         taskId,
-        taskUserId = vm.$store.state.support.AFRLUserId
-      // Add a task for the designated government employee for review
+        taskUserId = [],
+        taskEmail = []
+
+      let afrlgroup = this.afrlgroup
+      afrlgroup.forEach(user => {
+        taskUserId.push(user.Id)
+        taskEmail.push(user.Email)
+      })
+      // Add a task for the designated government employees for review
       let payload = {
         Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
         //AssignedToId: vm.userid, // Hardcode to Juan
@@ -614,9 +681,24 @@ export default {
         console.log('ERROR: ' + error.message)
       })
       let emailPayload = {
-        emails: [this.$store.state.support.AFRLUserEmail],
-        body: '<h3>Please complete or reject the following.</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.Id + '">Edit ' + this.FirstName + ' ' + this.LastName + '</a>',
-        subject: type + ' Request'
+        emails: taskEmail,
+        body:
+          '<h3>Please complete or reject the following.</h3> <p>Name: ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</p><p>Form: ' +
+          type +
+          ' Request</p><br/><a href="' +
+          url +
+          '/Pages/Home.aspx#/security/edit/' +
+          this.Id +
+          '">Edit ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+        subject: '(F3I-2 Portal) ' + type + ' Request'
       }
       await Security.dispatch('sendEmail', emailPayload)
       // Update the task to the new one for AFRL
@@ -642,43 +724,101 @@ export default {
           this.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
           this.JWICS.task = results.data.d.Id
           break
+        case 'SCI':
+          taskId = this.SCI.task
+          this.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.SCI.task = results.data.d.Id
+          break
+        case 'CAC':
+          taskId = this.CAC.task
+          this.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          this.CAC.task = results.data.d.Id
+          break
       }
+      this.Active = true
       this.updateForm(taskId)
     },
     async CompleteGov(event) {
       await Security.dispatch('getDigest')
       let type = event.currentTarget.dataset.type,
         taskId,
-        taskUserId = vm.$store.state.support.AccountUserId
+        submitterId = [],
+        submitterEmail = [],
+        taskUserId = [],
+        taskEmail = [],
+        group = []
+
       // get the current item data
       switch (type) {
         case 'NIPR':
           taskId = this.NIPR.task
           this.NIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var nipr = 0; nipr <= this.NIPR.forms.length; nipr++) {
+          for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+            if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+              submitterId.push(this.NIPR.forms[nipr].submitterId)
+              submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.NIPR.forms[nipr].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'SIPR':
           taskId = this.SIPR.task
           this.SIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var sipr = 0; sipr <= this.SIPR.forms.length; sipr++) {
+          for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+            if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+              submitterId.push(this.SIPR.forms[sipr].submitterId)
+              submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SIPR.forms[sipr].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'DREN':
           taskId = this.DREN.task
           this.DREN.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var dren = 0; dren <= this.DREN.forms.length; dren++) {
+          for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+            if (!submitterId.includes(this.DREN.forms[dren])) {
+              submitterId.push(this.DREN.forms[dren].submitterId)
+              submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.DREN.forms[dren].href, '_blank')
           }
+          group = this.accountgroup
           break
         case 'JWICS':
           taskId = this.JWICS.task // original taskId\
           this.JWICS.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var jwics = 0; jwics <= this.JWICS.forms.length; jwics++) {
+          for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+            if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+              submitterId.push(this.JWICS.forms[jwics].submitterId)
+              submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+            }
             window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.JWICS.forms[jwics].href, '_blank')
           }
+          group = this.accountgroup
+          break
+        case 'SCI':
+          taskId = this.SCI.task // original taskId\
+          this.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+            if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+              submitterId.push(this.SCI.forms[sci].submitterId)
+              submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+            }
+          }
+          group = this.scigroup
+          break
+        case 'CAC':
+          taskId = this.CAC.task // original taskId\
+          this.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+            if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+              submitterId.push(this.CAC.forms[cac].submitterId)
+              submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+            }
+          }
+          group = this.cacgroup
           break
       }
       await this.updateForm(taskId).catch(e => {
@@ -694,13 +834,19 @@ export default {
         })
         console.log('ERROR: ' + e.message)
       })
+      group.forEach(user => {
+        taskUserId.push(user.Id)
+        taskEmail.push(user.Email)
+      })
+      taskUserId.concat(submitterId)
+      taskEmail.concat(submitterEmail)
       let payload = {
         Title: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
         AssignedToId: taskUserId,
-        Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request. Please notify the original submitter.',
+        Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request.',
         IsMilestone: false,
         PercentComplete: 0,
-        TaskType: type + ' Request',
+        TaskType: 'gov-complete',
         TaskLink: '/security/tracker'
       }
       await Todo.dispatch('addTodo', payload).catch(error => {
@@ -715,6 +861,33 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })
+      let emailPayload = {
+        emails: taskEmail,
+        body:
+          '<h3>AFRL Completed ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          ' ' +
+          type +
+          ' Request</h3> <p>Name: ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</p><p>Form: ' +
+          type +
+          ' Request</p><br/><a href="' +
+          url +
+          '/Pages/Home.aspx#/security/edit/' +
+          this.Id +
+          '">Edit ' +
+          this.FirstName +
+          ' ' +
+          this.LastName +
+          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+        subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
+      }
+      await Security.dispatch('sendEmail', emailPayload)
       // Remove the button and display current Date
     },
     async RejectGov(event) {
@@ -722,81 +895,162 @@ export default {
       let type = event.currentTarget.dataset.type,
         taskId
       // get the current item data
-      switch (type) {
-        case 'NIPR':
-          taskId = this.NIPR.task
-          this.NIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.NIPR.forms, nipr => {
-            this.deleteForm(nipr)
-          })
-          this.NIPR.forms = []
-          break
-        case 'SIPR':
-          taskId = this.SIPR.task
-          this.SIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.SIPR.forms, sipr => {
-            this.deleteForm(sipr)
-          })
-          this.SIPR.forms = []
-          break
-        case 'DREN':
-          taskId = this.DREN.task
-          this.DREN.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.DREN.forms, dren => {
-            this.deleteForm(dren)
-          })
-          this.DREN.forms = []
-          break
-        case 'JWICS':
-          taskId = this.JWICS.task // original taskId\
-          this.JWICS.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-          await this.asyncForEach(this.JWICS.forms, jwics => {
-            this.deleteForm(jwics)
-          })
-          this.JWICS.forms = []
-          break
-      }
-      await this.updateForm(taskId).catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + error.message)
-      })
-      let taskUserId = null
-      if (type == 'NIPR' || type == 'SIPR' || type == 'DREN' || type == 'JWICS') {
-        taskUserId = vm.$store.state.support.AccountUserId
+    },
+    async SubmitRejectGov() {
+      if (this.govRejectReason.length <= 10) {
+        this.showGovRejectError = true
       } else {
-        taskUserId = vm.$store.state.support.CACSCIUserId
-      }
-      // Notify Accounts Admin or Security via task list
-      let payload = {
-        Title: 'AFRL Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-        //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-        AssignedToId: taskUserId,
-        Description: 'AFRL reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request. Please notify the original submitter.',
-        IsMilestone: false,
-        PercentComplete: 0,
-        TaskType: type + ' Request',
-        TaskLink: '/security/tracker'
-      }
-      await Todo.dispatch('addTodo', payload).catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
+        let taskId = '',
+          submitterId = [],
+          submitterEmail = [],
+          taskUserId = [],
+          taskEmail = [],
+          group = []
+
+        switch (this.govRejectType) {
+          case 'NIPR':
+            taskId = this.NIPR.task
+            group = this.accountgroup
+            submitterId = this.NIPR.submitterId
+            this.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.NIPR.GovRejectReason = this.govRejectReason
+            for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+              if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+                submitterId.push(this.NIPR.forms[nipr].submitterId)
+                submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+              }
+              this.deleteForm(this.NIPR.forms[nipr])
+            }
+            this.NIPR.forms = []
+            break
+          case 'SIPR':
+            taskId = this.SIPR.task
+            group = this.accountgroup
+            submitterId = this.SIPR.submitterId
+            this.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.SIPR.GovRejectReason = this.govRejectReason
+            for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+              // Getting all of the original submitters for notification
+              if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+                submitterId.push(this.SIPR.forms[sipr].submitterId)
+                submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+              }
+              this.deleteForm(this.SIPR.forms[sipr])
+            }
+            this.SIPR.forms = []
+            break
+          case 'DREN':
+            taskId = this.DREN.task
+            group = this.accountgroup
+            submitterId = this.DREN.submitterId
+            this.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.DREN.GovRejectReason = this.govRejectReason
+            for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+              if (!submitterId.includes(this.DREN.forms[dren].submitterId)) {
+                submitterId.push(this.DREN.forms[dren].submitterId)
+                submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+              }
+              this.deleteForm(this.DREN.forms[dren])
+            }
+            this.DREN.forms = []
+            break
+          case 'JWICS':
+            taskId = this.JWICS.task // original taskId\
+            group = this.accountgroup
+            submitterId = this.JWICS.submitterId
+            this.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.JWICS.GovRejectReason = this.govRejectReason
+            for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+              if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+                submitterId.push(this.JWICS.forms[jwics].submitterId)
+                submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+              }
+              this.deleteForm(this.JWICS.forms[jwics])
+            }
+            this.JWICS.forms = []
+            break
+          case 'SCI':
+            taskId = this.SCI.task // original taskId\
+            group = this.scigroup
+            submitterId = this.SCI.submitterId
+            this.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.SCI.GovRejectReason = this.govRejectReason
+            for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+              if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+                submitterId.push(this.SCI.forms[sci].submitterId)
+                submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+              }
+              this.deleteForm(this.SCI.forms[sci])
+            }
+            this.SCI.forms = []
+            break
+          case 'CAC':
+            taskId = this.CAC.task // original taskId\
+            group = this.cacgroup
+            submitterId = this.CAC.submitterId
+            this.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            this.CAC.GovRejectReason = this.govRejectReason
+            for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+              if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+                submitterId.push(this.CAC.forms[cac].submitterId)
+                submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+              }
+              this.deleteForm(this.CAC.forms[cac])
+            }
+            this.CAC.forms = []
+            break
+        }
+        await this.updateForm(taskId).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+        group.forEach(user => {
+          taskUserId.push(user.Id)
+          taskEmail.push(user.Email)
+        })
+        taskUserId.concat(submitterId)
+        taskEmail.concat(submitterEmail)
+        // Notify Accounts Admin or Security via task list
+        let payload = {
+          Title: 'Government Rejection: ' + this.FirstName + ' ' + this.LastName + ' ' + this.govRejectType + ' Request',
+          //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+          AssignedToId: taskUserId,
+          Description: 'Reason: ' + this.govRejectReason,
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'gov-reject',
+          TaskLink: '/security/tracker'
+        }
+        await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+        let emailPayload = {
+          emails: taskEmail, // TO DO: push the original submitters email in there.
+          body: '<h3>Government Rejected Submission</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
+          subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
         }
         this.$store.dispatch('notification/add', notification, {
           root: true
         })
         console.log('ERROR: ' + error.message)
-      })
+      }
     },
     async deleteForm(payload) {
       await Security.dispatch('DeleteForm', payload).catch(error => {
@@ -912,6 +1166,28 @@ export default {
           // finally, clear d.files to zero and remove from file uploader
         })
       }
+      if (this.statusesUpdated && this.taskId) {
+        await Todo.dispatch('getDigest')
+        let task = await Todo.dispatch('getTodoById', this.taskId)
+        let taskCompletePayload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: this.taskId
+        }
+        await Todo.dispatch('completeTodo', taskCompletePayload)
+        this.taskId = null
+      }
+      if (this.DISSCheckChanged && this.CAC.dissCheckTask) {
+        await Todo.dispatch('getDigest')
+        let task = await Todo.dispatch('getTodoById', this.CAC.dissCheckTask)
+        let taskCompletePayload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: this.taskId
+        }
+        await Todo.dispatch('completeTodo', taskCompletePayload)
+        this.taskId = null
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -937,6 +1213,8 @@ export default {
       payload.CACExpiredOnDate = this.CACExpiredOnDate ? this.CACExpiredOnDate : null
       payload.CACTurnedIn = this.CACTurnedIn
       payload.CACIssuedBy = this.CACIssuedBy
+      payload.DISSCheck = this.DISSCheck
+      payload.DISSCheckDate = this.DISSCheckDate ? this.DISSCheckDate : null
       payload.PRDueDate = this.PRDueDate ? this.PRDueDate : null
       payload.CEDate = this.CEDate ? this.CEDate : null
       payload.SCIAccessCheckDate = this.SCIAccessCheckDate
@@ -947,6 +1225,7 @@ export default {
       payload.SCIFormSubmitted = this.SCIFormSubmitted ? this.SCIFormSubmitted : null
       payload.SCIStatus = this.SCIStatus
       payload.Active = this.Active
+      payload.taskId = this.taskId
       payload.etag = this.etag
       payload.uri = this.uri
       let result = await Security.dispatch('updateSecurityForm', payload).catch(e => {
@@ -981,6 +1260,7 @@ export default {
 
       this.lockSubmit = false
       if (tId) {
+        console.log(tId)
         Todo.dispatch('getTodoById', tId).then(async function(task) {
           let payload = {
             etag: task.__metadata.etag,

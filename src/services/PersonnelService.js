@@ -136,20 +136,20 @@ export default {
     return results
   },
   async sendEmail(payload, digest) {
-    let body = '<p>Hello Work Plan Manager</p><br/>'
+    /*let body = '<p>Hello Work Plan Manager</p><br/>'
     body += '<p>Personnel have been submitted that requires review.</p><p></p>'
     //body += '<p>Entry edited by ' + modifiedBy + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
     // Change before Test - Production
-    body += '<p><a href="' + baseurl + '/Pages/drew.aspx#/personnel/home/edit/id/' + payload.Id + '">Personnel</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/drew.aspx#/personnel/home/edit/id/' + payload.Id + '">Personnel</a></p>'*/
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: ['drew.ahrens@caci.com'] }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
+        To: { results: payload.emails }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
         // To: { 'results': ['daniel.walker1@caci.com'] },
-        Body: body,
-        Subject: 'Personnel Edited In SharePoint'
+        Body: payload.body,
+        Subject: payload.subject
       }
     }
     let headers = {

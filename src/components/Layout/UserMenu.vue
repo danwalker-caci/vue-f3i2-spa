@@ -113,6 +113,11 @@ export default {
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
               </b-button>
             </div>
+            <div v-else-if="data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete'">
+              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
+                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>
             <div v-else>
               <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
@@ -125,7 +130,7 @@ export default {
             },
             methods: {
               completeme: function(data) {
-                this.$bvModal
+                vm.$bvModal
                   .msgBoxConfirm('Complete this Task?', {
                     title: 'Please Confirm',
                     size: 'sm',

@@ -246,9 +246,12 @@ import Personnel from '@/models/Personnel'
 import Workplan from '@/models/WorkPlan'
 import Company from '@/models/Company'
 import Security from '@/models/Security'
+import Todo from '@/models/Todo'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null
+// eslint-disable-next-line no-undef
+let url = _spPageContextInfo.webAbsoluteUrl
 
 export default {
   name: 'personnel',
@@ -303,6 +306,12 @@ export default {
     },
     userloaded() {
       return User.getters('Loaded')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
     },
     rect() {
       return this.$store.state.support.contentrect
@@ -574,71 +583,74 @@ export default {
   },
   mounted: async function() {
     vm = this
-    if (this.companies.length === 0) {
-      await Company.dispatch('getCompanies')
-    }
-    this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
-    this.company = this.currentuser[0].Company
-    Personnel.dispatch('getDigest')
-    Security.dispatch('getDigest')
-    Workplan.dispatch('getWorkplans')
-      .then(function() {
-        if (vm.isSubcontractor && vm.company) {
-          let payload = {}
-          payload.company = vm.company
-          Personnel.dispatch('getPersonnelByCompany', payload)
-            .then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
-            .catch(e => {
-              // vm.handleError(e)
-              console.log('getPersonnelByCompany ERROR: ' + e)
-            })
-        } else {
-          Personnel.dispatch('getPersonnel')
-            .then(function() {
-              vm.$options.interval = setInterval(vm.waitForPeople, 1000)
-            })
-            .catch(e => {
-              // vm.handleError(e)
-              console.log('getPersonnel ERROR: ' + e)
-            })
-        }
-      })
-      .catch(e => {
-        // Add user notification and system logging
-        // vm.handleError(e)
-        console.log('getWorkplans ERROR: ' + e)
-      })
-    if (vm.mode === 'edit') {
-      // Don't show all of the records until after the form is submitted
-      vm.approvalOnly = true
-      vm.PersonnelId = this.id
+    this.$nextTick(async () => {
+      if (this.companies.length === 0) {
+        await Company.dispatch('getCompanies')
+      }
+      this.$store.dispatch('support/addActivity', '<div class="bg-info">personnel-MOUNTED</div>')
+      this.company = this.currentuser[0].Company
+      Personnel.dispatch('getDigest')
+      Security.dispatch('getDigest')
+      Security.dispatch('getSecurityGroups')
       Workplan.dispatch('getWorkplans')
         .then(function() {
-          Personnel.dispatch('getPersonnelAllValuesById', vm.id)
-            .then(person => {
-              let modData = {}
-              if (person[0].Modification && person[0].Modification.length > 0) {
-                modData = JSON.parse(person[0].Modification)
-                modData.uri = person[0].uri
-                modData.etag = person[0].etag
-                modData.Id = person[0].Id
-                vm.oldData = person[0]
-                vm.showOldData = true
-              } else {
-                modData = person[0]
-              }
-              vm.editRow(modData)
-            })
-            .catch(e => {
-              vm.handleError(e)
-            })
+          if (vm.isSubcontractor && vm.company) {
+            let payload = {}
+            payload.company = vm.company
+            Personnel.dispatch('getPersonnelByCompany', payload)
+              .then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+              .catch(e => {
+                // vm.handleError(e)
+                console.log('getPersonnelByCompany ERROR: ' + e)
+              })
+          } else {
+            Personnel.dispatch('getPersonnel')
+              .then(function() {
+                vm.$options.interval = setInterval(vm.waitForPeople, 1000)
+              })
+              .catch(e => {
+                // vm.handleError(e)
+                console.log('getPersonnel ERROR: ' + e)
+              })
+          }
         })
         .catch(e => {
-          vm.handleError(e)
+          // Add user notification and system logging
+          // vm.handleError(e)
+          console.log('getWorkplans ERROR: ' + e)
         })
-    }
+      if (vm.mode === 'edit') {
+        // Don't show all of the records until after the form is submitted
+        vm.approvalOnly = true
+        vm.PersonnelId = this.id
+        Workplan.dispatch('getWorkplans')
+          .then(function() {
+            Personnel.dispatch('getPersonnelAllValuesById', vm.id)
+              .then(person => {
+                let modData = {}
+                if (person[0].Modification && person[0].Modification.length > 0) {
+                  modData = JSON.parse(person[0].Modification)
+                  modData.uri = person[0].uri
+                  modData.etag = person[0].etag
+                  modData.Id = person[0].Id
+                  vm.oldData = person[0]
+                  vm.showOldData = true
+                } else {
+                  modData = person[0]
+                }
+                vm.editRow(modData)
+              })
+              .catch(e => {
+                vm.handleError(e)
+              })
+          })
+          .catch(e => {
+            vm.handleError(e)
+          })
+      }
+    })
   },
   methods: {
     handleError: function(e) {
@@ -818,6 +830,7 @@ export default {
     newOk: async function() {
       await Personnel.dispatch('getDigest')
       await Security.dispatch('getDigest')
+      await Todo.dispatch('getDigest')
       if (this.isSubcontractor) {
         let data = {
           Modification: JSON.stringify(this.newData)
@@ -866,9 +879,77 @@ export default {
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,
               Company: vm.newData.Company,
-              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
+              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              DISSCheck: 'No'
             }
-            await Security.dispatch('addSecurityForm', payload)
+            //First add the Security entry
+            let security = await Security.dispatch('addSecurityForm', payload)
+            // then get the task users and emails sorted
+            let securityTaskUsers = []
+            let securityTaskEmail = []
+            // Combining both SCI and CAC groups
+            vm.cacgroup.forEach(user => {
+              if (user && !securityTaskUsers.includes(user.Id)) {
+                securityTaskUsers.push(user.Id)
+                securityTaskEmail.push(user.Email)
+              }
+            })
+            vm.scigroup.forEach(user => {
+              if (user && !securityTaskUsers.includes(user.Id)) {
+                securityTaskUsers.push(user.Id)
+                securityTaskEmail.push(user.Email)
+              }
+            })
+            // Add the task
+            let taskPayload = {
+              Title: 'New Personnel added: ' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              //AssignedToId: vm.userid, // Hardcoding the Security Group
+              AssignedToId: securityTaskUsers, // Need to get everyone in the Security Group
+              Description: 'New Personnel added ' + vm.newData.FirstName + ' ' + vm.newData.LastName,
+              IsMilestone: false,
+              PercentComplete: 0,
+              TaskType: 'PersonnelAdded',
+              TaskLink: '/security/edit/' + security.data.d.Id
+            }
+            results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+              const notification = {
+                type: 'danger',
+                title: 'Portal Error',
+                message: error.message,
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, {
+                root: true
+              })
+              console.log('ERROR: ' + error.message)
+            })
+            // Update the previously added security form with the task id to be completed when a status changes.
+            let securityPayload = {
+              Id: security.data.d.Id,
+              etag: security.data.d.__metadata.etag,
+              uri: security.data.d.__metadata.uri,
+              taskId: results.data.d.Id
+            }
+            await Security.dispatch('updateSecurityForm', securityPayload)
+            let emailPayload = {
+              body:
+                '<p></p>New Personnel Added: ' +
+                vm.newData.FirstName +
+                ' ' +
+                vm.newData.LastName +
+                '.</p><p>Please Review in the portal at <a href="' +
+                url +
+                '/security/edit/' +
+                security.data.d.Id +
+                '">Edit ' +
+                vm.newData.FirstName +
+                ' ' +
+                vm.newData.LastName +
+                '</a></p><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+              subject: '(F3I-2 Portal) New Personnel Added',
+              emails: securityTaskEmail
+            }
+            await Personnel.dispatch('sendEmail', emailPayload)
             vm.hideme('NewModal', 'refresh')
           })
         } catch (e) {

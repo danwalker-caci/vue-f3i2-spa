@@ -55,7 +55,6 @@ export default {
   },
   async getUserById(payload) {
     let url = baseUrl + '/_api/Web/GetUserById(' + payload.id + ')'
-    console.log(url)
     let response = await axios.get(url, {
       headers: {
         accept: 'application/json;odata=verbose'

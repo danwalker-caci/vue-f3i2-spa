@@ -6,7 +6,12 @@ export default class Security extends Model {
   static state = {
     digest: null,
     loaded: false,
-    securityforms: []
+    securityforms: [],
+    securitygroup: [],
+    accountgroup: [],
+    afrlgroup: [],
+    cacgroup: [],
+    scigroup: []
   }
 
   static fields() {
@@ -39,6 +44,7 @@ export default class Security extends Model {
       SIPR: this.attr(''),
       DREN: this.attr(''),
       JWICS: this.attr(''),
+      taskId: this.attr(''),
       etag: this.attr(null),
       uri: this.attr(null)
     }

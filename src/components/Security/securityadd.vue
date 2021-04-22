@@ -145,13 +145,13 @@
             </div>
           </b-col>
         </b-form-row>
-        <b-form-row v-if="formSCI">
+        <!--<b-form-row v-if="formSCI">
           <b-col cols="6">
             <b-form-group label="Scheduled Indoctrination Date: " label-for="formSCIIndocDate">
               <ejs-datepicker id="formSCIIndocDate" v-model="form.SCIIndocDate"></ejs-datepicker>
             </b-form-group>
           </b-col>
-        </b-form-row>
+        </b-form-row>-->
         <b-form-row>
           <b-col cols="6">
             <b-form-group>
@@ -276,6 +276,18 @@ export default {
     },
     isSecurity() {
       return User.getters('isSecurity')
+    },
+    afrlgroup() {
+      return Security.getters('AFRLGroup')
+    },
+    accountgroup() {
+      return Security.getters('AccountGroup')
+    },
+    cacgroup() {
+      return Security.getters('CACGroup')
+    },
+    scigroup() {
+      return Security.getters('SCIGroup')
     }
   },
   data: function() {
@@ -324,7 +336,9 @@ export default {
       library: '',
       libraryUrl: '',
       lockSubmit: false,
-      taskUserId: null,
+      taskId: null,
+      taskUserId: [],
+      taskEmail: [],
       securityForm: null,
       filteredData: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
@@ -338,32 +352,35 @@ export default {
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
       ],
+      securityGroups: ['Account Security', 'AFRL Security', 'CAC Security', 'SCI Security'],
       ddfields: { text: 'text', value: 'value' }
     }
   },
   mounted: async function() {
     vm = this
-    // First get current user informaiton
-    await Security.dispatch('getDigest')
-    await this.checkType()
-    await this.getUserIDs()
-    // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
-    await Company.dispatch('getCompanies')
-      .then(function() {
-        vm.$options.interval = setInterval(vm.waitForPersonnel, 750)
-      })
-      .catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+    this.$nextTick(async () => {
+      // First get current user informaiton
+      await Security.dispatch('getDigest')
+      if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
+      await vm.checkType()
+      // Setup a timing chaing so that we don't try to get the personnel by Company Dropdown until the state is loaded.
+      await Company.dispatch('getCompanies')
+        .then(function() {
+          vm.$options.interval = setInterval(vm.waitForPersonnel, 750)
         })
-        console.log('ERROR: ' + error.message)
-      })
+        .catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+    })
   },
   methods: {
     filtering: e => {
@@ -380,11 +397,6 @@ export default {
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
-    },
-    getUserIDs: async function() {
-      this.$store.dispatch('support/getAccountUser')
-      this.$store.dispatch('support/getAFRLUser')
-      this.$store.dispatch('support/getCACSCIUser')
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -503,39 +515,45 @@ export default {
         // Add post to correct document library with required MetaData
         this.lockSubmit = true
         let payload = {}
+        let group = []
+        let dissResults = ''
         switch (this.form.Type) {
           case 'NIPR':
             // set the url for the post of file
             this.library = 'AccountsNIPR'
             this.libraryUrl = this.AccountsNIPRForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
+            group = this.accountgroup
             break
           case 'SIPR':
             this.library = 'AccountsSIPR'
             this.libraryUrl = this.AccountsSIPRForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
+            group = this.accountgroup
             break
           case 'DREN':
             this.library = 'AccountsDREN'
             this.libraryUrl = this.AccountsDRENForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
+            group = this.accountgroup
             break
           case 'JWICS':
             this.library = 'AccountsJWICS'
             this.libraryUrl = this.AccountsJWICSForms
-            this.taskUserId = vm.$store.state.support.AccountUserId
+            group = this.accountgroup
             break
           case 'CAC':
             this.library = 'CACForms'
             this.libraryUrl = this.CACForms
-            this.taskUserId = vm.$store.state.support.CACSCIUserId
+            group = this.cacgroup
             break
           case 'SCI':
             this.library = 'SCIForms'
             this.libraryUrl = this.SCIForms
-            this.taskUserId = vm.$store.state.support.CACSCIUserId
+            group = this.scigroup
             break
         }
+        group.forEach(user => {
+          this.taskUserId.push(user.Id)
+          this.taskEmail.push(user.Email)
+        })
         payload.library = this.library
         payload.Company = vm.form.Company
         payload.PersonnelID = vm.form.PersonnelID
@@ -550,34 +568,34 @@ export default {
 
         // Push original forms into an array to prevent being overwritten
         if (this.securityForm.NIPR && this.securityForm.NIPR.length > 0) {
-          this.securityForm.NIPR.forEach(nipr => {
+          this.securityForm.NIPR.forms.forEach(nipr => {
             niprs.push(nipr)
           })
         }
         if (this.securityForm.JWICS && this.securityForm.JWICS.length > 0) {
-          this.securityForm.JWICS.forEach(jwic => {
+          this.securityForm.JWICS.forms.forEach(jwic => {
             jwics.push(jwic)
           })
         }
         if (this.securityForm.DREN && this.securityForm.DREN.length > 0) {
-          this.securityForm.DREN.forEach(dren => {
+          this.securityForm.DREN.forms.forEach(dren => {
             drens.push(dren)
           })
         }
         if (this.securityForm.SIPR && this.securityForm.SIPR.length > 0) {
-          this.securityForm.SIPR.forEach(sipr => {
+          this.securityForm.SIPR.forms.forEach(sipr => {
             siprs.push(sipr)
           })
         }
         // Don't overwrite SCI
         if (this.securityForm.SCI && this.securityForm.SCI.length > 0) {
-          this.securityForm.SCI.forEach(sci => {
+          this.securityForm.SCI.forms.forEach(sci => {
             scis.push(sci)
           })
         }
         // Don't overwrite CAC
         if (this.securityForm.CAC && this.securityForm.CAC.length > 0) {
-          this.securityForm.SCI.forEach(cac => {
+          this.securityForm.CAC.forms.forEach(cac => {
             cacs.push(cac)
           })
         }
@@ -614,7 +632,10 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               break
             case 'SIPR':
@@ -626,7 +647,10 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               break
             case 'DREN':
@@ -638,7 +662,10 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               break
             case 'JWICS':
@@ -650,7 +677,10 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               break
             case 'CAC':
@@ -661,11 +691,15 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               payload.CACValid = vm.form.CACValid
               payload.CACIssuedBy = vm.form.CACIssuedBy
               payload.CACExpirationDate = vm.form.CACExpirationDate !== '' ? vm.form.CACExpirationDate : null
+              payload.DISSCheck = vm.securityForm.DISSCheck
               if (vm.form.CACValid === 'Yes') {
                 payload.CACStatus = 'Non-F3I2 CAC'
               } else {
@@ -682,7 +716,10 @@ export default {
                 // task: results.data.d.Id,
                 href: vm.libraryUrl + pdfName,
                 etag: form.data.d.__metadata.etag,
-                uri: form.data.d.__metadata.uri
+                uri: form.data.d.__metadata.uri,
+                submitterId: vm.currentuser[0].id,
+                submitterEmail: vm.currentuser[0].Email,
+                rejectReason: ''
               })
               payload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
               payload.SCIStatus = 'CACI Review'
@@ -720,6 +757,55 @@ export default {
             })
             console.log('ERROR: ' + error.message)
           })
+          let emailPayload = {
+            emails: this.taskEmail,
+            body:
+              '<h3>Please approve or reject the following.</h3><p>Name: ' +
+              vm.form.Name +
+              '</p><p>Form: ' +
+              vm.form.Type +
+              ' Request</p><br/><a href="' +
+              url +
+              '/Pages/Home.aspx#/security/edit/' +
+              vm.securityForm.Id +
+              '">Edit ' +
+              vm.form.Name +
+              '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            subject: '(F3I-2 Portal) Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name
+          }
+          await Security.dispatch('sendEmail', emailPayload)
+        }
+        if (this.form.Type === 'CAC' && this.securityForm.DISSCheck == 'No') {
+          // Send a notification to the CAC folks to perform the DISS Check
+          let taskPayload = {
+            Title: 'Perform DISS Check for ' + vm.form.Name,
+            //AssignedToId: vm.userid, // Hardcoding the Security Group
+            AssignedToId: this.taskUserId,
+            Description: 'Perform DISS Check for ' + vm.form.Name,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: vm.form.Type + ' Request',
+            TaskLink: '/security/edit/' + this.securityForm.Id
+          }
+          dissResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          let emailPayload = {
+            //emails: [this.taskEmail],
+            emails: this.taskEmail,
+            body: '<h3>Please perform a DISS check for the following.</h3> <p>Name: ' + this.form.Name + '</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.securityForm.Id + '">Edit ' + this.form.Name + '</a>',
+            subject: '(F3I-2 Portal) DISS Check Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload)
         }
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({
@@ -772,10 +858,12 @@ export default {
             GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
             GovRejectDate: '',
             task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
+            dissCheckTask: dissResults.data ? dissResults.data.d.Id : '',
             forms: cacs
           })
         }
         payload.Active = this.securityForm.Active ? 'Yes' : 'No'
+        payload.taskId = this.taskId
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)
@@ -812,6 +900,7 @@ export default {
               vm.form.SCIType = ''
               vm.form.SCIStatus = ''
             }
+            vm.form.Historical = 'No'
             vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
             vm.form.setName = 'No'
             vm.form.FirstName = vm.currentFirstName
@@ -846,7 +935,7 @@ export default {
         // Post to the SecurityForms list with the FirstName, LastName, PersonnelID, Company and the Types array [{ SIPR: /SIPR/:id, GovSentDate: '', GovCompleteDate: '' }]
       }
     },
-    async onFileSelect(args) {
+    onFileSelect: async function(args) {
       args.filesData.forEach(fileData => {
         let file = {}
         file.fileSelected = fileData.name
@@ -857,7 +946,7 @@ export default {
         })
       })
     },
-    async asyncForEach(array, callback) {
+    asyncForEach: async function(array, callback) {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array)
       }
