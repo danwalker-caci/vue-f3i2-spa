@@ -145,13 +145,6 @@
             </div>
           </b-col>
         </b-form-row>
-        <!--<b-form-row v-if="formSCI">
-          <b-col cols="6">
-            <b-form-group label="Scheduled Indoctrination Date: " label-for="formSCIIndocDate">
-              <ejs-datepicker id="formSCIIndocDate" v-model="form.SCIIndocDate"></ejs-datepicker>
-            </b-form-group>
-          </b-col>
-        </b-form-row>-->
         <b-form-row>
           <b-col cols="6">
             <b-form-group>
