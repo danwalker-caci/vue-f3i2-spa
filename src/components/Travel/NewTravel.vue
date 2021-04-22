@@ -90,7 +90,11 @@
                           </b-form-radio-group>
                         </div>
                         <div v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="col-6">
-                          <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select>
+                          <!-- <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select> -->
+                          <b-form-radio-group v-model="travelmodel.InternalData.OCONUSLocation" name="oconus-radios" :state="ValidateMe('OL')">
+                            <b-form-radio value="Germany">Germany</b-form-radio>
+                            <b-form-radio value="Korea">Korea</b-form-radio>
+                          </b-form-radio-group>
                           <b-form-invalid-feedback>
                             Must Select OCONUS Location
                           </b-form-invalid-feedback>
@@ -696,7 +700,7 @@ export default {
 
         case 'OL':
           if (this.travelmodel.OCONUS == 'Yes') {
-            if (this.travelmodel.OCONUSLocation != 'Select...') {
+            if (this.travelmodel.OCONUSLocation != '') {
               ret = true
             }
           } else {
