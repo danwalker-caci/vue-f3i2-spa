@@ -73,6 +73,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="NIPR.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">NIPR Rejection Reason:</span> {{ NIPR.GovRejectReason }}</p>
+              </b-row>
               <div v-if="NIPR.forms && NIPR.forms.length > 0">
                 <div v-for="form in NIPR.forms" :key="form.id">
                   <b-form-row class="p-1" v-if="form.href !== ''">
@@ -121,6 +124,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="SIPR.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">SIPR Rejection Reason:</span> {{ SIPR.GovRejectReason }}</p>
+              </b-row>
               <div v-if="SIPR.forms && SIPR.forms.length > 0">
                 <div v-for="form in SIPR.forms" :key="form.id">
                   <b-form-row class="p-1" v-if="form.href !== ''">
@@ -169,6 +175,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="DREN.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">DREN Rejection Reason:</span> {{ DREN.GovRejectReason }}</p>
+              </b-row>
               <div v-if="DREN.forms && DREN.forms.length > 0">
                 <div v-for="form in DREN.forms" :key="form.id">
                   <b-form-row class="p-1" v-if="form.href !== ''">
@@ -216,6 +225,9 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="JWICS.GovRejectReason">
+                <p class="pr-3 pl-3"><span class="font-weight-bold">JWICS Rejection Reason:</span> {{ JWICS.GovRejectReason }}</p>
+              </b-row>
               <div v-if="JWICS.forms && JWICS.forms.length > 0">
                 <div v-for="form in JWICS.forms" :key="form.id">
                   <b-form-row class="p-1" v-if="form.href !== ''">
@@ -377,28 +389,30 @@
               </div>
             </b-tab>
             <b-tab title="Historical CAC" v-if="CACTurnedIn && CACExpiredOnDate">
-              <b-table-simple small responsive class="pt-3">
-                <b-thead head-variant="dark">
-                  <b-tr>
-                    <b-th>CAC Status</b-th>
-                    <b-th>CAC Turned In Location</b-th>
-                    <b-th>CAC Turned In Date</b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr>
-                    <b-td>
-                      {{ CACStatus }}
-                    </b-td>
-                    <b-td>
-                      {{ CACTurnedIn }}
-                    </b-td>
-                    <b-td>
-                      {{ CACExpiredOnDate }}
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
+              <b-row>
+                <b-table-simple small responsive class="pt-3">
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>CAC Status</b-th>
+                      <b-th>CAC Turned In Location</b-th>
+                      <b-th>CAC Turned In Date</b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
+                      <b-td>
+                        {{ CACStatus }}
+                      </b-td>
+                      <b-td>
+                        {{ CACTurnedIn }}
+                      </b-td>
+                      <b-td>
+                        {{ CACExpiredOnDate }}
+                      </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
             </b-tab>
             <b-tab title="Upload Forms" v-if="isDeveloper || isAFRL">
               <div class="width-98">
@@ -890,10 +904,10 @@ export default {
       await Security.dispatch('sendEmail', emailPayload)
       // Remove the button and display current Date
     },
-    async RejectGov(event) {
+    async RejectGov(data, event) {
       await Security.dispatch('getDigest')
-      let type = event.currentTarget.dataset.type,
-        taskId
+      this.govRejectType = event.currentTarget.dataset.type
+      this.showGovRejectForm = true
       // get the current item data
     },
     async SubmitRejectGov() {
@@ -1046,10 +1060,13 @@ export default {
           body: '<h3>Government Rejected Submission</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
           subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
         }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+        await Security.dispatch('sendEmail', emailPayload).then(() => {
+          // Reset Reject form
+          vm.showGovRejectError = false
+          vm.showGovRejectForm = false
+          vm.govRejectReason = ''
+          vm.govRejectType = ''
         })
-        console.log('ERROR: ' + error.message)
       }
     },
     async deleteForm(payload) {

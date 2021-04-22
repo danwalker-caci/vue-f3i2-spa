@@ -564,6 +564,10 @@ export default {
                   securityforms: []
                 },
                 lockSubmit: false,
+                showGovRejectError: false,
+                GovRejectReason: '',
+                GovRejectType: '',
+                showGovReject: false,
                 ddfields: { text: 'text', value: 'value' },
                 library: '',
                 libraryUrl: '',
@@ -858,8 +862,8 @@ export default {
               },
               async RejectGov(data, event) {
                 await Security.dispatch('getDigest')
-                let type = event.currentTarget.dataset.type,
-                  taskId
+                vm2.GovRejectType = event.currentTarget.dataset.type
+                vm2.showGovReject = true
                 // get the current item data
               },
               async SubmitRejectGov(data) {
@@ -1006,40 +1010,14 @@ export default {
                     body: '<h3>Government Rejected Submission</h3> <p>Name: ' + data.FirstName + ' ' + data.LastName + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
                     subject: '(F3I-2 Portal) Government Rejected ' + vm2.GovRejectType + ' Request'
                   }
-                  this.$store.dispatch('notification/add', notification, {
-                    root: true
+                  await Security.dispatch('sendEmail', emailPayload).then(() => {
+                    // Reset Reject form
+                    vm2.showGovRejectError = false
+                    vm2.showGovReject = false
+                    vm2.GovRejectReason = ''
+                    vm2.GovRejectType = ''
                   })
-                  console.log('ERROR: ' + error.message)
-                })
-                let taskUserId = null
-                if (type == 'NIPR' || type == 'SIPR' || type == 'DREN' || type == 'JWICS') {
-                  taskUserId = vm.$store.state.support.AccountUserId
-                } else {
-                  taskUserId = vm.$store.state.support.CACSCIUserId
                 }
-                // Notify Accounts Admin or Security via task list
-                let payload = {
-                  Title: 'AFRL Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
-                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                  AssignedToId: taskUserId,
-                  Description: 'AFRL reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request. Please notify the original submitter.',
-                  IsMilestone: false,
-                  PercentComplete: 0,
-                  TaskType: type + ' Request',
-                  TaskLink: '/security/tracker'
-                }
-                await Todo.dispatch('addTodo', payload).catch(error => {
-                  const notification = {
-                    type: 'danger',
-                    title: 'Portal Error',
-                    message: error.message,
-                    push: true
-                  }
-                  this.$store.dispatch('notification/add', notification, {
-                    root: true
-                  })
-                  console.log('ERROR: ' + error.message)
-                })
               },
               async deleteForm(payload) {
                 await Security.dispatch('DeleteForm', payload).catch(error => {
@@ -1482,7 +1460,7 @@ export default {
             SCIIndocAssistDate: this.$moment(sf.SCIIndocAssistDate).isValid() ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
             PRDueDate: this.$moment(sf.PRDueDate).isValid() ? this.$moment(sf.PRDueDate).format('MM/DD/YYYY') : '',
             CEDate: this.$moment(sf.CEDate).isValid() ? this.$moment(sf.CEDate).format('MM/DD/YYYY') : '',
-            SCIIndocDate: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
+            SCIIndoc: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
             SCIAccessCheckDate: this.$moment(sf.SCIAccessCheckDate).isValid() ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,
