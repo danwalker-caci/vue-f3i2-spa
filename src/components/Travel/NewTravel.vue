@@ -84,10 +84,13 @@
                       <div class="row">
                         <div class="col-6">
                           <!-- <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox> -->
-                          <b-form-radio-group v-model="travelmodel.InternalData.OCONUSTravel" name="oconus-radios" @change="onOCONUSSelected">
+                          <b-form-radio-group v-model="travelmodel.InternalData.OCONUSTravel" name="oconus-radios" :state="ValidateMe('O')" @change="onOCONUSSelected">
                             <b-form-radio value="Yes">Yes</b-form-radio>
                             <b-form-radio value="No">No</b-form-radio>
                           </b-form-radio-group>
+                          <b-form-invalid-feedback>
+                            Must Select OCONUS Yes or No
+                          </b-form-invalid-feedback>
                         </div>
                         <div v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="col-6">
                           <!-- <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select> -->
