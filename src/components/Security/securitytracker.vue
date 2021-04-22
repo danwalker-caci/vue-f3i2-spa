@@ -186,131 +186,111 @@ export default {
                       </b-tab>
                       <b-tab title="Accounts" v-if="data.NIPR || data.SIPR || data.JWICS || data.DREN">
                         <div class="width-98">
-                          <b-row>
-                            <!-- Account Template -->
-                            <b-table-simple small responsive>
-                              <b-thead head-variant="dark">
-                                <b-tr>
-                                  <b-th>Account</b-th>
-                                  <b-th>Government Sent Date</b-th>
-                                  <b-th>Government Review</b-th>
-                                  <b-th>Submitted Forms</b-th>
-                                </b-tr>
-                              </b-thead>
-                              <b-tbody>
-                                <!-- NIPR DATA -->
-                                <b-tr v-if="data.NIPR && data.NIPR.forms.length > 0">
-                                  <b-td>NIPR</b-td>
-                                  <b-td>
-                                    <span v-if="data.NIPR.GovSentDate !== ''">{{ data.NIPR.GovSentDate }}</span>
-                                    <span v-if="data.NIPR.GovSentDate == ''">
-                                      <!-- Should only show if in Security Group -->
-                                      <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'NIPR'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                      <span v-if="!isSecurity">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td>
-                                    <span v-if="data.NIPR.GovCompleteDate !== ''">{{ data.NIPR.GovCompleteDate }}</span>
-                                    <span v-if="data.NIPR.GovRejectDate !== ''">{{ data.NIPR.GovRejectDate }}</span>
-                                    <span v-if="data.NIPR.GovCompleteDate == '' && data.NIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                      <!-- REMOVE DEVELOPER OPTION -->  
-                                      <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'NIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                      <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'NIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                      <span v-if="!isAFRL && data.NIPR.GovSentDate !== ''">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/NIPR'">View Forms</b-button></b-td>
-                                </b-tr>
-                                <!-- SIPR DATA -->
-                                <b-tr v-if="data.SIPR && data.SIPR.forms.length > 0">
-                                  <b-td>SIPR</b-td>
-                                  <b-td>
-                                    <span v-if="data.SIPR.GovSentDate !== ''">{{ data.SIPR.GovSentDate }}</span>
-                                    <span v-if="data.SIPR.GovSentDate == ''">
-                                      <!-- Should only show if in Security Group -->
-                                      <b-button v-if="isSecurity" ref="NotifyGov" :data-type="'SIPR'" variant="success" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                      <span v-if="!isSecurity">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td>
-                                    <span v-if="data.SIPR.GovCompleteDate !== ''">{{ data.SIPR.GovCompleteDate }}</span>
-                                    <span v-if="data.SIPR.GovRejectDate !== ''">{{ data.SIPR.GovRejectDate }}</span>
-                                    <span v-if="data.SIPR.GovCompleteDate == '' && data.SIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                      <!-- REMOVE DEVELOPER OPTION -->  
-                                      <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                      <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                      <span v-if="!isAFRL && data.SIPR.GovSentDate !== ''">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
-                                </b-tr>
-                                <!-- DREN DATA -->
-                                <b-tr v-if="data.DREN && data.DREN.forms.length > 0">
-                                  <b-td>DREN</b-td>
-                                  <b-td>
-                                    <span v-if="data.DREN.GovSentDate !== ''">{{ data.DREN.GovSentDate }}</span>
-                                    <span v-if="data.DREN.GovSentDate == ''">
-                                      <!-- Should only show if in Security Group -->
-                                      <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'DREN'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                      <span v-if="!isSecurity">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td>
-                                    <span v-if="data.DREN.GovCompleteDate !== ''">{{ data.DREN.GovCompleteDate }}</span>
-                                    <span v-if="data.DREN.GovRejectDate !== ''">{{ data.DREN.GovRejectDate }}</span>
-                                    <span v-if="data.DREN.GovCompleteDate == '' && data.DREN.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                      <!-- REMOVE DEVELOPER OPTION -->  
-                                      <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'DREN'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                      <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'DREN'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                      <span v-if="!isAFRL && data.DREN.GovSentDate !== ''">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/DREN'">View Forms</b-button></b-td>
-                                </b-tr>
-                                <!-- JWICS DATA -->
-                                <b-tr v-if="data.JWICS && data.JWICS.forms.length > 0">
-                                  <b-td>JWICS</b-td>
-                                  <b-td>
-                                    <span v-if="data.JWICS.GovSentDate !== ''">{{ data.JWICS.GovSentDate }}</span>
-                                    <span v-if="data.JWICS.GovSentDate == ''">
-                                      <!-- Should only show if in Security Group -->
-                                      <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
-                                      <span v-if="!isSecurity">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td>
-                                    <span v-if="data.JWICS.GovCompleteDate !== ''">{{ data.JWICS.GovCompleteDate }}</span>
-                                    <span v-if="data.JWICS.GovRejectDate !== ''">{{ data.JWICS.GovRejectDate }}</span>
-                                    <span v-if="data.JWICS.GovCompleteDate == '' && data.JWICS.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
-                                      <!-- REMOVE DEVELOPER OPTION -->  
-                                      <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'JWICS'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
-                                      <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'JWICS'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
-                                      <span v-if="!isAFRL && data.JWICS.GovSentDate !== ''">Processing</span>
-                                    </span>
-                                  </b-td>
-                                  <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
-                                </b-tr>
-                              </b-tbody>
-                            </b-table-simple>
-                          </b-row>
-                          <b-row v-if="showGovReject">
-                            <p class="pr-2 pl-2">Please enter the reason for rework:</p>
-                            <b-form-textarea id="GovRejectReason" v-model="GovRejectReason" placeholder="Enter at least 10 characters..." rows="2" max-rows="4" :state="GovRejectReason.length >= 10"></b-form-textarea>
-                            <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm mt-2" @click="SubmitRejectGov(data)">Submit</b-button>
-                          </b-row>
-                          <b-row v-if="data.NIPR.GovRejectReason" >
-                            <p class="pr-2 pl-2">NIPR Rejection Reason: {{ data.NIPR.GovRejectReason }}</p>
-                          </b-row>
-                          <b-row v-if="data.SIPR.GovRejectReason" >
-                            <p class="pr-2 pl-2">SIPR Rejection Reason: {{ data.SIPR.GovRejectReason }}</p>
-                          </b-row>
-                          <b-row v-if="data.DREN.GovRejectReason" >
-                            <p class="pr-2 pl-2">DREN Rejection Reason: {{ data.DREN.GovRejectReason }}</p>
-                          </b-row>
-                          <b-row v-if="data.JWICS.GovRejectReason" >
-                            <p class="pr-2 pl-2">JWICS Rejection Reason: {{ data.JWICS.GovRejectReason }}</p>
-                          </b-row>
+                          <!-- Account Template -->
+                          <b-table-simple small responsive>
+                            <b-thead head-variant="dark">
+                              <b-tr>
+                                <b-th>Account</b-th>
+                                <b-th>Government Sent Date</b-th>
+                                <b-th>Government Review</b-th>
+                                <b-th>Submitted Forms</b-th>
+                              </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                              <!-- NIPR DATA -->
+                              <b-tr v-if="data.NIPR && data.NIPR.forms.length > 0">
+                                <b-td>NIPR</b-td>
+                                <b-td>
+                                  <span v-if="data.NIPR.GovSentDate !== ''">{{ data.NIPR.GovSentDate }}</span>
+                                  <span v-if="data.NIPR.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'NIPR'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.NIPR.GovCompleteDate !== ''">{{ data.NIPR.GovCompleteDate }}</span>
+                                  <span v-if="data.NIPR.GovRejectDate !== ''">{{ data.NIPR.GovRejectDate }}</span>
+                                  <span v-if="data.NIPR.GovCompleteDate == '' && data.NIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'NIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'NIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.NIPR.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.id + '/NIPR'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- SIPR DATA -->
+                              <b-tr v-if="data.SIPR && data.SIPR.forms.length > 0">
+                                <b-td>SIPR</b-td>
+                                <b-td>
+                                  <span v-if="data.SIPR.GovSentDate !== ''">{{ data.SIPR.GovSentDate }}</span>
+                                  <span v-if="data.SIPR.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" :data-type="'SIPR'" variant="success" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.SIPR.GovCompleteDate !== ''">{{ data.SIPR.GovCompleteDate }}</span>
+                                  <span v-if="data.SIPR.GovRejectDate !== ''">{{ data.SIPR.GovRejectDate }}</span>
+                                  <span v-if="data.SIPR.GovCompleteDate == '' && data.SIPR.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SIPR'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SIPR'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.SIPR.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/SIPR'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- DREN DATA -->
+                              <b-tr v-if="data.DREN && data.DREN.forms.length > 0">
+                                <b-td>DREN</b-td>
+                                <b-td>
+                                  <span v-if="data.DREN.GovSentDate !== ''">{{ data.DREN.GovSentDate }}</span>
+                                  <span v-if="data.DREN.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'DREN'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.DREN.GovCompleteDate !== ''">{{ data.DREN.GovCompleteDate }}</span>
+                                  <span v-if="data.DREN.GovRejectDate !== ''">{{ data.DREN.GovRejectDate }}</span>
+                                  <span v-if="data.DREN.GovCompleteDate == '' && data.DREN.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'DREN'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'DREN'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.DREN.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/DREN'">View Forms</b-button></b-td>
+                              </b-tr>
+                              <!-- JWICS DATA -->
+                              <b-tr v-if="data.JWICS && data.JWICS.forms.length > 0">
+                                <b-td>JWICS</b-td>
+                                <b-td>
+                                  <span v-if="data.JWICS.GovSentDate !== ''">{{ data.JWICS.GovSentDate }}</span>
+                                  <span v-if="data.JWICS.GovSentDate == ''">
+                                    <!-- Should only show if in Security Group -->
+                                    <b-button v-if="isSecurity" ref="NotifyGov" variant="success" :data-type="'JWICS'" class="btn-sm" @click="NotifyGov(data, $event)">Notify Government</b-button>
+                                    <span v-if="!isSecurity">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td>
+                                  <span v-if="data.JWICS.GovCompleteDate !== ''">{{ data.JWICS.GovCompleteDate }}</span>
+                                  <span v-if="data.JWICS.GovRejectDate !== ''">{{ data.JWICS.GovRejectDate }}</span>
+                                  <span v-if="data.JWICS.GovCompleteDate == '' && data.JWICS.GovRejectDate == ''"><!-- add a check if user is in AFRL -->
+                                    <!-- REMOVE DEVELOPER OPTION -->  
+                                    <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'JWICS'" class="btn-sm" @click="CompleteGov(data, $event)">Complete</b-button>
+                                    <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'JWICS'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
+                                    <span v-if="!isAFRL && data.JWICS.GovSentDate !== ''">Processing</span>
+                                  </span>
+                                </b-td>
+                                <b-td><b-button class="btn-sm" @click="viewForms($event)" variant="secondary" :data-link="'/security/view/' + data.Id + '/JWICS'">View Forms</b-button></b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
                         </div>
                       </b-tab>
                       <b-tab title="SCI">
@@ -374,15 +354,6 @@ export default {
                               <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
                             </span>
                           </b-row>
-                          <b-row v-if="showGovReject">
-                            <p class="pr-2 pl-2">Please enter the reason for rework:</p>
-                            <b-form-textarea id="GovRejectReason" v-model="GovRejectReason" placeholder="Enter at least 10 characters..." rows="2" max-rows="4" :state="GovRejectReason.length >= 10"></b-form-textarea>
-                            <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm mt-2" @click="SubmitRejectGov(data)">Submit</b-button>
-                          </b-row>
-                          <b-row v-if="data.SCI.GovRejectReason" >
-                            <p class="pr-2 pl-2">SCI Rejection Reason: {{ data.SCI.GovRejectReason }}</p>
-                          </b-row>
                         </div>
                       </b-tab>
                       <b-tab title="CAC">
@@ -438,15 +409,6 @@ export default {
                             <span v-if="data.CAC.GovCompleteDate === '' && data.CAC.GovRejectDate === ''" class="p-2">
                               <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
                             </span>
-                          </b-row>
-                          <b-row v-if="showGovReject">
-                            <p class="pr-2 pl-2">Please enter the reason for rework:</p>
-                            <b-form-textarea id="GovRejectReason" v-model="GovRejectReason" placeholder="Enter at least 10 characters..." rows="2" max-rows="4" :state="GovRejectReason.length >= 10"></b-form-textarea>
-                            <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-                            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm mt-2" @click="SubmitRejectGov(data)">Submit</b-button>
-                          </b-row>
-                          <b-row v-if="data.CAC.GovRejectReason" >
-                            <p class="pr-2 pl-2">CAC Rejection Reason: {{ data.CAC.GovRejectReason }}</p>
                           </b-row>
                         </div>
                       </b-tab>
@@ -533,10 +495,6 @@ export default {
                   securityforms: []
                 },
                 lockSubmit: false,
-                showGovRejectError: false,
-                GovRejectReason: '',
-                GovRejectType: '',
-                showGovReject: false,
                 ddfields: { text: 'text', value: 'value' },
                 library: '',
                 libraryUrl: '',
@@ -644,16 +602,6 @@ export default {
                     data.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
                     data.JWICS.task = results.data.d.Id
                     break
-                  case 'CAC':
-                    taskId = data.CAC.task
-                    data.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
-                    data.CAC.task = results.data.d.Id
-                    break
-                  case 'SCI':
-                    taskId = data.SCI.task
-                    data.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
-                    data.SCI.task = results.data.d.Id
-                    break
                 }
                 this.updateForm(data, taskId)
               },
@@ -661,7 +609,7 @@ export default {
                 await Security.dispatch('getDigest')
                 let type = event.currentTarget.dataset.type,
                   taskId,
-                  taskUserId = null
+                  taskUserId = vm.$store.state.support.AccountUserId
                 // get the current item data
                 switch (type) {
                   case 'NIPR':
@@ -670,7 +618,6 @@ export default {
                     for (var nipr = 0; nipr <= data.NIPR.forms.length; nipr++) {
                       window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.NIPR.forms[nipr].href, '_blank')
                     }
-                    taskUserId = vm.$store.state.support.AccountUserId
                     break
                   case 'SIPR':
                     taskId = data.SIPR.task
@@ -678,7 +625,6 @@ export default {
                     for (var sipr = 0; sipr <= data.SIPR.forms.length; sipr++) {
                       window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.SIPR.forms[sipr].href, '_blank')
                     }
-                    taskUserId = vm.$store.state.support.AccountUserId
                     break
                   case 'DREN':
                     taskId = data.DREN.task
@@ -686,7 +632,6 @@ export default {
                     for (var dren = 0; dren <= data.DREN.forms.length; dren++) {
                       window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.DREN.forms[dren].href, '_blank')
                     }
-                    taskUserId = vm.$store.state.support.AccountUserId
                     break
                   case 'JWICS':
                     taskId = data.JWICS.task // original taskId\
@@ -694,23 +639,6 @@ export default {
                     for (var jwics = 0; jwics <= data.JWICS.forms.length; jwics++) {
                       window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.JWICS.forms[jwics].href, '_blank')
                     }
-                    taskUserId = vm.$store.state.support.AccountUserId
-                    break
-                  case 'CAC':
-                    taskId = data.CAC.task // original taskId\
-                    data.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-                    for (var cacs = 0; cacs <= data.CAC.forms.length; cacs++) {
-                      window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.CAC.forms[cacs].href, '_blank')
-                    }
-                    taskUserId = vm.$store.state.support.CACUserId
-                    break
-                  case 'SCI':
-                    taskId = data.SCI.task // original taskId\
-                    data.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-                    for (var scis = 0; scis <= data.SCI.forms.length; cacs++) {
-                      window.open(url + '/_layouts/download.aspx?SourceUrl=' + data.SCI.forms[scis].href, '_blank')
-                    }
-                    taskUserId = vm.$store.state.support.SCIUserId
                     break
                 }
                 await this.updateForm(data, taskId).catch(e => {
@@ -751,134 +679,84 @@ export default {
               },
               async RejectGov(data, event) {
                 await Security.dispatch('getDigest')
-                vm2.GovRejectType = event.currentTarget.dataset.type
-                vm2.showGovReject = true
+                let type = event.currentTarget.dataset.type,
+                  taskId
                 // get the current item data
-              },
-              async SubmitRejectGov(data) {
-                if (vm2.GovRejectReason.length <= 10) {
-                  vm2.showGovRejectError = true
-                } else {
-                  let taskId = '',
-                    emails = [],
-                    taskUserId = null
-                  switch (vm2.GovRejectType) {
-                    case 'NIPR':
-                      taskId = data.NIPR.task
-                      data.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.NIPR.GovRejectReason = vm2.GovRejectReason
-                      for (var nipr = 0; nipr <= data.NIPR.forms.length; nipr++) {
-                        this.deleteForm(data.NIPR.forms[nipr])
-                      }
-                      data.NIPR.forms = []
-                      taskUserId = vm.$store.state.support.AccountUserId
-                      emails.push(vm.$store.state.support.AccountUserEmail)
-                      break
-                    case 'SIPR':
-                      taskId = data.SIPR.task
-                      data.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.SIPR.GovRejectReason = vm2.GovRejectReason
-                      for (var sipr = 0; sipr <= data.SIPR.forms.length; sipr++) {
-                        this.deleteForm(data.SIPR.forms[sipr])
-                      }
-                      data.SIPR.forms = []
-                      taskUserId = vm.$store.state.support.AccountUserId
-                      emails.push(vm.$store.state.support.AccountUserEmail)
-                      break
-                    case 'DREN':
-                      taskId = data.DREN.task
-                      data.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.DREN.GovRejectReason = vm2.GovRejectReason
-                      for (var dren = 0; dren <= data.DREN.forms.length; dren++) {
-                        this.deleteForm(data.DREN.forms[dren])
-                      }
-                      data.DREN.forms = []
-                      taskUserId = vm.$store.state.support.AccountUserId
-                      emails.push(vm.$store.state.support.AccountUserEmail)
-                      break
-                    case 'JWICS':
-                      taskId = data.JWICS.task // original taskId\
-                      data.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.JWICS.GovRejectReason = vm2.GovRejectReason
-                      for (var jwics = 0; jwics <= data.JWICS.forms.length; jwics++) {
-                        this.deleteForm(data.JWICS.forms[jwics])
-                      }
-                      data.JWICS.forms = []
-                      taskUserId = vm.$store.state.support.AccountUserId
-                      emails.push(vm.$store.state.support.AccountUserEmail)
-                      break
-                    case 'SCI':
-                      taskId = data.SCI.task // original taskId\
-                      data.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.SCI.GovRejectReason = vm2.GovRejectReason
-                      for (var sci = 0; sci <= data.SCI.forms.length; sci++) {
-                        this.deleteForm(data.SCI.forms[sci])
-                      }
-                      data.SCI.forms = []
-                      taskUserId = vm.$store.state.support.CACSCIUserId
-                      emails.push(vm.$store.state.support.CACSCIUserEmail)
-                      break
-                    case 'CAC':
-                      taskId = data.CAC.task // original taskId\
-                      data.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-                      data.CAC.GovRejectReason = vm2.GovRejectReason
-                      for (var cac = 0; cac <= data.CAC.forms.length; cac++) {
-                        this.deleteForm(data.CAC.forms[cac])
-                      }
-                      data.CAC.forms = []
-                      taskUserId = vm.$store.state.support.CACSCIUserId
-                      emails.push(vm.$store.state.support.CACSCIUserEmail)
-                      break
-                  }
-                  await this.updateForm(data, taskId).catch(error => {
-                    const notification = {
-                      type: 'danger',
-                      title: 'Portal Error',
-                      message: error.message,
-                      push: true
+                switch (type) {
+                  case 'NIPR':
+                    taskId = data.NIPR.task
+                    data.NIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    for (var nipr = 0; nipr <= data.NIPR.forms.length; nipr++) {
+                      this.deleteForm(data.NIPR.forms[nipr])
                     }
-                    this.$store.dispatch('notification/add', notification, {
-                      root: true
-                    })
-                    console.log('ERROR: ' + error.message)
-                  })
-                  // Notify Accounts Admin or Security via task list
-                  let payload = {
-                    Title: 'Government Reject ' + data.FirstName + ' ' + data.LastName + ' ' + vm2.GovRejectType + ' Request',
-                    //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                    AssignedToId: taskUserId,
-                    Description: 'Reason: ' + vm2.GovRejectReason,
-                    IsMilestone: false,
-                    PercentComplete: 0,
-                    TaskType: 'gov-reject',
-                    TaskLink: '/security/tracker'
-                  }
-                  await Todo.dispatch('addTodo', payload).catch(error => {
-                    const notification = {
-                      type: 'danger',
-                      title: 'Portal Error',
-                      message: error.message,
-                      push: true
+                    data.NIPR.forms = []
+                    break
+                  case 'SIPR':
+                    taskId = data.SIPR.task
+                    data.SIPR.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    for (var sipr = 0; sipr <= data.SIPR.forms.length; sipr++) {
+                      this.deleteForm(data.SIPR.forms[sipr])
                     }
-                    this.$store.dispatch('notification/add', notification, {
-                      root: true
-                    })
-                    console.log('ERROR: ' + error.message)
-                  })
-                  let emailPayload = {
-                    // emails: emails // TO DO: push original submitters email into the emails array
-                    emails: ['drew.ahrens@caci.com'],
-                    body: '<h3>Government Rejected Submission</h3> <p>Name: ' + data.FirstName + ' ' + data.LastName + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
-                    subject: 'Rejection of ' + vm2.GovRejectType + ' Request'
-                  }
-                  await Security.dispatch('sendEmail', emailPayload).then(() => {
-                    // Reset Reject form
-                    vm2.showGovRejectError = false
-                    vm2.showGovReject = false
-                    vm2.GovRejectReason = ''
-                    vm2.GovRejectType = ''
-                  })
+                    data.SIPR.forms = []
+                    break
+                  case 'DREN':
+                    taskId = data.DREN.task
+                    data.DREN.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    for (var dren = 0; dren <= data.DREN.forms.length; dren++) {
+                      this.deleteForm(data.DREN.forms[dren])
+                    }
+                    data.DREN.forms = []
+                    break
+                  case 'JWICS':
+                    taskId = data.JWICS.task // original taskId\
+                    data.JWICS.GovCompleteDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    for (var jwics = 0; jwics <= data.JWICS.forms.length; jwics++) {
+                      this.deleteForm(data.JWICS.forms[jwics])
+                    }
+                    data.JWICS.forms = []
+                    break
                 }
+                await this.updateForm(data, taskId).catch(error => {
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: error.message,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + error.message)
+                })
+                let taskUserId = null
+                if (type == 'NIPR' || type == 'SIPR' || type == 'DREN' || type == 'JWICS') {
+                  taskUserId = vm.$store.state.support.AccountUserId
+                } else {
+                  taskUserId = vm.$store.state.support.CACSCIUserId
+                }
+                // Notify Accounts Admin or Security via task list
+                let payload = {
+                  Title: 'AFRL Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
+                  //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+                  AssignedToId: taskUserId,
+                  Description: 'AFRL reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request. Please notify the original submitter.',
+                  IsMilestone: false,
+                  PercentComplete: 0,
+                  TaskType: type + ' Request',
+                  TaskLink: '/security/tracker'
+                }
+                await Todo.dispatch('addTodo', payload).catch(error => {
+                  const notification = {
+                    type: 'danger',
+                    title: 'Portal Error',
+                    message: error.message,
+                    push: true
+                  }
+                  this.$store.dispatch('notification/add', notification, {
+                    root: true
+                  })
+                  console.log('ERROR: ' + error.message)
+                })
               },
               async deleteForm(payload) {
                 await Security.dispatch('DeleteForm', payload).catch(error => {
@@ -1137,8 +1015,7 @@ export default {
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
-      this.$store.dispatch('support/getSCIUser')
-      this.$store.dispatch('support/getCACUser')
+      this.$store.dispatch('support/getCACSCIUser')
     },
     actionComplete(args) {
       // if (console) { console.log('ACTION COMPLETE: ' + args.requestType) }
@@ -1288,7 +1165,7 @@ export default {
             SCIIndocAssistDate: this.$moment(sf.SCIIndocAssistDate).isValid() ? this.$moment(sf.SCIIndocAssistDate).format('MM/DD/YYYY') : '',
             PRDueDate: this.$moment(sf.PRDueDate).isValid() ? this.$moment(sf.PRDueDate).format('MM/DD/YYYY') : '',
             CEDate: this.$moment(sf.CEDate).isValid() ? this.$moment(sf.CEDate).format('MM/DD/YYYY') : '',
-            SCIIndoc: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
+            SCIIndocDate: this.$moment(sf.SCIIndoc).isValid() ? this.$moment(sf.SCIIndoc).format('MM/DD/YYYY') : '',
             SCIAccessCheckDate: this.$moment(sf.SCIAccessCheckDate).isValid() ? this.$moment(sf.SCIAccessCheckDate).format('MM/DD/YYYY') : '',
             IsCACValid: sf.CACValid,
             CACStatus: sf.CACStatus,

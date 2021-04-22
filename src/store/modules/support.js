@@ -15,10 +15,8 @@ export const state = {
   AFRLUserId: null,
   AccountUserEmail: 'monica.dennis@caci.com',
   AccountUserId: null,
-  SCIUserEmails: ['Michele.Blackburn@caci.com', 'louis.ellis@caci.com'],
-  SCIUserIds: null,
-  CACUserEmails: ['Michele.Blackburn@caci.com', 'tammy.willson@caci.com'],
-  CACUserIds: null,
+  CACSCIUserEmail: 'Michele.Blackburn@caci.com',
+  CACSCIUserId: null,
   contentrect: {}
 }
 
@@ -48,11 +46,8 @@ export const mutations = {
   SET_AFRLID(state, afrlid) {
     state.AFRLUserId = afrlid
   },
-  SET_SCIID(state, sciid) {
-    state.SCIUserId = sciid
-  },
-  SET_CACID(state, cacid) {
-    state.CACUserId = cacid
+  SET_CACSCIID(state, cacsciid) {
+    state.CACSCIUserId = cacsciid
   }
 }
 
@@ -110,23 +105,10 @@ export const actions = {
     commit('SET_AFRLID', response.data.d.results[0].Id)
     return response.data.d.results[0].Id
   },
-  async getSCIUser({ commit }) {
-    let sciids = []
-    for (var i = 0; i < state.SCIUserEmails.length; i++) {
-      let response = await SupportService.getUserIdByEmail(state.SCIUserEmails[i])
-      sciids.push(response.data.d.results[0].Id)
-    }
-    commit('SET_SCIID', sciids)
-    return sciids
-  },
-  async getCACUser({ commit }) {
-    let cacids = []
-    for (var i = 0; i < state.CACUserEmails.length; i++) {
-      let response = await SupportService.getUserIdByEmail(state.CACUserEmails[i])
-      cacids.push(response.data.d.results[0].Id)
-    }
-    commit('SET_CACID', cacids)
-    return cacids
+  async getCACSCIUser({ commit }) {
+    let response = await SupportService.getUserIdByEmail(state.CACSCIUserEmail)
+    commit('SET_CACSCIID', response.data.d.results[0].Id)
+    return response.data.d.results[0].Id
   }
 }
 
@@ -143,11 +125,8 @@ export const getters = {
   getAccountUserId(state) {
     return state.AccountUserId
   },
-  getSCIUserId(state) {
-    return state.SCIUserId
-  },
-  getCACUserId(state) {
-    return state.CACUserId
+  getCACSCIUserId(state) {
+    return state.CACSCIUserId
   },
   getAFRLUserId(state) {
     return state.AFRLUserId

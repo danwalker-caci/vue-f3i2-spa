@@ -105,8 +105,7 @@ export default {
       SCIForms: url + '/SCIForms/',
       AccountId: '',
       AFRLId: '',
-      SCIUserId: null,
-      CACUserId: null,
+      SecurityId: '',
       authorId: '',
       libraryUrl: '',
       library: '',
@@ -142,8 +141,10 @@ export default {
     getUserIDs: async function() {
       this.AccountId = await this.$store.dispatch('support/getAccountUser')
       this.AFRLId = await this.$store.dispatch('support/getAFRLUser')
-      this.SCIUserId = await this.$store.dispatch('support/getSCIUser')
-      this.CACUserId = await this.$store.dispatch('support/getCACUser')
+      this.SecurityId = await this.$store.dispatch('support/getCACSCIUser')
+      // console.log(this.$store.state.support.AFRLUserID)
+      // console.log(this.$store.state.support.AccountUserID)
+      // console.log(this.$store.state.support.CACSCIUserID)
     },
     getForms: async function() {
       // Run query to load the form
@@ -269,8 +270,8 @@ export default {
           payload.SCI = JSON.stringify(vm.securityForms)
           break
       }
-      await Security.dispatch('updateSecurityForm', payload)
-        .then(results => {
+      try {
+        await Security.dispatch('updateSecurityForm', payload).then(results => {
           //console.log('Update Security Results: ' + JSON.stringify(results))
           //vm.uri = results.header.uri
           vm.etag = results.headers.etag
@@ -287,28 +288,19 @@ export default {
             vm.showNotify = true
           }
         })
-        .catch(e => {
-          // Add user notification and system logging
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
-            push: true
-          }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        })
-      // Check if all of the approve buttons have been clicked and then mark the related task as complete.
-      /*Todo.dispatch('getTodoById', vm.taskId).then(function(task) {
-        payload = {
-          etag: task.__metadata.etag,
-          uri: task.__metadata.uri,
-          id: task.Id
+      } catch (e) {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
         }
-        Todo.dispatch('completeTodo', payload)
-      })*/
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      }
     },
     rejectForm: async function(info) {
       // Delete form from doc library

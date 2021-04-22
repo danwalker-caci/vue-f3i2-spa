@@ -384,8 +384,7 @@ export default {
     getUserIDs: async function() {
       this.$store.dispatch('support/getAccountUser')
       this.$store.dispatch('support/getAFRLUser')
-      this.$store.dispatch('support/getSCIUser')
-      this.$store.dispatch('support/getCACUser')
+      this.$store.dispatch('support/getCACSCIUser')
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -529,12 +528,12 @@ export default {
           case 'CAC':
             this.library = 'CACForms'
             this.libraryUrl = this.CACForms
-            this.taskUserId = vm.$store.state.support.CACUserId
+            this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
           case 'SCI':
             this.library = 'SCIForms'
             this.libraryUrl = this.SCIForms
-            this.taskUserId = vm.$store.state.support.SCIUserId
+            this.taskUserId = vm.$store.state.support.CACSCIUserId
             break
         }
         payload.library = this.library
@@ -699,7 +698,6 @@ export default {
         }
         if (this.form.Historical !== 'Yes') {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
-          console.log(`Task User ID: ${this.taskUserId}`)
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
             //AssignedToId: vm.userid, // Hardcoding the Security Group
