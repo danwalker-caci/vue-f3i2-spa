@@ -469,15 +469,17 @@
                               </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
-                              <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
-                              <b-col v-if="isWPManager" cols="8">
-                                <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
-                                  <b-form-radio value="Yes">Yes</b-form-radio>
-                                  <b-form-radio value="No">No</b-form-radio>
-                                </b-form-radio-group>
-                              </b-col>
+                              <div v-if="travelmodel.InternalData.PreApproved == 'No'">
+                                <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
+                                <b-col v-if="isWPManager" cols="8">
+                                  <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
+                                    <b-form-radio value="Yes">Yes</b-form-radio>
+                                    <b-form-radio value="No">No</b-form-radio>
+                                  </b-form-radio-group>
+                                </b-col>
+                              </div>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes' && travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
+                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
                               <b-col cols="4">Reject</b-col>
                               <b-col cols="8">
                                 <b-form-radio-group v-model="travelmodel.InternalData.Rejected" name="reject-radios">
