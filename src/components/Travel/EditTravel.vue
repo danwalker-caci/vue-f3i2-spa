@@ -90,7 +90,11 @@
                       </div>
                       <div class="row">
                         <div class="col-6">
-                          <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox>
+                          <!-- <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox> -->
+                          <b-form-radio-group v-model="travelmodel.InternalData.OCONUSTravel" name="oconus-radios" @change="onOCONUSSelected">
+                            <b-form-radio value="Yes">Yes</b-form-radio>
+                            <b-form-radio value="No">No</b-form-radio>
+                          </b-form-radio-group>
                         </div>
                         <div v-if="travelmodel.InternalData.OCONUSTravel == 'Yes'" class="col-6">
                           <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select>
@@ -468,16 +472,14 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.OCONUSTravel == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
-                              <div v-if="travelmodel.InternalData.PreApproved == 'No'">
-                                <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
-                                <b-col v-if="isWPManager" cols="8">
-                                  <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
-                                    <b-form-radio value="Yes">Yes</b-form-radio>
-                                    <b-form-radio value="No">No</b-form-radio>
-                                  </b-form-radio-group>
-                                </b-col>
-                              </div>
+                            <b-row v-if="travelmodel.InternalData.PreApproved == 'No' || travelmodel.InternalData.ATP == 'Yes'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Request Travel Approval</b-col>
+                              <b-col v-if="isWPManager" cols="8">
+                                <b-form-radio-group v-model="travelmodel.InternalData.ApprovalRequested" name="approvalrequest-radios">
+                                  <b-form-radio value="Yes">Yes</b-form-radio>
+                                  <b-form-radio value="No">No</b-form-radio>
+                                </b-form-radio-group>
+                              </b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'No'" class="mb-1">
                               <b-col cols="4">Reject</b-col>
