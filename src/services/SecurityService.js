@@ -230,7 +230,7 @@ export default {
       SCIIndoc: payload.SCIIndoc,
       taskId: payload.taskId
     }
-    if (payload.DISSCheck) {
+    if (payload.DISSCheck !== undefined || payload.DISSCheck !== null) {
       itemprops.DISSCheck = payload.DISSCheck === 'Yes' ? true : false
     }
     if (payload.NIPR) {

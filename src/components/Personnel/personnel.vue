@@ -879,8 +879,7 @@ export default {
               FirstName: vm.newData.FirstName,
               LastName: vm.newData.LastName,
               Company: vm.newData.Company,
-              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName,
-              DISSCheck: 'No'
+              Title: results.data.d.Id + '-' + vm.newData.FirstName + ' ' + vm.newData.LastName
             }
             //First add the Security entry
             let security = await Security.dispatch('addSecurityForm', payload)

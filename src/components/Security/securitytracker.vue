@@ -359,7 +359,7 @@ export default {
                                     <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" :select="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.SCIStatus" :dataSource="status" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <ejs-dropdownlist id="sciFormType" :disable="!isSecurity" v-model="data.SCIFormType" :dataSource="sciFormType" :fields="ddfields"></ejs-dropdownlist>
@@ -418,7 +418,7 @@ export default {
                               <b-tbody>
                                 <b-tr>
                                   <b-td>
-                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" :select="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
+                                    <ejs-dropdownlist :disable="!isSecurity" v-model="data.CACStatus" :dataSource="cacstatus" @change="statusChange(data)" :fields="ddfields"></ejs-dropdownlist>
                                   </b-td>
                                   <b-td>
                                     <b-form-input :disable="!isSecurity" type="text" id="formCACIssuedBy" v-model="data.CACIssuedBy"></b-form-input>
@@ -1243,6 +1243,7 @@ export default {
                 this.$router.push({ path: link })
               },
               async statusChange(data) {
+                console.log('STATUS CHANGED: ' + data)
                 if (data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') {
                   this.statusesUpdated = true
                 } else if (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info') {
