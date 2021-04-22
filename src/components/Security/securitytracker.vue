@@ -1165,6 +1165,7 @@ export default {
                   payload.CAC = JSON.stringify(payload.CAC)
                 }
                 payload.Active = true
+                payload.CACStatus = d.CACStatus
                 payload.CACValid = d.CACValid
                 payload.CACRequestDate = d.CACRequestDate ? d.CACRequestDate : null
                 payload.CACExpirationDate = d.CACExpirationDate ? d.CACExpirationDate : null

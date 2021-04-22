@@ -1225,6 +1225,7 @@ export default {
       if (this.CAC) {
         payload.CAC = JSON.stringify(this.CAC)
       }
+      payload.CACStatus = this.CACStatus
       payload.CACValid = this.CACValid
       payload.CACRequestDate = this.CACRequestDate ? this.CACRequestDate : null
       payload.CACExpirationDate = this.CACExpirationDate ? this.CACExpirationDate : null
