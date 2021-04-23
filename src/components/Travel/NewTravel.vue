@@ -1040,7 +1040,7 @@ export default {
         WorkPlanNumber: this.travelmodel.WorkPlanNumber,
         OriginalWorkPlanNumber: this.travelmodel.OriginalWorkPlanNumber,
         WorkPlanText: this.travelmodel.WorkPlanText,
-        OCONUS: this.travelmodel.InternalData.OCONUSTravel,
+        OCONUS: this.travelmodel.OCONUS,
         OCONUSLocation: this.travelmodel.OCONUSLocation,
         Company: this.travelmodel.Company,
         TravelFrom: this.travelmodel.TravelFrom,
