@@ -648,7 +648,7 @@ export default {
                   IsMilestone: false,
                   PercentComplete: 0,
                   TaskType: type + ' Request',
-                  TaskLink: '/security/tracker'
+                  TaskLink: '/security/edit/' + data.Id
                 }
                 let results = await Todo.dispatch('addTodo', payload).catch(error => {
                   const notification = {
@@ -705,6 +705,16 @@ export default {
                     taskId = data.JWICS.task // original taskId\
                     data.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
                     data.JWICS.task = results.data.d.Id
+                    break
+                  case 'SCI':
+                    taskId = data.SCI.task
+                    data.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+                    data.SCI.task = results.data.d.Id
+                    break
+                  case 'CAC':
+                    taskId = data.CAC.task
+                    data.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
+                    data.CAC.task = results.data.d.Id
                     break
                 }
                 this.updateForm(data, taskId)

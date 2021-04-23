@@ -472,7 +472,7 @@ export default {
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: vm.form + ' Request',
-            TaskLink: '/security/tracker'
+            TaskLink: '/security/edit/' + vm.formId
           }
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
