@@ -769,6 +769,7 @@ export default {
   data: function() {
     return {
       busyTitle: 'Getting Trip Data. Please Wait.',
+      isDenied: false,
       actionselected: false,
       company: null,
       searchinput: '',
@@ -1001,6 +1002,9 @@ export default {
         this.travelmodel.uri = this.selectedtrip.uri
         if (this.travelmodel.CreatedByEmail.indexOf(this.currentuser[0].Email) >= 0) {
           this.isAuthor = true
+        }
+        if (this.travelmodel.Status == 'Denied') {
+          this.isDenied = true
         }
         this.$bvToast.hide('form-toast')
         // personnel are filtered by company
@@ -1591,7 +1595,57 @@ export default {
       let securityactioncompleted = moment(this.travelmodel.SecurityActionCompleted).isValid() ? moment(this.travelmodel.SecurityActionCompleted).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
       let status = this.travelmodel.Status
       // TODO: Setup internal data to ensure that we can track what to do for tracking state
-      if (this.travelmodel.InternalData.PreApproved == 'Yes') {
+
+      if (this.isDenied == true && this.travelmodel.InternalData.DeniedForAdmin == 'Yes') {
+        // set to WPMReview and allow for resubmission
+        this.actionselected = true
+        status = 'WPMReview'
+        this.travelmodel.InternalData.Status = 'WPMReview'
+        let emailto = []
+        let taskid = []
+        emailto.push(vm.travelmodel.InternalData.ManagerEmail)
+        for (let i = 0; i < vm.delegates.length; i++) {
+          if (vm.delegates[i]['EMail'] == vm.travelmodel.InternalData.ManagerEmail) {
+            // add the delegates to the email and task array
+            taskid.push(vm.delegates[i]['Id'])
+            let j = vm.delegates[i]['Delegates']
+            for (let k = 0; k < j.length; k++) {
+              emailto.push(j[k]['EMail'])
+              taskid.push(j[k]['Id'])
+            }
+          }
+        }
+        console.log('EMAILS: ' + emailto.toString())
+        let payload = {}
+        payload.id = vm.travelmodel.id
+        payload.email = emailto
+        payload.title = vm.travelmodel.Subject
+        payload.workplan = vm.travelmodel.WorkPlanNumber
+        payload.company = vm.travelmodel.Company
+        payload.travelers = vm.travelmodel.Travelers
+        payload.start = vm.travelmodel.StartTime
+        payload.end = vm.travelmodel.EndTime
+        // create task and send emails
+        let taskpayload = {
+          Title: 'Approve or Deny Travel Request',
+          AssignedToId: taskid,
+          Description: 'Please Review The Trip',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'WPMReview',
+          TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+          TaskInfo: 'Type:TravelData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+        }
+        let deletepayload = {
+          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+        }
+        Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+          Todo.dispatch('addTodo', taskpayload)
+        })
+        Travel.dispatch('EditTripEmail', payload)
+      }
+
+      if (this.travelmodel.InternalData.PreApproved == 'Yes' && this.actionselected == false) {
         this.actionselected = true
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
