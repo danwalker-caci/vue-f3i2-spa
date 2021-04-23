@@ -73,6 +73,12 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+              </b-row>
               <b-row v-if="NIPR.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">NIPR Rejection Reason:</span> {{ NIPR.GovRejectReason }}</p>
               </b-row>
@@ -124,6 +130,12 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+              </b-row>
               <b-row v-if="SIPR.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">SIPR Rejection Reason:</span> {{ SIPR.GovRejectReason }}</p>
               </b-row>
@@ -175,6 +187,12 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+              </b-row>
               <b-row v-if="DREN.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">DREN Rejection Reason:</span> {{ DREN.GovRejectReason }}</p>
               </b-row>
@@ -225,6 +243,12 @@
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
+              <b-row v-if="showGovRejectForm">
+                <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+                <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+                <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+                <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+              </b-row>
               <b-row v-if="JWICS.GovRejectReason">
                 <p class="pr-3 pl-3"><span class="font-weight-bold">JWICS Rejection Reason:</span> {{ JWICS.GovRejectReason }}</p>
               </b-row>
