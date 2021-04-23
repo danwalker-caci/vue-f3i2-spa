@@ -936,7 +936,7 @@ export default {
                 vm.newData.LastName +
                 '.</p><p>Please Review in the portal at <a href="' +
                 url +
-                '/security/edit/' +
+                'Home.aspx#/security/edit/' +
                 security.data.d.Id +
                 '">Edit ' +
                 vm.newData.FirstName +
