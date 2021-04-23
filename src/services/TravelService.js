@@ -233,7 +233,8 @@ export default {
     body += '<p>Subject: ' + payload.Subject + '</p>'
     body += '<p>Clearance Required: ' + payload.Clearance + '</p>'
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + id + '">Travel</a></p>'
+    //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + id + '">Travel</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + id + '">Travel</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -282,7 +283,8 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
+    //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">Approve or Deny Travel Request</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
@@ -344,7 +346,8 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
-    body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
+    //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
+    body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },

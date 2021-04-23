@@ -911,7 +911,7 @@ export default {
       // get the current item data
     },
     async SubmitRejectGov() {
-      if (this.govRejectReason.length <= 10) {
+      if (this.govRejectReason.length < 10) {
         this.showGovRejectError = true
       } else {
         let taskId = '',
@@ -925,7 +925,6 @@ export default {
           case 'NIPR':
             taskId = this.NIPR.task
             group = this.accountgroup
-            submitterId = this.NIPR.submitterId
             this.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.NIPR.GovRejectReason = this.govRejectReason
             for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
@@ -940,7 +939,6 @@ export default {
           case 'SIPR':
             taskId = this.SIPR.task
             group = this.accountgroup
-            submitterId = this.SIPR.submitterId
             this.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.SIPR.GovRejectReason = this.govRejectReason
             for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
@@ -956,7 +954,6 @@ export default {
           case 'DREN':
             taskId = this.DREN.task
             group = this.accountgroup
-            submitterId = this.DREN.submitterId
             this.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.DREN.GovRejectReason = this.govRejectReason
             for (var dren = 0; dren < this.DREN.forms.length; dren++) {
@@ -971,7 +968,6 @@ export default {
           case 'JWICS':
             taskId = this.JWICS.task // original taskId\
             group = this.accountgroup
-            submitterId = this.JWICS.submitterId
             this.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.JWICS.GovRejectReason = this.govRejectReason
             for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
@@ -986,7 +982,6 @@ export default {
           case 'SCI':
             taskId = this.SCI.task // original taskId\
             group = this.scigroup
-            submitterId = this.SCI.submitterId
             this.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.SCI.GovRejectReason = this.govRejectReason
             for (var sci = 0; sci < this.SCI.forms.length; sci++) {
@@ -1001,7 +996,6 @@ export default {
           case 'CAC':
             taskId = this.CAC.task // original taskId\
             group = this.cacgroup
-            submitterId = this.CAC.submitterId
             this.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
             this.CAC.GovRejectReason = this.govRejectReason
             for (var cac = 0; cac < this.CAC.forms.length; cac++) {
