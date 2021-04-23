@@ -565,7 +565,7 @@ export default {
           DeniedForNonAdmin: '',
           RequiredCorrections: '',
           ApprovalRequested: '',
-          ApproverSelected: '',
+          ApproverSelected: [],
           Approval: '',
           ApprovedBy: '',
           ApprovedOn: '',
