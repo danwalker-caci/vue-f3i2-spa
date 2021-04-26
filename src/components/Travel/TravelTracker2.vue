@@ -836,8 +836,8 @@ export default {
       if (this.travel && this.travel.length > 0) {
         clearInterval(this.$options.interval)
         this.filteredtravel = Vue._.orderBy(this.travel, 'Id', 'desc')
-        this.loadfilters() // TODO: Remove on filter story
-        this.fields[9]['Options'] = this.companies
+        // this.loadfilters() // TODO: Remove on filter story
+        // this.fields[9]['Options'] = this.companies
         this.$store.dispatch('support/setLegendItems', this.legenditems)
       }
     },

@@ -19,7 +19,7 @@ let portalemail = ''
 
 let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc"
 let gurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(Status eq 'AFRLReview')"
-let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(Company eq '"
+let curl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*,Author/Title,Author/ID,Author/Name,Author/EMail&$expand=Author&$filter=(Company eq '"
 let eurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
