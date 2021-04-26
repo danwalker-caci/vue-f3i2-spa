@@ -390,7 +390,7 @@ export default {
   },
   cron: [
     {
-      time: 60000,
+      time: 15000,
       method: 'refreshMyTodos',
       autoStart: true
     }
