@@ -1119,10 +1119,11 @@ export default {
         let emailto = []
         let taskid = []
         emailto.push(vm.ManagerEmail)
+        taskid.push(vm.travelmodel.InternalData.ManagerID)
         for (let i = 0; i < vm.delegates.length; i++) {
           if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
             // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['Id'])
+            // taskid.push(vm.delegates[i]['Id'])
             let j = vm.delegates[i]['Delegates']
             for (let k = 0; k < j.length; k++) {
               emailto.push(j[k]['EMail'])
