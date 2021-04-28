@@ -362,6 +362,12 @@ let personnelMenu = {
       props: true
     },
     {
+      path: 'home/reports/:mode/:id',
+      name: 'Personnel',
+      component: () => import(/* webpackChunkName: "personnel" */ '../components/Personnel/personnel.vue'),
+      props: true
+    },
+    {
       path: 'home/refresh/:mode',
       name: 'Personnel',
       component: () => import(/* webpackChunkName: "personnel" */ '../components/Personnel/personnel.vue'),

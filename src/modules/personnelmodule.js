@@ -101,12 +101,8 @@ const actions = {
     let response = await PersonnelService.sendEmail(payload, state.digest)
     return response
   },
-  async newSubEmail({ state}, payload) {
-    let response = await PersonnelService.newSubEmail(payload, state.digest)
-    return response
-  },
-  async editSubEmail({ state }, payload) {
-    let response = await PersonnelService.editSubEmail(payload, state.digest)
+  async deletePersonnelById({ state }, payload) {
+    let response = await PersonnelService.deletePersonnelById(payload.id, state.digest)
     return response
   }
 }
@@ -140,10 +136,12 @@ function formatPersonnel(j) {
         SCIFormSubmitted: moment(j[i]['SCIFormSubmitted']).isValid() ? String(moment(j[i]['SCIFormSubmitted']).format('MM/DD/YYYY')) : '', // date
         PRDueDate: moment(j[i]['PRDueDate']).isValid() ? String(moment(j[i]['PRDueDate']).format('MM/DD/YYYY')) : '', // date
         CEDate: moment(j[i]['CEDate']).isValid() ? String(moment(j[i]['CEDate']).format('MM/DD/YYYY')) : '',  // date
+        CreatedBy: j[i]['CreatedBy'],
         ModifiedBy: j[i]['ModifiedBy'],
-        Modification: j[i]['Modification'],
+        Modification: JSON.parse(j[i]['Modification']),
         ModDeniedReason: j[i]['ModDeniedReason'],
         SubContractorModifier: j[i]['SubContractorModifier'],
+        WPMReview: j[i]['WPMReview'],
         etag: j[i]['__metadata']['etag'],
         uri: j[i]['__metadata']['uri']
       })
