@@ -1254,9 +1254,7 @@ export default {
               },
               async statusChange(data) {
                 console.log('STATUS CHANGED: ' + data)
-                if (data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') {
-                  this.statusesUpdated = true
-                } else if (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info') {
+                if ((data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') && (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info')) {
                   this.statusesUpdated = true
                 }
               },
