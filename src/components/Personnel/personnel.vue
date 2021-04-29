@@ -328,7 +328,6 @@ export default {
       company: null,
       showDenial: false,
       showOldData: false,
-      approvalOnly: false,
       deniedReason: '',
       sortfield: '',
       sortdir: '',
@@ -629,29 +628,26 @@ export default {
         })
       if (vm.mode === 'edit') {
         // Don't show all of the records until after the form is submitted
-        vm.approvalOnly = true
         vm.PersonnelId = this.id ? this.id : null
-        Workplan.dispatch('getWorkplans')
-          .then(function() {
-            if (vm.id) {
-              Personnel.dispatch('getPersonnelAllValuesById', vm.id)
-                .then(person => {
-                  let modData = {}
-                  modData = person[0]
-                  if (person[0].WPMReview) {
-                    vm.oldData = JSON.parse(person[0].Modification)
-                    vm.showOldData = true
-                  }
-                  vm.editRow(modData)
-                })
-                .catch(e => {
-                  vm.handleError(e)
-                })
-            }
-          })
-          .catch(e => {
+        await Workplan.dispatch('getWorkplans').catch(e => {
+          vm.handleError(e)
+        })
+
+        if (vm.id) {
+          let person = await Personnel.dispatch('getPersonnelAllValuesById', vm.id).catch(e => {
             vm.handleError(e)
           })
+          this.rowData = person[0]
+          if (person[0].WPMReview) {
+            console.log('MODIFICATION: ' + JSON.stringify(person[0].Modification))
+            this.oldData = person[0].Modification
+            this.showOldData = true
+          }
+          if (person[0].WPData && person[0].WPData.length > 0) {
+            this.Plans = JSON.parse(person[0].WPData)
+          }
+          this.$bvModal.show('EditModal')
+        }
       }
       if (this.isSubcontractor) {
         console.log(`WPDATA: ${JSON.stringify(this.currentuser[0].WPData)}`)
@@ -837,107 +833,87 @@ export default {
       }
       this.$bvModal.show('EditModal')
       this.rowData = data
-      this.oldData = data
+      this.oldData = JSON.parse(JSON.stringify(this.rowData)) // immutable data hack...
     },
     editOk: async function() {
       await Personnel.dispatch('getDigest')
-      console.log('LENGTH: ' + this.Plans.length)
       if (this.Plans.length > 0) {
         this.rowData.WPData = JSON.stringify(this.Plans)
       }
       if (this.isSubcontractor) {
         let data = this.rowData
         data.Active = this.rowData.Active === 'No' ? false : true
+        data.Modification = null
         let od = this.oldData
         od.submitterId = this.currentuser[0].id
         od.submitterEmail = this.currentuser[0].Email
         data.Modification = od
         data.WPMReview = true
-        console.log('IS A SUBCONTRACTOR: ' + JSON.stringify(data))
-        try {
-          Personnel.dispatch('editPerson', data).then(async function() {
-            // add task to manager
-            /*let payload = {
-              Title: 'Review Personnel Submission ' + this.rowData.FirstName + ' ' + this.rowData.LastName,
-              //AssignedToId: vm.userid, // Hardcode to Juan
-              AssignedToId: managerTasks,
-              Description: 'Review Personnel Submission ' + this.rowData.FirstName + ' ' + this.rowData.LastName,
-              IsMilestone: false,
-              PercentComplete: 0,
-              TaskType: 'Personnel-Review',
-              TaskLink: '/personnel/home/reports/edit/' + this.rowData.Id
-            }
-            await Todo.dispatch('addTodo', payload).catch(error => {
-              const notification = {
-                type: 'danger',
-                title: 'Portal Error',
-                message: error.message,
-                push: true
-              }
-              this.$store.dispatch('notification/add', notification, {
-                root: true
-              })
-              console.log('ERROR: ' + error.message)
-            })*/
+        await Personnel.dispatch('editPerson', data).catch(e => {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        })
+        // add task to manager
+        /*let payload = {
+          Title: 'Review Personnel Submission ' + this.rowData.FirstName + ' ' + this.rowData.LastName,
+          //AssignedToId: vm.userid, // Hardcode to Juan
+          AssignedToId: managerTasks,
+          Description: 'Review Personnel Submission ' + this.rowData.FirstName + ' ' + this.rowData.LastName,
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'Personnel-Review',
+          TaskLink: '/personnel/home/reports/edit/' + this.rowData.Id
+        }
+        await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })*/
 
-            let emailBody = '<p>Personnel has been submitted that requires review.</p><p></p>'
-            emailBody += '<p>User Edited: </p>'
-            emailBody += '<p>Personnel: ' + vm.rowData.FirstName + ' ' + vm.rowData.LastName + '</p>'
-            emailBody += '<p>Company: ' + vm.rowData.Company + '</p>'
-            emailBody += '<p>Email: ' + vm.rowData.Email + '</p>'
-            emailBody += '<p>Phone: ' + vm.rowData.Phone + '</p>'
-            emailBody += '<p>Please click the link below for more details.</p><p></p>'
-            // Change before Test - Production
-            emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + vm.rowData.Id + '">Personnel</a></p>'
-            let emailData = {
-              subject: '(F3I-2 Portal) Subcontractor Edited Personnel',
-              body: emailBody,
-              emails: vm.wpmEmail
-            }
-            await Personnel.dispatch('sendEmail', emailData).then(function() {
-              const notification = {
-                type: 'info',
-                title: 'Information',
-                message: 'A Workplan Manager will review your submission.',
-                push: true
-              }
-              vm.$store.dispatch('notification/add', notification, { root: true })
-              vm.hideme('EditModal', 'refresh')
-            })
-          })
-        } catch (e) {
-          // Add user notification and system logging
+        let emailBody = '<p>Personnel has been submitted that requires review.</p><p></p>'
+        emailBody += '<p>User Edited: </p>'
+        emailBody += '<p>Personnel: ' + this.rowData.FirstName + ' ' + this.rowData.LastName + '</p>'
+        emailBody += '<p>Company: ' + this.rowData.Company + '</p>'
+        emailBody += '<p>Email: ' + this.rowData.Email + '</p>'
+        emailBody += '<p>Phone: ' + this.rowData.Phone + '</p>'
+        emailBody += '<p>Please click the link below for more details.</p><p></p>'
+        // Change before Test - Production
+        emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+        let emailData = {
+          subject: '(F3I-2 Portal) Subcontractor Edited Personnel',
+          body: emailBody,
+          emails: this.wpmEmail
+        }
+        await Personnel.dispatch('sendEmail', emailData).then(function() {
           const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: e,
+            type: 'info',
+            title: 'Information',
+            message: 'A Workplan Manager will review your submission.',
             push: true
           }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + e)
-        }
+          vm.$store.dispatch('notification/add', notification, { root: true })
+          vm.hideme('EditModal', 'refresh')
+        })
       } else {
-        try {
-          let payload = this.rowData
-          payload.Active = this.rowData.Active === 'No' ? false : true
-          Personnel.dispatch('editPerson', payload).then(async function() {
-            // Add integration with Security to update the following field in that list: FirstName, LastName, Company, Active
-            let securityPayload = {
-              PersonnelID: vm.rowData.id,
-              FirstName: vm.rowData.FirstName,
-              LastName: vm.rowData.LastName,
-              Company: vm.rowData.Company,
-              Active: vm.rowData.Active === 'No' ? false : true
-            }
-            let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
-            securityPayload.etag = securityInfo.etag
-            securityPayload.uri = securityInfo.uri
-            await Security.dispatch('updateSecurityForm', securityPayload)
-            vm.hideme('EditModal', 'refresh')
-          })
-        } catch (e) {
+        let payload = this.rowData
+        payload.Active = this.rowData.Active === 'No' ? false : true
+        Personnel.dispatch('editPerson', payload).catch(e => {
           // Add user notification and system logging
           const notification = {
             type: 'danger',
@@ -949,7 +925,20 @@ export default {
             root: true
           })
           console.log('ERROR: ' + e)
+        })
+        // Add integration with Security to update the following field in that list: FirstName, LastName, Company, Active
+        let securityPayload = {
+          PersonnelID: this.rowData.id,
+          FirstName: this.rowData.FirstName,
+          LastName: this.rowData.LastName,
+          Company: this.rowData.Company,
+          Active: this.rowData.Active === 'No' ? false : true
         }
+        let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
+        securityPayload.etag = securityInfo.etag
+        securityPayload.uri = securityInfo.uri
+        await Security.dispatch('updateSecurityForm', securityPayload)
+        vm.hideme('EditModal', 'refresh')
       }
     },
     editClose: function() {
@@ -1098,7 +1087,6 @@ export default {
             securityPayload.uri = securityInfo.uri
             await Security.dispatch('updateSecurityForm', securityPayload).then(() => {
               // Send notification of approved user to Security group
-              vm.approvalOnly = false
               vm.hideme('EditModal', 'refresh')
             })
           }
@@ -1170,23 +1158,20 @@ export default {
         denyData.Active = this.rowData.Active === 'No' ? false : true
         denyData.etag = this.rowData.etag
         denyData.uri = this.rowData.uri
-        Personnel.dispatch('editPerson', denyData)
-          .then(function() {
-            vm.approvalOnly = false
+        console.log('DENIAL DATA: ' + JSON.stringify(this.oldData))
+        await Personnel.dispatch('editPerson', denyData).catch(e => {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
           })
-          .catch(e => {
-            // Add user notification and system logging
-            const notification = {
-              type: 'danger',
-              title: 'Portal Error',
-              message: e,
-              push: true
-            }
-            this.$store.dispatch('notification/add', notification, {
-              root: true
-            })
-            console.log('ERROR: ' + e)
-          })
+          console.log('ERROR: ' + e)
+        })
       } else {
         // otherwise delete the sucker
         await Personnel.dispatch('deletePersonnelById', { id: this.rowData.Id })
@@ -1220,7 +1205,7 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })*/
-      console.log('OLD DATA: ' + this.oldData)
+      console.log('OLD DATA: ' + JSON.stringify(this.oldData))
       let emailBody = '<p>Personnel Submission has been Rejected.</p><p></p>'
       emailBody += '<p>Personnel: ' + this.rowData.FirstName + ' ' + this.rowData.LastName + '</p>'
       emailBody += '<p>Denial Reason: ' + this.deniedReason + '</p>'
@@ -1232,7 +1217,7 @@ export default {
       let emailData = {
         subject: '(F3I-2 Portal) Personnel Rejected',
         body: emailBody,
-        emails: this.oldData.submitterEmail
+        emails: [this.oldData.submitterEmail]
       }
       await Personnel.dispatch('sendEmail', emailData).then(function() {
         vm.deniedReason = ''
