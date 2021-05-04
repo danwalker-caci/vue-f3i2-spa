@@ -24,7 +24,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group label="CE Date" label-for="CEDate">
+                <b-form-group label="CE Date (Deferred Investigation)" label-for="CEDate">
                   <ejs-datepicker :disable="!isSecurity" id="CEDate" v-model="CEDate"></ejs-datepicker>
                 </b-form-group>
               </b-col>

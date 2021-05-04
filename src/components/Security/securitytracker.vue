@@ -177,7 +177,7 @@ export default {
                                 <b-thead head-variant="dark">
                                   <b-tr>
                                     <b-th>PR Due Date</b-th>
-                                    <b-th>CE Date</b-th>
+                                    <b-th>CE Date (Deferred Investigation)</b-th>
                                     <b-th></b-th>
                                   </b-tr>
                                 </b-thead>
