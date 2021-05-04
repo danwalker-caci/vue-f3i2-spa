@@ -778,7 +778,7 @@ export default {
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: vm.form.Type + ' Request',
-            TaskLink: '/security/edit/' + this.securityForm.Id
+            TaskLink: '/security/edit/' + this.securityForm.Id + '?disscheck=true'
           }
           dissResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
             const notification = {
