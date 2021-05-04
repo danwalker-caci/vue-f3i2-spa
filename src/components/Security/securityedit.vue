@@ -272,9 +272,6 @@
                       <b-th>SCI Access Check Date</b-th>
                       <b-th>SCI Indoctrination Date</b-th>
                       <b-th>SCI Form Submitted</b-th>
-                      <b-th>SCI Status</b-th>
-                      <b-th>SCI Form Type</b-th>
-                      <b-th></b-th>
                     </b-tr>
                   </b-thead>
                   <b-tbody>
@@ -291,6 +288,21 @@
                       <b-td>
                         <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
                       </b-td>
+                    </b-tr>
+                  </b-tbody>
+                </b-table-simple>
+              </b-row>
+              <b-row>
+                <b-table-simple small responsive>
+                  <b-thead head-variant="dark">
+                    <b-tr>
+                      <b-th>SCI Status</b-th>
+                      <b-th>SCI Form Type</b-th>
+                      <b-th></b-th>
+                    </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                    <b-tr>
                       <b-td>
                         <ejs-dropdownlist :disable="!isSecurity" v-model="SCIStatus" :dataSource="status" @change="statusChange" :fields="ddfields"></ejs-dropdownlist>
                       </b-td>
