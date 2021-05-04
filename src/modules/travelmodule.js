@@ -121,7 +121,7 @@ const actions = {
       state.currentEvent = payload[0]
     })
     let requestrequired = payload[0].VisitRequest
-    if (requestrequired === 'yes') {
+    if (requestrequired.toLowerCase() === 'yes') {
       Travel.commit(state => {
         state.sendEmail = true
       })
