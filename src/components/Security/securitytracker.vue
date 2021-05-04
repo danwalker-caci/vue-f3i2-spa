@@ -350,10 +350,10 @@ export default {
                                     <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange(data)" v-model="data.SCIIndocAssistDate"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
+                                    <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" @change="AccessDateChange(data)" v-model="data.SCIAccessCheckDate"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
-                                    <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="data.SCIIndoc"></ejs-datepicker>
+                                    <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" @change="IndocDateChange(data)" v-model="data.SCIIndoc"></ejs-datepicker>
                                   </b-td>
                                   <b-td>
                                     <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="data.SCIFormSubmitted"></ejs-datepicker>
@@ -590,6 +590,7 @@ export default {
                   { text: 'CACI Review', value: 'CACI Review' },
                   { text: 'Submitted', value: 'Submitted' },
                   { text: 'Indoc Assist Sent', value: 'Indoc Assist Sent' },
+                  { text: 'Indoc Assist Pending', value: 'Indoc Assist Pending' },
                   { text: 'SSO Processed', value: 'SSO Processed' },
                   { text: 'Debrief Notification Submitted', value: 'Debrief Notification Submitted' },
                   { text: 'Disposition-Transfer', value: 'Disposition-Transfer' },
@@ -618,9 +619,16 @@ export default {
               }
             },
             methods: {
-              AssistDateChange(data) {
+              AccessDateChange(data) {
                 data.SCIStatus = 'SSO Processed'
               },
+              AssistDateChange(data) {
+                data.SCIStatus = 'Indoc Assist Sent'
+              },
+              IndocDateChange(data) {
+                data.SCIStatus = 'Indoc Assist Pending'
+              },
+
               async dissCheckChange(data) {
                 if (data === 'Yes') {
                   vm2.DISSCheckChanged = true

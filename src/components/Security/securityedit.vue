@@ -283,10 +283,10 @@
                         <ejs-datepicker :disable="!isSecurity" id="formSCIIndocAssistDate" @change="AssistDateChange()" v-model="SCIIndocAssistDate"></ejs-datepicker>
                       </b-td>
                       <b-td>
-                        <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" v-model="SCIAccessCheckDate"></ejs-datepicker>
+                        <ejs-datepicker :disable="!isSecurity" id="formAccessCheckDate" @change="AccessDateChange()" v-model="SCIAccessCheckDate"></ejs-datepicker>
                       </b-td>
                       <b-td>
-                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" v-model="SCIIndoc"></ejs-datepicker>
+                        <ejs-datepicker :disable="!isSecurity" id="formSCIIndocDate" @change="IndocDateChange()" v-model="SCIIndoc"></ejs-datepicker>
                       </b-td>
                       <b-td>
                         <ejs-datepicker id="sciFormSubmitted" :disable="!isSecurity" v-model="SCIFormSubmitted"></ejs-datepicker>
@@ -575,6 +575,7 @@ export default {
         { text: 'CACI Review', value: 'CACI Review' },
         { text: 'Submitted', value: 'Submitted' },
         { text: 'Indoc Assist Sent', value: 'Indoc Assist Sent' },
+        { text: 'Indoc Assist Pending', value: 'Indoc Assist Pending' },
         { text: 'SSO Processed', value: 'SSO Processed' },
         { text: 'Debrief Notification Submitted', value: 'Debrief Notification Submitted' },
         { text: 'Disposition-Transfer', value: 'Disposition-Transfer' },
@@ -673,8 +674,14 @@ export default {
       await Security.dispatch('getDigest')
       this.loaded = true
     },
-    AssistDateChange() {
+    AccessDateChange() {
       this.SCIStatus = 'SSO Processed'
+    },
+    AssistDateChange() {
+      this.SCIStatus = 'Indoc Assist Sent'
+    },
+    IndocDateChange() {
+      this.SCIStatus = 'Indoc Assist Pending'
     },
     async statusChange() {
       if ((this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') && (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info')) {
