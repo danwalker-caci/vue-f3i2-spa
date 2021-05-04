@@ -35,7 +35,7 @@
               </b-col>
             </b-form-row>
           </div>
-          <b-tabs pills content-class="mt-0 p-0">
+          <b-tabs pills content-class="mt-0 p-0" v-model="securityTabs">
             <b-tab title="NIPR" v-if="NIPR" class="pt-3">
               <b-table-simple small responsive>
                 <b-thead head-variant="dark">
@@ -560,6 +560,7 @@ export default {
       lockSubmit: false,
       statusesUpdated: false,
       selectedSecurityFormType: '',
+      securityTabs: 0,
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
         { value: 'SIPR', text: 'SIPR' },
@@ -608,6 +609,9 @@ export default {
       await Security.dispatch('getDigest')
       if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
       await this.getForms()
+      if (this.$route.query.disscheck) {
+        this.securityTabs = 5
+      }
     })
   },
   methods: {
