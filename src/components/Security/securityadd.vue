@@ -158,7 +158,7 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                  <b-dropdown-form><b-form-input id="personnelFiltering" placeholder="Filter..." type="text" @keyup.native="filtering"></b-form-input></b-dropdown-form>
+                  <b-dropdown-form><b-form-input id="personnelFiltering" placeholder="Search ..." type="text" @keyup.native="filtering"></b-form-input><b-button variant="primary" size="sm" @click="filtering">Search</b-button></b-dropdown-form>
                   <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
                 </b-dropdown>
