@@ -894,7 +894,8 @@ export default {
         emailBody += '<p>Phone: ' + this.rowData.Phone + '</p>'
         emailBody += '<p>Please click the link below for more details.</p><p></p>'
         // Change before Test - Production
-        emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+        // emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+        emailBody += '<p><a href="' + url + '/Pages/Test.aspx#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>' // TODO: change back to prod
         let emailData = {
           subject: '(F3I-2 Portal) Subcontractor Edited Personnel',
           body: emailBody,
@@ -1014,8 +1015,11 @@ export default {
         emailBody += '<p>Phone: ' + this.newData.Phone + '</p>'
         emailBody += '<p>Please click the link below for more details.</p><p></p>'
         // Change before Test - Production
-        console.log(process.env.APP_PAGE)
-        emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + results.Id + '">Personnel</a></p>'
+        if (console) {
+          console.log(process.env.APP_PAGE)
+        }
+        //emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + results.Id + '">Personnel</a></p>'
+        emailBody += '<p><a href="' + url + '/Pages/Test.aspx#/personnel/home/reports/edit/' + results.Id + '">Personnel</a></p>' // TODO: Change this back to production
         let emailData = {
           subject: '(F3I-2 Portal) Subcontractor Added Personnel',
           body: emailBody,
@@ -1138,9 +1142,10 @@ export default {
       emailBody += '<p>Company: ' + this.rowData.Company + '</p>'
       emailBody += '<p>Email: ' + this.rowData.Email + '</p>'
       emailBody += '<p>Phone: ' + this.rowData.Phone + '</p>'
-      emailBody += '<p>Please click the link (or copy and paste into a modern browser) below for more details.</p><p></p>'
+      emailBody += '<p>Please click the hyperlink (or copy and paste into a modern browser) below for more details.</p><p></p>'
       // Change before Test - Production
-      emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+      //emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+      emailBody += '<p><a href="' + url + '/Pages/Test.aspx#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>' // TODO: Change back to Prod
       let emailData = {
         subject: '(F3I-2 Portal) Personnel Approved',
         body: emailBody,
@@ -1205,14 +1210,17 @@ export default {
         })
         console.log('ERROR: ' + error.message)
       })*/
-      console.log('OLD DATA: ' + JSON.stringify(this.oldData))
+      if (console) {
+        console.log('OLD DATA: ' + JSON.stringify(this.oldData))
+      }
       let emailBody = '<p>Personnel Submission has been Rejected.</p><p></p>'
       emailBody += '<p>Personnel: ' + this.rowData.FirstName + ' ' + this.rowData.LastName + '</p>'
       emailBody += '<p>Denial Reason: ' + this.deniedReason + '</p>'
       if (!this.rowData.newSubmission) {
         emailBody += '<p>Please click the link (or copy and paste into a modern browser) below for more details.</p><p></p>'
         // Change before Test - Production
-        emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+        //emailBody += '<p><a href="' + url + '/Pages/' + process.env.APP_PAGE + '#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>'
+        emailBody += '<p><a href="' + url + '/Pages/Test.aspx#/personnel/home/reports/edit/' + this.rowData.Id + '">Personnel</a></p>' // TODO: Change back to prod
       }
       let emailData = {
         subject: '(F3I-2 Portal) Personnel Rejected',
