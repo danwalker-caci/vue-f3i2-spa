@@ -1151,6 +1151,7 @@ export default {
                     // finally, clear d.files to zero and remove from file uploader
                   })
                 }
+                console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
                 if (this.statusesUpdated && d.taskId) {
                   await Todo.dispatch('getDigest')
                   let task = await Todo.dispatch('getTodoById', d.taskId)
@@ -1273,8 +1274,7 @@ export default {
                 this.$router.push({ path: link })
               },
               async statusChange(data) {
-                console.log('STATUS CHANGED: ' + data)
-                if ((data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') && (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info')) {
+                if (data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info' || data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info') {
                   this.statusesUpdated = true
                 }
               },
