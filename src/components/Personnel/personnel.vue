@@ -697,7 +697,7 @@ export default {
       let taskPayload = {
         Title: 'New Personnel added: ' + data.FirstName + ' ' + data.LastName,
         //AssignedToId: vm.userid, // Hardcoding the Security Group
-        AssignedToId: 63, // Need to get everyone in the Security Group
+        AssignedToId: securityTaskUsers, // Need to get everyone in the Security Group
         Description: 'New Personnel added ' + data.FirstName + ' ' + data.LastName,
         IsMilestone: false,
         PercentComplete: 0,
@@ -740,7 +740,7 @@ export default {
           data.LastName +
           '</a></p><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
         subject: '(F3I-2 Portal) New Personnel Added',
-        emails: ['drew.ahrens@caci.com']
+        emails: securityTaskEmail
       }
       await Personnel.dispatch('sendEmail', emailPayload)
       vm.hideme(modalType, 'refresh')
