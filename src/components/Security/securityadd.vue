@@ -944,7 +944,7 @@ export default {
           }).length > 0
         ) {
           vm.$bvModal
-            .msgBoxConfirm('A form with the same name has already been uploaded. Would you like to overwrite it? This action cannot be reversed.', {
+            .msgBoxConfirm('A form with the same name has already been uploaded. Would you like to overwrite it on submission? This action cannot be reversed.', {
               title: 'Please Confirm',
               size: 'sm',
               buttonSize: 'sm',
