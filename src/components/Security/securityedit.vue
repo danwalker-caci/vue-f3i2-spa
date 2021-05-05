@@ -752,11 +752,11 @@ export default {
           url +
           '/Pages/Home.aspx#/security/edit/' +
           this.Id +
-          '">Edit ' +
+          '">Review ' +
           this.FirstName +
           ' ' +
           this.LastName +
-          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
         subject: '(F3I-2 Portal) ' + type + ' Request'
       }
       await Security.dispatch('sendEmail', emailPayload)
@@ -939,11 +939,11 @@ export default {
           url +
           '/Pages/Home.aspx#/security/edit/' +
           this.Id +
-          '">Edit ' +
+          '">Review ' +
           this.FirstName +
           ' ' +
           this.LastName +
-          '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
         subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
       }
       await Security.dispatch('sendEmail', emailPayload)

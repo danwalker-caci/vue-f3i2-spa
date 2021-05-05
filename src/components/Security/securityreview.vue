@@ -478,7 +478,8 @@ export default {
           let newTaskId = results.data.d.Id
           let emailPayload = {
             emails: afrlEmail,
-            body: '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.id + '">Edit ' + vm.name + '</a><p><b>Please copy and paste the link into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            body:
+              '<h3>Please complete or reject the following.</h3><p>Name: ' + vm.name + '</p><p>Form: ' + vm.form + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + vm.id + '">Review ' + vm.name + '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
             subject: '(F3I-2 Portal) ' + vm.form + ' Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
