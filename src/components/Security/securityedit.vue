@@ -677,7 +677,7 @@ export default {
       this.SCIStatus = 'SSO Processed'
     },
     async statusChange() {
-      if ((this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') && (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info')) {
+      if (this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info' || this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info') {
         this.statusesUpdated = true
       }
     },
