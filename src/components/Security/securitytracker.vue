@@ -1253,7 +1253,7 @@ export default {
                 this.$router.push({ path: link })
               },
               async statusChange(data) {
-                console.log('STATUS CHANGED: ' + data)
+                if (console) console.log('STATUS CHANGED: ' + data.SCIStatus + ' ' + data.CACStatus)
                 if ((data.SCIStatus === 'Not Required' || data.SCIStatus === 'Pending Info') && (data.CACStatus === 'Not Required' || data.CACStatus === 'Pending Info')) {
                   this.statusesUpdated = true
                 }
