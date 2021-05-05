@@ -562,7 +562,7 @@ export default {
           OCONUSTravel: '',
           Rejected: '',
           RejectedComments: '',
-          DeniedForNonAdmin: '',
+          DeniedForAdmin: '',
           RequiredCorrections: '',
           ApprovalRequested: '',
           ApproverSelected: [],
@@ -580,6 +580,7 @@ export default {
           ATPDeniedOn: '',
           ATPDenialComments: '',
           ManagerEmail: '',
+          ManagerID: null,
           date: this.$moment().format('MM/DD/YYYY')
         },
         VisitRequest: '',
@@ -967,6 +968,7 @@ export default {
         console.log(manager)
         this.ManagerEmail = manager[0]['Manager']['EMail']
         this.travelmodel.InternalData.ManagerEmail = manager[0]['Manager']['EMail']
+        this.travelmodel.InternalData.ManagerID = manager[0]['Manager']['ID']
       } catch (e) {
         // Add user notification and system logging
         const notification = {
@@ -1062,10 +1064,6 @@ export default {
         let response = await Travel.dispatch('addTrip', event)
         let id = response.data.d.Id
         let payload = {}
-        /* payload.uri = this.wpuri
-        payload.etag = this.wpetag
-        payload.index = this.newindex
-        Workplan.dispatch('updateIndex', payload) */
         if (this.emailRequired) {
           Travel.dispatch('sendEmail', id).then(function() {
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent Security Email</div>')
@@ -1073,10 +1071,11 @@ export default {
             let emailto = []
             let taskid = []
             emailto.push(vm.ManagerEmail)
+            taskid.push(vm.travelmodel.InternalData.ManagerID)
             for (let i = 0; i < vm.delegates.length; i++) {
               if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
                 // add the delegates to the email and task array
-                taskid.push(vm.delegates[i]['ID'])
+                // taskid.push(vm.delegates[i]['ID'])
                 let j = vm.delegates[i]['Delegates']
                 for (let k = 0; k < j.length; k++) {
                   emailto.push(j[k]['EMail'])
@@ -1120,10 +1119,11 @@ export default {
         let emailto = []
         let taskid = []
         emailto.push(vm.ManagerEmail)
+        taskid.push(vm.travelmodel.InternalData.ManagerID)
         for (let i = 0; i < vm.delegates.length; i++) {
           if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
             // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['Id'])
+            // taskid.push(vm.delegates[i]['Id'])
             let j = vm.delegates[i]['Delegates']
             for (let k = 0; k < j.length; k++) {
               emailto.push(j[k]['EMail'])
