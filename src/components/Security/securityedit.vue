@@ -339,7 +339,7 @@
                 </div>
               </div>
             </b-tab>
-            <b-tab title="CAC">
+            <b-tab title="CAC" :active="cacTab">
               <b-row>
                 <b-table-simple small responsive class="pt-3">
                   <b-thead head-variant="dark">
@@ -560,6 +560,7 @@ export default {
       lockSubmit: false,
       statusesUpdated: false,
       selectedSecurityFormType: '',
+      cacTab: false,
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
         { value: 'SIPR', text: 'SIPR' },
@@ -608,6 +609,9 @@ export default {
       await Security.dispatch('getDigest')
       if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
       await this.getForms()
+      if (this.$route.query.disscheck) {
+        this.cacTab = true
+      }
     })
   },
   methods: {

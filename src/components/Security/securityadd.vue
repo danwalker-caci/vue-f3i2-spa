@@ -778,7 +778,7 @@ export default {
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: vm.form.Type + ' Request',
-            TaskLink: '/security/edit/' + this.securityForm.Id
+            TaskLink: '/security/edit/' + this.securityForm.Id + '?disscheck=true'
           }
           dissResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
             const notification = {
@@ -795,7 +795,7 @@ export default {
           let emailPayload = {
             //emails: [this.taskEmail],
             emails: this.taskEmail,
-            body: '<h3>Please perform a DISS check for the following.</h3> <p>Name: ' + this.form.Name + '</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.securityForm.Id + '">Edit ' + this.form.Name + '</a>',
+            body: '<h3>Please perform a DISS check for the following.</h3> <p>Name: ' + this.form.Name + '</p><br/><a href="' + url + '/Pages/Home.aspx#/security/edit/' + this.securityForm.Id + '?disscheck=true">Edit ' + this.form.Name + '</a>',
             subject: '(F3I-2 Portal) DISS Check Request'
           }
           await Security.dispatch('sendEmail', emailPayload)
