@@ -924,6 +924,7 @@ export default {
             vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
             vm.form.PersonnelID = vm.currentPersonnelID
             vm.person = ''
+            vm.personnelFiltering = ''
             vm.files = []
             vm.fileSelected = null
             vm.fileBuffer = null
