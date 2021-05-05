@@ -700,7 +700,8 @@ export default {
       this.SCIStatus = 'Indoc Assist Pending'
     },
     async statusChange() {
-      if (this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info' || this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info') {
+      if (console) console.log('STATUS CHANGED: ' + this.SCIStatus + ' ' + this.CACStatus)
+      if ((this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') && (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info')) {
         this.statusesUpdated = true
       }
     },
