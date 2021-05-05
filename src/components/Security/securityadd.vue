@@ -19,7 +19,7 @@
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
         <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
         <p class="font-weight-bolder h4 text-danger">
-          <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine.</em>
+          <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine. Please limit the form names to 64 character length.</em>
         </p>
         <div v-show="formAccount">
           <p class="h5">***Only for individuals sitting in AFRL***</p>
@@ -573,34 +573,34 @@ export default {
           cacs = []
 
         // Push original forms into an array to prevent being overwritten
-        if (this.securityForm.NIPR && this.securityForm.NIPR.length > 0) {
+        if (this.securityForm.NIPR && this.securityForm.NIPR.forms.length > 0) {
           this.securityForm.NIPR.forms.forEach(nipr => {
             niprs.push(nipr)
           })
         }
-        if (this.securityForm.JWICS && this.securityForm.JWICS.length > 0) {
+        if (this.securityForm.JWICS && this.securityForm.JWICS.forms.length > 0) {
           this.securityForm.JWICS.forms.forEach(jwic => {
             jwics.push(jwic)
           })
         }
-        if (this.securityForm.DREN && this.securityForm.DREN.length > 0) {
+        if (this.securityForm.DREN && this.securityForm.DREN.forms.length > 0) {
           this.securityForm.DREN.forms.forEach(dren => {
             drens.push(dren)
           })
         }
-        if (this.securityForm.SIPR && this.securityForm.SIPR.length > 0) {
+        if (this.securityForm.SIPR && this.securityForm.SIPR.forms.length > 0) {
           this.securityForm.SIPR.forms.forEach(sipr => {
             siprs.push(sipr)
           })
         }
         // Don't overwrite SCI
-        if (this.securityForm.SCI && this.securityForm.SCI.length > 0) {
+        if (this.securityForm.SCI && this.securityForm.SCI.forms.length > 0) {
           this.securityForm.SCI.forms.forEach(sci => {
             scis.push(sci)
           })
         }
         // Don't overwrite CAC
-        if (this.securityForm.CAC && this.securityForm.CAC.length > 0) {
+        if (this.securityForm.CAC && this.securityForm.CAC.forms.length > 0) {
           this.securityForm.CAC.forms.forEach(cac => {
             cacs.push(cac)
           })
@@ -877,6 +877,7 @@ export default {
             forms: cacs
           })
         }
+        payload.DISSCheck = this.securityForm.DISSCheck ? this.securityForm.DISSCheck : false
         payload.Active = true
         payload.taskId = this.taskId
         payload.etag = this.securityForm.etag
@@ -954,11 +955,71 @@ export default {
       args.filesData.forEach(fileData => {
         let file = {}
         file.fileSelected = fileData.name
-        let buffer = vm.getFileBuffer(fileData.rawFile)
-        buffer.then(function(buff) {
-          file.fileBuffer = buff
-          vm.files.push(file)
-        })
+        // Need to perform a check here to see what the file will be named, if the corresponding type already has it and then set a flag to overwrite or modify based on user interaction
+        let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
+        console.log('FORMS: ' + JSON.stringify(vm.securityForm[vm.form.Type]))
+        console.log('NEW FORM NAME: ' + pdfName)
+        if (
+          vm.securityForm[vm.form.Type].forms &&
+          vm.securityForm[vm.form.Type].forms.filter(function(e) {
+            return e.name === pdfName
+          }).length > 0
+        ) {
+          vm.$bvModal
+            .msgBoxConfirm('A form with the same name has already been uploaded. Would you like to overwrite it? This action cannot be reversed.', {
+              title: 'Please Confirm',
+              size: 'sm',
+              buttonSize: 'sm',
+              okVariant: 'danger',
+              okTitle: 'YES',
+              cancelTitle: 'NO',
+              footerClass: 'p-2',
+              hideHeaderClose: false,
+              centered: true
+            })
+            .then(async value => {
+              // If they want to delete the original form then run the delete sequence, otherwise increment the number of times the name was added
+              if (value == true) {
+                // delete the original form from the library, remove it from the securityForm[vm.form.Type] array
+                let currentForms = vm.securityForm[vm.form.Type].forms
+                for (var n = 0; n < currentForms.length; n++) {
+                  if (currentForms[n].name === pdfName) {
+                    // pop the sucker off
+                    console.log('DELETING OLD FORM')
+                    await Security.dispatch('DeleteForm', { library: currentForms[n].library, name: currentForms[n].name })
+                    vm.securityForm[vm.form.Type].forms.splice(n, 1)
+                    vm.getFileBuffer(fileData.rawFile).then(function(buff) {
+                      file.fileBuffer = buff
+                      vm.files.push(file)
+                    })
+                  }
+                }
+                /*let matchedFile = vm.securityForm[vm.form.Type].forms.find(function(e) {
+                  return (e.name = pdfName)
+                })*/
+              } else {
+                // Add a Unix timestamp to the name and then add it the vm files
+                console.log('NOT GOING TO REPLACE: ' + Date.now().toString())
+                if (pdfName.length < 115) {
+                  let currentDate = Date.now().toString()
+                  file.fileSelected = pdfName.split('.')[0] + '-' + currentDate + '.' + pdfName.split('.')[1]
+                } else {
+                  let formLength = vm.securityForm[vm.form.Type].forms.length + 1
+                  file.fileSelected = pdfName.split('.')[0] + '-' + formLength + '.' + pdfName.split('.')[1]
+                }
+                vm.getFileBuffer(fileData.rawFile).then(function(buff) {
+                  file.fileBuffer = buff
+                  vm.files.push(file)
+                })
+              }
+            })
+        } else {
+          console.log('UPLOADING AS-IS')
+          vm.getFileBuffer(fileData.rawFile).then(function(buff) {
+            file.fileBuffer = buff
+            vm.files.push(file)
+          })
+        }
       })
     },
     asyncForEach: async function(array, callback) {
