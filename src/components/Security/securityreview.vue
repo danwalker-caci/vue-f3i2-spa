@@ -44,9 +44,6 @@
           <!-- Loop through the type of account and each of the forms. -->
           <div v-if="loaded && securityForms.forms.length > 0">
             <div v-for="form in securityForms.forms" :key="form.id">
-              <b-form-row class="p-1" v-if="form.href">
-                <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
-              </b-form-row>
               <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === '' && securityForms.GovRejectDate === ''">
                 <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
                   <b-col cols="10"></b-col>
@@ -65,6 +62,9 @@
                   <p><span class="font-weight-bold">FSO Rejection Reason: </span>{{ form.rejectReason }}</p>
                 </b-form-row>
               </div>
+              <b-form-row class="p-1" v-if="form.href">
+                <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+              </b-form-row>
             </div>
           </div>
           <!-- Add a Notify Government button -->
