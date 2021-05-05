@@ -9,7 +9,7 @@ if (window._spPageContextInfo) {
 }
 
 let portalemail = ''
-let baseurl = SPCI.webAbsoluteUrl
+//let baseurl = SPCI.webAbsoluteUrl
 let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Personnel')/items?$select=*&$orderby=Id"
 geturl += '&$filter=(Active eq 1)'
 // geturl += '&$filter=((Active eq 1) and (OData__ModerationStatus eq 0))'
@@ -135,6 +135,34 @@ export default {
     let results = response.data.d.results
     return results
   },
+  async deletePersonnelById(id, digest) {
+    let endpoint = url
+    endpoint += '(' + id + ')'
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'DELETE',
+      'If-Match': '*'
+    }
+    let config = {
+      headers: headers
+    }
+    return axios
+      .post(endpoint, null, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        const notification = {
+          type: 'danger',
+          title: 'Security Service Error: ' + error,
+          message: 'Error Approving Security Form Data',
+          push: true
+        }
+        store.dispatch('notification/add', notification, { root: true })
+      })
+  },
   async sendEmail(payload, digest) {
     /*let body = '<p>Hello Work Plan Manager</p><br/>'
     body += '<p>Personnel have been submitted that requires review.</p><p></p>'
@@ -146,107 +174,10 @@ export default {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
         From: portalemail,
-        To: { results: payload.emails }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
+        To: { results: Array.isArray(payload.emails) ? payload.emails : [payload.emails] }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
         // To: { 'results': ['daniel.walker1@caci.com'] },
         Body: payload.body,
         Subject: payload.subject
-      }
-    }
-    let headers = {
-      'Content-Type': 'application/json;odata=verbose',
-      Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': digest,
-      'X-HTTP-Method': 'POST'
-    }
-    let config = {
-      headers: headers
-    }
-    return axios
-      .post(surl, mail, config)
-      .then(function(response) {
-        return response
-      })
-      .catch(function(error) {
-        console.log('PersonnelService Error Sending Email: ' + error)
-      })
-  },
-  async editSubEmail(payload, digest) {
-    let body = '<p>Hello Work Plan Manager</p><br/>'
-    body += '<p>Personnel have been submitted that requires review.</p><p></p>'
-    // TODO: Add what was changed between the two submissions
-    body += '<p>Here is what changed: </p>'
-    let emailObject = JSON.parse(payload.Modification)
-    for (const p in emailObject) {
-      if (p !== 'etag' && p !== 'uri' && p !== '$id' && p !== 'id' && p !== 'Id' && emailObject[p] !== null) {
-        body += '<p>' + p + ': ' + emailObject[p] + '</p>'
-      }
-    }
-    //body += '<p>Entry edited by ' + modifiedBy + '</p>'
-    body += '<p>Please click the link below for more details.</p><p></p>'
-    // Change before Test - Production
-    body += '<p><a href="' + baseurl + '/Pages/drew.aspx#/personnel/home/edit/' + payload.Id + '">Personnel</a></p>'
-    //let emails = ['drew.ahrens@caci.com', 'alexie.hazen@caci.com']
-    let emails = []
-    if (payload.WPManagerEmails.length > 0) {
-      payload.WPManagerEmails.foreach(email => {
-        emails.push(email)
-      })
-    }
-    let mail = {
-      properties: {
-        __metadata: { type: 'SP.Utilities.EmailProperties' },
-        From: portalemail,
-        To: { results: emails }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
-        // To: { 'results': ['daniel.walker1@caci.com'] },
-        Body: body,
-        Subject: 'Personnel Edited In SharePoint'
-      }
-    }
-    let headers = {
-      'Content-Type': 'application/json;odata=verbose',
-      Accept: 'application/json;odata=verbose',
-      'X-RequestDigest': digest,
-      'X-HTTP-Method': 'POST'
-    }
-    let config = {
-      headers: headers
-    }
-    return axios
-      .post(surl, mail, config)
-      .then(function(response) {
-        return response
-      })
-      .catch(function(error) {
-        console.log('PersonnelService Error Sending Email: ' + error)
-      })
-  },
-  async newSubEmail(payload, digest) {
-    let emailData = JSON.parse(payload.Modification)
-    let body = '<p>Hello Work Plan Manager</p><br/>'
-    body += '<p>Personnel have been submitted that requires review.</p><p></p>'
-    body += '<p>New User Submitted: </p>'
-    body += '<p>Personnel: ' + emailData.FirstName + ' ' + emailData.LastName + '</p>'
-    body += '<p>Company: ' + emailData.Company + '</p>'
-    body += '<p>Email: ' + emailData.Email + '</p>'
-    body += '<p>Phone: ' + emailData.Phone + '</p>'
-    body += '<p>Please click the link below for more details.</p><p></p>'
-    // Change before Test - Production
-    body += '<p><a href="' + baseurl + '/Pages/drew.aspx#/personnel/home/edit/' + payload.Id + '">Personnel</a></p>'
-    // let emails = ['drew.ahrens@caci.com', 'alexie.hazen@caci.com']
-    let emails = []
-    if (payload.WPManagerEmails.length > 0) {
-      payload.WPManagerEmails.foreach(email => {
-        emails.push(email)
-      })
-    }
-    let mail = {
-      properties: {
-        __metadata: { type: 'SP.Utilities.EmailProperties' },
-        From: portalemail,
-        To: { results: emails }, // TODO: Get these user emails from a list/group , 'daniel.walker1@caci.com'
-        // To: { 'results': ['daniel.walker1@caci.com'] },
-        Body: body,
-        Subject: 'Personnel Added In SharePoint'
       }
     }
     let headers = {
@@ -337,7 +268,8 @@ export default {
                   .format('YYYY-MM-DD[T]HH:MM:[00Z]')
               )
             : null,
-          Modification: payload.Modification,
+          WPMReview: payload.WPMReview,
+          Modification: payload.Modification ? JSON.stringify(payload.Modification) : null,
           ModDeniedReason: payload.ModDeniedReason
         }
 
@@ -372,7 +304,8 @@ export default {
           Phone: payload.Phone,
           Company: payload.Company,
           SubET: payload.SubET,
-          Modification: payload.Modification,
+          WPMReview: payload.WPMReview,
+          Modification: payload.Modification ? JSON.stringify(payload.Modification) : null,
           ModDeniedReason: payload.ModDeniedReason
         }
 
@@ -408,8 +341,9 @@ export default {
           Phone: payload.Phone,
           Company: payload.Company,
           SubET: payload.SubET,
-          Modification: payload.Modification,
-          ModDeniedReason: payload.ModDeniedReason
+          Modification: payload.Modification ? JSON.stringify(payload.Modification) : null,
+          ModDeniedReason: payload.ModDeniedReason,
+          WPMReview: payload.WPMReview
         }
 
         try {
