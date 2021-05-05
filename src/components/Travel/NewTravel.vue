@@ -555,7 +555,7 @@ export default {
         POCEmail: '',
         POCPhone: '',
         Comments: '',
-        Clearance: 'None',
+        Clearance: '',
         InternalData: {
           Status: 'WPMReview',
           PreApproved: '',
