@@ -158,7 +158,10 @@
             <div v-if="form.setName === 'Yes'">
               <b-form-group label="Select Person: " label-for="formPerson">
                 <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                  <b-dropdown-form><b-form-input id="personnelFiltering" placeholder="Filter..." type="text" @keyup.native="filtering"></b-form-input></b-dropdown-form>
+                  <b-dropdown-form>
+                    <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" @keyup.native="filtering"></b-form-input>
+                    <b-button variant="primary" class="mt-1" size="sm" @click="searchFiltering($event)">Search</b-button>
+                  </b-dropdown-form>
                   <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
                 </b-dropdown>
@@ -337,6 +340,7 @@ export default {
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       url: '',
       person: '',
+      personnelFiltering: '',
       cacvalid: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
@@ -387,6 +391,15 @@ export default {
             .includes(e.target.value.toLowerCase())
         )
       }, 25)
+    },
+    searchFiltering: e => {
+      e.preventDefault()
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      vm.filteredData = vm.personnel.filter(data =>
+        JSON.stringify(data)
+          .toLowerCase()
+          .includes(vm.personnelFiltering.toLowerCase())
+      )
     },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
