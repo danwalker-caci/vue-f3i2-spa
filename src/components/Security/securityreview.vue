@@ -409,9 +409,9 @@ export default {
           })
           // Add task for whoever created the original form
           payload = {
-            Title: 'Correct ' + vm.name,
+            Title: 'Correct ' + vm.name + ' by uploading a form',
             AssignedToId: vm.authorId, // TO DO: send to original Submitter
-            Description: 'Correct ' + vm.name + ' by uploading a form.',
+            Description: 'CACI FSO has Rejected your Request. Reason: ' + vm.fsoDenialInput,
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: 'fso-reject',
