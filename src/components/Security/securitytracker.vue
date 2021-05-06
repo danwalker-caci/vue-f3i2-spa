@@ -35,10 +35,10 @@
                     <e-column field="SCIFormType" headerText="SCI Form" minWidth="50" textAlign="Left"></e-column>
                     <e-column field="SCIFormSubmitted" headerText="SCI Submitted" minWidth="50" textAlign="Left"></e-column>
                     <e-column field="SCIIndocAssistDate" headerText="SCI Indoc Assist Date" :visible="false" textAlign="Left"></e-column>
-                    <e-column field="PRDueDate" headerText="PR Due Date" minWidth="40" textAlign="Left"></e-column>
-                    <e-column field="CEDate" headerText="CE Date (Deferred Investigation)" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="SCIIndoc" headerText="SCI Indoc Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="SCIAccessCheckDate" headerText="SCI Access Check Date" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="PRDueDate" headerText="PR Due Date" minWidth="40" textAlign="Left"></e-column>
+                    <e-column field="CEDate" headerText="CE Date (Deferred Investigation)" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="CACValid" headerText="Is CAC Valid" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="CACStatus" headerText="CAC Status" minWidth="40" textAlign="Left"></e-column>
                     <e-column field="CACRequestDate" headerText="CAC Request Date" minWidth="40" textAlign="Left"></e-column>
