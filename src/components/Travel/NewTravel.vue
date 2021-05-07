@@ -1114,52 +1114,53 @@ export default {
               }
             })
           })
-        }
-        // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
-        let emailto = []
-        let taskid = []
-        emailto.push(vm.ManagerEmail)
-        for (let i = 0; i < vm.delegates.length; i++) {
-          if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
-            // add the delegates to the email and task array
-            taskid.push(vm.delegates[i]['Id'])
-            let j = vm.delegates[i]['Delegates']
-            for (let k = 0; k < j.length; k++) {
-              emailto.push(j[k]['EMail'])
-              taskid.push(j[k]['Id'])
+        } else {
+          // TODO: Loop through the delegates to see if this WPM has delegates that need to have the email and tasks
+          let emailto = []
+          let taskid = []
+          emailto.push(vm.ManagerEmail)
+          for (let i = 0; i < vm.delegates.length; i++) {
+            if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
+              // add the delegates to the email and task array
+              taskid.push(vm.delegates[i]['Id'])
+              let j = vm.delegates[i]['Delegates']
+              for (let k = 0; k < j.length; k++) {
+                emailto.push(j[k]['EMail'])
+                taskid.push(j[k]['Id'])
+              }
             }
           }
-        }
-        console.log('EMAILS: ' + emailto.toString())
-        payload = {}
-        payload.id = id
-        payload.email = emailto
-        payload.title = this.travelmodel.Subject
-        payload.workplan = this.travelmodel.WorkPlanNumber
-        payload.company = this.travelmodel.Company
-        payload.travelers = this.travelmodel.Travelers
-        payload.start = this.travelmodel.StartTime
-        payload.end = this.travelmodel.EndTime
-        // create task and send emails
-        let taskpayload = {
-          Title: 'Approve or Deny Travel Request',
-          AssignedToId: taskid,
-          Description: 'Please Review The Trip',
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: 'WPMReview',
-          TaskLink: '/travel/page/edit?id=' + id,
-          TaskInfo: 'Type:TravelData, TrvlID:' + id + ', IN:' + vm.travelmodel.IndexNumber
-        }
-        Todo.dispatch('addTodo', taskpayload)
-        Travel.dispatch('NewTripEmail', payload).then(function() {
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
-          if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
-            vm.$router.push({ name: vm.$router.currentRoute.params.back })
-          } else {
-            vm.$router.push({ name: 'Travel Tracker' }) // default
+          console.log('EMAILS: ' + emailto.toString())
+          payload = {}
+          payload.id = id
+          payload.email = emailto
+          payload.title = this.travelmodel.Subject
+          payload.workplan = this.travelmodel.WorkPlanNumber
+          payload.company = this.travelmodel.Company
+          payload.travelers = this.travelmodel.Travelers
+          payload.start = this.travelmodel.StartTime
+          payload.end = this.travelmodel.EndTime
+          // create task and send emails
+          let taskpayload = {
+            Title: 'Approve or Deny Travel Request',
+            AssignedToId: taskid,
+            Description: 'Please Review The Trip',
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'WPMReview',
+            TaskLink: '/travel/page/edit?id=' + id,
+            TaskInfo: 'Type:TravelData, TrvlID:' + id + ', IN:' + vm.travelmodel.IndexNumber
           }
-        })
+          Todo.dispatch('addTodo', taskpayload)
+          Travel.dispatch('NewTripEmail', payload).then(function() {
+            vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
+            if (vm.$router.currentRoute.params.back !== undefined || vm.$router.currentRoute.params.back !== null) {
+              vm.$router.push({ name: vm.$router.currentRoute.params.back })
+            } else {
+              vm.$router.push({ name: 'Travel Tracker' }) // default
+            }
+          })
+        }
       } catch (e) {
         // Add user notification and system logging
         const notification = {
