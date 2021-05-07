@@ -38,24 +38,24 @@ const actions = {
       .then(response => {
         MSR.commit(state => {
           state.digest =
-            response.data.d.GetContextWebInformation.FormDigestValue;
-          state.currentmonth = month;
-          state.currentyear = year;
-          state.previousyear = prevyear;
-        });
+            response.data.d.GetContextWebInformation.FormDigestValue
+          state.currentmonth = month
+          state.currentyear = year
+          state.previousyear = prevyear
+        })
       })
       .catch(error => {
-        console.log("There was an error getting digest data: ", error.response);
-      });
+        console.log("There was an error getting digest data: ", error.response)
+      })
   },
   async getMSR({ state }, payload) {
-    let response = await MSRService.getMSR(payload);
-    console.log("GetMSR Response: " + response);
-    state.currentmsr = formatMSR(response);
-    state.msrloaded = true;
+    let response = await MSRService.getMSR(payload)
+    console.log("GetMSR Response: " + response)
+    state.currentmsr = formatMSR(response)
+    state.msrloaded = true
   },
   async getMSRs({ state, commit }) {
-    let response = await MSRService.getMSRs();
+    let response = await MSRService.getMSRs()
     MSR.create({ data: formatMSRs(response) })
     MSR.commit(state => {
       state.loaded = true
@@ -65,7 +65,7 @@ const actions = {
   async updateMSRData({ state }, payload) {
     state.msrloaded = false
     let response = await MSRService.updateMSRData(payload, state.digest)
-    state.currentmsr = formatMSR(response)
+    state.currentmsr = formatMSR(response) // Are we even using the state?
     state.msrloaded = true
     return formatMSR(response)
   },

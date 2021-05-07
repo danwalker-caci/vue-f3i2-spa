@@ -222,10 +222,13 @@ export default {
               }
             },
             methods: {
-              edit: function(data) {
+              edit: async function(data) {
+                // Add a digest call here to ensure that the msr is updated properly
+                await MSR.dispatch('getDigest')
                 if (console) {
                   console.log('Locking and Editing MSR')
                 }
+                clearInterval(vm.$options.interval)
                 vm.selecteddata = data
                 let payload = {}
                 payload.field = 'Locked'
@@ -361,9 +364,9 @@ export default {
       }
     }
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
-    MSR.dispatch('getDigest')
+    await MSR.dispatch('getDigest') // waits for the digest to be loaded
     this.getData()
   },
   beforeDestroy() {
@@ -377,12 +380,12 @@ export default {
         })
         .then(() => {
           // Reload the page after 15 minutes
-          vm.$options.interval = setInterval(vm.reloadPage, 900000)
+          vm.$options.interval = setInterval(vm.reloadPage, 1080000) // Updating to 18 minutes for reload
         })
     },
     reloadPage: function() {
       clearInterval(this.$options.interval)
-      window.location.reload()
+      if (window.location.hash.indexOf('/msr/home') > -1) window.location.reload()
     },
     displayMSRs: function() {
       if (this.loaded) {

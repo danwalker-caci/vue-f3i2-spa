@@ -2180,7 +2180,7 @@ export default {
       timeoutId: null,
       publishedTimeout: null,
       timerid: null,
-      timeout: 900000, // set to 15 minutes for now
+      timeout: 1020000, // set to 17 minutes for now
       headerText: '',
       WordDocument: null,
       fileDigest: null,
@@ -2343,8 +2343,11 @@ export default {
   beforeDestroy: function() {
     console.log('BEFORE DESTROY MSR FORM')
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
+    if (console) console.log('GETTING MSR DIGEST')
+    await MSR.dispatch('getDigest') // get the form digest first to ensure that the user can write back to the list
+    this.fileDigest = this.$store.state.database.msr.digest
     this.$bvToast.show('form-toast')
     this.WorkplanTitle = this.msrdata.WorkplanTitle
     this.WorkplanNumber = this.msrdata.WorkplanNumber
@@ -2360,25 +2363,24 @@ export default {
     this.Year = String(this.$moment().year())
     this.headerText = 'Edit Data For MSR ' + this.msrdata.WorkplanNumber + ' ' + this.msrdata.WorkplanTitle
     this.isDirty = true // dirty because it is locked
-    try {
-      MSR.dispatch('getDigest')
-      Workplan.dispatch('getSubs', this.WorkplanNumber).then(function() {
+    Workplan.dispatch('getSubs', this.WorkplanNumber)
+      .then(function() {
         vm.setupTimers()
         vm.getData()
       })
-    } catch (e) {
-      // Add notification to user and logging
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e.message,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
+      .catch(e => {
+        // Add notification to user and logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e.message,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        logger.logToServer(e)
       })
-      logger.logToServer(e)
-    }
   },
   methods: {
     async getUserInfo() {
@@ -2408,15 +2410,6 @@ export default {
       } else {
         this.getUserInfo()
       }
-    },
-    getFormDigest() {
-      return axios.request({
-        url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
-        method: 'post',
-        headers: {
-          Accept: 'application/json; odata=verbose'
-        }
-      })
     },
     getData: function() {
       if (console) {
@@ -2497,7 +2490,8 @@ export default {
         this.onFormClose()
       }
     },
-    onFormClose: function() {
+    onFormClose: async function() {
+      await MSR.dispatch('getDigest')
       clearInterval(this.timerid)
       this.isDirty = false
       let payload = {}
@@ -2592,6 +2586,8 @@ export default {
     },
     // All edits should lock the tabs, all saves should unlock tabs
     async handleit(action, field, form) {
+      await MSR.dispatch('getDigest')
+      this.fileDigest = this.$store.state.database.msr.digest
       if (console) {
         console.log('HANDLEIT CALLED: ' + action + ', ' + field + ', ' + form)
       }
@@ -2667,8 +2663,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this[field] = await this.sanitizeHTML(this[field])
           await this.trackMSRImage(this[field])
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           let payload = {}
           payload.field = field
           payload.value = this[field]
@@ -2695,8 +2690,7 @@ export default {
           console.log('FIELD: ' + JSON.stringify(this[field]))
           //this[field] = await this.sanitizeHTML(this[field])
           await this.trackMSRImage(this[field])
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           let payload = {}
           payload.field = field
           payload.value = this[field]
@@ -2798,8 +2792,7 @@ export default {
           this.$bvToast.show('form-toast')
           //this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
           await this.trackMSRImage(this.SelectedAccomplishment)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this[form] = false
           this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
           let payload = {}
@@ -2826,8 +2819,7 @@ export default {
           this.$bvToast.show('form-toast')
           //this.SelectedAccomplishment = await this.sanitizeHTML(this.SelectedAccomplishment)
           await this.trackMSRImage(this.SelectedAccomplishment)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           // update the existing HTML for the index and then save entire array
           this.Accomplishments[this.SelectedIndex].HTML = this.SelectedAccomplishment
           let payload = {}
@@ -2929,8 +2921,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
           await this.trackMSRImage(this.SelectedPlan)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -2956,8 +2947,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedPlan = await this.sanitizeHTML(this.SelectedPlan)
           await this.trackMSRImage(this.SelectedPlan)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Plans[this.SelectedIndex].HTML = this.SelectedPlan
           let payload = {}
           payload.field = field
@@ -3056,8 +3046,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
           await this.trackMSRImage(this.SelectedAssumption)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3083,8 +3072,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedAssumption = await this.sanitizeHTML(this.SelectedAssumption)
           await this.trackMSRImage(this.SelectedAssumption)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Assumptions[this.SelectedIndex].HTML = this.SelectedAssumption
           let payload = {}
           payload.field = field
@@ -3183,8 +3171,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
           await this.trackMSRImage(this.SelectedRisk)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3210,8 +3197,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedRisk = await this.sanitizeHTML(this.SelectedRisk)
           await this.trackMSRImage(this.SelectedRisk)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Risks[this.SelectedIndex].HTML = this.SelectedRisk
           let payload = {}
           payload.field = field
@@ -3310,8 +3296,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
           await this.trackMSRImage(this.SelectedOpportunity)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3337,8 +3322,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedOpportunity = await this.sanitizeHTML(this.SelectedOpportunity)
           await this.trackMSRImage(this.SelectedOpportunity)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Opportunities[this.SelectedIndex].HTML = this.SelectedOpportunity
           let payload = {}
           payload.field = field
@@ -3436,8 +3420,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
           await this.trackMSRImage(this.SelectedDeliverable)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3463,8 +3446,7 @@ export default {
           vm.$bvToast.show('form-toast')
           //this.SelectedDeliverable = await this.sanitizeHTML(this.SelectedDeliverable)
           await this.trackMSRImage(this.SelectedDeliverable)
-          let response = await this.getFormDigest()
-          this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+
           this.Deliverables[this.SelectedIndex].HTML = this.SelectedDeliverable
           let payload = {}
           payload.field = field
@@ -3544,8 +3526,8 @@ export default {
     async trackMSRImage(content) {
       // get the total number of blobs and assign to a property
       if (content.indexOf('blob') > 0) {
-        let response = await this.getFormDigest()
-        this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+        await MSR.dispatch('getDigest')
+        this.fileDigest = this.$store.state.database.msr.digest
         vm.fileType = vm.ActiveSection
         let parts = content.split('blob:')
         console.log('PARTS: ' + parts)
@@ -3643,9 +3625,9 @@ export default {
         if (currentImg.indexOf(img) === -1) {
           // run the delete function
           console.log('DELETING IMAGE: ' + img)
-          this.getFormDigest()
-            .then(response => {
-              vm.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+          MSR.dispatch('getDigest')
+            .then(() => {
+              vm.fileDigest = vm.$store.state.database.msr.digest
               vm.deleteMSRImage(img, vm.fileDigest)
             })
             .catch(e => {
@@ -3790,8 +3772,7 @@ export default {
     },
     async publishMSR() {
       this.fileName = this.WorkplanNumber + '-' + this.msr.Month + '-' + this.msr.Year + '.docx'
-      let response = await this.getFormDigest()
-      this.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
+      this.fileDigest = await MSR.dispatch('getDigest')
       let y = String(
         this.$moment()
           .subtract(1, 'months')
@@ -4456,7 +4437,7 @@ export default {
   },
   cron: [
     {
-      time: 600000,
+      time: 840000,
       method: 'doInactive',
       autoStart: false
     }
