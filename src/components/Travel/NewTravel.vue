@@ -475,6 +475,7 @@ export default {
   },
   mounted: function() {
     vm = this // Setting up page specific handle to 'this' which represents the vue component. Used in promise functions as they will have their on 'this'.
+    Todo.dispatch('getDigest')
     Travel.dispatch('getDigest')
     Travel.dispatch('getDelegates')
     this.company = this.currentuser[0].Company
@@ -1110,7 +1111,6 @@ export default {
       }
       Todo.dispatch('addTodo', taskpayload)
       Travel.dispatch('NewTripEmail', payload).then(function() {
-        vm.$store.dispatch('support/addActivity', '<div class="bg-success">NewTravel - Sent New Trip Email</div>')
         vm.$router.push({ name: 'Travel Tracker' }) // default
       })
     }
