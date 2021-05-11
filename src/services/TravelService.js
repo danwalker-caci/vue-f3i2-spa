@@ -389,7 +389,7 @@ export default {
     switch (payload.action) {
       case 'Deny':
         // denied
-        body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
         break
 
       case 'Notify':
@@ -399,7 +399,7 @@ export default {
 
       case 'Approve':
         //approve
-        body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
         break
     }
     let mail = {
