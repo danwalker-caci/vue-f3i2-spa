@@ -92,7 +92,7 @@
                         </div>
                         <div v-if="travelmodel.OCONUS == 'Yes'" class="col-6">
                           <!-- <b-form-select class="form-control-sm form-control-travel" v-model="travelmodel.OCONUSLocation" :options="locations" :state="ValidateMe('OL')" ref="OCONUSLocation"></b-form-select> -->
-                          <b-form-radio-group v-model="travelmodel.OCONUSLocation" :options="locations" name="location-radios" :state="ValidateMe('LOCATION')">
+                          <b-form-radio-group v-model="travelmodel.OCONUSLocation" :options="locations" name="location-radios" :state="ValidateMe('LOCATION')" ref="OCONUSLocation">
                             <b-form-invalid-feedback :state="ValidateMe('LOCATION')">
                               Must Select OCONUS Location
                             </b-form-invalid-feedback>
@@ -794,6 +794,7 @@ export default {
       // check all the fields in the first tab to see that they are properly validated
       let valid = true
       for (let i = 0; i < this.fieldsFirstTab.length; i++) {
+        console.log('VALIDATING: ' + this.fieldsFirstTab[i])
         if (this.$refs[this.fieldsFirstTab[i]].state === false) {
           valid = false
         }
