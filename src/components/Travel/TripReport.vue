@@ -224,7 +224,7 @@ export default {
         if (this.travelmodel.WPNumber !== '') {
           let manager = await Workplan.dispatch('getManagerByWPNumber', this.travelmodel.WPNumber)
           this.ManagerID = manager[0]['Manager']['ID']
-          this.ManagerEmail = manager[0]['Manager']['Email']
+          this.ManagerEmail = manager[0]['Manager']['EMail']
         }
         if (this.isWPManager && this.travelmodel.TripReportLink !== '') {
           // create iframe and set iframe source to trip report
