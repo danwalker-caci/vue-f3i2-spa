@@ -184,10 +184,12 @@ export default {
       travelmodel: {
         id: 0,
         Status: '',
+        Company: '',
         TripReport: '',
         TripReportLink: '',
         TripReportApproval: '',
         TripReportRejectedComments: '',
+        StartTime: '',
         EndTime: '',
         IndexNumber: '',
         WPNumber: '',
@@ -208,8 +210,10 @@ export default {
         clearInterval(this.$options.interval)
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
+        this.travelmodel.Company = this.selectedtrip.Company
         this.travelmodel.TripReport = this.selectedtrip.TripReport
         this.travelmodel.TripReportLink = this.selectedtrip.TripReportLink
+        this.travelmodel.StartTime = moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
         this.travelmodel.EndTime = this.$moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.IndexNumber = this.selectedtrip.IndexNumber
         this.travelmodel.WPNumber = this.selectedtrip.WorkPlanNumber
@@ -425,7 +429,7 @@ export default {
             payload.id = vm.travelmodel.id
             payload.email = emailto
             payload.title = 'Approve/Reject Trip Report'
-            payload.workplan = vm.travelmodel.IndexNumber
+            payload.indexnumber = vm.travelmodel.IndexNumber
             payload.company = vm.travelmodel.Company
             payload.start = vm.travelmodel.StartTime
             payload.end = vm.travelmodel.EndTime

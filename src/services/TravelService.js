@@ -381,12 +381,10 @@ export default {
   TripReportEmail(state, digest, payload) {
     // send email to workplan manager regarding state of trip. Reminder of specific actions
     let body = ''
-    body += '<p>WorkPlanNumber: ' + payload.workplan
     body += '<p>IndexNumber: ' + payload.indexnumber
     body += '<p>Company: ' + payload.company
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
-    // build travelers text
     body += '<p>Please click the link below for more details.</p><p></p>'
     //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
     body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
