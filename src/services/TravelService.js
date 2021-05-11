@@ -416,7 +416,7 @@ export default {
       .catch(function(error) {
         // TODO: Better error handling and response
         store.dispatch('support/addActivity', '<div class="bg-danger">TravelService NewTripEmail ERROR: ' + error + '</div>')
-        console.log('TravelService Error Sending NewTripEmail: ' + error)
+        console.log('TravelService Error Sending TripReportEmail: ' + error)
       })
   },
   async addTrip(payload, digest) {
