@@ -302,7 +302,7 @@ export default {
         // trip status will be either ReportDue or ReportLate
         // is the report approved or rejected
         if (this.travelmodel.TripReportApproval == 'No') {
-          // rejected so update status and send notification to submitter
+          // rejected so update status and send notification email and task to submitter
           let status = 'ReportDue'
           let end = this.$moment(this.travelmodel.EndTime)
           let today = this.$moment()
@@ -317,6 +317,18 @@ export default {
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
           })
+          let payload = {}
+          payload.id = vm.travelmodel.id
+          payload.action = 'Deny'
+          payload.email = [vm.travelmodel.CreatedByEmail]
+          payload.title = 'Trip Report Denied'
+          payload.indexnumber = vm.travelmodel.IndexNumber
+          payload.company = vm.travelmodel.Company
+          payload.start = vm.travelmodel.StartTime
+          payload.end = vm.travelmodel.EndTime
+          payload.comments = vm.travelmodel.TripReportRejectedComments
+          payload.linktext = 'Edit Trip Report'
+          Travel.dispatch('TripReportEmail', payload)
           let taskpayload = {
             Title: 'Trip Report Rejected By WPM',
             AssignedToId: [vm.travelmodel.CreatedBy],
@@ -353,6 +365,7 @@ export default {
           }
           let payload = {}
           payload.id = vm.travelmodel.id
+          payload.action = 'Notify'
           payload.email = notificationemails
           payload.title = 'Trip Report Approved'
           payload.indexnumber = vm.travelmodel.IndexNumber
@@ -428,13 +441,13 @@ export default {
             console.log('EMAILS: ' + emailto.toString())
             let payload = {}
             payload.id = vm.travelmodel.id
+            payload.action = 'Approve'
             payload.email = emailto
             payload.title = 'Approve/Reject Trip Report'
             payload.indexnumber = vm.travelmodel.IndexNumber
             payload.company = vm.travelmodel.Company
             payload.start = vm.travelmodel.StartTime
             payload.end = vm.travelmodel.EndTime
-            payload.link = trlink + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + vm.travelmodel.id
             payload.linktext = 'Approve/Reject Trip Report'
             Travel.dispatch('TripReportEmail', payload)
             let taskpayload = {

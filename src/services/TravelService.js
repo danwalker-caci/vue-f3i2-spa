@@ -386,6 +386,22 @@ export default {
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     body += '<p>Please click the link below for more details.</p><p></p>'
+    switch (payload.action) {
+      case 'Deny':
+        // denied
+        body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        break
+
+      case 'Notify':
+        // notify
+        body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
+        break
+
+      case 'Approve':
+        //approve
+        body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        break
+    }
     //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
     body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
     let mail = {
