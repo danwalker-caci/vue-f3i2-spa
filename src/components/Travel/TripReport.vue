@@ -498,6 +498,10 @@ export default {
           document.getElementById('FrameColumn').appendChild(iframe)
         }
       })
+      if (this.isWPManager) {
+        // autoset approval to yes
+        vm.travelmodel.TripReportApproval = 'Yes'
+      }
     },
     getFileBuffer(file) {
       let p = new Promise(function(resolve, reject) {
