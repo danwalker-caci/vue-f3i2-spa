@@ -87,7 +87,6 @@ if (window._spPageContextInfo) {
 }
 
 let library = SPCI.webAbsoluteUrl + '/TripReports/'
-let trlink = SPCI.webAbsoluteUrl
 
 let vm = null
 
