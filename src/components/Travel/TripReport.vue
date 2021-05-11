@@ -284,7 +284,6 @@ export default {
           payload.title = 'Trip Report Approved'
           payload.workplan = vm.travelmodel.IndexNumber
           payload.company = vm.travelmodel.Company
-          payload.travelers = vm.travelmodel.Travelers
           payload.start = vm.travelmodel.StartTime
           payload.end = vm.travelmodel.EndTime
           payload.link = library + vm.fileSelected
@@ -354,7 +353,6 @@ export default {
           payload.title = 'Trip Report Approved'
           payload.workplan = vm.travelmodel.IndexNumber
           payload.company = vm.travelmodel.Company
-          payload.travelers = vm.travelmodel.Travelers
           payload.start = vm.travelmodel.StartTime
           payload.end = vm.travelmodel.EndTime
           payload.link = library + vm.fileSelected
@@ -429,7 +427,6 @@ export default {
             payload.title = 'Approve/Reject Trip Report'
             payload.workplan = vm.travelmodel.IndexNumber
             payload.company = vm.travelmodel.Company
-            payload.travelers = vm.travelmodel.Travelers
             payload.start = vm.travelmodel.StartTime
             payload.end = vm.travelmodel.EndTime
             payload.link = trlink + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + vm.travelmodel.id

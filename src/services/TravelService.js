@@ -384,16 +384,6 @@ export default {
     body += '<p>WorkPlanNumber: ' + payload.workplan
     body += '<p>IndexNumber: ' + payload.indexnumber
     body += '<p>Company: ' + payload.company
-    let t = payload.travelers
-    let s = ''
-    for (let i = 0; i < t.length; i++) {
-      if (i == 0) {
-        s += t[i].firstName + ' ' + t[i].lastName
-      } else {
-        s += ', ' + t[i].firstName + ' ' + t[i].lastName
-      }
-    }
-    body += '<p>Travelers: ' + s
     body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
     body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
     // build travelers text
