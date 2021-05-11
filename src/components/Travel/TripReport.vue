@@ -213,7 +213,7 @@ export default {
         this.travelmodel.Company = this.selectedtrip.Company
         this.travelmodel.TripReport = this.selectedtrip.TripReport
         this.travelmodel.TripReportLink = this.selectedtrip.TripReportLink
-        this.travelmodel.StartTime = moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
+        this.travelmodel.StartTime = this.$moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
         this.travelmodel.EndTime = this.$moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.IndexNumber = this.selectedtrip.IndexNumber
         this.travelmodel.WPNumber = this.selectedtrip.WorkPlanNumber
