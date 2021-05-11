@@ -794,7 +794,6 @@ export default {
       // check all the fields in the first tab to see that they are properly validated
       let valid = true
       for (let i = 0; i < this.fieldsFirstTab.length; i++) {
-        console.log('VALIDATING: ' + this.fieldsFirstTab[i])
         if (this.$refs[this.fieldsFirstTab[i]].state === false) {
           valid = false
         }
