@@ -402,8 +402,6 @@ export default {
         body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
         break
     }
-    //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
-    body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
