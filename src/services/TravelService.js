@@ -378,6 +378,59 @@ export default {
         console.log('TravelService Error Sending NewTripEmail: ' + error)
       })
   },
+  TripReportEmail(state, digest, payload) {
+    // send email to workplan manager regarding state of trip. Reminder of specific actions
+    let body = ''
+    body += '<p>WorkPlanNumber: ' + payload.workplan
+    body += '<p>IndexNumber: ' + payload.indexnumber
+    body += '<p>Company: ' + payload.company
+    let t = payload.travelers
+    let s = ''
+    for (let i = 0; i < t.length; i++) {
+      if (i == 0) {
+        s += t[i].firstName + ' ' + t[i].lastName
+      } else {
+        s += ', ' + t[i].firstName + ' ' + t[i].lastName
+      }
+    }
+    body += '<p>Travelers: ' + s
+    body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
+    body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
+    // build travelers text
+    body += '<p>Please click the link below for more details.</p><p></p>'
+    //body += '<p><a href="' + baseurl + '/Pages/' + process.env.ENV_BASE + '#/travel/page/edit?id=' + payload.id + '">' + linktext + '</a></p>'
+    body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
+    let mail = {
+      properties: {
+        __metadata: { type: 'SP.Utilities.EmailProperties' },
+        From: portalemail,
+        To: { results: payload.email },
+        Body: body,
+        Subject: payload.title
+      }
+    }
+    // store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail TO: ' + payload.email + '</div>')
+    // store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail body: ' + body + '</div>')
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    return axios
+      .post(eurl, mail, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        // TODO: Better error handling and response
+        store.dispatch('support/addActivity', '<div class="bg-danger">TravelService NewTripEmail ERROR: ' + error + '</div>')
+        console.log('TravelService Error Sending NewTripEmail: ' + error)
+      })
+  },
   async addTrip(payload, digest) {
     // payload is the full event object as json array with 1 element
     let wp = String(payload[0].WorkPlan).split(', ')

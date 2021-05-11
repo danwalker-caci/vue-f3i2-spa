@@ -1,3 +1,16 @@
+<!--
+TripReport 
+Actions Supported
+1 Upload Trip Report: Action can be performed by Subcontractor/Travel Submiiter or WPM/Delegate
+  [A] If action is performed by sub/submitter just expose submit button. Submitting should create a task for WPM/Delegates with link to this page for specific trip report based on trip and report. This link is for "Approve/Reject Trip Report" and will be exposed in the WPM/Delegates My Tasks section. 
+  [B] If action is performed by WPM/Delegate expose email recipient list and submit button. Email recipient list is where the selection of government users who will receive the aprroval are selected. The submit will set the status of the trip to Completed and sends emails to the selected recipients. No tasks are created.
+2 Approve/Reject Trip Report
+  [A] Action should be exposed as a task for WPM/Delegate and also as a travel tracker action or part of the trip report action from the tracker. 
+  [B] The page will load the existing trip report which could also be overridden by uploading a new one. The page shhould expose the Approve/Reject option and if Approve is selected the Email Recipient selector should be exposed.
+      [1] if Approve is selected, the submission will change the trip to Completed and send emails to the selected recipients. 
+      [2] if Reject is selected, the rejection comments should be exposed and filled out. The submission should create an email and a task for the submitter to correct the issues with the trip report and changes the status back to TripReportDue or TripReportLate. 
+
+-->
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
     <b-row no-gutters class="contentHeight">
@@ -12,12 +25,6 @@
                 </span>
               </b-row>
               <b-row class="m-2 p-0"><ejs-uploader id="fileuploadwpm" name="UploadFilesWPM" :selected="onFileSelect" :multiple="false"></ejs-uploader></b-row>
-              <!-- <b-row class="m-2 p-0">
-                <b-button-group class="mx-auto" style="width: 200px;">
-                  <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
-                  <b-button variant="success" ref="btnOk" class="ml-2" @click="onSubmit">Submit</b-button>
-                </b-button-group>
-              </b-row> -->
               <b-row class="m-2 p-0">
                 <span class="mx-auto" style="width: 200px;">
                   Approve Trip Report
@@ -28,17 +35,18 @@
                   <b-form-radio value="Yes">Yes</b-form-radio>
                   <b-form-radio value="No">No</b-form-radio>
                 </b-form-radio-group>
-                <!-- <b-form-group class="mx-auto" style="width: 200px;">
-                  <b-form-checkbox class="float-left ml-1" v-model="travelmodel.TripReportApproval" value="Approved" @change="ApprovedChanged">Approve</b-form-checkbox>
-                  <b-form-checkbox class="float-left ml-3" v-model="travelmodel.TripReportRejected" value="Denied" @change="DeniedChanged">Reject</b-form-checkbox>
-                </b-form-group> -->
               </b-row>
               <b-row v-if="travelmodel.TripReportApproval == 'No'" class="m-2 p-0">
                 <b-form-textarea rows="8" class="mx-auto" style="width: 95%;" v-model="travelmodel.TripReportRejectedComments" placeholder="Rejection Comments"></b-form-textarea>
               </b-row>
-              <!-- <b-row v-if="travelmodel.TripReportApproval == 'Yes'" class="mb-1">
+              <b-row v-if="travelmodel.TripReportApproval == 'Yes'" class="m-2 p-0">
+                <span class="mx-auto" style="width: 200px;">
+                  Select Email Recipients
+                </span>
+              </b-row>
+              <b-row v-if="travelmodel.TripReportApproval == 'Yes'" class="m-2 p-0">
                 <b-form-checkbox-group v-model="travelmodel.Notifications" stacked :options="govTrvlApprovers" name="selectedapprover-radios"></b-form-checkbox-group>
-              </b-row> -->
+              </b-row>
               <b-row class="m-2 p-0">
                 <b-button-group class="mx-auto" style="width: 200px;">
                   <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
@@ -79,6 +87,7 @@ if (window._spPageContextInfo) {
 }
 
 let library = SPCI.webAbsoluteUrl + '/TripReports/'
+let trlink = SPCI.webAbsoluteUrl
 
 let vm = null
 
@@ -126,7 +135,23 @@ export default {
     vm = this
     this.$nextTick(function() {
       let payload = {}
-      payload.id = vm.TripId
+      // payload.id = vm.TripId
+      if (this.$route) {
+        let idx = ''
+        idx = this.$route.query.id
+        console.log('idx: ' + idx)
+        let a = Number(idx)
+        if (isNaN(a)) {
+          console.log('TEST B')
+          payload.id = vm.TripId
+        } else {
+          console.log('TEST A')
+          payload.id = idx
+        }
+        console.log('PAYLOAD ID: ' + payload.id)
+      } else {
+        payload.id = vm.TripId
+      }
       this.today = this.$moment().format('YYYY-MM-DD')
       try {
         Todo.dispatch('getDigest')
@@ -208,20 +233,6 @@ export default {
         }
       }
     },
-    /* ApprovedChanged: function(checked) {
-      console.log('ApprovedChanged: ' + checked)
-      if (checked) {
-        this.travelmodel.TripReportApproval = 'Yes'
-        this.travelmodel.TripReportRejected = 'No'
-      }
-    },
-    DeniedChanged: function(checked) {
-      console.log('DeniedChanged: ' + checked)
-      if (checked) {
-        this.travelmodel.TripReportApproval = 'No'
-        this.travelmodel.TripReportRejected = 'Yes'
-      }
-    }, */
     onCancel: function() {
       this.$router.push({ name: 'Travel Tracker' })
     },
@@ -252,7 +263,7 @@ export default {
         Travel.dispatch('updateReportItem', payload).then(function() {
           // Refresh trip with trip report data
           console.log('WPMSubmit ReportItemUpdated')
-          vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
+          // vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
           let event = []
           event.push({
             name: vm.fileName,
@@ -261,12 +272,24 @@ export default {
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
           })
-          /* let notificationemails = []
+          let notificationemails = []
           let notificationselected = vm.travelmodel.Notifications
           for (let i = 0; i < notificationselected.length; i++) {
             let a = notificationselected[i].split(',')
             notificationemails.push(a[1])
-          } */
+          }
+          let payload = {}
+          payload.id = vm.travelmodel.id
+          payload.email = notificationemails
+          payload.title = 'Trip Report Approved'
+          payload.workplan = vm.travelmodel.IndexNumber
+          payload.company = vm.travelmodel.Company
+          payload.travelers = vm.travelmodel.Travelers
+          payload.start = vm.travelmodel.StartTime
+          payload.end = vm.travelmodel.EndTime
+          payload.link = library + vm.fileSelected
+          payload.linktext = 'View Trip Report'
+          Travel.dispatch('TripReportEmail', payload)
           Travel.dispatch('editTripReport', event).then(function() {
             vm.$router.push({ name: 'Travel Tracker' })
           })
@@ -298,7 +321,7 @@ export default {
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: status,
-            TaskLink: '/travel/page/edit?id=' + vm.travelmodel.id,
+            TaskLink: '/travel/page/report?id=' + vm.travelmodel.id,
             TaskInfo: 'Type:Travel, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
           }
           let deletepayload = {
@@ -319,6 +342,24 @@ export default {
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
           })
+          let notificationemails = []
+          let notificationselected = vm.travelmodel.Notifications
+          for (let i = 0; i < notificationselected.length; i++) {
+            let a = notificationselected[i].split(',')
+            notificationemails.push(a[1])
+          }
+          let payload = {}
+          payload.id = vm.travelmodel.id
+          payload.email = notificationemails
+          payload.title = 'Trip Report Approved'
+          payload.workplan = vm.travelmodel.IndexNumber
+          payload.company = vm.travelmodel.Company
+          payload.travelers = vm.travelmodel.Travelers
+          payload.start = vm.travelmodel.StartTime
+          payload.end = vm.travelmodel.EndTime
+          payload.link = library + vm.fileSelected
+          payload.linktext = 'View Trip Report'
+          Travel.dispatch('TripReportEmail', payload)
           Travel.dispatch('editTripReport', event).then(function() {
             vm.$router.push({ name: 'Travel Tracker' })
           })
@@ -369,25 +410,39 @@ export default {
             let emailto = []
             let taskid = []
             emailto.push(vm.ManagerEmail)
-            for (let i = 0; i < vm.delegates.length; i++) {
-              if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
-                // add the delegates to the email and task array
-                taskid.push(vm.delegates[i]['Id'])
-                let j = vm.delegates[i]['Delegates']
-                for (let k = 0; k < j.length; k++) {
-                  emailto.push(j[k]['EMail'])
-                  taskid.push(j[k]['Id'])
+            taskid.push(vm.ManagerID)
+            if (vm.delegates.length > 0) {
+              for (let i = 0; i < vm.delegates.length; i++) {
+                if (vm.delegates[i]['EMail'] == vm.ManagerEmail) {
+                  // add the delegates to the email and task array
+                  let j = vm.delegates[i]['Delegates']
+                  for (let k = 0; k < j.length; k++) {
+                    emailto.push(j[k]['EMail'])
+                    taskid.push(j[k]['Id'])
+                  }
                 }
               }
             }
+            let payload = {}
+            payload.id = vm.travelmodel.id
+            payload.email = emailto
+            payload.title = 'Approve/Reject Trip Report'
+            payload.workplan = vm.travelmodel.IndexNumber
+            payload.company = vm.travelmodel.Company
+            payload.travelers = vm.travelmodel.Travelers
+            payload.start = vm.travelmodel.StartTime
+            payload.end = vm.travelmodel.EndTime
+            payload.link = trlink + '/Pages/' + process.env.ENV_BASE + '#/travel/page/report?id=' + vm.travelmodel.id
+            payload.linktext = 'Approve/Reject Trip Report'
+            Travel.dispatch('TripReportEmail', payload)
             let taskpayload = {
               Title: 'Approve/Reject Trip Report',
-              AssignedToId: vm.ManagerID,
+              AssignedToId: taskid,
               Description: 'Approve or Reject Trip Report',
               IsMilestone: false,
               PercentComplete: 0,
               TaskType: 'Trip Report Review',
-              TaskLink: library + vm.fileSelected,
+              TaskLink: '/travel/page/report?id=' + vm.travelmodel.id,
               TaskInfo: 'Type:TripReportData, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber,
               TaskData: taskdata
             }
