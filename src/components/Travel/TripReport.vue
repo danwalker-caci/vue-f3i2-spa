@@ -377,8 +377,13 @@ export default {
           payload.link = vm.travelmodel.TripReportLink
           payload.linktext = 'View Trip Report'
           Travel.dispatch('TripReportEmail', payload)
-          Travel.dispatch('editTripReport', event).then(function() {
-            vm.$router.push({ name: 'Travel Tracker' })
+          let deletepayload = {
+            url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
+          }
+          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
+            Travel.dispatch('editTripReport', event).then(function() {
+              vm.$router.push({ name: 'Travel Tracker' })
+            })
           })
         }
       }
