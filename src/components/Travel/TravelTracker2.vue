@@ -800,6 +800,7 @@ export default {
     vm = this
     this.$nextTick(function() {
       this.$store.dispatch('support/addActivity', '<div class="bg-info">TravelTracker-MOUNTED</div>')
+      Travel.dispatch('getDigest')
       this.company = this.currentuser[0].Company
       if (console) {
         console.log('COMPANY: ' + this.company)
