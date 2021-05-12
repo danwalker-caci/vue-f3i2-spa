@@ -333,7 +333,7 @@ export default {
           let taskpayload = {
             Title: 'Trip Report Rejected By WPM',
             AssignedToId: [vm.travelmodel.CreatedBy],
-            Description: 'Please make the requested updates to the report and resubmit.',
+            Description: vm.travelmodel.TripReportRejectedComments,
             IsMilestone: false,
             PercentComplete: 0,
             TaskType: status,
@@ -374,7 +374,7 @@ export default {
           payload.company = vm.travelmodel.Company
           payload.start = vm.travelmodel.StartTime
           payload.end = vm.travelmodel.EndTime
-          payload.link = library + vm.fileSelected
+          payload.link = vm.travelmodel.TripReportLink
           payload.linktext = 'View Trip Report'
           Travel.dispatch('TripReportEmail', payload)
           Travel.dispatch('editTripReport', event).then(function() {
