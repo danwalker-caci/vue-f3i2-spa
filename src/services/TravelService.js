@@ -662,8 +662,10 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.TravelListItem' },
-      Status: payload[0].Status,
-      TripReport: !isNullOrUndefined(payload[0].TripReport) ? report : ''
+      Status: payload[0].Status
+    }
+    if (payload[0].Action == 'Submit') {
+      itemprops.TripReport = payload[0].TripReport
     }
     try {
       const response = await axios.post(url, itemprops, config)

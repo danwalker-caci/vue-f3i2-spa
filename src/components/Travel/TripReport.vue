@@ -269,6 +269,7 @@ export default {
           // vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
           let event = []
           event.push({
+            Action: 'Submit',
             name: vm.fileName,
             Status: 'Completed',
             TripReport: library + vm.fileSelected,
@@ -312,6 +313,7 @@ export default {
           }
           let event = []
           event.push({
+            Action: 'Deny',
             Status: status,
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
@@ -352,6 +354,7 @@ export default {
           // approved so update status to completed.
           let event = []
           event.push({
+            Action: 'Approval',
             Status: 'Completed',
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
@@ -405,6 +408,7 @@ export default {
           vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
           let event = []
           event.push({
+            Action: 'Submit',
             name: vm.fileName,
             Status: 'TripReportReview',
             TripReport: library + vm.fileSelected,

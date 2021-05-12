@@ -102,18 +102,7 @@ export default {
         return {
           template: Vue.component('columnTemplate', {
             template: `
-            <div v-if="data.TaskType == 'Trip Report Review'">
-              <b-button class="actionbutton" variant="info" @click="reviewtr(data)" title="Review Trip Report">
-                <font-awesome-icon far icon="file-invoice" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button class="actionbutton" variant="success" @click="approveme(data)" title="Approve">
-                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
-              </b-button>
-              <b-button class="actionbutton" variant="danger" @click="rejectme(data)" title="Reject">
-                <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
-              </b-button>
-            </div>
-            <div v-else-if="data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
+            <div v-if="data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
               <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
