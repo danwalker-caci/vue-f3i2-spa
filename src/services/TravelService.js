@@ -723,10 +723,7 @@ export default {
   },
   postponeTravel(id, uri, etag, digest) {
     // console.log('TodoService Completing Todo with ID: ' + id + ', Digest: ' + digest + ', Uri: ' + uri + ', etag: ' + etag)
-    let taskurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items"
-    if (!isNullOrUndefined(uri)) {
-      taskurl = uri
-    }
+    let taskurl = uri
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
