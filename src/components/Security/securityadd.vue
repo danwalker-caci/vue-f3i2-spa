@@ -736,8 +736,8 @@ export default {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-            AssignedToId: 63, // TESTING TASK
-            //AssignedToId: this.taskUserId,
+            //AssignedToId: 63, // TESTING TASK
+            AssignedToId: this.taskUserId,
             Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
             IsMilestone: false,
             PercentComplete: 0,
@@ -757,8 +757,8 @@ export default {
             console.log('ERROR: ' + error.message)
           })
           let emailPayload = {
-            //emails: this.taskEmail,
-            emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+            emails: this.taskEmail,
+            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               vm.form.Name +

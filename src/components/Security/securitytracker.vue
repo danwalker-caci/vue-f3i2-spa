@@ -662,8 +662,8 @@ export default {
                 // Add a task for the designated government employee for review
                 let payload = {
                   Title: 'Complete or Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
-                  AssignedToId: 63, // TESTING TASK
-                  //AssignedToId: taskUserId,
+                  //AssignedToId: 63, // TESTING TASK
+                  AssignedToId: taskUserId,
                   Description: 'Complete or reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
                   IsMilestone: false,
                   PercentComplete: 0,
@@ -683,8 +683,8 @@ export default {
                   console.log('ERROR: ' + error.message)
                 })
                 let emailPayload = {
-                  //emails: taskEmail,
-                  emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                  emails: taskEmail,
+                  //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                   body:
                     '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                     data.FirstName +
@@ -1129,12 +1129,6 @@ export default {
                     let itemlink = item.data.d.ListItemAllFields.__deferred.uri
                     let form = await Security.dispatch('getForm', itemlink)
                     let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
-                    /*payload = form.data.d.__metadata
-                    //payload.file = file.fileSelected
-                    payload.name = pdfName
-                    // payload.IndexNumber = this.IndexNumber
-                    payload.SecurityFormId = d.Id
-                    await Security.dispatch('updateForm', payload)*/
                     // Clear out old forms
                     d[this.selectedSecurityFormType].forms.push({
                       account: this.selectedSecurityFormType,
@@ -1146,14 +1140,9 @@ export default {
                       etag: form.data.d.__metadata.etag,
                       uri: form.data.d.__metadata.uri
                     })
-                    // then upload files to replace the formType
-
-                    // Replace the files in original form type
-                    //d[this.formTypes].files =
-                    // finally, clear d.files to zero and remove from file uploader
                   })
                 }
-                console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
+                if (console) console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
                 if (this.statusesUpdated && d.taskId) {
                   await Todo.dispatch('getDigest')
                   let task = await Todo.dispatch('getTodoById', d.taskId)
