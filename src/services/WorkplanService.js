@@ -78,7 +78,7 @@ export default {
   async getPCAForWP(state, payload) {
     let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/items"
     geturl += '?$select=PCA/Title,PCA/ID,PCA/Name,PCA/EMail&$expand=PCA'
-    geturl += "&$filter=(Number eq '" + payload + "')"
+    geturl += "&$filter=(Number eq '" + payload.wp + "')"
     console.log('getURL: ' + geturl)
     let response = await axios.get(geturl, {
       headers: {
