@@ -79,6 +79,7 @@ export default {
     let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/items"
     geturl += '?$select=PCA/Title,PCA/ID,PCA/Name,PCA/EMail&$expand=PCA'
     geturl += "&$filter=(Number eq '" + payload + "')"
+    console.log('getURL: ' + geturl)
     let response = await axios.get(geturl, {
       headers: {
         accept: 'application/json;odata=verbose'
