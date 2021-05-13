@@ -137,7 +137,9 @@
                 <ejs-grid
                   id="WorkplanGrid"
                   ref="WorkplanGrid"
+                  :load="load"
                   :dataSource="filtereddata"
+                  :enablePersistence="false"
                   :allowPaging="true"
                   :allowReordering="true"
                   :allowResizing="true"
@@ -185,6 +187,7 @@
 </template>
 
 <script>
+/* eslint-disable no-case-declarations */
 import Vue from 'vue'
 import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
@@ -222,6 +225,9 @@ export default {
     },
     userid() {
       return User.getters('CurrentUserId')
+    },
+    isPM() {
+      return User.getters('isPM')
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
@@ -364,10 +370,11 @@ export default {
       ],
       pageSettings: { pageSize: 30 },
       editSettings: {
-        allowEditing: this.isSubcontractor ? false : true,
-        allowAdding: this.isSubcontractor ? false : true,
-        allowDeleting: false,
-        mode: 'Dialog'
+        allowEditing: true,
+        allowAdding: true,
+        allowDeleting: true,
+        newRowPosition: 'Bottom',
+        mode: 'Normal'
       },
       filterSettings: { type: 'Menu' },
       status: [
@@ -378,7 +385,7 @@ export default {
         { text: 'Approved', value: 'Approved' },
         { text: 'PM Review', value: 'PM Review' }
       ],
-      toolbar: this.isSubcontractor ? ['Search'] : ['Add', 'Edit', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['Search'],
       rowData: {},
       newData: {
         Title: '',
@@ -394,7 +401,7 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager" class="actionbutton" variant="danger" @click="archiveme(data)" v-b-tooltip.hover.v-dark title="Archive">
+              <b-button v-if="isPM" class="actionbutton" variant="danger" @click="archiveme(data)" v-b-tooltip.hover.v-dark title="Archive">
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
               </b-button>
               <b-button :href="href" class="actionbutton ml-1" variant="success" v-b-tooltip.hover.v-dark title="Email Workplan Manager">
@@ -410,8 +417,8 @@ export default {
               href: function() {
                 return 'mailto:' + this.data.ManagerEmail
               },
-              isWPManager() {
-                return User.getters('isWPManager')
+              isPM() {
+                return User.getters('isPM')
               }
             },
             methods: {
@@ -454,27 +461,25 @@ export default {
   },
   mounted: function() {
     vm = this
-    this.$bvToast.show('busy-toast')
-    try {
-      Workplan.dispatch('getDigest')
-      Workplan.dispatch('getManagers').then(function() {
-        Workplan.dispatch('getWorkplans').then(function() {
-          vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+    this.$nextTick(async () => {
+      this.$bvToast.show('busy-toast')
+      this.editSettings.allowEditing = this.isPM
+      this.editSettings.allowAdding = this.isPM
+      this.editSettings.allowDeleting = this.isPM
+      this.toolbar = this.isPM ? ['Add', 'Edit', 'Print', 'Search', 'ExcelExport'] : ['Search']
+      await Workplan.dispatch('getDigest')
+      await Workplan.dispatch('getManagers').catch(e => {
+        // include a notification to the user of an error and log that error for developers
+        this.throwError(e)
+      })
+      await Workplan.dispatch('getWorkplans')
+        .then(function() {
+          vm.$options.interval = setInterval(vm.waitForPlans, 750)
         })
-      })
-    } catch (e) {
-      // include a notification to the user of an error and log that error for developers
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
+        .catch(e => {
+          this.throwError(e)
+        })
+    })
   },
   methods: {
     waitForPlans: function() {
@@ -507,36 +512,86 @@ export default {
           break
       }
     },
-    actionBegin(args) {
+    async throwError(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: error,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + JSON.stringify(error))
+    },
+    async load() {
+      this.$refs['WorkplanGrid'].ej2Instances.element.addEventListener('mousedown', function(e) {
+        var instance = this.ej2_instances[0]
+        if (e.target.classList.contains('e-rowcell')) {
+          console.log(instance)
+          if (instance.isEdit) instance.endEdit()
+          let index = parseInt(e.target.getAttribute('Index'))
+          instance.selectRow(index)
+          instance.startEdit()
+        }
+      })
+    },
+    async actionBegin(args) {
       switch (args.requestType) {
         case 'beginEdit':
-          if (!this.isSubcontractor) {
+          /*if (!this.isSubcontractor) {
             this.editRow(args.rowData)
-          }
-          args.cancel = true
+          }*/
+          console.log('BEGIN EDIT: ' + JSON.stringify(args.rowData))
+          // Get the information so that
+          //args.cancel = true
           break
 
         case 'add':
           args.cancel = true
-          if (!this.isSubcontractor) {
+          if (this.isPM) {
             this.$bvModal.show('NewModal')
           }
           break
+        case 'save':
+          // build payload to pass to update function
+          await this.updateWorkplan(args.data)
       }
     },
-    actionComplete(args) {
+    async actionComplete(args) {
       // console.log('ACTION COMPLETE: ' + args.requestType)
-      if (args.requestType == 'columnstate') {
-        this.$refs['WorkplanGrid'].autoFitColumns()
+      switch (args.requestType) {
+        case 'columnstate':
+          this.$refs['WorkplanGrid'].autoFitColumns()
+          break
+        case 'refresh':
+          /*let h1 = 0
+          let h2 = this.$refs.WorkplanGrid.$el.children[3].children[0].clientHeight // children[7] matches .e-gridconent
+          console.log('CLIENTHEIGHT: ' + h2)
+          h1 = Math.floor(h2 / 20)
+          this.pageSettings.pageSize = h1
+          this.$refs.WorkplanGrid.pageSettings = { pageSize: h1 }*/
+          break
+        case 'beginEdit':
+          if (console) console.log('ACTION COMPLETE BEGIN EDIT: ' + JSON.stringify(args.rowData))
+          break
       }
-      if (args.requestType == 'refresh') {
-        let h1 = 0
-        let h2 = this.$refs.WorkplanGrid.$el.children[7].children[0].clientHeight // children[7] matches .e-gridconent
-        console.log('CLIENTHEIGHT: ' + h2)
-        h1 = Math.floor(h2 / 20)
-        this.pageSettings.pageSize = h1
-        this.$refs.WorkplanGrid.pageSettings = { pageSize: h1 }
+    },
+    async updateWorkplan(data) {
+      console.log('UPDATING WORKPLAN: ' + data)
+      let payload = {
+        Title: data.Title,
+        Number: data.Number,
+        Revision: data.Revision,
+        POPStart: data.POPStart,
+        POPEnd: data.POPEnd,
+        ManagerId: data.ManagerId,
+        Status: data.Status
       }
+      payload.uri = data.uri
+      payload.etag = data.etag
+      let results = await Workplan.dispatch('editWorkplan', payload)
+      data.etag = results.headers.etag
     },
     dataBound: function() {
       this.$refs.WorkplanGrid.autoFitColumns()
