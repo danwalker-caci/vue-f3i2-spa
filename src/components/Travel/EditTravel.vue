@@ -702,6 +702,9 @@ export default {
     isTravelApprover() {
       return User.getters('isTravelApprover')
     },
+    pca() {
+      return this.$store.state.database.travel.pca
+    },
     delegates() {
       return this.$store.state.database.travel.delegates
     },
@@ -1000,6 +1003,7 @@ export default {
         this.travelmodel.CreatedByEmail = this.selectedtrip.CreatedByEmail
         this.travelmodel.etag = this.selectedtrip.etag
         this.travelmodel.uri = this.selectedtrip.uri
+        Travel.dispatch('getPCAForWP', this.travelmodel.WorkPlanNumber)
         if (this.travelmodel.CreatedByEmail.indexOf(this.currentuser[0].Email) >= 0) {
           this.isAuthor = true
         }

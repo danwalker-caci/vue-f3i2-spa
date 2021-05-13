@@ -1,6 +1,7 @@
 // import Vue from 'vue'
 import Travel from '@/models/Travel'
 import TravelService from '@/services/TravelService.js'
+import WorkplanService from '@/services/WorkplanService.js'
 import { isNullOrUndefined } from 'util'
 import moment from 'moment-timezone'
 
@@ -59,6 +60,12 @@ const actions = {
       .catch(error => {
         console.log('There was an error: ', error.response)
       })
+  },
+  async getPCAForWP({ state }, payload) {
+    let response = await WorkplanService.getPCAForWP(payload, state)
+    Travel.commit(state => {
+      state.pca = formatPCA(response)
+    })
   },
   async getTRIPS() {
     TravelService.getAllTrips()
@@ -266,6 +273,13 @@ function formatGovApprovers(j) {
       value: j[i]['Id'] + ',' + j[i]['Email']
     })
   }
+  return p
+}
+
+function formatPCA(j) {
+  let p = {}
+  p.Id = j[0]['PCA']['ID']
+  p.Email = j[0]['PCA']['EMail']
   return p
 }
 
