@@ -1656,7 +1656,7 @@ export default {
         status = 'Approved'
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
-
+        let emailto = []
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.CreatedByEmail]
@@ -1696,7 +1696,6 @@ export default {
           this.actionselected = true
           status = 'WPMReview'
           this.travelmodel.InternalData.Status = 'WPMReview'
-
           let emailto = []
           let taskid = []
           emailto.push(vm.travelmodel.InternalData.ManagerEmail)
