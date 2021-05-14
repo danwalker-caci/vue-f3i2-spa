@@ -118,7 +118,7 @@
                 <td><ejs-datepicker v-model="newData.POPEnd"></ejs-datepicker></td>
                 <td><ejs-dropdownlist id="ddStatusNew" v-model="newData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
                 <td><ejs-dropdownlist id="ddManagerNew" v-model="newData.Manager" :dataSource="managers" :fields="ddfields" @change="NewManagerSelected"></ejs-dropdownlist></td>
-                <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
+                <td><ejs-datepicker v-model="newData.DateApproved"></ejs-datepicker></td>
               </tr>
             </tbody>
           </table>
@@ -126,18 +126,59 @@
       </b-modal>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-form @submit="onSubmit">
-            <b-row no-gutters class="buttonrow">
-              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
-                Toggle Filters
-              </b-button>
-            </b-row>
-            <b-row no-gutters class="gridrow">
-              <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+          <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+            <b-form @submit="onSubmit">
+              <b-row no-gutters class="buttonrow">
+                <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+                  Toggle Filters
+                </b-button>
+              </b-row>
+              <b-row no-gutters class="gridrow" v-if="isPM && !loadingData">
+                <ejs-grid
+                  id="WorkplanGrid"
+                  ref="WorkplanGrid"
+                  :load="load"
+                  :dataSource="filtereddata"
+                  :enablePersistence="false"
+                  :allowPaging="true"
+                  :allowReordering="true"
+                  :allowResizing="true"
+                  :pageSettings="pageSettings"
+                  :editSettings="editSettingsPM"
+                  :filterSettings="filterSettings"
+                  :toolbar="toolbarPM"
+                  :allowExcelExport="true"
+                  :toolbarClick="toolbarClick"
+                  :dataBound="dataBound"
+                  :actionBegin="actionBegin"
+                  :actionComplete="actionComplete"
+                  rowHeight="20"
+                  :height="rect.height - 175"
+                  :width="rect.width - 1"
+                >
+                  <e-columns>
+                    <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
+                    <e-column field="Number" headerText="Number" minWidth="100"></e-column>
+                    <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
+                    <e-column field="DateApproved" headerText="Date Approved" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
+                    <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+                  </e-columns>
+                </ejs-grid>
+              </b-row>
+              <b-row no-gutters class="gridrow" v-if="!isPM && !loadingData">
                 <ejs-grid
                   id="WorkplanGrid"
                   ref="WorkplanGrid"
                   :dataSource="filtereddata"
+                  :enablePersistence="false"
                   :allowPaging="true"
                   :allowReordering="true"
                   :allowResizing="true"
@@ -156,7 +197,7 @@
                 >
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
                     <e-column field="Status" headerText="Status" width="125"></e-column>
                     <e-column field="Number" headerText="Number" width="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
@@ -170,14 +211,14 @@
                     <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
                   </e-columns>
                 </ejs-grid>
-                <template #overlay>
-                  <div class="text-center">
-                    <p id="busy-label">{{ overlayText }}</p>
-                  </div>
-                </template>
-              </b-overlay>
-            </b-row>
-          </b-form>
+              </b-row>
+            </b-form>
+            <template #overlay>
+              <div class="text-center">
+                <p id="busy-label">{{ overlayText }}</p>
+              </div>
+            </template>
+          </b-overlay>
         </b-container>
       </b-col>
     </b-row>
@@ -185,13 +226,29 @@
 </template>
 
 <script>
+/* eslint-disable no-case-declarations */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import User from '@/models/User'
 import Workplan from '@/models/WorkPlan'
 import Personnel from '@/models/Personnel'
+import { DropDownList } from '@syncfusion/ej2-dropdowns'
+import { DatePicker } from '@syncfusion/ej2-calendars'
+import { createElement } from '@syncfusion/ej2-base'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 
-let vm = null
+let vm = null,
+  managerElem,
+  managerObj,
+  statusElem,
+  statusObj,
+  dateApprovedElem,
+  dateApprovedObj,
+  popEndElem,
+  popEndObj,
+  popStartElem,
+  popStartObj
 
 export default {
   name: 'workplan',
@@ -220,8 +277,14 @@ export default {
     user() {
       return User.getters('CurrentUser')
     },
+    userLoaded() {
+      return User.getters('Loaded')
+    },
     userid() {
       return User.getters('CurrentUserId')
+    },
+    isPM() {
+      return User.getters('isPM')
     },
     isSubcontractor() {
       return User.getters('isSubcontractor')
@@ -235,6 +298,7 @@ export default {
       busyTitle: 'Getting Data. Please Wait.',
       overlayText: 'Getting Data. Please Wait...',
       overlayVariant: 'light',
+      loadingData: true,
       sortfield: '',
       sortdir: '',
       data: [],
@@ -364,21 +428,29 @@ export default {
       ],
       pageSettings: { pageSize: 30 },
       editSettings: {
-        allowEditing: this.isSubcontractor ? false : true,
-        allowAdding: this.isSubcontractor ? false : true,
+        allowEditing: false,
+        allowAdding: false,
         allowDeleting: false,
-        mode: 'Dialog'
+        newRowPosition: 'Bottom',
+        mode: 'Normal'
+      },
+      editSettingsPM: {
+        allowEditing: true,
+        allowAdding: true,
+        allowDeleting: false,
+        newRowPosition: 'Bottom',
+        mode: 'Normal'
       },
       filterSettings: { type: 'Menu' },
       status: [
         //In Progress, Submitted, Approved, PM Review
-        { text: 'Select...', value: 'S' },
         { text: 'In Progress', value: 'In Progress' },
         { text: 'Submitted', value: 'Submitted' },
         { text: 'Approved', value: 'Approved' },
         { text: 'PM Review', value: 'PM Review' }
       ],
-      toolbar: this.isSubcontractor ? ['Search'] : ['Add', 'Edit', 'Print', 'Search', 'ExcelExport'],
+      toolbar: ['Search'],
+      toolbarPM: ['Add', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
       newData: {
         Title: '',
@@ -394,7 +466,7 @@ export default {
           template: Vue.component('columnTemplate', {
             template: `
             <div>
-              <b-button v-if="isWPManager" class="actionbutton" variant="danger" @click="archiveme(data)" v-b-tooltip.hover.v-dark title="Archive">
+              <b-button v-if="isPM" class="actionbutton" variant="danger" @click="archiveme(data)" v-b-tooltip.hover.v-dark title="Archive">
                 <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
               </b-button>
               <b-button :href="href" class="actionbutton ml-1" variant="success" v-b-tooltip.hover.v-dark title="Email Workplan Manager">
@@ -410,8 +482,8 @@ export default {
               href: function() {
                 return 'mailto:' + this.data.ManagerEmail
               },
-              isWPManager() {
-                return User.getters('isWPManager')
+              isPM() {
+                return User.getters('isPM')
               }
             },
             methods: {
@@ -449,32 +521,127 @@ export default {
             }
           })
         }
+      },
+      managerParams: {
+        create: () => {
+          managerElem = document.createElement('input')
+          return managerElem
+        },
+        read: () => {
+          return managerObj.text
+        },
+        destroy: () => {
+          managerObj.destroy()
+        },
+        write: () => {
+          managerObj = new DropDownList({
+            dataSource: vm.managers,
+            fields: { value: 'value', text: 'text' },
+            enabled: true,
+            placeholder: 'Select a manager',
+            floatLabelType: 'Never'
+          })
+          managerObj.appendTo(managerElem)
+        }
+      },
+      statusParams: {
+        create: () => {
+          statusElem = document.createElement('input')
+          return statusElem
+        },
+        read: () => {
+          return statusObj.text
+        },
+        destroy: () => {
+          statusObj.destroy()
+        },
+        write: () => {
+          statusObj = new DropDownList({
+            dataSource: vm.status,
+            fields: { value: 'value', text: 'text' },
+            enabled: true,
+            placeholder: 'Select a status',
+            floatLabelType: 'Never'
+          })
+          statusObj.appendTo(statusElem)
+        }
+      },
+      popEndParams: {
+        create: function() {
+          popEndElem = document.createElement('input')
+          return popEndElem
+        },
+        read: () => {
+          return popEndObj.value
+        },
+        destroy: () => {
+          popEndObj.destroy()
+        },
+        write: args => {
+          popEndObj = new DatePicker({
+            value: new Date(args.rowData[args.column.field]),
+            floatLabelType: 'Never'
+          })
+          popEndObj.appendTo(popEndElem)
+        }
+      },
+      popStartParams: {
+        create: function() {
+          popStartElem = document.createElement('input')
+          return popStartElem
+        },
+        read: () => {
+          return popStartObj.value
+        },
+        destroy: () => {
+          popStartObj.destroy()
+        },
+        write: args => {
+          popStartObj = new DatePicker({
+            value: new Date(args.rowData[args.column.field]),
+            floatLabelType: 'Never'
+          })
+          popStartObj.appendTo(popStartElem)
+        }
+      },
+      dateApprovedParams: {
+        create: function() {
+          dateApprovedElem = document.createElement('input')
+          return dateApprovedElem
+        },
+        read: () => {
+          return dateApprovedObj.value
+        },
+        destroy: () => {
+          dateApprovedObj.destroy()
+        },
+        write: args => {
+          dateApprovedObj = new DatePicker({
+            value: new Date(args.rowData[args.column.field]),
+            floatLabelType: 'Never'
+          })
+          dateApprovedObj.appendTo(dateApprovedElem)
+        }
       }
     }
   },
-  mounted: function() {
+  mounted: async function() {
     vm = this
-    this.$bvToast.show('busy-toast')
-    try {
-      Workplan.dispatch('getDigest')
-      Workplan.dispatch('getManagers').then(function() {
-        Workplan.dispatch('getWorkplans').then(function() {
+    this.$nextTick(async () => {
+      this.$bvToast.show('busy-toast')
+      await Workplan.dispatch('getDigest')
+      await Workplan.dispatch('getManagers').catch(e => {
+        // include a notification to the user of an error and log that error for developers
+        this.throwError(e)
+      })
+      await Workplan.dispatch('getWorkplans')
+        .then(function() {
           vm.$options.interval = setInterval(vm.waitForPlans, 1000)
         })
-      })
-    } catch (e) {
-      // include a notification to the user of an error and log that error for developers
-      const notification = {
-        type: 'danger',
-        title: 'Portal Error',
-        message: e,
-        push: true
-      }
-      this.$store.dispatch('notification/add', notification, {
-        root: true
-      })
-      console.log('ERROR: ' + e)
-    }
+        .catch(e => {
+          this.throwError(e)
+        })
+    })
   },
   methods: {
     waitForPlans: function() {
@@ -482,6 +649,7 @@ export default {
         clearInterval(this.$options.interval)
         this.data = this.workplans
         this.filtereddata = this.workplans
+        this.loadingData = false
         // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
         this.$bvToast.hide('busy-toast')
         // load any saved filters
@@ -507,36 +675,120 @@ export default {
           break
       }
     },
-    actionBegin(args) {
+    async throwError(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Portal Error',
+        message: error,
+        push: true
+      }
+      this.$store.dispatch('notification/add', notification, {
+        root: true
+      })
+      console.log('ERROR: ' + JSON.stringify(error))
+    },
+    async load() {
+      this.$refs['WorkplanGrid'].ej2Instances.element.addEventListener('mousedown', function(e) {
+        var instance = this.ej2_instances[0]
+        if (e.target.classList.contains('e-rowcell')) {
+          console.log(instance)
+          if (instance.isEdit) instance.endEdit()
+          let index = parseInt(e.target.getAttribute('Index'))
+          instance.selectRow(index)
+          instance.startEdit()
+        }
+      })
+    },
+    async actionBegin(args) {
       switch (args.requestType) {
         case 'beginEdit':
-          if (!this.isSubcontractor) {
+          /*if (!this.isSubcontractor) {
             this.editRow(args.rowData)
-          }
-          args.cancel = true
+          }*/
+          this.rowData = Object.assign({}, args.rowData)
+          // Get the information so that
+          //args.cancel = true
           break
 
         case 'add':
           args.cancel = true
-          if (!this.isSubcontractor) {
+          if (this.isPM) {
             this.$bvModal.show('NewModal')
+          }
+          break
+        case 'save':
+          // Create immutable objects and update related fields
+          if (console) console.log('SAVING ACTION BEGIN')
+          this.rowData = Object.assign({}, args.rowData)
+          if (managerObj.value) {
+            let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
+            this.rowData.ManagerId = Number(newManager.value)
+            this.rowData.Manager = newManager.text.toString()
+            args.rowData.ManagerId = Number(newManager.value)
+            args.rowData.Manager = newManager.text.toString()
+          }
+          if (statusObj.value) {
+            let newStatus = Object.assign({}, { value: statusObj.value })
+            this.rowData.Status = newStatus.value.toString()
+            args.rowData.Status = newStatus.value.toString()
+          }
+          if (popEndObj.value) {
+            let newPopEnd = Object.assign({}, { value: popEndObj.value })
+            this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
+          }
+          if (popStartObj.value) {
+            let newPopStart = Object.assign({}, { value: popStartObj.value })
+            this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
+          }
+          if (dateApprovedObj.value) {
+            let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
+            this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
           }
           break
       }
     },
-    actionComplete(args) {
+    async actionComplete(args) {
       // console.log('ACTION COMPLETE: ' + args.requestType)
-      if (args.requestType == 'columnstate') {
-        this.$refs['WorkplanGrid'].autoFitColumns()
+      switch (args.requestType) {
+        case 'columnstate':
+          this.$refs['WorkplanGrid'].autoFitColumns()
+          break
+        case 'refresh':
+          /*let h1 = 0
+          let h2 = this.$refs.WorkplanGrid.$el.children[3].children[0].clientHeight // children[7] matches .e-gridconent
+          console.log('CLIENTHEIGHT: ' + h2)
+          h1 = Math.floor(h2 / 20)
+          this.pageSettings.pageSize = h1
+          this.$refs.WorkplanGrid.pageSettings = { pageSize: h1 }*/
+          break
+        case 'beginEdit':
+          break
+        case 'save':
+          // Create an immutable manager object and update related fields
+          let workplan = await this.updateWorkplan(this.rowData)
+          console.log('UPDATED WORKPLAN: ' + workplan)
+          this.rowData.etag = Number(workplan.headers.etag)
+          if (console) console.log('SAVING ACTION COMPLETE')
+          this.$refs.WorkplanGrid.setRowData(this.rowData.Id, this.rowData)
+          //this.$refs.WorkplanGrid.refresh()
+          break
       }
-      if (args.requestType == 'refresh') {
-        let h1 = 0
-        let h2 = this.$refs.WorkplanGrid.$el.children[7].children[0].clientHeight // children[7] matches .e-gridconent
-        console.log('CLIENTHEIGHT: ' + h2)
-        h1 = Math.floor(h2 / 20)
-        this.pageSettings.pageSize = h1
-        this.$refs.WorkplanGrid.pageSettings = { pageSize: h1 }
+    },
+    async updateWorkplan(data) {
+      await Workplan.dispatch('getDigest')
+      let payload = {
+        Title: data.Title,
+        Number: data.Number,
+        Revision: data.Revision,
+        POPStart: data.POPStart,
+        POPEnd: data.POPEnd,
+        ManagerId: data.ManagerId,
+        Status: data.Status
       }
+      payload.uri = data.uri
+      payload.etag = data.etag
+      let results = await Workplan.dispatch('editWorkplan', payload)
+      return results
     },
     dataBound: function() {
       this.$refs.WorkplanGrid.autoFitColumns()
@@ -586,12 +838,12 @@ export default {
         console.log('ERROR: ' + e)
       }
     },
-    newOk: function() {
-      Workplan.dispatch('addWorkplan', this.newData).then(function() {
-        vm.$bvModal.hide('NewModal')
-        Workplan.dispatch('getWorkplans').then(function() {
-          vm.$options.interval = setInterval(vm.waitForPlans, 1000)
-        })
+    newOk: async function() {
+      await Workplan.dispatch('getDigest')
+      await Workplan.dispatch('addWorkplan', this.newData)
+      vm.$bvModal.hide('NewModal')
+      await Workplan.dispatch('getWorkplans').then(function() {
+        vm.$options.interval = setInterval(vm.waitForPlans, 1000)
       })
     },
     /* -------------------------------------------------------------------------------------------------- FILTER Functions --------------------------------------------------------------------- */
