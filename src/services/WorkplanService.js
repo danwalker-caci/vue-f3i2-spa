@@ -85,6 +85,7 @@ export default {
         accept: 'application/json;odata=verbose'
       }
     })
+    console.log('getPCAForWP response' + response)
     let results = response.data.d.results
     return results
   },

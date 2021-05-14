@@ -277,6 +277,7 @@ function formatGovApprovers(j) {
 }
 
 function formatPCA(j) {
+  console.log('formatPCA j: ' + j)
   let p = {}
   p.Id = j[0]['PCA']['ID']
   p.Email = j[0]['PCA']['EMail']
