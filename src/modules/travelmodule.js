@@ -279,8 +279,8 @@ function formatGovApprovers(j) {
 function formatPCA(j) {
   console.log('formatPCA j: ' + j)
   let p = {}
-  p.Id = j[0]['PCA']['ID']
-  p.Email = j[0]['PCA']['EMail']
+  p.Id = j[0]['PCA'].results[0]['ID']
+  p.Email = j[0]['PCA'].results[0]['EMail']
   return p
 }
 
