@@ -88,23 +88,25 @@ export default {
     return results
   },
   async saveWorkplan(payload, digest, action) {
+    let surl = ''
     // payload is the full event object as json array with 1 element
     // action determines if it is new or edit
     let headers = null
 
     switch (action) {
       case 'edit':
-        url = payload.uri
+        surl = payload.uri
         headers = {
           'Content-Type': 'application/json;odata=verbose',
           Accept: 'application/json;odata=verbose',
           'X-RequestDigest': digest,
           'X-HTTP-Method': 'MERGE',
-          'If-Match': payload.etag
+          'If-Match': '*'
         }
         break
 
       case 'new':
+        surl = url
         headers = {
           'Content-Type': 'application/json;odata=verbose',
           Accept: 'application/json;odata=verbose',
@@ -143,10 +145,10 @@ export default {
     }
 
     try {
-      await axios.post(url, itemprops, config)
+      await axios.post(surl, itemprops, config)
       // go get the data for the saved item to return back to the user
       return axios
-        .get(url, {
+        .get(surl, {
           headers: {
             accept: 'application/json;odata=verbose'
           }
