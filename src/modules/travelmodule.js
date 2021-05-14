@@ -62,7 +62,7 @@ const actions = {
       })
   },
   async getPCAForWP({ state }, payload) {
-    let response = await WorkplanService.getPCAForWP(payload, state)
+    let response = await WorkplanService.getPCAForWP(state, payload)
     Travel.commit(state => {
       state.pca = formatPCA(response)
     })
