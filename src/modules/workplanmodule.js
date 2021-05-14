@@ -95,6 +95,7 @@ function formatWorkplan(j) {
       POPStart: moment(j[i]['POPStart']).isValid() ? moment(j[i]['POPStart']).format('MM/DD/YYYY') : '',
       POPEnd: moment(j[i]['POPEnd']).isValid() ? moment(j[i]['POPEnd']).format('MM/DD/YYYY') : '',
       DateApproved: moment(j[i]['DateApproved']).isValid() ? moment(j[i]['DateApproved']).format('MM/DD/YYYY') : '',
+      CACISubmittedDate: moment(j[i]['CACISubmittedDate']).isValid() ? moment(j[i]['CACISubmittedDate']).format('MM/DD/YYYY') : '',
       Manager: j[i]['Manager']['Title'],
       ManagerId: j[i]['Manager']['ID'],
       ManagerEmail: j[i]['Manager']['EMail'],

@@ -141,7 +141,8 @@ export default {
             .format('YYYY-MM-DD[T]HH:MM:[00Z]')
         : null,
       ManagerId: Number(payload.ManagerId),
-      Status: payload.Status
+      Status: payload.Status,
+      CACISubmittedDate: moment(payload.CACISubmittedDate).isValid() ? moment(payload.CACISubmittedDate).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
     }
 
     try {

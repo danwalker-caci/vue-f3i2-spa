@@ -160,6 +160,7 @@
                     <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
+                    <e-column field="CACISubmittedDate" headerText="Submitted Date" format="M/d/y" :edit="submitDateParams" minWidth="150"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
                     <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
@@ -199,6 +200,7 @@
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
                     <e-column field="Status" headerText="Status" width="125"></e-column>
+                    <e-column field="CACISubmittedDate" headerText="Submitted Date" width="150"></e-column>
                     <e-column field="Number" headerText="Number" width="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
                     <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
@@ -248,7 +250,9 @@ let vm = null,
   popEndElem,
   popEndObj,
   popStartElem,
-  popStartObj
+  popStartObj,
+  submitDateElem,
+  submitDateObj
 
 export default {
   name: 'workplan',
@@ -301,6 +305,7 @@ export default {
       loadingData: true,
       sortfield: '',
       sortdir: '',
+      unlockSubmitDate: false,
       data: [],
       WorkplanData: [],
       filtereddata: [],
@@ -443,11 +448,11 @@ export default {
       },
       filterSettings: { type: 'Menu' },
       status: [
-        //In Progress, Submitted, Approved, PM Review
-        { text: 'In Progress', value: 'In Progress' },
-        { text: 'Submitted', value: 'Submitted' },
-        { text: 'Approved', value: 'Approved' },
-        { text: 'PM Review', value: 'PM Review' }
+        //Changed from In Progress, Submitted, Approved, PM Review to Waiting on Work Plan, CACI Updating, CACI Submitted, Approved on 5/14/2021
+        { text: 'Waiting on Work Plan', value: 'Waiting on Work Plan' },
+        { text: 'CACI Updating', value: 'CACI Updating' },
+        { text: 'CACI Submitted', value: 'CACI Submitted' },
+        { text: 'Approved', value: 'Approved' }
       ],
       toolbar: ['Search'],
       toolbarPM: ['Add', 'Print', 'Search', 'ExcelExport'],
@@ -555,7 +560,7 @@ export default {
         destroy: () => {
           statusObj.destroy()
         },
-        write: () => {
+        write: args => {
           statusObj = new DropDownList({
             dataSource: vm.status,
             fields: { value: 'value', text: 'text' },
@@ -564,6 +569,19 @@ export default {
             floatLabelType: 'Never'
           })
           statusObj.appendTo(statusElem)
+          statusObj.addEventListener('change', event => {
+            //event.preventDefault()
+            console.log('STATUS OBJECT CHANGE: ' + event)
+            if (statusObj.value === 'CACI Submitted') {
+              submitDateElem.disabled = false
+              submitDateObj = new DatePicker({
+                value: new Date(args.rowData['CACISubmittedDate']),
+                enabled: true,
+                floatLabelType: 'Never'
+              })
+              submitDateObj.appendTo(submitDateElem)
+            }
+          })
         }
       },
       popEndParams: {
@@ -622,6 +640,20 @@ export default {
           })
           dateApprovedObj.appendTo(dateApprovedElem)
         }
+      },
+      submitDateParams: {
+        create: function() {
+          submitDateElem = document.createElement('input')
+          submitDateElem.disabled = true
+          return submitDateElem
+        },
+        read: () => {
+          return submitDateObj.value
+        },
+        destroy: () => {
+          submitDateObj.destroy()
+        },
+        write: () => {}
       }
     }
   },
@@ -743,6 +775,10 @@ export default {
           if (dateApprovedObj.value) {
             let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
             this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
+          }
+          if (submitDateObj.value) {
+            let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
+            this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
           }
           break
       }
