@@ -776,7 +776,7 @@ export default {
             let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
             this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
           }
-          if (submitDateObj.value) {
+          if (submitDateObj && submitDateObj.value) {
             let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
             this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
           }
