@@ -1659,25 +1659,18 @@ export default {
         let emailto = []
         let pcaemail = String(this.pca.Email)
         let subemail = String(this.travelmodel.CreatedByEmail)
-        console.log(pcaemail)
-        console.log(subemail)
         emailto.push(pcaemail)
-        console.log('EMAILS: ' + emailto.toString())
         if (subemail == pcaemail) {
           //do nothing
         } else {
-          console.log('PUSHING FOR INEQUALITY')
           emailto.push(subemail)
         }
-        console.log('EMAILS: ' + emailto.toString())
         if (this.delegates.length > 0) {
           for (let i = 0; i < this.delegates.length; i++) {
             if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
               let j = this.delegates[i]['Delegates']
               for (let k = 0; k < j.length; k++) {
                 let delemail = String(j[k]['EMail'])
-                console.log(delemail)
-                console.log('EMAILS: ' + emailto.toString())
                 if (delemail !== pcaemail && delemail !== subemail) {
                   emailto.push(delemail)
                 }
@@ -1715,11 +1708,8 @@ export default {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
           }
-          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-            Travel.dispatch('EditTripEmail', payload)
-          })
+          Todo.dispatch('completeTodosByQuery', deletepayload)
         } catch (e) {
-          // Add user notification and system logging
           const notification = {
             type: 'danger',
             title: 'Portal Error',
