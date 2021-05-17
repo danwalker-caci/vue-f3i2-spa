@@ -1565,7 +1565,7 @@ export default {
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.ApprovedOn = moment().format('YYYY-MM-DD')
-        this.travelmodel.InternalData.ApprovedTime = moment().format('hh:mm A')
+        this.travelmodel.InternalData.ApprovedTime = moment().format('hh:mm')
         this.travelmodel.InternalData.DeniedBy = ''
         this.travelmodel.InternalData.DeniedOn = ''
       }
