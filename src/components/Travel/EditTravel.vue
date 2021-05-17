@@ -508,10 +508,15 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
+                            <b-row v-if="travelmodel.PreApproved == 'Yes'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Select EMail Recipients</b-col>
+                              <b-col v-if="isWPManager" cols="8">
+                                <b-form-checkbox-group v-model="travelmodel.InternalData.PreApprovedEmails" stacked :options="govTrvlApprovers" name="selectedrecipients"></b-form-checkbox-group>
+                              </b-col>
+                            </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
-                                <!-- <b-form-select multiple select-size="8" v-model="travelmodel.InternalData.ApproverSelected" :options="govTrvlApprovers"></b-form-select> -->
                                 <b-form-checkbox-group v-model="travelmodel.InternalData.ApproverSelected" stacked :options="govTrvlApprovers" name="selectedapprovers"></b-form-checkbox-group>
                               </b-col>
                             </b-row>
@@ -565,7 +570,8 @@
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Approval == 'Yes'" class="mb-1">
                               <b-col cols="4">Travel Approved On</b-col>
-                              <b-col cols="8"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedOn" type="date"></b-form-input></b-col>
+                              <b-col cols="4"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedOn" type="date"></b-form-input></b-col>
+                              <b-col cols="4"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedTime" type="time"></b-form-input></b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denied By</b-col>
@@ -830,10 +836,12 @@ export default {
           DeniedForAdmin: '',
           RequiredCorrections: '',
           ApprovalRequested: '',
+          PreApprovedEmails: [],
           ApproverSelected: [],
           Approval: '',
           ApprovedBy: '',
           ApprovedOn: '',
+          ApprovedTime: '',
           DeniedBy: '',
           DeniedOn: '',
           DenialComments: '',
@@ -1557,6 +1565,7 @@ export default {
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
         this.travelmodel.InternalData.ApprovedOn = moment().format('YYYY-MM-DD')
+        this.travelmodel.InternalData.ApprovedTime = moment().format('hh:mm A')
         this.travelmodel.InternalData.DeniedBy = ''
         this.travelmodel.InternalData.DeniedOn = ''
       }
@@ -1659,11 +1668,15 @@ export default {
         let emailto = []
         let pcaemail = String(this.pca.Email)
         let subemail = String(this.travelmodel.CreatedByEmail)
+        let wpmemail = String(this.travelmodel.InternalData.ManagerEmail)
         emailto.push(pcaemail)
         if (subemail == pcaemail) {
           //do nothing
         } else {
           emailto.push(subemail)
+        }
+        if (wpmemail !== pcaemail && wpmemail !== subemail) {
+          emailto.push(wpmemail)
         }
         if (this.delegates.length > 0) {
           for (let i = 0; i < this.delegates.length; i++) {
@@ -1678,7 +1691,12 @@ export default {
             }
           }
         }
-        //TODO: Add AFRL emails
+        //Add AFRL emails
+        let afremails = this.travelmodel.InternalData.PreApprovedEmails
+        for (let i = 0; i < afremails.length; i++) {
+          let a = afremails[i].split(',')
+          emailto.push(a[1])
+        }
         console.log('EMAILS: ' + emailto.toString())
         let payload = {}
         payload.id = vm.travelmodel.id
@@ -1833,24 +1851,64 @@ export default {
           this.travelmodel.OCONUSApprovedBy = this.travelmodel.InternalData.ApprovedBy
           this.travelmodel.OCONUSApprovedOn = this.travelmodel.InternalData.ApprovedOn
         }
+        let emailto = []
+        let pcaemail = String(this.pca.Email)
+        let subemail = String(this.travelmodel.CreatedByEmail)
+        let wpmemail = String(this.travelmodel.InternalData.ManagerEmail)
+        emailto.push(pcaemail)
+        if (subemail == pcaemail) {
+          //do nothing
+        } else {
+          emailto.push(subemail)
+        }
+        if (wpmemail !== pcaemail && wpmemail !== subemail) {
+          emailto.push(wpmemail)
+        }
+        if (this.delegates.length > 0) {
+          for (let i = 0; i < this.delegates.length; i++) {
+            if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
+              let j = this.delegates[i]['Delegates']
+              for (let k = 0; k < j.length; k++) {
+                let delemail = String(j[k]['EMail'])
+                if (delemail !== pcaemail && delemail !== subemail) {
+                  emailto.push(delemail)
+                }
+              }
+            }
+          }
+        }
+        console.log('EMAILS: ' + emailto.toString())
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.email = emailto
         payload.title = 'Travel Request Approved'
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.indexnumber = vm.travelmodel.IndexNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        payload.comments = 'Travel Approved'
+        payload.body = ''
+        payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
+        payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
+        let t = vm.travelmodel.Travelers
+        let s = ''
+        for (let i = 0; i < t.length; i++) {
+          if (i == 0) {
+            s += t[i].firstName + ' ' + t[i].lastName
+          } else {
+            s += ', ' + t[i].firstName + ' ' + t[i].lastName
+          }
+        }
+        payload.body += '<p>Travelers: ' + s
+        payload.body += '<p>From: ' + vm.travelmodel.TravelFrom
+        payload.body += '<p>To: ' + vm.travelmodel.TravelTo
+        payload.body += '<p>Start: ' + vm.travelmodel.StartTime
+        payload.body += '<p>End: ' + vm.travelmodel.EndTime
+        payload.body += '<p>Sponsor: ' + vm.travelmodel.Sponsor
+        payload.body += '<p>Approved By: ' + vm.travelmodel.InternalData.ApprovedBy
+        payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn
+        payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
+        this.$store.dispatch('support/SendEmail', payload)
         try {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
           }
-          Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
-            Travel.dispatch('EditTripEmail', payload)
-          })
+          Todo.dispatch('completeTodosByQuery', deletepayload)
         } catch (e) {
           // Add user notification and system logging
           const notification = {
