@@ -1660,18 +1660,23 @@ export default {
         let pcaemail = String(this.pca.Email)
         let subemail = String(this.travelmodel.InternalData.CreatedByEmail)
         emailto.push(pcaemail)
-        console.log('EMAILS: ' + emailto.toString())
-        if (emailto.indexOf(subemail) < 0) {
+        console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(subemail))
+        if (emailto.indexOf(subemail) >= 0) {
+          // do nothing
+        } else {
           emailto.push(subemail)
-          console.log('EMAILS: ' + emailto.toString())
         }
+        console.log('EMAILS: ' + emailto.toString())
         if (this.delegates.length > 0) {
           for (let i = 0; i < this.delegates.length; i++) {
             if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
               let j = this.delegates[i]['Delegates']
               for (let k = 0; k < j.length; k++) {
                 let delemail = String(j[k]['EMail'])
-                if (emailto.indexOf(delemail) < 0) {
+                console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(delemail))
+                if (emailto.indexOf(delemail) >= 0) {
+                  // do nothing
+                } else {
                   emailto.push(delemail)
                 }
               }
