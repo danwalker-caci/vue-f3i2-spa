@@ -1901,7 +1901,7 @@ export default {
         payload.body += '<p>End: ' + vm.travelmodel.EndTime
         payload.body += '<p>Sponsor: ' + vm.travelmodel.Sponsor
         payload.body += '<p>Approved By: ' + vm.travelmodel.InternalData.ApprovedBy
-        payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn
+        payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn + ' ' + vm.travelmodel.InternalData.ApprovedTime
         payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
         this.$store.dispatch('support/SendEmail', payload)
         try {
