@@ -1659,9 +1659,14 @@ export default {
         let emailto = []
         let pcaemail = String(this.pca.Email)
         let subemail = String(this.travelmodel.InternalData.CreatedByEmail)
+        console.log(pcaemail)
+        console.log(subemail)
         emailto.push(pcaemail)
-        console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(subemail))
-        if (subemail !== pcaemail) {
+        console.log('EMAILS: ' + emailto.toString())
+        if (subemail == pcaemail) {
+          //do nothing
+        } else {
+          console.log('PUSHING FOR INEQUALITY')
           emailto.push(subemail)
         }
         console.log('EMAILS: ' + emailto.toString())
@@ -1671,7 +1676,8 @@ export default {
               let j = this.delegates[i]['Delegates']
               for (let k = 0; k < j.length; k++) {
                 let delemail = String(j[k]['EMail'])
-                console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(delemail))
+                console.log(delemail)
+                console.log('EMAILS: ' + emailto.toString())
                 if (delemail !== pcaemail && delemail !== subemail) {
                   emailto.push(delemail)
                 }
