@@ -1657,18 +1657,20 @@ export default {
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
         let emailto = []
-        let pcaemail = this.pca.Email
-        let subemail = this.travelmodel.InternalData.CreatedByEmail
+        let pcaemail = String(this.pca.Email)
+        let subemail = String(this.travelmodel.InternalData.CreatedByEmail)
         emailto.push(pcaemail)
+        console.log('EMAILS: ' + emailto.toString())
         if (emailto.indexOf(subemail) < 0) {
           emailto.push(subemail)
+          console.log('EMAILS: ' + emailto.toString())
         }
         if (this.delegates.length > 0) {
           for (let i = 0; i < this.delegates.length; i++) {
             if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
               let j = this.delegates[i]['Delegates']
               for (let k = 0; k < j.length; k++) {
-                let delemail = j[k]['EMail']
+                let delemail = String(j[k]['EMail'])
                 if (emailto.indexOf(delemail) < 0) {
                   emailto.push(delemail)
                 }
