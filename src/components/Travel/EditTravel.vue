@@ -1657,17 +1657,44 @@ export default {
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
         let emailto = []
+        emailto.push(this.pca.Email)
+        emailto.push(this.travelmodel.InternalData.CreatedByEmail)
+        if (this.delegates.length > 0) {
+          for (let i = 0; i < this.delegates.length; i++) {
+            if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
+              let j = this.delegates[i]['Delegates']
+              for (let k = 0; k < j.length; k++) {
+                emailto.push(j[k]['EMail'])
+              }
+            }
+          }
+        }
+        //TODO: Add AFRL emails
+        console.log('EMAILS: ' + emailto.toString())
         let payload = {}
         payload.id = vm.travelmodel.id
-        payload.email = [vm.travelmodel.CreatedByEmail]
+        payload.email = emailto
         payload.title = 'Travel Request Approved'
-        payload.workplan = vm.travelmodel.WorkPlanNumber
-        payload.indexnumber = vm.travelmodel.IndexNumber
-        payload.company = vm.travelmodel.Company
-        payload.travelers = vm.travelmodel.Travelers
-        payload.start = vm.travelmodel.StartTime
-        payload.end = vm.travelmodel.EndTime
-        payload.comments = 'Travel Approved'
+        payload.body = ''
+        payload.body += '<p>Per the signed workplan, this travel is preapproved and requires no additional action.</p>'
+        payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
+        payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
+        let t = vm.travelmodel.Travelers
+        let s = ''
+        for (let i = 0; i < t.length; i++) {
+          if (i == 0) {
+            s += t[i].firstName + ' ' + t[i].lastName
+          } else {
+            s += ', ' + t[i].firstName + ' ' + t[i].lastName
+          }
+        }
+        payload.body += '<p>Travelers: ' + s
+        payload.body += '<p>From: ' + vm.travelmodel.TravelFrom
+        payload.body += '<p>To: ' + vm.travelmodel.TravelTo
+        payload.body += '<p>Start: ' + vm.travelmodel.StartTime
+        payload.body += '<p>End: ' + vm.travelmodel.EndTime
+        payload.body += '<p><a href="' + SPCI.webServerRelativeUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
+        this.$store.dispatch('support/SendEmail', payload)
         try {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
