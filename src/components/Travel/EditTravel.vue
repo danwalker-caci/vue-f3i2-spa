@@ -1702,7 +1702,7 @@ export default {
         payload.body += '<p>To: ' + vm.travelmodel.TravelTo
         payload.body += '<p>Start: ' + vm.travelmodel.StartTime
         payload.body += '<p>End: ' + vm.travelmodel.EndTime
-        payload.body += '<p><a href="' + SPCI.webServerRelativeUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
+        payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
         this.$store.dispatch('support/SendEmail', payload)
         try {
           let deletepayload = {
