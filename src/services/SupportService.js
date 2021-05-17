@@ -65,8 +65,8 @@ export default {
         return response
       })
   },
-  async SendEmail(payload) {
-    console.log('SUPPORT SENDEMAIL PAYLOAD: ' + payload)
+  async SendEmail(state, payload) {
+    console.log('SUPPORT SENDEMAIL PAYLOAD: ' + payload + ', STATE: ' + state)
     const response = await axios.request({
       url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
       method: 'post',
@@ -76,7 +76,7 @@ export default {
     let mail = {
       properties: {
         __metadata: { type: 'SP.Utilities.EmailProperties' },
-        From: payload.from,
+        From: state.portalemail,
         To: { results: payload.email },
         Body: payload.body,
         Subject: payload.title
