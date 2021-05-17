@@ -1564,8 +1564,7 @@ export default {
         this.travelmodel.InternalData.ATPRequested = 'No'
         this.travelmodel.InternalData.ApprovalRequested = 'No'
         this.travelmodel.InternalData.ApprovedBy = this.currentuser[0]['Email']
-        this.travelmodel.InternalData.ApprovedOn = moment().format('YYYY-MM-DD')
-        this.travelmodel.InternalData.ApprovedTime = moment().format('hh:mm')
+        this.travelmodel.InternalData.ApprovedOn = new Date().toLocaleString() // moment().format('YYYY-MM-DD')
         this.travelmodel.InternalData.DeniedBy = ''
         this.travelmodel.InternalData.DeniedOn = ''
       }
@@ -1901,7 +1900,7 @@ export default {
         payload.body += '<p>End: ' + vm.travelmodel.EndTime
         payload.body += '<p>Sponsor: ' + vm.travelmodel.Sponsor
         payload.body += '<p>Approved By: ' + vm.travelmodel.InternalData.ApprovedBy
-        payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn + ' ' + vm.travelmodel.InternalData.ApprovedTime
+        payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn
         payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
         this.$store.dispatch('support/SendEmail', payload)
         try {
