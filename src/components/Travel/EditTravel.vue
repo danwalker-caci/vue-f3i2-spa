@@ -570,8 +570,7 @@
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Approval == 'Yes'" class="mb-1">
                               <b-col cols="4">Travel Approved On</b-col>
-                              <b-col cols="4"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedOn" type="date"></b-form-input></b-col>
-                              <b-col cols="4"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedTime" type="time"></b-form-input></b-col>
+                              <b-col cols="4"><b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.InternalData.ApprovedOn" type="text"></b-form-input></b-col>
                             </b-row>
                             <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denied By</b-col>
