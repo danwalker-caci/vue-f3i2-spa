@@ -1657,14 +1657,21 @@ export default {
         this.travelmodel.InternalData.Status = 'Approved'
         this.travelmodel.InternalData.Approval = 'Yes'
         let emailto = []
-        emailto.push(this.pca.Email)
-        emailto.push(this.travelmodel.InternalData.CreatedByEmail)
+        let pcaemail = this.pca.Email
+        let subemail = this.travelmodel.InternalData.CreatedByEmail
+        emailto.push(pcaemail)
+        if (emailto.indexOf(subemail) < 0) {
+          emailto.push(subemail)
+        }
         if (this.delegates.length > 0) {
           for (let i = 0; i < this.delegates.length; i++) {
             if (this.delegates[i]['EMail'] == this.travelmodel.InternalData.ManagerEmail) {
               let j = this.delegates[i]['Delegates']
               for (let k = 0; k < j.length; k++) {
-                emailto.push(j[k]['EMail'])
+                let delemail = j[k]['EMail']
+                if (emailto.indexOf(delemail) < 0) {
+                  emailto.push(delemail)
+                }
               }
             }
           }
@@ -1674,7 +1681,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = 'Travel Request Approved'
+        payload.title = 'Travel Request PreApproved'
         payload.body = ''
         payload.body += '<p>Per the signed workplan, this travel is preapproved and requires no additional action.</p>'
         payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
