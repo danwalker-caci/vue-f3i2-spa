@@ -1658,7 +1658,7 @@ export default {
         this.travelmodel.InternalData.Approval = 'Yes'
         let emailto = []
         let pcaemail = String(this.pca.Email)
-        let subemail = String(this.travelmodel.InternalData.CreatedByEmail)
+        let subemail = String(this.travelmodel.CreatedByEmail)
         console.log(pcaemail)
         console.log(subemail)
         emailto.push(pcaemail)
