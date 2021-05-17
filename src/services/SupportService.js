@@ -66,6 +66,7 @@ export default {
       })
   },
   async SendEmail(payload) {
+    console.log('SUPPORT SENDEMAIL PAYLOAD: ' + payload)
     const response = await axios.request({
       url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
       method: 'post',
