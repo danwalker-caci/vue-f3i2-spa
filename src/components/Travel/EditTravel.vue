@@ -1661,9 +1661,7 @@ export default {
         let subemail = String(this.travelmodel.InternalData.CreatedByEmail)
         emailto.push(pcaemail)
         console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(subemail))
-        if (emailto.indexOf(subemail) >= 0) {
-          // do nothing
-        } else {
+        if (subemail !== pcaemail) {
           emailto.push(subemail)
         }
         console.log('EMAILS: ' + emailto.toString())
@@ -1674,9 +1672,7 @@ export default {
               for (let k = 0; k < j.length; k++) {
                 let delemail = String(j[k]['EMail'])
                 console.log('EMAILS: ' + emailto.toString() + ', index: ' + emailto.indexOf(delemail))
-                if (emailto.indexOf(delemail) >= 0) {
-                  // do nothing
-                } else {
+                if (delemail !== pcaemail && delemail !== subemail) {
                   emailto.push(delemail)
                 }
               }
