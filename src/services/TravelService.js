@@ -669,7 +669,7 @@ export default {
       Status: payload[0].Status
     }
     if (payload[0].Action == 'Submit') {
-      itemprops.TripReport = payload[0].TripReport
+      itemprops.TripReport = report
     }
     try {
       const response = await axios.post(url, itemprops, config)
