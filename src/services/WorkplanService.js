@@ -125,6 +125,7 @@ export default {
       Title: payload.Title,
       Number: payload.Number,
       Revision: payload.Revision,
+      Increment: payload.Increment,
       POPStart: moment(payload.POPStart).isValid()
         ? moment(payload.POPStart)
             .add(6, 'hours')
