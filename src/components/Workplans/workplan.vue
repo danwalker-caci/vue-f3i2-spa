@@ -651,7 +651,7 @@ export default {
           return submitDateObj ? submitDateObj.value : null
         },
         destroy: () => {
-          submitDateObj.destroy()
+          submitDateObj ? submitDateObj.destroy() : null
         },
         write: () => {}
       }
