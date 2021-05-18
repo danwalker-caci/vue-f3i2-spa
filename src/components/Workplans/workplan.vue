@@ -533,7 +533,7 @@ export default {
           return managerElem
         },
         read: () => {
-          return managerObj.text
+          return managerObj ? managerObj.text : null
         },
         destroy: () => {
           managerObj.destroy()
@@ -555,7 +555,7 @@ export default {
           return statusElem
         },
         read: () => {
-          return statusObj.text
+          return statusObj ? statusObj.text : null
         },
         destroy: () => {
           statusObj.destroy()
@@ -577,7 +577,7 @@ export default {
           return popEndElem
         },
         read: () => {
-          return popEndObj.value
+          return popEndObj ? popEndObj.value : null
         },
         destroy: () => {
           popEndObj.destroy()
@@ -596,7 +596,7 @@ export default {
           return popStartElem
         },
         read: () => {
-          return popStartObj.value
+          return popStartObj ? popStartObj.value : null
         },
         destroy: () => {
           popStartObj.destroy()
@@ -615,7 +615,7 @@ export default {
           return dateApprovedElem
         },
         read: () => {
-          return dateApprovedObj.value
+          return dateApprovedObj ? dateApprovedObj.value : null
         },
         destroy: () => {
           dateApprovedObj.destroy()
