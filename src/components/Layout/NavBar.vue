@@ -265,7 +265,7 @@
           <b-nav-item-dropdown id="TasksMenu" right no-caret menu-class="animated bounceInDown">
             <template slot="button-content">
               <font-awesome-icon fas icon="tasks" class="icon"></font-awesome-icon>
-              <span id="taskmenubadge" class="badge badge-xs badge-light-blue">5</span>
+              <span id="taskmenubadge" class="badge badge-xs badge-warning">5</span>
             </template>
             <b-dropdown-item href="#">
               <div>
