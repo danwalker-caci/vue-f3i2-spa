@@ -124,9 +124,9 @@
           </table>
         </b-container>
       </b-modal>
-      <b-col cols="12" class="m-0 p-0">
-        <b-container fluid class="contentHeight m-0 p-0">
-          <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+      <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000" class="w-100">
+        <b-col cols="12" class="m-0 p-0">
+          <b-container fluid class="contentHeight m-0 p-0">
             <b-form @submit="onSubmit">
               <b-row no-gutters class="buttonrow">
                 <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
@@ -215,14 +215,14 @@
                 </ejs-grid>
               </b-row>
             </b-form>
-            <template #overlay>
-              <div class="text-center">
-                <p id="busy-label">{{ overlayText }}</p>
-              </div>
-            </template>
-          </b-overlay>
-        </b-container>
-      </b-col>
+          </b-container>
+        </b-col>
+        <template #overlay>
+          <div class="text-center">
+            <p id="busy-label">{{ overlayText }}</p>
+          </div>
+        </template>
+      </b-overlay>
     </b-row>
   </b-container>
 </template>
@@ -310,6 +310,8 @@ export default {
       WorkplanData: [],
       filtereddata: [],
       manager: null,
+      managerId: null,
+      origStatus: null,
       fields: [
         {
           FieldName: 'Version',
@@ -455,8 +457,9 @@ export default {
         { text: 'Approved', value: 'Approved' }
       ],
       toolbar: ['Search'],
-      toolbarPM: ['Add', 'Print', 'Search', 'ExcelExport'],
+      toolbarPM: ['Add', 'Cancel', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
+      originalRowData: {},
       newData: {
         Title: '',
         Number: '',
@@ -533,7 +536,7 @@ export default {
           return managerElem
         },
         read: () => {
-          return managerObj.text
+          return managerObj ? managerObj.text : null
         },
         destroy: () => {
           managerObj.destroy()
@@ -555,7 +558,7 @@ export default {
           return statusElem
         },
         read: () => {
-          return statusObj.text
+          return statusObj ? statusObj.text : null
         },
         destroy: () => {
           statusObj.destroy()
@@ -590,14 +593,14 @@ export default {
           return popEndElem
         },
         read: () => {
-          return popEndObj.value
+          return popEndObj ? popEndObj.value : null
         },
         destroy: () => {
           popEndObj.destroy()
         },
         write: args => {
           popEndObj = new DatePicker({
-            value: new Date(args.rowData[args.column.field]),
+            value: args.rowData[args.column.field] ? new Date(args.rowData[args.column.field]) : null,
             floatLabelType: 'Never'
           })
           popEndObj.appendTo(popEndElem)
@@ -609,14 +612,14 @@ export default {
           return popStartElem
         },
         read: () => {
-          return popStartObj.value
+          return popStartObj ? popStartObj.value : null
         },
         destroy: () => {
           popStartObj.destroy()
         },
         write: args => {
           popStartObj = new DatePicker({
-            value: new Date(args.rowData[args.column.field]),
+            value: args.rowData[args.column.field] ? new Date(args.rowData[args.column.field]) : null,
             floatLabelType: 'Never'
           })
           popStartObj.appendTo(popStartElem)
@@ -628,14 +631,14 @@ export default {
           return dateApprovedElem
         },
         read: () => {
-          return dateApprovedObj.value
+          return dateApprovedObj ? dateApprovedObj.value : null
         },
         destroy: () => {
           dateApprovedObj.destroy()
         },
         write: args => {
           dateApprovedObj = new DatePicker({
-            value: new Date(args.rowData[args.column.field]),
+            value: args.rowData[args.column.field] ? new Date(args.rowData[args.column.field]) : null,
             floatLabelType: 'Never'
           })
           dateApprovedObj.appendTo(dateApprovedElem)
@@ -723,8 +726,7 @@ export default {
       this.$refs['WorkplanGrid'].ej2Instances.element.addEventListener('mousedown', function(e) {
         var instance = this.ej2_instances[0]
         if (e.target.classList.contains('e-rowcell')) {
-          console.log(instance)
-          if (instance.isEdit) instance.endEdit()
+          if (instance.isEdit) instance.endEdit() //might need to override this function
           let index = parseInt(e.target.getAttribute('Index'))
           instance.selectRow(index)
           instance.startEdit()
@@ -732,12 +734,15 @@ export default {
       })
     },
     async actionBegin(args) {
+      //if (console) console.log('ACTION BEGIN: ' + args.requestType)
       switch (args.requestType) {
         case 'beginEdit':
           /*if (!this.isSubcontractor) {
             this.editRow(args.rowData)
           }*/
-          this.rowData = Object.assign({}, args.rowData)
+          console.log(JSON.stringify(args.rowData))
+          // Save the dropdown information before editing so that it can be restored if there aren't changes to those fields.
+
           // Get the information so that
           //args.cancel = true
           break
@@ -752,39 +757,11 @@ export default {
           // Create immutable objects and update related fields
           if (console) console.log('SAVING ACTION BEGIN')
           this.rowData = Object.assign({}, args.rowData)
-          if (managerObj.value) {
-            let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
-            this.rowData.ManagerId = Number(newManager.value)
-            this.rowData.Manager = newManager.text.toString()
-            args.rowData.ManagerId = Number(newManager.value)
-            args.rowData.Manager = newManager.text.toString()
-          }
-          if (statusObj.value) {
-            let newStatus = Object.assign({}, { value: statusObj.value })
-            this.rowData.Status = newStatus.value.toString()
-            args.rowData.Status = newStatus.value.toString()
-          }
-          if (popEndObj.value) {
-            let newPopEnd = Object.assign({}, { value: popEndObj.value })
-            this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
-          }
-          if (popStartObj.value) {
-            let newPopStart = Object.assign({}, { value: popStartObj.value })
-            this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
-          }
-          if (dateApprovedObj.value) {
-            let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
-            this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
-          }
-          if (submitDateObj && submitDateObj.value) {
-            let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
-            this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
-          }
           break
       }
     },
     async actionComplete(args) {
-      // console.log('ACTION COMPLETE: ' + args.requestType)
+      //if (console) console.log('ACTION COMPLETE: ' + args.requestType)
       switch (args.requestType) {
         case 'columnstate':
           this.$refs['WorkplanGrid'].autoFitColumns()
@@ -798,15 +775,65 @@ export default {
           this.$refs.WorkplanGrid.pageSettings = { pageSize: h1 }*/
           break
         case 'beginEdit':
+          this.originalRowData = Object.assign({}, args.rowData)
           break
         case 'save':
+          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
+          if (managerObj.value) {
+            let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
+            this.rowData.ManagerId = Number(newManager.value)
+            this.rowData.Manager = newManager.text
+            args.rowData.ManagerId = Number(newManager.value)
+            args.rowData.Manager = newManager.text
+          } else {
+            managerElem.value = null
+            this.rowData.ManagerId = this.originalRowData.ManagerId
+            this.rowData.Manager = this.originalRowData.Manager
+            args.rowData.ManagerId = this.originalRowData.ManagerId
+            args.rowData.Manager = this.originalRowData.Manager
+          }
+          if (statusObj.value) {
+            let newStatus = Object.assign({}, { value: statusObj.value })
+            this.rowData.Status = newStatus.value
+            args.rowData.Status = newStatus.value
+          } else {
+            statusElem.value = null
+            this.rowData.Status = this.originalRowData.Status
+            args.rowData.Status = this.originalRowData.Status
+          }
+          if (popEndObj.value) {
+            let newPopEnd = Object.assign({}, { value: popEndObj.value })
+            this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
+          } else {
+            this.rowData.POPEnd = null
+          }
+          if (popStartObj.value) {
+            let newPopStart = Object.assign({}, { value: popStartObj.value })
+            this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
+          } else {
+            this.rowData.POPStart = null
+          }
+          if (dateApprovedObj.value) {
+            let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
+            this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
+          } else {
+            this.rowData.DateApproved = null
+          }
+          if (submitDateObj.value) {
+            let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
+            this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
+          } else {
+            this.rowData.CACISubmittedDate = null
+          }
+          this.rowData.Revision = args.rowData.Revision
+          this.rowData.Title = args.rowData.Title
           // Create an immutable manager object and update related fields
           let workplan = await this.updateWorkplan(this.rowData)
-          console.log('UPDATED WORKPLAN: ' + workplan)
+          //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
           this.rowData.etag = Number(workplan.headers.etag)
-          if (console) console.log('SAVING ACTION COMPLETE')
-          this.$refs.WorkplanGrid.setRowData(this.rowData.Id, this.rowData)
-          //this.$refs.WorkplanGrid.refresh()
+          if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
+          this.$refs['WorkplanGrid'].setRowData(this.rowData.Id, this.rowData)
+          //this.$refs['WorkplanGrid'].refresh()
           break
       }
     },
@@ -815,6 +842,8 @@ export default {
       let payload = {
         Title: data.Title,
         Number: data.Number,
+        CACISubmittedDate: data.CACISubmittedDate,
+        DateApproved: data.DateApproved,
         Revision: data.Revision,
         POPStart: data.POPStart,
         POPEnd: data.POPEnd,
