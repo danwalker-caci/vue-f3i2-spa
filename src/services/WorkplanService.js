@@ -66,7 +66,7 @@ export default {
   async getManagerByWPNumber(state, payload) {
     let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/items"
     geturl += '?$select=Manager/Title,Manager/ID,Manager/Name,Manager/EMail&$expand=Manager'
-    geturl += "&$filter=(Number eq '" + payload.wp + "')"
+    geturl += "&$filter=(Number eq '" + payload + "')"
     let response = await axios.get(geturl, {
       headers: {
         accept: 'application/json;odata=verbose'
