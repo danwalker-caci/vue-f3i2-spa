@@ -28,6 +28,7 @@ export default class Travel extends Model {
       Title: this.attr(''),
       Subject: this.attr(''),
       Status: this.attr(''),
+      FundingAvailable: this.attr(''),
       OCONUS: this.attr(''),
       OCONUSLocation: this.attr(''),
       OCONUSApprovedBy: this.attr(''),

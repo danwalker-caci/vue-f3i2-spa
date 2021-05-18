@@ -150,17 +150,18 @@
                         <div class="col-4" v-else></div>
                       </div>
                       <div class="row">
-                        <div class="col-6">Start Date</div>
-                        <div class="col-6">End Date</div>
+                        <div class="col-4">Start Date</div>
+                        <div class="col-4">End Date</div>
+                        <div class="col-4">Funding Available</div>
                       </div>
                       <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                           <b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.StartTime" ref="start" type="date" title="Start" :state="ValidateMe('start')"></b-form-input>
                           <b-form-invalid-feedback>
                             Enter a valid date (mm/dd/yyyy)
                           </b-form-invalid-feedback>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                           <b-form-input class="form-control-sm form-control-travel form-control-travel-date" v-model="travelmodel.EndTime" ref="end" type="date" title="End" :state="ValidateMe('end')"></b-form-input>
                           <b-form-invalid-feedback v-if="BadEndDate === true">
                             Enter a valid date (mm/dd/yyyy)
@@ -168,6 +169,13 @@
                           <b-form-invalid-feedback v-if="EndBeforeStart === true">
                             End Date cannot be before Start Date
                           </b-form-invalid-feedback>
+                        </div>
+                        <div class="col-4">
+                          <b-form-radio-group v-model="travelmodel.FundingAvailable" name="funding-radios" :options="yesno" :state="ValidateMe('FundingAvailable')" ref="FundingAvailable">
+                            <b-form-invalid-feedback :state="ValidateMe('FundingAvailable')">
+                              Must Select Funding Available Yes or No
+                            </b-form-invalid-feedback>
+                          </b-form-radio-group>
                         </div>
                       </div>
                       <div class="row">
@@ -791,6 +799,7 @@ export default {
       travelmodel: {
         id: 0,
         Status: '',
+        FundingAvailable: '',
         WorkPlan: '',
         WorkPlanText: '',
         WorkPlanNumber: '',
@@ -882,7 +891,7 @@ export default {
         ]
       },
       filterSettings: { type: 'Menu' },
-      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo', 'IndexNumber'],
+      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo', 'IndexNumber', 'FundingAvailable'],
       fieldsFirstTabAuthor: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
       fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments'],
       fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
@@ -967,6 +976,7 @@ export default {
         let giraffe = JSON.parse(this.selectedtrip.Travelers)
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
+        this.travelmodel.FundingAvailable = this.selectedtrip.FundingAvailable
         this.travelmodel.WorkPlan = this.selectedtrip.WorkPlan
         this.travelmodel.WorkPlanNumber = this.selectedtrip.WorkPlanNumber
         this.travelmodel.OriginalWorkPlanNumber = this.selectedtrip.OriginalWorkPlanNumber
@@ -1108,6 +1118,12 @@ export default {
       let ti = /([\d]{2})-([a-zA-Z0-9]{4})-([\d]{1,})/
       let ret = false
       switch (control) {
+        case 'FundingAvailable':
+          if (this.travelmodel.FundingAvailable == 'Yes' || this.travelmodel.FundingAvailable == 'No') {
+            ret = true
+          }
+          break
+
         case 'OCONUS':
           if (this.travelmodel.OCONUS == 'Yes' || this.travelmodel.OCONUS == 'No') {
             ret = true
@@ -2142,6 +2158,7 @@ export default {
         StartTime: start,
         EndTime: end,
         Status: status,
+        FundingAvailable: this.travelmodel.FundingAvailable,
         WorkPlan: this.travelmodel.WorkPlan,
         WorkPlanNumber: this.travelmodel.WorkPlanNumber,
         OriginalWorkPlanNumber: this.travelmodel.OriginalWorkPlanNumber,

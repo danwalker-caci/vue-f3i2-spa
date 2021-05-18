@@ -460,6 +460,7 @@ export default {
       __metadata: { type: 'SP.Data.TravelListItem' },
       Title: payload[0].Subject,
       Status: payload[0].Status,
+      FundingAvailable: payload[0].FundingAvailable,
       StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
       EndDate: moment(payload[0].EndTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
       WorkPlan: payload[0].WorkPlan,
