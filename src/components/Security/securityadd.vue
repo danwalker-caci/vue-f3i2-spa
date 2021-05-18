@@ -156,11 +156,15 @@
           <b-col cols="6">
             <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
             <div v-if="form.setName === 'Yes'">
-              <b-form-group label="Select Person: " label-for="formPerson">
+              <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
                 <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                  <b-dropdown-form>
-                    <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" @keyup.native="filtering"></b-form-input>
-                    <b-button variant="primary" class="mt-1" size="sm" @click="searchFiltering($event)">Search</b-button>
+                  <b-dropdown-form v-on:submit.native.prevent>
+                    <b-input-group>
+                      <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" v-on:submit.native.prevent @keyup.native="filtering"></b-form-input>
+                      <b-input-group-append>
+                        <b-button variant="primary" v-on:submit.native.prevent @click="searchFiltering($event)">Search</b-button>
+                      </b-input-group-append>
+                    </b-input-group>
                   </b-dropdown-form>
                   <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
@@ -441,8 +445,6 @@ export default {
       this.filteredData = this.personnel
     },
     onPersonnelChange: function(value) {
-      console.log('Personnel Change')
-      console.log(value)
       this.personnel.forEach(person => {
         if (person.value === value) {
           vm.form.Name = person.text
