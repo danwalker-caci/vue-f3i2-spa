@@ -159,6 +159,7 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175" editType="dropdownedit" :edit="activeParams"></e-column>
                     <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
@@ -198,6 +199,7 @@
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
+                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175"></e-column>
                     <e-column field="Status" headerText="Status" width="125"></e-column>
                     <e-column field="Number" headerText="Number" width="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
@@ -239,6 +241,8 @@ import { createElement } from '@syncfusion/ej2-base'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
 
 let vm = null,
+  activeElem,
+  activeObj,
   managerElem,
   managerObj,
   statusElem,
@@ -451,6 +455,10 @@ export default {
         { text: 'Approved', value: 'Approved' },
         { text: 'PM Review', value: 'PM Review' }
       ],
+      active: [
+        { text: 'Active', value: 'Active' },
+        { text: 'Retired', value: 'Retired' }
+      ],
       toolbar: ['Search'],
       toolbarPM: ['Add', 'Cancel', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
@@ -523,6 +531,28 @@ export default {
               }
             }
           })
+        }
+      },
+      activeParams: {
+        create: () => {
+          activeElem = document.createElement('input')
+          return activeElem
+        },
+        read: () => {
+          return activeObj ? activeObj.text : null
+        },
+        destroy: () => {
+          activeObj.destroy()
+        },
+        write: () => {
+          activeObj = new DropDownList({
+            dataSource: vm.active,
+            fields: { value: 'value', text: 'text' },
+            enabled: true,
+            placeholder: 'Select active or retired',
+            floatLabelType: 'Never'
+          })
+          activeObj.appendTo(activeElem)
         }
       },
       managerParams: {
@@ -747,6 +777,15 @@ export default {
           break
         case 'save':
           if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
+          if (activeObj.value) {
+            let newActive = Object.assign({}, { value: activeObj.value })
+            this.rowData.Active = newActive.value
+            args.rowData.Active = newActive.value
+          } else {
+            activeElem.value = null
+            this.rowData.Active = this.originalRowData.Active
+            args.rowData.Active = this.originalRowData.Active
+          }
           if (managerObj.value) {
             let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
             this.rowData.ManagerId = Number(newManager.value)
@@ -804,6 +843,7 @@ export default {
       await Workplan.dispatch('getDigest')
       let payload = {
         Title: data.Title,
+        Active: data.Active,
         Number: data.Number,
         DateApproved: data.DateApproved,
         Revision: data.Revision,

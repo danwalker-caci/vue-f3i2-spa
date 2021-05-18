@@ -123,6 +123,7 @@ export default {
     let itemprops = {
       __metadata: { type: 'SP.Data.WorkPlansListItem' },
       Title: payload.Title,
+      Active: payload.Active,
       Number: payload.Number,
       Revision: payload.Revision,
       POPStart: moment(payload.POPStart).isValid()
