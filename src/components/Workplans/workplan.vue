@@ -648,7 +648,7 @@ export default {
           return submitDateElem
         },
         read: () => {
-          return submitDateObj.value
+          return submitDateObj ? submitDateObj.value : null
         },
         destroy: () => {
           submitDateObj.destroy()
