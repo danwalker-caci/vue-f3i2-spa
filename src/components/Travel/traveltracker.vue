@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
     <b-row no-gutters class="contentHeight">
-      <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+      <b-toast id="busy-toast" variant="light-blue" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
             <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
@@ -68,7 +68,7 @@
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="buttonrow">
-            <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+            <b-button id="ShowFilters" class="btn btn-light-blue" @click="ToggleFilters">
               Toggle Filters
             </b-button>
           </b-row>
@@ -713,7 +713,7 @@ export default {
               <b-button variant="success" class="actionbutton" @click="report(data)" title="Add/Edit Trip Report">
                 <font-awesome-icon far icon="upload" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isWPManager || isAdmin || isPM" variant="warning" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
+              <b-button v-if="isWPManager || isAdmin || isPM" variant="light-blue" class="actionbutton" @click="postpone(data)" title="Postpone Travel">
                 <font-awesome-icon far icon="hand-paper" class="icon"></font-awesome-icon>
               </b-button>
               <b-button v-if="isWPManager || isAdmin || isPM" variant="danger" class="actionbutton" @click="cancel(data)" title="Cancel Travel">

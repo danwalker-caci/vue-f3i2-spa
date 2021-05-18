@@ -31,16 +31,19 @@ $container-max-widths: (
   xxxxxl: 3840px
 );
 
+$deep-blue: #1B263B;
+$light-blue: #3A5069;
+
 $enable-rounded: false;
 
 $grid-icon-color: $white;
-$tbar-default-bg: $warning;
-$tbar-hor-active-bg: $warning;
+$tbar-default-bg: $deep-blue;
+$tbar-hor-active-bg: $deep-blue;
 $tbar-hover-bg: $black;
 $tbar-popup-hover-bg: $black;
 $tbar-default-icon-color: $white;
 $tbar-default-font: $white;
-$ribbon-content-bg-color: $warning;
+$ribbon-content-bg-color: $deep-blue;
 
 $input-box-border-color: $black; // override syncfusion input border color
 
