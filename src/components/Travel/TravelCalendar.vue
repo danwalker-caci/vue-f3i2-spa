@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
-    <b-toast id="busy-toast" variant="warning" solid no-auto-hide>
+    <b-toast id="busy-toast" variant="light-blue" solid no-auto-hide>
       <template v-slot:toast-title>
         <div class="d-flex flex-grow-1 align-items-baseline">
           <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>

@@ -144,7 +144,7 @@
         <div class="container-fluid">
           <table id="NewTable" class="personneltable">
             <tbody>
-              <tr class="bg-warning text-white">
+              <tr class="bg-light-blue text-white">
                 <th>Last Name</th>
                 <th>First Name</th>
                 <th>Middle</th>
@@ -164,7 +164,7 @@
                   <ejs-dropdownlist v-model="newData.Company" :dataSource="companies"></ejs-dropdownlist>
                 </td>
               </tr>
-              <tr class="bg-warning text-white">
+              <tr class="bg-light-blue text-white">
                 <th colspan="2">Email</th>
                 <th colspan="2">Phone</th>
               </tr>
@@ -184,7 +184,7 @@
         <b-container fluid class="contentHeight m-0 p-0">
           <b-form @submit="onSubmit">
             <b-row no-gutters class="buttonrow">
-              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+              <b-button id="ShowFilters" class="btn btn-light-blue" @click="ToggleFilters">
                 Toggle Filters
               </b-button>
             </b-row>
@@ -516,9 +516,9 @@ export default {
         { text: '0%', value: 0 }
       ],
       WPFields: [
-        { key: 'actions', label: 'Action', thClass: 'bg-warning text-white text-center px40' },
-        { key: 'Workplan', label: 'Workplan', thClass: 'bg-warning text-white text-center px300' },
-        { key: 'PercentSupport', label: 'Percent Support', thClass: 'bg-warning text-white text-center px200' }
+        { key: 'actions', label: 'Action', thClass: 'bg-light-blue text-white text-center px40' },
+        { key: 'Workplan', label: 'Workplan', thClass: 'bg-light-blue text-white text-center px300' },
+        { key: 'PercentSupport', label: 'Percent Support', thClass: 'bg-light-blue text-white text-center px200' }
       ],
       pageSettings: { pageSize: 30 },
       editSettings: { allowEditing: true, allowAdding: true, allowDeleting: false, mode: 'Dialog' },

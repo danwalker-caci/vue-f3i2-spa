@@ -69,7 +69,7 @@
         <b-container fluid class="contentHeight m-0 p-0">
           <b-form @submit="onSubmit">
             <b-row no-gutters class="buttonrow">
-              <b-button id="ShowFilters" class="btn btn-warning" @click="ToggleFilters">
+              <b-button id="ShowFilters" class="btn btn-light-blue" @click="ToggleFilters">
                 Toggle Filters
               </b-button>
             </b-row>

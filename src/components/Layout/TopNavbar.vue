@@ -1,7 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg ">
     <div class="container-fluid">
-      <b-modal id="ActivityLog" ref="ActivityLog" size="xl" centered :header-bg-variant="warning" @close="onModalHide" v-model="Show">
+      <!-- eslint-disable-next-line prettier/prettier -->
+      <b-modal id="ActivityLog" ref="ActivityLog" size="xl" centered :header-bg-variant="light-blue" @close="onModalHide" v-model="Show">
         <template v-slot:modal-title>Activity Log</template>
         <b-container fluid class="p-0">
           <div class="row m-0">
