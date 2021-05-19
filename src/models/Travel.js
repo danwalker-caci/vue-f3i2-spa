@@ -11,6 +11,7 @@ export default class Travel extends Model {
     afrltrips: [],
     delegates: [],
     govapprovers: [],
+    pca: {},
     trip: {},
     loaded: false,
     triploaded: false,

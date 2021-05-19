@@ -702,6 +702,9 @@ export default {
     isTravelApprover() {
       return User.getters('isTravelApprover')
     },
+    pca() {
+      return this.$store.state.database.travel.pca
+    },
     delegates() {
       return this.$store.state.database.travel.delegates
     },
@@ -1000,6 +1003,9 @@ export default {
         this.travelmodel.CreatedByEmail = this.selectedtrip.CreatedByEmail
         this.travelmodel.etag = this.selectedtrip.etag
         this.travelmodel.uri = this.selectedtrip.uri
+        let payload = {}
+        payload.wp = this.travelmodel.WorkPlanNumber
+        Travel.dispatch('getPCAForWP', payload)
         if (this.travelmodel.CreatedByEmail.indexOf(this.currentuser[0].Email) >= 0) {
           this.isAuthor = true
         }
@@ -1008,7 +1014,7 @@ export default {
         }
         this.$bvToast.hide('form-toast')
         // personnel are filtered by company
-        let payload = {}
+        payload = {}
         payload.company = this.company
         if (this.isSubcontractor == true) {
           try {
@@ -1102,7 +1108,7 @@ export default {
     /* ---------------------------------------------------------------------------------------------------------------- End Base Events ---------------------------------------------------------------------------- */
     /* ---------------------------------------------------------------------------------------------------------------- Validation Events -------------------------------------------------------------------------- */
     ValidateMe: function(control) {
-      console.log('VALIDATION: ' + control)
+      // console.log('VALIDATION: ' + control)
       let phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/
       let emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
       let ti = /([\d]{2})-([a-zA-Z0-9]{4})-([\d]{1,})/

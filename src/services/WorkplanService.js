@@ -75,6 +75,20 @@ export default {
     let results = response.data.d.results
     return results
   },
+  async getPCAForWP(state, payload) {
+    let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/items"
+    geturl += '?$select=PCA/Title,PCA/ID,PCA/Name,PCA/EMail&$expand=PCA'
+    geturl += "&$filter=(Number eq '" + payload.wp + "')"
+    console.log('getURL: ' + geturl)
+    let response = await axios.get(geturl, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
+    console.log('getPCAForWP response' + response)
+    let results = response.data.d.results
+    return results
+  },
   async getPOPByWPNumber(state, payload) {
     let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/items"
     geturl += '?$select=POPStart,POPEnd'
