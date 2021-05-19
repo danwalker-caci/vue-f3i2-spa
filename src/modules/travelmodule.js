@@ -335,6 +335,7 @@ function formatTrip(j) {
   p.Id = j[0]['Id']
   p.Subject = j[0]['Title'] !== null ? String(j[0]['Title']) : ''
   p.Status = j[0]['Status'] !== null ? String(j[0]['Status']) : ''
+  p.FundingAvailable = j[0]['FundingAvailable'] === 'Yes' ? 'Yes' : 'No'
   p.Created = created
   p.CreatedBy = j[0]['Author']['ID']
   p.CreatedByEmail = j[0]['Author']['EMail']
@@ -418,6 +419,7 @@ function formatTravel(j) {
       Id: j[i]['Id'],
       Subject: j[i]['Title'] !== null ? String(j[i]['Title']) : '',
       Status: j[i]['Status'] !== null ? String(j[i]['Status']) : '',
+      FundingAvailable: j[i]['FundingAvailable'] === 'Yes' ? 'Yes' : 'No',
       Created: created,
       CreatedBy: createdby,
       StartTime: start,
