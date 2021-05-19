@@ -9,6 +9,10 @@
       </template>
       <b-progress :variant="busyVariant" :value="busyValue" :max="busyMax" show-progress animated></b-progress>
     </b-toast>
+    <b-modal title="Persons Missing in Security" id="PerSecResults" ok-only ok-variant="secondary" ok-title="Close">
+      <p>Use this information to update the Security Tracker with the Personnel roster.</p>
+      <b-table-lite id="PersonnelVSecurity" :items="persVSecurityResults" :fields="persVSecurityFields" striped></b-table-lite>
+    </b-modal>
     <b-row class="mb-1">
       <b-col cols="3">
         <b-card border-variant="success" text-variant="dark">
@@ -81,6 +85,24 @@
           </b-card-body>
         </b-card>
       </b-col>
+      <b-col cols="3">
+        <b-card border-variant="success" text-variant="dark">
+          <template v-slot:header>
+            <h3 class="mb-0">
+              <span class="ml-0">Personnel Actions</span>
+              <font-awesome-icon fas icon="people-arrows" class="icon text-danger float-right ml-1"></font-awesome-icon>
+            </h3>
+          </template>
+          <b-card-body>
+            <b-alert v-model="showOkPersSecurityAlert" variant="success" dismissible>
+              No discrepencies detected!
+            </b-alert>
+            <b-row class="p-0 m-0">
+              <b-button ref="checkPersonnelSecurity" variant="success" :disabled="disablePersonnelSecurityCheck" @click="checkPersonnelSecurity">Check Personnel against Security</b-button>
+            </b-row>
+          </b-card-body>
+        </b-card>
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -144,6 +166,9 @@ export default {
     allpersonnel() {
       return Personnel.getters('allPersonnel')
     },
+    allsecurity() {
+      return Security.getters('SecurityForms')
+    },
     allworkplans() {
       return Workplan.getters('allWorkplans')
     },
@@ -192,6 +217,10 @@ export default {
       selecteddata: null,
       ManagerEmail: '',
       cloneMSR: false,
+      disablePersonnelSecurityCheck: false,
+      showOkPersSecurityAlert: false,
+      persVSecurityResults: [],
+      persVSecurityFields: [{ key: 'id' }, { key: 'FirstName' }, { key: 'LastName' }, { key: 'Company' }],
       dataMap: [],
       tripcount: 0
     }
@@ -253,6 +282,33 @@ export default {
           console.log('Install Failed: ' + args.get_message())
         }
       )
+    },
+    async checkPersonnelSecurity() {
+      this.disablePersonnelSecurityCheck = true
+      await Personnel.dispatch('getDigest')
+      await Security.dispatch('getDigest')
+      await Personnel.dispatch('getPersonnel')
+      await Security.dispatch('getSecurityForms')
+      if (this.allpersonnel.length !== this.allsecurity.length) {
+        // Loop through and find based on PersonnelID
+        this.allpersonnel.forEach(person => {
+          var result = vm.allsecurity.find(security => {
+            return security.PersonnelId === person.Id
+          })
+          if (result === undefined) {
+            vm.persVSecurityResults.push({ id: person.id, FirstName: person.FirstName, LastName: person.LastName, Company: person.Company })
+          }
+        })
+        console.log('Results from checking Personnel against Security: ' + JSON.stringify(this.persVSecurityResults))
+        if (this.persVSecurityResults.length > 0) {
+          this.persVSecurityResults.reverse()
+          this.$bvModal.show('PerSecResults')
+        }
+      } else {
+        // This is fine.
+        this.showOkPersSecurityAlert = true
+      }
+      this.disablePersonnelSecurityCheck = false
     },
     async btn_LateTripReports_Clicked() {
       // calculate late trip reports
