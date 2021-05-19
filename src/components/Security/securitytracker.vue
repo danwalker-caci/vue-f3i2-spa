@@ -169,7 +169,7 @@ export default {
                         <div class="width-98">
                           <b-row>
                             <b-col cols="3" class="p-1" align-v="center">
-                              <b-button v-if="isSecurity || isDeveloper" ref="SecurityEdit" @click="editSecurity($event)" :data-link="'/security/edit/' + data.id " variant="secondary" class="btn float-right">Edit Person Security</b-button>
+                              <b-button v-if="isSecurity || isDeveloper || isAFRL" ref="SecurityEdit" @click="editSecurity($event)" :data-link="'/security/edit/' + data.id " variant="secondary" class="btn float-right">Edit Person Security</b-button>
                             </b-col>
                             <!-- PR Due Date and CE Date -->
                             <b-col cols="9">
