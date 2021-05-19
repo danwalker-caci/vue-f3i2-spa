@@ -133,6 +133,9 @@
                   Toggle Filters
                 </b-button>
               </b-row>
+              <b-alert v-model="showIncrementAlert" variant="danger" dismissible>
+                Please enter a number in the Increment column.
+              </b-alert>
               <b-row no-gutters class="gridrow" v-if="isPM && !loadingData">
                 <ejs-grid
                   id="WorkplanGrid"
@@ -163,6 +166,7 @@
                     <e-column field="CACISubmittedDate" headerText="Submitted Date" format="M/d/y" :edit="submitDateParams" minWidth="150"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Increment" headerText="Increment" textAlign="Left" minWidth="50" type="number"></e-column>
                     <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
@@ -204,6 +208,7 @@
                     <e-column field="CACISubmittedDate" headerText="Submitted Date" width="150"></e-column>
                     <e-column field="Number" headerText="Number" width="100"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
+                    <e-column field="Increment" headerText="Increment" textAlign="Left" width="50"></e-column>
                     <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
                     <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
@@ -315,6 +320,7 @@ export default {
       manager: null,
       managerId: null,
       origStatus: null,
+      showIncrementAlert: false,
       fields: [
         {
           FieldName: 'Version',
@@ -783,6 +789,7 @@ export default {
           break
         case 'save':
           if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
+          this.showIncrementAlert = false
           if (managerObj.value) {
             let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
             this.rowData.ManagerId = Number(newManager.value)
@@ -830,6 +837,15 @@ export default {
             this.rowData.CACISubmittedDate = null
           }
           this.rowData.Revision = args.rowData.Revision
+
+          if (Number.isFinite(args.rowData.Increment)) {
+            this.rowData.Increment = args.rowData.Increment
+          } else if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
+            this.showIncrementAlert = true
+            this.rowData.Increment = null
+          } else {
+            this.rowData.Increment = null
+          }
           this.rowData.Title = args.rowData.Title
           this.rowData.Comments = args.rowData.Comments
           // Create an immutable manager object and update related fields
@@ -869,6 +885,7 @@ export default {
         CACISubmittedDate: data.CACISubmittedDate,
         DateApproved: data.DateApproved,
         Revision: data.Revision,
+        Increment: data.Increment,
         POPStart: data.POPStart,
         POPEnd: data.POPEnd,
         ManagerId: data.ManagerId,

@@ -91,6 +91,7 @@ function formatWorkplan(j) {
       Comments: j[i]['Comments'],
       Number: j[i]['Number'],
       Revision: j[i]['Revision'],
+      Increment: j[i]['Increment'],
       Status: j[i]['Status'],
       Subs: j[i]['Subs'],
       POPStart: moment(j[i]['POPStart']).isValid() ? moment(j[i]['POPStart']).format('MM/DD/YYYY') : '',

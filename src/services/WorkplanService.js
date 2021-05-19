@@ -126,6 +126,7 @@ export default {
       Comments: payload.Comments,
       Number: payload.Number,
       Revision: payload.Revision,
+      Increment: payload.Increment,
       POPStart: moment(payload.POPStart).isValid()
         ? moment(payload.POPStart)
             .add(6, 'hours')
