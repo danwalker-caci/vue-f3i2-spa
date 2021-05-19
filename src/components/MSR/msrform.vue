@@ -2,7 +2,7 @@
   <b-container fluid class="contentHeight m-0 p-0" id="MainContainer">
     <b-modal id="InsertTableModal" ref="InsertTableModal" v-model="ModalShow" scrollable size="xxxl" centered hide-header hide-footer @shown="onModalShown">
       <b-container fluid class="m-0 p-0">
-        <b-row no-gutters class="bg-warning text-white formheader">
+        <b-row no-gutters class="bg-light-blue text-white formheader">
           <b-col cols="4" class="p-0 text-left"></b-col>
           <b-col cols="4" class="p-0 text-center">Insert Table</b-col>
           <b-col cols="4" class="p-0 text-right"></b-col>
@@ -10,7 +10,7 @@
         <b-row no-gutters>
           <ejs-spreadsheet ref="ModalSpreadSheet" :created="onSpreadSheetCreate" height="700"></ejs-spreadsheet>
         </b-row>
-        <b-row no-gutters class="bg-warning buttonrow formfooter">
+        <b-row no-gutters class="bg-light-blue buttonrow formfooter">
           <b-col cols="4" class="p-0 text-left"></b-col>
           <b-col cols="4" class="p-0 text-center"></b-col>
           <b-col cols="4" class="p-0 text-right">
@@ -23,7 +23,7 @@
       </b-container>
     </b-modal>
     <b-row no-gutters class="contentHeight">
-      <b-toast id="form-toast" variant="warning" solid no-auto-hide>
+      <b-toast id="form-toast" variant="light-blue" solid no-auto-hide>
         <template v-slot:toast-title>
           <div class="d-flex flex-grow-1 align-items-baseline">
             <b-img blank blank-color="#ff0000" class="mr-2" width="12" height="12"></b-img>
@@ -34,7 +34,7 @@
       </b-toast>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="bg-warning text-black formheader">
+          <b-row no-gutters class="bg-light-blue text-black formheader">
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center">{{ headerText }}</b-col>
             <b-col cols="4" class="p-0 text-right"></b-col>
@@ -64,7 +64,7 @@
                               </b-row>
                               <b-form v-if="FundingForm">
                                 <b-row>
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelFunding" ref="btn_CancelFunding" class="formbutton" variant="info" @click="handleit('cancel', 'Funding', 'FundingForm')">Cancel</b-button>
                                   <b-button id="btn_SaveFunding" ref="btn_SaveFunding" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Funding', 'FundingForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -84,7 +84,7 @@
                               </b-row>
                               <b-form v-if="StaffingForm">
                                 <b-row id="StaffingAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelStaffing" ref="btn_CancelStaffing" class="formbutton" variant="info" @click="handleit('cancel', 'Staffing', 'StaffingForm')">Cancel</b-button>
                                   <b-button id="btn_SaveStaffing" ref="btn_SaveStaffing" class="formbutton ml-auto" variant="success" @click="handleit('save', 'Staffing', 'StaffingForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -104,7 +104,7 @@
                               </b-row>
                               <b-form v-if="CostReportForm">
                                 <b-row id="CostReportAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelCostReport" ref="btn_CancelCostReport" class="formbutton" variant="info" @click="handleit('cancel', 'CostReport', 'CostReportForm')">Cancel</b-button>
                                   <b-button id="btn_SaveCostReport" ref="btn_SaveCostReport" class="formbutton ml-auto" variant="success" @click="handleit('save', 'CostReport', 'CostReportForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -141,7 +141,7 @@
                               </b-row>
                               <b-form v-if="TravelAccomplishedForm">
                                 <b-row id="TravelAccomplishedAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelAccomplished" ref="btn_CancelTravelAccomplished" class="formbutton" variant="info" @click="handleit('cancel', 'TravelAccomplished', 'TravelAccomplishedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelAccomplished" ref="btn_SaveTravelAccomplished" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelAccomplished', 'TravelAccomplishedForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -161,7 +161,7 @@
                               </b-row>
                               <b-form v-if="TravelPlannedForm">
                                 <b-row id="TravelPlannedAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelPlanned" ref="btn_CancelTravelPlanned" class="formbutton" variant="info" @click="handleit('cancel', 'TravelPlanned', 'TravelPlannedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelPlanned" ref="btn_SaveTravelPlanned" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelPlanned', 'TravelPlannedForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -181,7 +181,7 @@
                               </b-row>
                               <b-form v-if="TravelCostsForm">
                                 <b-row id="TravelCostsAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelTravelCosts" ref="btn_CancelTravelCosts" class="formbutton" variant="info" @click="handleit('cancel', 'TravelCosts', 'TravelCostsForm')">Cancel</b-button>
                                   <b-button id="btn_SaveTravelCosts" ref="btn_SaveTravelCosts" class="formbutton ml-auto" variant="success" @click="handleit('save', 'TravelCosts', 'TravelCostsForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -201,7 +201,7 @@
                               </b-row>
                               <b-form v-if="ODCAccomplishedForm">
                                 <b-row id="ODCAccomplishedAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCAccomplished" ref="btn_CancelODCAccomplished" class="formbutton" variant="info" @click="handleit('cancel', 'ODCAccomplished', 'ODCAccomplishedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCAccomplished" ref="btn_SaveODCAccomplished" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCAccomplished', 'ODCAccomplishedForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -221,7 +221,7 @@
                               </b-row>
                               <b-form v-if="ODCPlannedForm">
                                 <b-row id="ODCPlannedAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCPlanned" ref="btn_CancelODCPlanned" class="formbutton" variant="info" @click="handleit('cancel', 'ODCPlanned', 'ODCPlannedForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCPlanned" ref="btn_SaveODCPlanned" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCPlanned', 'ODCPlannedForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -241,7 +241,7 @@
                               </b-row>
                               <b-form v-if="ODCCostsForm">
                                 <b-row id="ODCCostsAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clear', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clear', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelODCCosts" ref="btn_CancelODCCosts" class="formbutton" variant="info" @click="handleit('cancel', 'ODCCosts', 'ODCCostsForm')">Cancel</b-button>
                                   <b-button id="btn_SaveODCCosts" ref="btn_SaveODCCosts" class="formbutton ml-auto" variant="success" @click="handleit('save', 'ODCCosts', 'ODCCostsForm')" title="Inputs are complete for this section.">Complete</b-button>
                                 </b-row>
@@ -281,7 +281,7 @@
                         </b-row>
                         <b-form v-if="AccomplishmentsForm">
                           <b-row id="AccomplishmentsAnchor">
-                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
+                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clearaccomplishment', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelAccomplishments" ref="btn_CancelAccomplishments" class="formbutton" variant="info" @click="handleit('cancelaccomplishment', '', '')">Cancel</b-button>
                             <b-button id="btn_SaveAccomplishments" ref="btn_SaveAccomplishments" class="formbutton" variant="success" @click="handleit('saveaccomplishment', 'Accomplishments', 'AccomplishmentsForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivateAccomplishment" ref="btn_PrivateAccomplishment" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateaccomplishment', '', '')">Make Private</b-button>
@@ -326,12 +326,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ accomplishment.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -339,12 +339,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ accomplishment.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -367,11 +367,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ accomplishment.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -379,11 +379,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ accomplishment.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -419,7 +419,7 @@
                         </b-row>
                         <b-form v-if="PlansForm">
                           <b-row id="PlansAnchor">
-                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearplan', '', '')">Clear Contents</b-button>
+                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clearplan', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelPlans" ref="btn_CancelPlans" class="formbutton" variant="info" @click="handleit('cancelplan', '', '')">Cancel</b-button>
                             <b-button id="btn_SavePlans" ref="btn_SavePlans" class="formbutton" variant="success" @click="handleit('saveplan', 'Plans', 'PlansForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivatePlan" ref="btn_PrivatePlan" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateplan', '', '')">Make Private</b-button>
@@ -464,12 +464,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ plan.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="plan.HTML"></b-card-body>
@@ -477,12 +477,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ plan.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="plan.HTML"></b-card-body>
@@ -505,11 +505,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ plan.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="plan.HTML"></b-card-body>
@@ -517,11 +517,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ plan.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="plan.HTML"></b-card-body>
@@ -564,7 +564,7 @@
                               </b-row>
                               <b-form v-if="AssumptionsForm">
                                 <b-row id="AssumptionsAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearassumption', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clearassumption', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelAssumptions" ref="btn_CancelAssumptions" class="formbutton" variant="info" @click="handleit('cancelassumption', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveAssumptions" ref="btn_SaveAssumptions" class="formbutton" variant="success" @click="handleit('saveassumption', 'Assumptions', 'AssumptionsForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateAssumption" ref="btn_PrivateAssumption" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateassumption', '', '')">Make Private</b-button>
@@ -609,12 +609,12 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ assumption.Company }}</span>
                                                 <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -622,12 +622,12 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ assumption.Company }}</span>
                                               <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -650,11 +650,11 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="assumption.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ assumption.Company }}</span>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -662,11 +662,11 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ assumption.Company }}</span>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -696,7 +696,7 @@
                               </b-row>
                               <b-form v-if="RisksForm">
                                 <b-row id="RisksAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearrisk', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clearrisk', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelRisks" ref="btn_CancelRisks" class="formbutton" variant="info" @click="handleit('cancelrisk', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveRisks" ref="btn_SaveRisks" class="formbutton" variant="success" @click="handleit('saverisk', 'Risks', 'RisksForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateRisk" ref="btn_PrivateRisk" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privaterisk', '', '')">Make Private</b-button>
@@ -741,12 +741,12 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="risk.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ risk.Company }}</span>
                                                 <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="risk.HTML"></b-card-body>
@@ -754,12 +754,12 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ risk.Company }}</span>
                                               <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="risk.HTML"></b-card-body>
@@ -782,11 +782,11 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="risk.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ risk.Company }}</span>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="risk.HTML"></b-card-body>
@@ -794,11 +794,11 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ risk.Company }}</span>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="risk.HTML"></b-card-body>
@@ -828,7 +828,7 @@
                               </b-row>
                               <b-form v-if="OpportunitiesForm">
                                 <b-row id="OpportunitiesAnchor">
-                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('clearopportunity', '', '')">Clear Contents</b-button>
+                                  <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('clearopportunity', '', '')">Clear Contents</b-button>
                                   <b-button id="btn_CancelOpportunitys" ref="btn_CancelOpportunitys" class="formbutton" variant="info" @click="handleit('cancelopportunity', '', '')">Cancel</b-button>
                                   <b-button id="btn_SaveOpportunitys" ref="btn_SaveOpportunitys" class="formbutton" variant="success" @click="handleit('saveopportunity', 'Opportunities', 'OpportunitiesForm')" title="Save and Edit Later">Save</b-button>
                                   <b-button id="btn_PrivateOpportunity" ref="btn_PrivateOpportunity" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privateopportunity', '', '')">Make Private</b-button>
@@ -873,12 +873,12 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="opportunity.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ opportunity.Company }}</span>
                                                 <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -886,12 +886,12 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ opportunity.Company }}</span>
                                               <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -914,11 +914,11 @@
                                     <div v-else>
                                       <div v-if="isSubcontractor">
                                         <div v-if="opportunity.Company == Company">
-                                          <b-card border-variant="warning" text-variant="dark">
+                                          <b-card border-variant="light-blue" text-variant="dark">
                                             <template v-slot:header>
                                               <h3 class="mb-0">
                                                 <span class="ml-0">{{ opportunity.Company }}</span>
-                                                <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                                <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                               </h3>
                                             </template>
                                             <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -926,11 +926,11 @@
                                         </div>
                                       </div>
                                       <div v-else>
-                                        <b-card border-variant="warning" text-variant="dark">
+                                        <b-card border-variant="light-blue" text-variant="dark">
                                           <template v-slot:header>
                                             <h3 class="mb-0">
                                               <span class="ml-0">{{ opportunity.Company }}</span>
-                                              <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                              <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                             </h3>
                                           </template>
                                           <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -969,7 +969,7 @@
                         </b-row>
                         <b-form v-if="DeliverablesForm">
                           <b-row id="DeliverablesAnchor">
-                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="warning" @click="handleit('cleardeliverable', '', '')">Clear Contents</b-button>
+                            <b-button id="btn_Clear" ref="btn_Clear" class="formbutton" variant="light-blue" @click="handleit('cleardeliverable', '', '')">Clear Contents</b-button>
                             <b-button id="btn_CancelDeliverables" ref="btn_CancelDeliverables" class="formbutton" variant="info" @click="handleit('canceldeliverable', '', '')">Cancel</b-button>
                             <b-button id="btn_SaveDeliverables" ref="btn_SaveDeliverables" class="formbutton" variant="success" @click="handleit('savedeliverable', 'Deliverables', 'DeliverablesForm')" title="Save and Edit Later">Save</b-button>
                             <b-button id="btn_PrivateDeliverable" ref="btn_PrivateDeliverable" class="formbutton" variant="primary" title="Ensure that others can't see the input" @click="handleit('privatedeliverable', '', '')">Make Private</b-button>
@@ -1014,12 +1014,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ deliverable.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1027,12 +1027,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ deliverable.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1055,11 +1055,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ deliverable.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1067,11 +1067,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ deliverable.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1210,12 +1210,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ accomplishment.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -1223,12 +1223,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ accomplishment.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -1251,11 +1251,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="accomplishment.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ accomplishment.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -1263,11 +1263,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ accomplishment.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="accomplishment.HTML"></b-card-body>
@@ -1321,12 +1321,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ plan.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="plan.HTML"></b-card-body>
@@ -1334,12 +1334,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ plan.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="plan.HTML"></b-card-body>
@@ -1362,11 +1362,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="plan.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ plan.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="plan.HTML"></b-card-body>
@@ -1374,11 +1374,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ plan.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="plan.HTML"></b-card-body>
@@ -1437,12 +1437,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="assumption.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ assumption.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -1450,12 +1450,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ assumption.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -1479,11 +1479,11 @@
                                 >
                                 <div v-if="isSubcontractor">
                                   <div v-if="assumption.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ assumption.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -1491,11 +1491,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ assumption.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="assumption.HTML"></b-card-body>
@@ -1545,12 +1545,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="risk.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ risk.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="risk.HTML"></b-card-body>
@@ -1558,12 +1558,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ risk.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="risk.HTML"></b-card-body>
@@ -1586,11 +1586,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="risk.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ risk.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="risk.HTML"></b-card-body>
@@ -1598,11 +1598,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ risk.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="risk.HTML"></b-card-body>
@@ -1652,12 +1652,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="opportunity.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ opportunity.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -1665,12 +1665,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ opportunity.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -1693,11 +1693,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="opportunity.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ opportunity.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -1705,11 +1705,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ opportunity.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="opportunity.HTML"></b-card-body>
@@ -1764,12 +1764,12 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ deliverable.Company }}</span>
                                           <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1777,12 +1777,12 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ deliverable.Company }}</span>
                                         <font-awesome-icon fas icon="user-shield" class="icon text-danger float-right ml-1"></font-awesome-icon>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1805,11 +1805,11 @@
                               <div v-else>
                                 <div v-if="isSubcontractor">
                                   <div v-if="deliverable.Company == Company">
-                                    <b-card border-variant="warning" text-variant="dark">
+                                    <b-card border-variant="light-blue" text-variant="dark">
                                       <template v-slot:header>
                                         <h3 class="mb-0">
                                           <span class="ml-0">{{ deliverable.Company }}</span>
-                                          <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                          <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                         </h3>
                                       </template>
                                       <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -1817,11 +1817,11 @@
                                   </div>
                                 </div>
                                 <div v-else>
-                                  <b-card border-variant="warning" text-variant="dark">
+                                  <b-card border-variant="light-blue" text-variant="dark">
                                     <template v-slot:header>
                                       <h3 class="mb-0">
                                         <span class="ml-0">{{ deliverable.Company }}</span>
-                                        <font-awesome-icon fas icon="folder-open" class="icon text-warning float-right ml-1"></font-awesome-icon>
+                                        <font-awesome-icon fas icon="folder-open" class="icon text-light-blue float-right ml-1"></font-awesome-icon>
                                       </h3>
                                     </template>
                                     <b-card-body v-html="deliverable.HTML"></b-card-body>
@@ -2035,7 +2035,7 @@
               </b-tabs>
             </b-card>
           </b-row>
-          <b-row class="bg-warning buttonrow formfooter">
+          <b-row class="bg-light-blue buttonrow formfooter">
             <b-col cols="4" class="p-0 text-left"></b-col>
             <b-col cols="4" class="p-0 text-center">
               <b-button-group class="mt-1">

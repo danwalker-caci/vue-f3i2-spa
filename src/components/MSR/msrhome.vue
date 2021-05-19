@@ -171,13 +171,13 @@ export default {
                 <b-button disabled class="actionbutton" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
                 </b-button>
-                <b-button disabled v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
+                <b-button disabled v-if="isWPManager" variant="light-blue" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
+                <b-button disabled v-if="isPCA" variant="light-blue" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
                 </b-button>
-                <b-button disabled v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
+                <b-button disabled v-if="isQA" variant="light-blue" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark title="Locked For Editing">
                   <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
                 </b-button>
               </div>
@@ -185,13 +185,13 @@ export default {
                 <b-button variant="success" class="actionbutton" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit">
                   <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon> Edit MSR
                 </b-button>
-                <b-button v-if="isWPManager" variant="warning" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('WPMReview', data)">
+                <b-button v-if="isWPManager" variant="light-blue" class="actionbutton" @click="wpmreview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('WPMReview', data)">
                   <font-awesome-icon far icon="user-tie" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('WPMReview', data)"></div>
                 </b-button>
-                <b-button v-if="isPCA" variant="warning" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('PCAReview', data)">
+                <b-button v-if="isPCA" variant="light-blue" class="actionbutton" @click="pcareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('PCAReview', data)">
                   <font-awesome-icon far icon="user-tag" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('PCAReview', data)"></div>
                 </b-button>
-                <b-button v-if="isQA" variant="warning" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('QAReview', data)">
+                <b-button v-if="isQA" variant="light-blue" class="actionbutton" @click="qareview(data)" v-b-tooltip.hover.v-dark :title="tooltipme('QAReview', data)">
                   <font-awesome-icon far icon="user-lock" class="icon"></font-awesome-icon><div class="float-right" v-html="tooltipme('QAReview', data)"></div>
                 </b-button>
               </div>

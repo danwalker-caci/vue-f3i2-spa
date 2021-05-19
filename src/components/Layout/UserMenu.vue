@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <b-modal id="Todos" ref="Todos" scrollable size="xl" centered hide-footer header-bg-variant="warning" header-text-variant="white">
+    <b-modal id="Todos" ref="Todos" scrollable size="xl" centered hide-footer header-bg-variant="light-blue" header-text-variant="white">
       <template v-slot:modal-title>My Tasks</template>
       <b-form>
         <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
@@ -24,7 +24,7 @@
       <a data-toggle="collapse" :aria-expanded="!isClosed" @click.stop="toggleMenu" href="#">
         <span class="UserName">
           {{ userdisplayname }}
-          <b-button v-if="mytodos.length > 0" variant="warning" @click="OpenTodos" class="sidebar-tasks rounded"
+          <b-button v-if="mytodos.length > 0" variant="light-blue" @click="OpenTodos" class="sidebar-tasks rounded"
             >My Tasks
             <b-spinner v-if="!mytodosloaded" variant="danger" class="loading-spinner"></b-spinner>
             <span class="badge badge-xs badge-danger sidebar-badge" @click="OpenTodos">{{ mytodos.length }}</span>

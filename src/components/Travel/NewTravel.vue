@@ -18,7 +18,7 @@
               <b-input-group>
                 <b-form-input type="text" placeholder="Search..." class="form-control" v-model="searchinput" v-on:keyup.enter="searchme"></b-form-input>
                 <b-input-group-append>
-                  <b-button variant="warning" @click.stop="searchme" title="Search">
+                  <b-button variant="light-blue" @click.stop="searchme" title="Search">
                     <font-awesome-icon far icon="search" class="icon"></font-awesome-icon>
                   </b-button>
                 </b-input-group-append>
@@ -308,13 +308,13 @@
                     </template>
                     <table id="SummaryTable" class="summarytable">
                       <tbody>
-                        <tr class="bg-warning text-white">
+                        <tr class="bg-light-blue text-white">
                           <td colspan="5">Subject</td>
                         </tr>
                         <tr>
                           <td colspan="5">{{ travelmodel.Subject }}</td>
                         </tr>
-                        <tr class="bg-warning text-white">
+                        <tr class="bg-light-blue text-white">
                           <td colspan="2">Company</td>
                           <td colspan="3">WorkPlan</td>
                         </tr>
@@ -322,7 +322,7 @@
                           <td colspan="2">{{ travelmodel.Company }}</td>
                           <td colspan="3">{{ travelmodel.WorkPlanText }}</td>
                         </tr>
-                        <tr class="bg-warning text-white">
+                        <tr class="bg-light-blue text-white">
                           <td>Start Date</td>
                           <td>End Date</td>
                           <td>Traveling From</td>
@@ -336,7 +336,7 @@
                           <td>{{ travelmodel.TravelTo }}</td>
                           <td>${{ travelmodel.EstimatedCost }}</td>
                         </tr>
-                        <tr class="bg-warning text-white">
+                        <tr class="bg-light-blue text-white">
                           <td>Gov Sponsor</td>
                           <td>Gov POC Name</td>
                           <td colspan="2">Gov POC Email</td>
@@ -348,7 +348,7 @@
                           <td colspan="2">{{ travelmodel.POCEmail }}</td>
                           <td>{{ travelmodel.POCPhone }}</td>
                         </tr>
-                        <tr class="bg-warning text-white">
+                        <tr class="bg-light-blue text-white">
                           <td colspan="3">Purpose</td>
                           <td>Visit Request</td>
                           <td>Required Clearance</td>
@@ -362,12 +362,12 @@
                           <td colspan="5">
                             <table class="summarytable">
                               <thead>
-                                <tr class="bg-warning text-white">
+                                <tr class="bg-light-blue text-white">
                                   <td colspan="4">Travelers</td>
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr class="bg-warning text-white">
+                                <tr class="bg-light-blue text-white">
                                   <th>First Name</th>
                                   <th>Last Name</th>
                                   <th>Email</th>
@@ -626,27 +626,27 @@ export default {
         {
           key: 'actions',
           label: 'Action',
-          thClass: 'bg-warning text-white text-center px40'
+          thClass: 'bg-light-blue text-white text-center px40'
         },
         {
           key: 'firstName',
           label: 'First Name',
-          thClass: 'bg-warning text-white text-center px80'
+          thClass: 'bg-light-blue text-white text-center px80'
         },
         {
           key: 'lastName',
           label: 'Last Name',
-          thClass: 'bg-warning text-white text-center px80'
+          thClass: 'bg-light-blue text-white text-center px80'
         },
         {
           key: 'email',
           label: 'Email',
-          thClass: 'bg-warning text-white text-center px200'
+          thClass: 'bg-light-blue text-white text-center px200'
         },
         {
           key: 'phone',
           label: 'Phone',
-          thClass: 'bg-warning text-white text-center px100'
+          thClass: 'bg-light-blue text-white text-center px100'
         }
       ],
       levels: [
