@@ -283,6 +283,7 @@ export default {
             notificationemails.push(a[1])
           }
           let payload = {}
+          payload.action = 'Notify'
           payload.id = vm.travelmodel.id
           payload.email = notificationemails
           payload.title = 'Trip Report Approved'
