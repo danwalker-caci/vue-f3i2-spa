@@ -20,6 +20,7 @@ export default class Workplan extends Model {
       Id: this.attr(null),
       Title: this.attr(''),
       Comments: this.attr(''),
+      Active: this.attr(''),
       Number: this.attr(''),
       Revision: this.attr(''), // May not be needed
       Increment: this.attr(''),

@@ -124,6 +124,7 @@ export default {
       __metadata: { type: 'SP.Data.WorkPlansListItem' },
       Title: payload.Title,
       Comments: payload.Comments,
+      Active: payload.Active,
       Number: payload.Number,
       Revision: payload.Revision,
       Increment: payload.Increment,
