@@ -84,7 +84,7 @@
                       <div class="row">
                         <div class="col-6">
                           <!-- <b-form-checkbox v-model="travelmodel.InternalData.OCONUSTravel" value="Yes" unchecked-value="No" switch @change="onOCONUSSelected"></b-form-checkbox> -->
-                          <b-form-radio-group v-model="travelmodel.OCONUS" name="oconus-radios" :options="yesno" :state="ValidateMe('OCONUS')" @change="onOCONUSSelected">
+                          <b-form-radio-group v-model="travelmodel.OCONUS" name="oconus-radios" :options="yesno" :state="ValidateMe('OCONUS')" ref="OCONUS" @change="onOCONUSSelected">
                             <b-form-invalid-feedback :state="ValidateMe('OCONUS')">
                               Must Select OCONUS Yes or No
                             </b-form-invalid-feedback>
@@ -618,7 +618,7 @@ export default {
         ]
       },
       NewTravelfilterSettings: { type: 'Menu' },
-      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
+      fieldsFirstTab: ['OCONUS', 'WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
       fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'Clearance'],
       fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
