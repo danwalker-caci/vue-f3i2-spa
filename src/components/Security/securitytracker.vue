@@ -662,7 +662,7 @@ export default {
                 // Add a task for the designated government employee for review
                 let payload = {
                   Title: 'Complete or Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
-                  //AssignedToId: vm.userid, // Hardcode to Juan
+                  //AssignedToId: 63, // TESTING TASK
                   AssignedToId: taskUserId,
                   Description: 'Complete or reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
                   IsMilestone: false,
@@ -684,6 +684,7 @@ export default {
                 })
                 let emailPayload = {
                   emails: taskEmail,
+                  //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                   body:
                     '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                     data.FirstName +
@@ -1082,9 +1083,10 @@ export default {
                         console.log('ERROR: ' + error.message)
                       })
                     })
+                    // Need to clear out original forms
+                    d[this.selectedSecurityFormType].forms = []
                   }
                   // Clear original form
-                  d[this.selectedSecurityFormType].forms = []
                   switch (this.selectedSecurityFormType) {
                     case 'NIPR':
                       // set the url for the post of file
@@ -1113,13 +1115,13 @@ export default {
                       break
                   }
                   // loop and upload all attached files
+
                   await this.asyncForEach(this.files, async file => {
                     let payload = {}
                     payload.library = vm2.library
                     let pdfName = 'Completed-' + d.PersonnelId + '-' + d.FirstName + ' ' + d.LastName + '-' + file.fileSelected
                     let name = pdfName.split('.')[0]
-                    file.fileName = name
-                    payload.file = file.fileSelected
+                    payload.file = pdfName
                     payload.name = name
                     payload.buffer = file.fileBuffer
                     let item = await Security.dispatch('uploadForm', payload)
@@ -1127,13 +1129,7 @@ export default {
                     let itemlink = item.data.d.ListItemAllFields.__deferred.uri
                     let form = await Security.dispatch('getForm', itemlink)
                     let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
-                    payload = form.data.d.__metadata
-                    //payload.file = file.fileSelected
-                    payload.name = pdfName
-                    // payload.IndexNumber = this.IndexNumber
-                    payload.SecurityFormId = d.Id
-                    await Security.dispatch('updateForm', payload)
-                    // First check to see if there is an entry for the PersonnelID in the Security Form List
+                    // Clear out old forms
                     d[this.selectedSecurityFormType].forms.push({
                       account: this.selectedSecurityFormType,
                       id: formId,
@@ -1144,14 +1140,9 @@ export default {
                       etag: form.data.d.__metadata.etag,
                       uri: form.data.d.__metadata.uri
                     })
-                    // then upload files to replace the formType
-
-                    // Replace the files in original form type
-                    //d[this.formTypes].files =
-                    // finally, clear d.files to zero and remove from file uploader
                   })
                 }
-                console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
+                if (console) console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
                 if (this.statusesUpdated && d.taskId) {
                   await Todo.dispatch('getDigest')
                   let task = await Todo.dispatch('getTodoById', d.taskId)

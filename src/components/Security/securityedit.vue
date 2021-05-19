@@ -1143,6 +1143,7 @@ export default {
               console.log('ERROR: ' + error.message)
             })
           })
+          this[this.selectedSecurityFormType].forms = []
         }
         // Clear original form
         this[this.selectedSecurityFormType].forms = []
@@ -1179,32 +1180,15 @@ export default {
           payload.library = vm.library
           let pdfName = 'Completed-' + vm.PersonnelId + '-' + vm.FirstName + ' ' + vm.LastName + '-' + file.fileSelected
           let name = pdfName.split('.')[0]
-          file.fileName = name
-          payload.file = file.fileSelected
+          payload.file = pdfName
           payload.name = name
           payload.buffer = file.fileBuffer
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
+          if (console) console.log('UPLOADED FORM: ' + item)
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri
           let form = await Security.dispatch('getForm', itemlink)
           let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
-          payload = form.data.d.__metadata
-          //payload.file = file.fileSelected
-          payload.name = pdfName
-          payload.SecurityFormId = this.id
-          await Security.dispatch('updateForm', payload).catch(e => {
-            // Add user notification and system logging
-            const notification = {
-              type: 'danger',
-              title: 'Portal Error',
-              message: e,
-              push: true
-            }
-            this.$store.dispatch('notification/add', notification, {
-              root: true
-            })
-            console.log('ERROR: ' + e)
-          })
           // First check to see if there is an entry for the PersonnelID in the Security Form List
           this[this.selectedSecurityFormType].forms.push({
             account: this.selectedSecurityFormType,

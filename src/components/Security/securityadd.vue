@@ -611,22 +611,15 @@ export default {
           payload.PersonnelID = vm.form.PersonnelID
           let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
           let name = pdfName.split('.')[0]
-          file.fileName = name
-          payload.file = file.fileSelected
+          payload.file = pdfName
           payload.name = name
           payload.buffer = file.fileBuffer
+          if (console) console.log('PAYLOAD TO UPLOAD FORM: ' + JSON.stringify(payload))
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri
           let form = await Security.dispatch('getForm', itemlink)
           let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
-          payload = form.data.d.__metadata
-          //payload.file = file.fileSelected
-          payload.name = pdfName
-          // payload.IndexNumber = this.IndexNumber
-          payload.SecurityFormId = vm.securityForm.Id
-          await Security.dispatch('updateForm', payload)
-          // First check to see if there is an entry for the PersonnelID in the Security Form List
           switch (this.form.Type) {
             case 'NIPR':
               // set the url for the post of file
@@ -743,7 +736,7 @@ export default {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-            //AssignedToId: vm.userid, // Hardcoding the Security Group
+            //AssignedToId: 63, // TESTING TASK
             AssignedToId: this.taskUserId,
             Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
             IsMilestone: false,
@@ -765,6 +758,7 @@ export default {
           })
           let emailPayload = {
             emails: this.taskEmail,
+            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               vm.form.Name +
@@ -892,14 +886,6 @@ export default {
             }
             vm.$store.dispatch('notification/add', notification, { root: true })
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
-            let event = []
-            event.push({
-              name: vm.fileName,
-              Status: 'SecurityReview',
-              Form: this.library + vm.fileSelected,
-              etag: vm.form.etag,
-              uri: vm.form.uri
-            })
             vm.form.etag = parseInt(results.headers.etag)
             if (vm.formType === 'account') {
               vm.form.Type = vm.accountOptions[0]
@@ -958,8 +944,8 @@ export default {
         file.fileSelected = fileData.name
         // Need to perform a check here to see what the file will be named, if the corresponding type already has it and then set a flag to overwrite or modify based on user interaction
         let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
-        console.log('FORMS: ' + JSON.stringify(vm.securityForm[vm.form.Type]))
-        console.log('NEW FORM NAME: ' + pdfName)
+        if (console) console.log('FORMS: ' + JSON.stringify(vm.securityForm[vm.form.Type]))
+        if (console) console.log('NEW FORM NAME: ' + pdfName)
         if (
           vm.securityForm[vm.form.Type].forms &&
           vm.securityForm[vm.form.Type].forms.filter(function(e) {
@@ -986,7 +972,7 @@ export default {
                 for (var n = 0; n < currentForms.length; n++) {
                   if (currentForms[n].name === pdfName) {
                     // pop the sucker off
-                    console.log('DELETING OLD FORM')
+                    if (console) console.log('DELETING OLD FORM')
                     await Security.dispatch('DeleteForm', { library: currentForms[n].library, name: currentForms[n].name })
                     vm.securityForm[vm.form.Type].forms.splice(n, 1)
                     vm.getFileBuffer(fileData.rawFile).then(function(buff) {
@@ -1000,7 +986,7 @@ export default {
                 })*/
               } else {
                 // Add a Unix timestamp to the name and then add it the vm files
-                console.log('NOT GOING TO REPLACE: ' + Date.now().toString())
+                if (console) console.log('NOT GOING TO REPLACE: ' + Date.now().toString())
                 if (pdfName.length < 115) {
                   let currentDate = Date.now().toString()
                   file.fileSelected = pdfName.split('.')[0] + '-' + currentDate + '.' + pdfName.split('.')[1]
@@ -1015,7 +1001,7 @@ export default {
               }
             })
         } else {
-          console.log('UPLOADING AS-IS')
+          if (console) console.log('UPLOADING AS-IS')
           vm.getFileBuffer(fileData.rawFile).then(function(buff) {
             file.fileBuffer = buff
             vm.files.push(file)
