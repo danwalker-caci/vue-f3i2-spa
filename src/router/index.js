@@ -55,6 +55,12 @@ let travelMenu = {
       props: true
     },
     {
+      path: 'page/view',
+      name: 'View Travel',
+      component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/ViewTravel.vue'),
+      props: true
+    },
+    {
       path: 'page/report',
       name: 'Trip Report',
       component: () => import(/* webpackChunkName: "travel" */ '../components/Travel/TripReport.vue'),

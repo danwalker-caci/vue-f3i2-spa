@@ -36,6 +36,12 @@ export const mutations = {
 }
 
 export const actions = {
+  SendEmail(payload) {
+    payload.from = state.portalemail
+    SupportService.SendEmail(payload).then(response => {
+      return response
+    })
+  },
   getUserProfile({ commit }) {
     SupportService.getUserProfile()
       .then(response => {
