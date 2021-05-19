@@ -79,7 +79,7 @@
                 <th>POP End</th>
                 <th>Status</th>
                 <th>Manager</th>
-                <th>Date Approved</th>
+                <th>Cover Page Date</th>
               </tr>
               <tr>
                 <td class="px300"><input class="e-input" type="text" v-model="rowData.Title" /></td>
@@ -108,7 +108,7 @@
                 <th>POP End</th>
                 <th>Status</th>
                 <th>Manager</th>
-                <th>Date Approved</th>
+                <th>Cover Page Date</th>
               </tr>
               <tr>
                 <td class="px300"><input class="e-input" type="text" v-model="newData.Title" /></td>
@@ -166,7 +166,7 @@
                     <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
-                    <e-column field="DateApproved" headerText="Date Approved" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
@@ -207,7 +207,7 @@
                     <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
                     <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
-                    <e-column field="DateApproved" headerText="Date Approved" textAlign="Left" width="150"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" textAlign="Left" width="150"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" width="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
@@ -404,7 +404,7 @@ export default {
         {
           FieldName: 'DateApproved',
           Visible: true,
-          DisplayName: 'Date Approved',
+          DisplayName: 'Cover Page Date',
           Filter: false,
           Control: '',
           DataType: 'Date',
