@@ -19,6 +19,7 @@ export default class Workplan extends Model {
       id: this.attr(null),
       Id: this.attr(null),
       Title: this.attr(''),
+      Comments: this.attr(''),
       Number: this.attr(''),
       Revision: this.attr(''), // May not be needed
       POPStart: this.attr(''),

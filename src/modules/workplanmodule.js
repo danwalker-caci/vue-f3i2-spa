@@ -88,6 +88,7 @@ function formatWorkplan(j) {
       id: j[i]['Id'],
       Id: j[i]['Id'],
       Title: j[i]['Title'], // This is the Title column in SharePoint
+      Comments: j[i]['Comments'],
       Number: j[i]['Number'],
       Revision: j[i]['Revision'],
       Status: j[i]['Status'],

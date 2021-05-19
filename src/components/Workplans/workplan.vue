@@ -167,6 +167,7 @@
                     <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
                     <e-column field="DateApproved" headerText="Date Approved" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -207,6 +208,7 @@
                     <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
                     <e-column field="DateApproved" headerText="Date Approved" textAlign="Left" width="150"></e-column>
+                    <e-column field="Comments" headerText="Comments" textAlign="Left" width="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -829,6 +831,7 @@ export default {
           }
           this.rowData.Revision = args.rowData.Revision
           this.rowData.Title = args.rowData.Title
+          this.rowData.Comments = args.rowData.Comments
           // Create an immutable manager object and update related fields
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
           await this.updateWorkplan(this.rowData)
@@ -861,6 +864,7 @@ export default {
       await Workplan.dispatch('getDigest')
       let payload = {
         Title: data.Title,
+        Comments: data.Comments,
         Number: data.Number,
         CACISubmittedDate: data.CACISubmittedDate,
         DateApproved: data.DateApproved,
