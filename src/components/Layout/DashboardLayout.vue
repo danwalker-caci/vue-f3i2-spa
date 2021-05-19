@@ -106,6 +106,9 @@ export default {
     isDeveloper() {
       return User.getters('isDeveloper')
     },
+    isPM() {
+      return User.getters('isPM')
+    },
     isCACI() {
       return !this.isSubcontractor && !this.isAdmin
     },
