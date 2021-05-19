@@ -1212,14 +1212,15 @@ export default {
     validateFirstTab: function() {
       // check all the fields in the first tab to see that they are properly validated
       let valid = true
-      if (this.isAuthor == true) {
-        for (let i = 0; i < this.fieldsFirstTabAuthor.length; i++) {
+      if (this.isWPManager == true) {
+        for (let i = 0; i < this.fieldsFirstTab.length; i++) {
           if (this.$refs[this.fieldsFirstTab[i]].state === false) {
             valid = false
           }
         }
       } else {
-        for (let i = 0; i < this.fieldsFirstTab.length; i++) {
+        // not WPM so if they are the author
+        for (let i = 0; i < this.fieldsFirstTabAuthor.length; i++) {
           if (this.$refs[this.fieldsFirstTab[i]].state === false) {
             valid = false
           }

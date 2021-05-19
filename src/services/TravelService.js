@@ -378,6 +378,65 @@ export default {
         console.log('TravelService Error Sending NewTripEmail: ' + error)
       })
   },
+  TripReportEmail(state, digest, payload) {
+    // send email to workplan manager regarding state of trip. Reminder of specific actions
+    let body = ''
+    body += '<p>IndexNumber: ' + payload.indexnumber
+    body += '<p>Company: ' + payload.company
+    body += '<p>StartDate: ' + moment(payload.start).format('MM/DD/YYYY')
+    body += '<p>EndDate: ' + moment(payload.end).format('MM/DD/YYYY')
+    /* body += '<p>Please click the link below for more details.</p><p></p>' */
+    switch (payload.action) {
+      case 'Deny':
+        // denied
+        body += '<p>Comments: ' + payload.comments
+        body += '<p>Please click the link below for more details.</p><p></p>'
+        body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        break
+
+      case 'Notify':
+        // notify
+        body += '<p>Please click the link below for more details.</p><p></p>'
+        body += '<p><a href="' + payload.link + '">' + payload.linktext + '</a></p>'
+        break
+
+      case 'Approve':
+        //approve
+        body += '<p>Please click the link below for more details.</p><p></p>'
+        body += '<p><a href="' + baseurl + '/Pages/Home.aspx#/travel/page/report?id=' + payload.id + '">' + payload.linktext + '</a></p>'
+        break
+    }
+    let mail = {
+      properties: {
+        __metadata: { type: 'SP.Utilities.EmailProperties' },
+        From: portalemail,
+        To: { results: payload.email },
+        Body: body,
+        Subject: payload.title
+      }
+    }
+    // store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail TO: ' + payload.email + '</div>')
+    // store.dispatch('support/addActivity', '<div class="bg-info">TravelService EditTripEmail body: ' + body + '</div>')
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST'
+    }
+    let config = {
+      headers: headers
+    }
+    return axios
+      .post(eurl, mail, config)
+      .then(function(response) {
+        return response
+      })
+      .catch(function(error) {
+        // TODO: Better error handling and response
+        store.dispatch('support/addActivity', '<div class="bg-danger">TravelService NewTripEmail ERROR: ' + error + '</div>')
+        console.log('TravelService Error Sending TripReportEmail: ' + error)
+      })
+  },
   async addTrip(payload, digest) {
     // payload is the full event object as json array with 1 element
     let wp = String(payload[0].WorkPlan).split(', ')
@@ -607,8 +666,10 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.TravelListItem' },
-      Status: payload[0].Status,
-      TripReport: !isNullOrUndefined(payload[0].TripReport) ? report : ''
+      Status: payload[0].Status
+    }
+    if (payload[0].Action == 'Submit') {
+      itemprops.TripReport = report
     }
     try {
       const response = await axios.post(url, itemprops, config)

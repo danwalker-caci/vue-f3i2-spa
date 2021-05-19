@@ -216,6 +216,15 @@ const actions = {
         console.log('There was an error sending email: ', error.response)
       })
   },
+  TripReportEmail({ state }, payload) {
+    TravelService.TripReportEmail(state, state.digest, payload)
+      .then(response => {
+        return response
+      })
+      .catch(error => {
+        console.log('There was an error sending email: ', error.response)
+      })
+  },
   async uploadTripReport({ state }, payload) {
     payload.state = state
     let report = await TravelService.uploadTripReport(payload)
