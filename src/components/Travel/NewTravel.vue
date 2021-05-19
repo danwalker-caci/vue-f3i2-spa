@@ -617,7 +617,7 @@ export default {
         ]
       },
       NewTravelfilterSettings: { type: 'Menu' },
-      fieldsFirstTab: ['WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
+      fieldsFirstTab: ['OCONUS', 'WorkPlan', 'Company', 'start', 'end', 'TravelFrom', 'TravelTo'],
       fieldsThirdTab: ['Sponsor', 'EstimatedCost', 'Comments', 'Clearance'],
       fieldsFourthTab: ['Clearance', 'POCName', 'POCEmail', 'POCPhone'],
       travelerData: [],
