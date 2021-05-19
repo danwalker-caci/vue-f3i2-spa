@@ -462,7 +462,10 @@
                 <b-row no-gutters>
                   <b-col cols="2">
                     <b-form-group label="Form Type: " label-for="formType">
-                      <b-form-select id="formType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                      <b-form-select id="formType" :state="validateSecurityFormType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                      <b-form-invalid-feedback :state="validateSecurityFormType">
+                        Please select a Security Form Type.
+                      </b-form-invalid-feedback>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2"></b-col>
@@ -526,6 +529,9 @@ export default {
     },
     rect() {
       return this.$store.state.support.contentrect
+    },
+    validateSecurityFormType() {
+      return this.selectedSecurityFormType !== null && this.selectedSecurityFormType !== ''
     }
   },
   data: function() {
@@ -571,7 +577,7 @@ export default {
       libraryUrl: '',
       lockSubmit: false,
       statusesUpdated: false,
-      selectedSecurityFormType: '',
+      selectedSecurityFormType: null,
       cacTab: false,
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
@@ -1126,7 +1132,11 @@ export default {
     async updateForm(tId) {
       await Security.dispatch('getDigest')
       this.lockSubmit = true
-      if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
+      if (this.files && this.files.length > 0 && (this.selectedSecurityFormType === null || this.selectedSecurityFormType === '')) {
+        this.lockSubmit = false
+        return true
+      }
+      if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null && this.selectedSecurityFormType !== '') {
         // first delete all files related to the formTypes
         if (this[this.selectedSecurityFormType] && this[this.selectedSecurityFormType].forms && this[this.selectedSecurityFormType].forms.length > 0) {
           await this.asyncForEach(this[this.selectedSecurityFormType].forms, async file => {

@@ -522,7 +522,10 @@ export default {
                             <b-col cols="2">
                               <b-form-group>
                                 <b-form-group label="Form Type: " label-for="formType">
-                                <b-form-select id="formType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                                <b-form-select id="formType" :state="validateSecurityFormType" v-model="selectedSecurityFormType" :options="securityFormTypes"></b-form-select>
+                                <b-form-invalid-feedback :state="validateSecurityFormType">
+                                  Please select a Security Form Type.
+                                </b-form-invalid-feedback>
                               </b-form-group>
                             </b-col>
                             <b-col cols="2"></b-col>
@@ -567,6 +570,9 @@ export default {
               },
               rect() {
                 return this.$store.state.support.contentrect
+              },
+              validateSecurityFormType() {
+                return this.selectedSecurityFormType !== null && this.selectedSecurityFormType !== ''
               }
             },
             data: function() {
@@ -583,7 +589,7 @@ export default {
                 ddfields: { text: 'text', value: 'value' },
                 library: '',
                 libraryUrl: '',
-                selectedSecurityFormType: '',
+                selectedSecurityFormType: null,
                 statusesUpdated: false,
                 files: [],
                 DISSCheckChanged: false,
@@ -1065,8 +1071,12 @@ export default {
                 })
               },
               async updateForm(d, tId) {
+                if (this.files && this.files.length > 0 && (this.selectedSecurityFormType === null || this.selectedSecurityFormType === '')) {
+                  this.lockSubmit = false
+                  return true
+                }
                 this.lockSubmit = true
-                if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null) {
+                if (this.files && this.files.length > 0 && this.selectedSecurityFormType !== null && this.selectedSecurityFormType !== '') {
                   // first delete all files related to the formTypes
                   if (d[this.selectedSecurityFormType] && d[this.selectedSecurityFormType].forms && d[this.selectedSecurityFormType].forms.length > 0) {
                     await this.asyncForEach(d[this.selectedSecurityFormType].forms, async file => {
