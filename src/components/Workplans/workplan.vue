@@ -799,8 +799,10 @@ export default {
 
           if (Number.isFinite(args.rowData.Increment)) {
             this.rowData.Increment = args.rowData.Increment
-          } else {
+          } else if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
             this.showIncrementAlert = true
+            this.rowData.Increment = null
+          } else {
             this.rowData.Increment = null
           }
           this.rowData.Title = args.rowData.Title
