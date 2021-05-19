@@ -36,9 +36,9 @@ export const mutations = {
 }
 
 export const actions = {
-  SendEmail(payload) {
-    payload.from = state.portalemail
-    SupportService.SendEmail(payload).then(response => {
+  SendEmail({ state }, payload) {
+    // payload.from = state.portalemail
+    SupportService.SendEmail(state, payload).then(response => {
       return response
     })
   },
