@@ -287,7 +287,7 @@ export default {
           payload.id = vm.travelmodel.id
           payload.email = notificationemails
           payload.title = 'Trip Report Approved'
-          payload.workplan = vm.travelmodel.IndexNumber
+          payload.indexnumber = vm.travelmodel.IndexNumber
           payload.company = vm.travelmodel.Company
           payload.start = vm.travelmodel.StartTime
           payload.end = vm.travelmodel.EndTime
