@@ -154,18 +154,18 @@
                   :actionComplete="actionComplete"
                   rowHeight="20"
                   :height="rect.height - 175"
-                  :width="rect.width - 1"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column headerText="Actions" textAlign="Left" minWidth="50" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
-                    <e-column field="Number" headerText="Number" minWidth="100"></e-column>
-                    <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
-                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
-                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
-                    <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
-                    <e-column field="DateApproved" headerText="Date Approved" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Number" headerText="Number" minWidth="50"></e-column>
+                    <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="50"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="150"></e-column>
+                    <e-column field="DateApproved" headerText="Date Approved" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="100"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -302,6 +302,7 @@ export default {
       sortfield: '',
       sortdir: '',
       data: [],
+      locked: false,
       WorkplanData: [],
       filtereddata: [],
       manager: null,
@@ -452,7 +453,7 @@ export default {
         { text: 'PM Review', value: 'PM Review' }
       ],
       toolbar: ['Search'],
-      toolbarPM: ['Add', 'Cancel', 'Print', 'Search', 'ExcelExport'],
+      toolbarPM: ['Add', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
       originalRowData: {},
       newData: {
@@ -693,7 +694,8 @@ export default {
     async load() {
       this.$refs['WorkplanGrid'].ej2Instances.element.addEventListener('mousedown', function(e) {
         var instance = this.ej2_instances[0]
-        if (e.target.classList.contains('e-rowcell')) {
+        if (e.target.classList.contains('e-rowcell') && !vm.locked) {
+          vm.locked = true
           if (instance.isEdit) instance.endEdit() //might need to override this function
           let index = parseInt(e.target.getAttribute('Index'))
           instance.selectRow(index)
@@ -791,12 +793,30 @@ export default {
           this.rowData.Revision = args.rowData.Revision
           this.rowData.Title = args.rowData.Title
           // Create an immutable manager object and update related fields
-          let workplan = await this.updateWorkplan(this.rowData)
-          //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
-          this.rowData.etag = Number(workplan.headers.etag)
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
-          this.$refs['WorkplanGrid'].setRowData(this.rowData.Id, this.rowData)
-          //this.$refs['WorkplanGrid'].refresh()
+          await this.updateWorkplan(this.rowData)
+            .then(workplan => {
+              //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
+              vm.rowData.etag = Number(workplan.headers.etag)
+              vm.$refs['WorkplanGrid'].setRowData(vm.rowData.Id, vm.rowData)
+              vm.$refs['WorkplanGrid'].refresh()
+            })
+            .then(() => {
+              vm.locked = false
+            })
+            .catch(e => {
+              const notification = {
+                type: 'danger',
+                title: 'Portal Error',
+                message: e,
+                push: true
+              }
+              this.$store.dispatch('notification/add', notification, {
+                root: true
+              })
+              console.log('ERROR: ' + e)
+            })
+
           break
       }
     },
