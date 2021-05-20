@@ -36,7 +36,9 @@
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="bg-light-blue text-black formheader">
             <b-col cols="4" class="p-0 text-left"></b-col>
-            <b-col cols="4" class="p-0 text-center">{{ headerText }}</b-col>
+            <b-col cols="4" class="p-0 text-center text-white">
+              {{ headerText }}
+            </b-col>
             <b-col cols="4" class="p-0 text-right"></b-col>
           </b-row>
           <b-row id="Tabs" class="tabrow formbody m-0">
@@ -4533,6 +4535,10 @@ export default {
 .e-richtexteditor .e-source-content .e-content {
   padding: 10px !important;
   /* min-height: calc(100vh - 350px) !important; */
+}
+
+.e-richtexteditor .e-rte-toolbar .e-toolbar-item .e-icons {
+  color: #fff !important;
 }
 
 .e-rte-content p {
