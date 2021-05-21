@@ -1358,6 +1358,19 @@ export default {
       })
       return p
     }
+  },
+  watch: {
+    id: {
+      // the callback will be called immediately after the start of the observation
+      immediate: true,
+      async handler() {
+        // do your stuff
+        await this.getForms()
+        if (this.$route.query.disscheck) {
+          this.cacTab = true
+        }
+      }
+    }
   }
 }
 </script>
