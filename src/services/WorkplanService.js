@@ -159,7 +159,11 @@ export default {
         : null,
       ManagerId: Number(payload.ManagerId),
       Status: payload.Status,
-      CACISubmittedDate: moment(payload.CACISubmittedDate).isValid() ? moment(payload.CACISubmittedDate).format('YYYY-MM-DD[T]HH:MM:[00Z]') : null
+      CACISubmittedDate: moment(payload.CACISubmittedDate).isValid()
+        ? moment(payload.CACISubmittedDate)
+            .add(6, 'hours')
+            .format('YYYY-MM-DD[T]HH:MM:[00Z]')
+        : null
     }
 
     try {
