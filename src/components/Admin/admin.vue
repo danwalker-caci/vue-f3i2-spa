@@ -10,7 +10,7 @@
       <b-progress :variant="busyVariant" :value="busyValue" :max="busyMax" show-progress animated></b-progress>
     </b-toast>
     <b-modal title="Persons Missing in Security" id="PerSecResults" ok-only ok-variant="secondary" ok-title="Close">
-      <p>These individuals are not aligned between the Security and Personnel Lists. Please manually review to ensure dataa integrity.</p>
+      <p>These individuals are not aligned between the Security and Personnel Lists. Please manually review to ensure data integrity.</p>
       <b-table-lite id="PersonnelVSecurity" :items="persVSecurityResults" :fields="persVSecurityFields" striped></b-table-lite>
       <p>Here are the duplicates in the Personnel List.</p>
       <b-table-lite id="duplicatePersons" :items="duplicatePersonResults" :fields="duplicatePersonFields" striped></b-table-lite>
