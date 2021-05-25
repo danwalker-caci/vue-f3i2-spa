@@ -161,17 +161,17 @@
                 >
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" minWidth="50" :template="ActionsTemplate"></e-column>
-                    <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
-                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175" editType="dropdownedit" :edit="activeParams"></e-column>
-                    <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
-                    <e-column field="CACISubmittedDate" headerText="Submitted Date" format="M/d/y" :edit="submitDateParams" minWidth="150"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
                     <e-column field="Increment" headerText="Increment" textAlign="Left" minWidth="50" type="number"></e-column>
-                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/d/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
-                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/d/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" type="date" format="M/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175" editType="dropdownedit" :edit="activeParams"></e-column>
+                    <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
+                    <e-column field="CACISubmittedDate" headerText="Submitted Date" type="date" format="M/d/y" textAlign="Left" :edit="submitDateParams" minWidth="150"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
-                    <e-column field="DateApproved" headerText="Cover Page Date" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
@@ -204,17 +204,17 @@
                 >
                   <e-columns>
                     <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                    <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
-                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175"></e-column>
-                    <e-column field="Status" headerText="Status" width="125"></e-column>
-                    <e-column field="CACISubmittedDate" headerText="Submitted Date" width="150"></e-column>
                     <e-column field="Number" headerText="Number" width="100"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
                     <e-column field="Increment" headerText="Increment" textAlign="Left" width="50"></e-column>
-                    <e-column field="POPStart" headerText="POP Start" textAlign="Left" width="150"></e-column>
-                    <e-column field="POPEnd" headerText="POP End" textAlign="Left" width="150"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" format="M/d/y" textAlign="Left" width="150"></e-column>
+                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175"></e-column>
+                    <e-column field="Status" headerText="Status" width="125"></e-column>
+                    <e-column field="CACISubmittedDate" type="date" format="M/d/y" headerText="Submitted Date" textAlign="Left" width="150"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" format="M/y" textAlign="Left" width="150"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" format="M/y" textAlign="Left" width="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
-                    <e-column field="DateApproved" headerText="Cover Page Date" textAlign="Left" width="150"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" width="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
@@ -613,11 +613,10 @@ export default {
           statusObj.appendTo(statusElem)
           statusObj.addEventListener('change', event => {
             //event.preventDefault()
-            console.log('STATUS OBJECT CHANGE: ' + event)
             if (statusObj.value === 'CACI Submitted') {
               submitDateElem.disabled = false
               submitDateObj = new DatePicker({
-                value: new Date(args.rowData['CACISubmittedDate']),
+                value: args.rowData['CACISubmittedDate'] ? new Date(args.rowData['CACISubmittedDate']) : null,
                 enabled: true,
                 floatLabelType: 'Never'
               })
@@ -887,6 +886,7 @@ export default {
           }
           this.rowData.Title = args.rowData.Title
           this.rowData.Comments = args.rowData.Comments
+          this.rowData.Number = args.rowData.Number
           // Create an immutable manager object and update related fields
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
           await this.updateWorkplan(this.rowData)
@@ -986,6 +986,7 @@ export default {
     },
     newOk: async function() {
       await Workplan.dispatch('getDigest')
+      this.newData.CACISubmittedDate = null
       await Workplan.dispatch('addWorkplan', this.newData)
       vm.$bvModal.hide('NewModal')
       await Workplan.dispatch('getWorkplans').then(function() {
