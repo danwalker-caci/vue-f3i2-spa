@@ -74,6 +74,12 @@
             <b-row class="p-0 m-1">
               <b-button ref="migrateSecurityInfo" variant="success" @click="migrateSecurityInfo" class="ml-1">Migrate Security Info</b-button>
             </b-row>
+            <b-row class="p-0 m-1">
+              <b-button ref="UpdatePermissions" variant="success" @click="UpdatePermissions" class="ml-1">Update Permissions</b-button>
+            </b-row>
+            <b-row class="p-0 m-1">
+              <b-button ref="AddUsersToGroups" variant="success" @click="AddUsersToGroups" class="ml-1">Add Users To Groups</b-button>
+            </b-row>
             <!-- <b-row class="p-0 m-0">
               <b-form-input id="txtUserId" ref="txtUserId" v-model="UserId" placeholder="User Id"></b-form-input>
               <b-button ref="getUserInfo" variant="success" @click="getUserInfo" class="ml-1">Get User Info By Id</b-button>
@@ -230,6 +236,136 @@ export default {
       payload.login = response.data.d.LoginName
       response = await User.dispatch('getUserProfileFor', payload)
       console.log('User Profile Results: ' + response)
+    },
+    async AddUsersToGroups() {
+      let url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Companies')/items?$select=*"
+      let response = await axios.get(url, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      console.log('RESPONSE: ' + response)
+      let j = response.data.d.results
+      for (let i = 0; i < j.length; i++) {
+        let company = j[i]['Title']
+        url = "https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups/getbyname('" + company + "')/id"
+        let response = await axios.get(url, {
+          headers: {
+            accept: 'application/json;odata=verbose'
+          }
+        })
+        let groupid = response.data.d.Id
+        url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=(Company eq '" + company + "')"
+        response = await axios.get(url, {
+          headers: {
+            accept: 'application/json;odata=verbose'
+          }
+        })
+        let k = response.data.d.results
+        for (let l = 0; l < k.length; l++) {
+          let userId = k[l]['UserAccount']['Id']
+          let userTitle = String(k[l]['UserAccount']['Title'])
+          if (userTitle != 'undefined') {
+            // console.log('COMPANY: ' + company + ', User: ' + userId + ', ' + userTitle + ', ' + userTitle.length)
+            url = 'https://infoplus.caci.com/sites/f3i2/_api/Web/GetUserById(' + userId + ')'
+            let response = await axios.get(url, {
+              headers: {
+                accept: 'application/json;odata=verbose'
+              }
+            })
+            let m = response.data.d
+            let login = m.LoginName
+            console.log('LOGIN NAME: ' + login)
+            // add user to group
+            response = await axios.request({
+              url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+              method: 'post',
+              headers: { Accept: 'application/json; odata=verbose' }
+            })
+            let digest = response.data.d.GetContextWebInformation.FormDigestValue
+            url = 'https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups(' + groupid + ')/users'
+            let headers = {
+              'Content-Type': 'application/json;odata=verbose',
+              Accept: 'application/json;odata=verbose',
+              'X-RequestDigest': digest,
+              'X-HTTP-Method': 'POST'
+            }
+            let config = {
+              headers: headers
+            }
+            let body = {
+              __metadata: { type: 'SP.User' },
+              LoginName: login
+            }
+            try {
+              response = await axios.post(url, body, config)
+            } catch (error) {
+              console.log('Error Adding User to Group: ' + login + ', ' + groupid)
+            }
+            console.log(response)
+          }
+        }
+      }
+    },
+    async UpdatePermissions() {
+      let url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Workplans')/items?$select=*"
+      let response = await axios.get(url, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      console.log('RESPONSE: ' + response)
+      let j = response.data.d.results
+      for (let i = 0; i < j.length; i++) {
+        let id = j[i]['Id']
+        let subs = j[i]['Subs']
+        if (subs && subs.length > 3) {
+          let k = subs.split(', ')
+          for (let l = 0; l < k.length; l++) {
+            // get company group id
+            let url = "https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups/getbyname('" + k[l] + "')/id"
+            let response = await axios.get(url, {
+              headers: {
+                accept: 'application/json;odata=verbose'
+              }
+            })
+            let groupid = response.data.d.Id
+            // break inheritance
+            response = await axios.request({
+              url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+              method: 'post',
+              headers: { Accept: 'application/json; odata=verbose' }
+            })
+            let digest = response.data.d.GetContextWebInformation.FormDigestValue
+            url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('WorkPlans')/items("
+            url += id
+            url += ')/breakroleinheritance(copyRoleAssignments=true, clearSubscopes=true)'
+            response = await axios.request({
+              url: url,
+              method: 'post',
+              headers: {
+                Accept: 'application/json; odata=verbose',
+                'Content-Type': 'application/json;odata=verbose',
+                'X-RequestDigest': digest
+              }
+            })
+            // console.log('ID: ' + groupid + ', SUB: ' + k[l] + ', RESPONSE: ' + response)
+            url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('WorkPlans')/items("
+            url += id
+            url += ')/roleassignments/addroleassignment(principalid=' + groupid + ',roleDefId=1073741826)'
+            response = await axios.request({
+              url: url,
+              method: 'post',
+              headers: {
+                Accept: 'application/json; odata=verbose',
+                'Content-Type': 'application/json;odata=verbose',
+                'X-RequestDigest': digest
+              }
+            })
+            console.log('ID: ' + groupid + ', SUB: ' + k[l] + ', RESPONSE: ' + response)
+          }
+        }
+      }
     },
     InstallSecurity() {
       var ctx = SP.ClientContext.get_current() // SP is SharePoint library and is expected to be loaded. SP object added to globals in package.json
