@@ -842,7 +842,7 @@ export default {
       }
       if (this.isSubcontractor) {
         let data = this.rowData
-        data.Active = this.rowData.Active === 'No' ? false : true
+        data.Active = this.rowData.Active === 'No' || !this.rowData.Active ? false : true
         data.Modification = null
         let od = this.oldData
         od.submitterId = this.currentuser[0].id
@@ -913,7 +913,7 @@ export default {
         })
       } else {
         let payload = this.rowData
-        payload.Active = this.rowData.Active === 'No' ? false : true
+        payload.Active = this.rowData.Active === 'No' || !this.rowData.Active ? false : true
         Personnel.dispatch('editPerson', payload).catch(e => {
           // Add user notification and system logging
           const notification = {
@@ -933,7 +933,7 @@ export default {
           FirstName: this.rowData.FirstName,
           LastName: this.rowData.LastName,
           Company: this.rowData.Company,
-          Active: this.rowData.Active === 'No' ? false : true
+          Active: this.rowData.Active === 'No' || !this.rowData.Active ? false : true
         }
         let securityInfo = await Security.dispatch('getSecurityFormByPersonnelId', securityPayload)
         securityPayload.etag = securityInfo.etag
