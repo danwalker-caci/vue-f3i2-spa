@@ -163,14 +163,14 @@
                     <e-column headerText="Actions" textAlign="Left" minWidth="50" :template="ActionsTemplate"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
-                    <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
-                    <e-column field="Increment" headerText="Increment" textAlign="Left" minWidth="50" type="number"></e-column>
-                    <e-column field="DateApproved" headerText="Cover Page Date" type="date" format="M/y" :edit="dateApprovedParams" textAlign="Left" minWidth="150"></e-column>
-                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175" editType="dropdownedit" :edit="activeParams"></e-column>
-                    <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="200"></e-column>
-                    <e-column field="CACISubmittedDate" headerText="Submitted Date" type="date" format="M/d/y" textAlign="Left" :edit="submitDateParams" minWidth="150"></e-column>
-                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/y" :edit="popStartParams" textAlign="Left" minWidth="150"></e-column>
-                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/y" :edit="popEndParams" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Revision" headerText="Rev" textAlign="Left" minWidth="25"></e-column>
+                    <e-column field="Increment" headerText="Inc" textAlign="Left" minWidth="25" type="number"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" type="date" format="M/d/y" :edit="dateApprovedParams" textAlign="Left" minWidth="125"></e-column>
+                    <e-column field="Active" headerText="Active" textAlign="Left" minWidth="75" editType="dropdownedit" :edit="activeParams"></e-column>
+                    <e-column field="Status" headerText="Status" editType="dropdownedit" :edit="statusParams" minWidth="150"></e-column>
+                    <e-column field="CACISubmittedDate" headerText="Submitted Date" type="date" format="M/d/y" textAlign="Left" :edit="submitDateParams" minWidth="75"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" type="date" format="M/y" :edit="popStartParams" textAlign="Left" minWidth="50"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" type="date" format="M/y" :edit="popEndParams" textAlign="Left" minWidth="50"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
