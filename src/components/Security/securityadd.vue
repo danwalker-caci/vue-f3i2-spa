@@ -88,6 +88,7 @@
               <div v-if="formCAC || formSCI">
                 <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
               </div>
+              <!-- if the formSCI === 'Transfer', add a checkbox to denote it is for multiple people. If that checkbox is set to true then show three personnel selections which are added to an array. JSON stringify the array and add to SecuritySCITransfer -->
               <div v-if="formSCI">
                 <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
                 <b-form-invalid-feedback>
@@ -146,14 +147,43 @@
           </b-col>
         </b-form-row>
         <b-form-row>
+          <b-col cols="6" v-show="form.SCIType === 'Transfer'">
+            <b-form-group label="Multiple Persons in SCI Transfer? " label-for="sciTransferMP">
+              <b-form-checkbox v-model="sciTransferMP" value="Yes" unchecked-value="No" ref="sciTransferMP" id="sciTransferMP" @input="loadSCITransferFilteredData" switch></b-form-checkbox>
+            </b-form-group>
+          </b-col>
+          <b-col cols="6" v-show="sciTransferMP === 'Yes'">
+            <!-- add a filtering system here -->
+            <b-input-group>
+              <b-form-input id="sciTransferMPFilter" v-model="sciTransferFilterInput" placeholder="Search" type="text" @keyup.native="sciTransferFiltering"></b-form-input>
+              <b-input-group-append>
+                <b-button variant="primary" @click="sciTransferSearchFiltering($event)">Search</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col cols="12" v-show="sciTransferMP === 'Yes'">
+            <!-- One idea is to have a component that would allow for the user to click add person and a new dropdown would be added -->
+            <!-- The other option is to dynamically render a grid of checkboxes which will reduce the amount of clicks -->
+            <b-row v-for="col in personnelColumns" :key="col.index">
+              <b-col v-for="(person, index) in col" :key="index" cols="2">
+                <div v-if="person !== undefined && person !== null && person.value !== 'S'" class="mb-1">
+                  <b-form-checkbox v-model="sciTransferPersons" :id="person.value" :name="person.value" :value="person.value + '-' + person.text">{{ person.text }}</b-form-checkbox>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
           <b-col cols="6">
-            <b-form-group>
+            <b-form-group v-if="sciTransferMP === 'No'">
               <b-form-group label="Form submission is for another Person: " label-for="formSetName">
                 <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
               </b-form-group>
             </b-form-group>
           </b-col>
-          <b-col cols="6">
+          <b-col cols="6" v-if="sciTransferMP === 'No'">
             <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
             <div v-if="form.setName === 'Yes'">
               <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
@@ -288,6 +318,22 @@ export default {
     },
     scigroup() {
       return Security.getters('SCIGroup')
+    },
+    personnelColumns() {
+      var columns = []
+      var itemsPerColumn = 6
+      if (this.filteredPersonnelColumns !== undefined && this.filteredPersonnelColumns !== null) {
+        for (var i = 0; i < this.filteredPersonnelColumns.length; i += itemsPerColumn) {
+          var col = []
+          for (var z = 0; z < itemsPerColumn; z++) {
+            if (this.filteredPersonnelColumns[i + z] !== null) {
+              col.push(this.filteredPersonnelColumns[i + z])
+            }
+          }
+          columns.push(col)
+        }
+      }
+      return columns
     }
   },
   data: function() {
@@ -340,11 +386,16 @@ export default {
       taskUserId: [],
       taskEmail: [],
       securityForm: null,
+      securityByPersonnel: [],
       filteredData: null,
+      filteredPersonnelColumns: null,
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
+      sciTransferPersons: [],
+      sciTransferMP: 'No',
       url: '',
       person: '',
       personnelFiltering: '',
+      sciTransferFilterInput: '',
       cacvalid: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
@@ -405,6 +456,29 @@ export default {
           .includes(vm.personnelFiltering.toLowerCase())
       )
     },
+    sciTransferFiltering: e => {
+      e.preventDefault()
+      console.log(e.target.value.toLowerCase())
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        vm.filteredPersonnelColumns = vm.personnel.filter(data => {
+          JSON.stringify(data)
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+        })
+      }, 25)
+    },
+    sciTransferSearchFiltering: e => {
+      e.preventDefault()
+      vm.filteredPersonnelColumns = vm.personnel.filter(data => {
+        JSON.stringify(data)
+          .toLowerCase()
+          .includes(vm.sciTransferFilterInput.toLowerCase())
+      })
+    },
+    loadSCITransferFilteredData: async () => {
+      vm.filteredPersonnelColumns = vm.personnel
+    },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
     },
@@ -430,6 +504,7 @@ export default {
           this.form.CACStatus = result[0].CACStatus
         }
         this.filteredData = this.personnel
+        this.filteredPersonnelColumns = this.personnel
         this.checkSecurityForms()
         clearInterval(this.$options.interval)
       }
@@ -443,6 +518,7 @@ export default {
         this.form.PersonnelID = 'S'
       }
       this.filteredData = this.personnel
+      this.filteredPersonnelColumns = this.personnel
     },
     onPersonnelChange: function(value) {
       this.personnel.forEach(person => {
@@ -508,6 +584,7 @@ export default {
       vm.$router.push({ path: '/security/tracker' })
     },
     onFormSubmit: async function() {
+      await Security.dispatch('getDigest')
       // VALIDATE SUBK && FORM
       this.formError = false
       if (this.isSubcontractor && this.form.Company !== this.currentuser[0].Company) {
@@ -519,7 +596,230 @@ export default {
       if (this.files.length <= 0) {
         this.formError = true
       }
-      if (!this.formError) {
+      /* Checking to see if the form is just a regular submission compared to a SCI Transfer with multiple people */
+      if (!this.formError && this.form.Type === 'SCI' && this.form.SCIType === 'Transfer' && this.sciTransferMP === 'Yes') {
+        this.lockSubmit = true
+        let payload = {},
+          group = [],
+          sciInfo = null
+        this.taskUserId = []
+        this.taskEmail = []
+        this.library = 'SCIForms'
+        this.libraryUrl = this.SCIForms
+        group = this.scigroup
+        group.forEach(user => {
+          this.taskUserId.push(user.Id)
+          this.taskEmail.push(user.Email)
+        })
+        payload.library = this.library
+        payload.Company = vm.form.Company
+        // Time to loop through everyone added to the sciTransferPersons array to get all of the security information
+        let transferPayload = {
+          Persons: '',
+          Forms: '',
+          Title: ''
+        }
+        let transferPersons = []
+        let persons = ''
+        await this.asyncForEach(this.sciTransferPersons, async person => {
+          var persArray = person.split('-')
+          let result = await Security.dispatch('getSecurityFormByPersonnelId', { PersonnelID: persArray[0] })
+          vm.securityByPersonnel.push(result)
+          transferPersons.push({ PersonnelID: result.PersonnelId, SecurityID: result.Id, FirstName: result.FirstName, LastName: result.LastName, Company: result.Company })
+          persons += result.FirstName + ' ' + result.LastName + ', '
+        })
+        transferPayload.Persons = JSON.stringify(transferPersons)
+        transferPayload.Title += persons + ' Transfer Request'
+        // payload.PersonnelID = vm.form.PersonnelID // TO DO: loop through the sciTransferPersons array and then update each record in the SecurityForms list
+        await this.asyncForEach(this.files, async file => {
+          payload.library = vm.library
+          payload.Company = vm.form.Company
+          payload.PersonnelID = vm.form.PersonnelID
+          let pdfName = ''
+          // Loop through the sciTransferPersons array to append the ids to the PDF Name
+          vm.sciTransferPersons.forEach(person => {
+            let split = person.split('-')
+            pdfName += split[0] + '-'
+          })
+          pdfName += vm.form.Name + '-' + file.fileSelected //
+          let name = pdfName.split('.')[0]
+          file.fileName = name
+          payload.file = file.fileSelected
+          payload.name = name
+          payload.buffer = file.fileBuffer
+          let item = await Security.dispatch('uploadForm', payload)
+          //TO DO: Check if item contains the form Id. The update form could then be deleted
+          let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+          let form = await Security.dispatch('getForm', itemlink)
+          let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+          payload = form.data.d.__metadata
+          //payload.file = file.fileSelected
+          payload.name = pdfName
+          // payload.IndexNumber = this.IndexNumber
+          payload.SecurityFormId = vm.securityForm.Id
+          await Security.dispatch('updateForm', payload)
+          // Set the SCI information so that we can add it to the Security SCI Transfer list
+          sciInfo = {
+            id: formId,
+            library: vm.library,
+            name: pdfName,
+            // task: results.data.d.Id,
+            href: vm.libraryUrl + pdfName,
+            etag: form.data.d.__metadata.etag,
+            uri: form.data.d.__metadata.uri,
+            submitterId: vm.currentuser[0].id,
+            submitterEmail: vm.currentuser[0].Email,
+            rejectReason: '',
+            status: ''
+          }
+        })
+        transferPayload.Form = JSON.stringify({
+          GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+          GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+          GovRejectDate: '',
+          status: '',
+          forms: [sciInfo]
+        })
+        // Add a securitySCITransfer record
+        let transferResults = await Security.dispatch('addSecuritySCITransfer', transferPayload)
+        let taskResults = {}
+        if (vm.form.Historical !== 'Yes') {
+          let taskPayload = {
+            Title: 'Approve SCI Transfer Submission for ' + persons,
+            AssignedToId: 63, // Hardcoding the Security Group
+            //AssignedToId: this.taskUserId,
+            Description: 'Approve or reject SCI Transfer request for ' + persons,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'SCI Transfer Request',
+            TaskLink: '/security/view/' + transferResults.data.d.Id + '/' + vm.form.Type + '?transfer=true'
+          }
+          taskResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          console.log('Task Results: ' + JSON.stringify(taskResults))
+          let emailPayload = {
+            //emails: this.taskEmail,
+            emails: ['drew.ahrens@caci.com'],
+            body:
+              '<h3>Please approve or reject the following.</h3><p>Name: ' +
+              persons +
+              '</p><p>Form: ' +
+              vm.form.Type +
+              ' Request</p><br/><a href="' +
+              url +
+              '/Pages/Home.aspx#/security/view/' +
+              transferResults.data.d.Id +
+              '/' +
+              vm.form.Type +
+              '?transfer=true">Review ' +
+              persons +
+              '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            subject: '(F3I-2 Portal) Approve ' + vm.form.Type + ' Submission for ' + persons
+          }
+          await Security.dispatch('sendEmail', emailPayload)
+        }
+        // Update each security record
+        this.asyncForEach(this.securityByPersonnel, async person => {
+          // Now we need to update
+          let securityPayload = person
+          securityPayload.SCI = JSON.stringify({
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovRejectDate: '',
+            forms: [sciInfo]
+          })
+          securityPayload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
+          securityPayload.SCIStatus = 'CACI Review'
+          securityPayload.SCITransferId = transferResults.data.d.Id
+          console.log('PERSON: ' + JSON.stringify(securityPayload))
+          await Security.dispatch('updateSecurityForm', securityPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          // Don't forget to notify of each record change.
+        })
+        // Finally - Update the SCITransfer list with the task id and reset form
+        transferPayload.etag = transferResults.data.d.__metadata.etag
+        transferPayload.uri = transferResults.data.d.__metadata.uri
+        transferPayload.TaskId = taskResults.data.d.Id
+        await Security.dispatch('updateSecuritySCITransfer', transferPayload)
+          .then(() => {
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            // Clear form after submission
+            if (vm.formType === 'cac') {
+              vm.form.CACValid = ''
+              vm.form.CACExpirationDate = ''
+              vm.form.CACIssuedBy = ''
+              vm.form.CACStatus = ''
+            }
+            if (vm.formType === 'sci') {
+              vm.form.SCIIndocDate = ''
+              vm.form.SCIType = ''
+              vm.form.SCIStatus = ''
+            }
+            vm.form.Historical = 'No'
+            vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
+            vm.form.setName = 'No'
+            vm.form.FirstName = vm.currentFirstName
+            vm.form.LastName = vm.currentLastName
+            vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
+            vm.form.PersonnelID = vm.currentPersonnelID
+            vm.sciTransferMP = 'No'
+            vm.transferPersons = []
+            vm.securityByPersonnel = []
+            vm.person = ''
+            vm.personnelFiltering = ''
+            vm.files = []
+            vm.fileSelected = null
+            vm.fileBuffer = null
+            vm.lockSubmit = false
+            // need CAC and SCI clear here as well
+            let uploadedFiles = document.querySelector('.e-upload-files')
+            while (uploadedFiles.firstChild) {
+              uploadedFiles.removeChild(uploadedFiles.firstChild)
+            }
+          })
+          .catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+        const notification = {
+          type: 'success',
+          title: 'Succesfully Uploaded Form',
+          message: 'Uploaded SCI Transfer Form',
+          push: true
+        }
+        vm.$store.dispatch('notification/add', notification, { root: true })
+        vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+      } else if (!this.formError && this.sciTransferMP === 'No') {
         // Add post to correct document library with required MetaData
         this.lockSubmit = true
         let payload = {}
@@ -945,8 +1245,12 @@ export default {
         let file = {}
         file.fileSelected = fileData.name
         // Need to perform a check here to see what the file will be named, if the corresponding type already has it and then set a flag to overwrite or modify based on user interaction
-        let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
-        if (console) console.log('FORMS: ' + JSON.stringify(vm.securityForm[vm.form.Type]))
+        let pdfName = ''
+        if (this.form.SCIType === 'Transfer') {
+          pdfName = file.fileSelected
+        } else {
+          pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
+        }
         if (console) console.log('NEW FORM NAME: ' + pdfName)
         if (
           vm.securityForm[vm.form.Type].forms &&

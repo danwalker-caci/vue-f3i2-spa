@@ -387,7 +387,7 @@ export default {
                               </b-tbody>
                             </b-table-simple>
                           </b-row>
-                          <b-row v-if="data.SCI && data.SCI.forms.length > 0">
+                          <b-row v-if="data.SCI && data.SCI.forms.length > 0 && data.SCITransferId.length == 0">
                             <span v-if="data.SCI.GovSentDate !== ''" class="p-2">Government Notified On: {{ data.SCI.GovSentDate }}</span>
                             <span v-if="data.SCI.GovCompleteDate !== ''" class="p-2">Government {{ data.SCI.GovCompleteDate }}</span>
                             <span v-if="data.SCI.GovRejectDate !== ''" class="p-2">Government {{ data.SCI.GovRejectDate }}</span>
@@ -400,6 +400,9 @@ export default {
                             <span v-if="data.SCI.GovCompleteDate === '' && data.SCI.GovRejectDate === ''" class="p-2">
                               <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov(data, $event)">Rework</b-button>
                             </span>
+                          </b-row>
+                          <b-row v-if="data.SCITransferId">
+                            <b-button v-if="isDeveloper || isAFRL" ref="SecurityEdit" @click="editSecurity($event)" :data-link="'/security/edit/' + data.SCITransferId '?sciTransfer=true" variant="secondary" class="btn float-right">Approve/Reject SCI Transfer</b-button>
                           </b-row>
                           <b-row v-if="showGovReject">
                             <p class="pr-2 pl-2">Please enter the reason for rework:</p>
