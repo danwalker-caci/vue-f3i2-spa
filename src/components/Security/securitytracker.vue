@@ -679,7 +679,7 @@ export default {
                   })
                   let payload = {
                     Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-                    AssignedToId: 63, // TESTING TASK
+                    AssignedToId: 25, // TESTING TASK
                     //AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
                     IsMilestone: false,
@@ -701,7 +701,7 @@ export default {
                   })
                   let emailPayload = {
                     //emails: taskEmail,
-                    emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                    emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       persons +
@@ -720,7 +720,6 @@ export default {
                   await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
                     // get each Security form
                     let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
-                    if (console) console.log('UPDATING SECURITY INFORMATION: ' + securityFormInfo)
                     // update the persons security form
                     securityFormInfo.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
                     securityFormInfo.SCI.task = results.data.d.Id
@@ -752,7 +751,7 @@ export default {
                   // Add a task for the designated government employee for review
                   let payload = {
                     Title: 'Complete or Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
-                    //AssignedToId: 63, // TESTING TASK
+                    //AssignedToId: 25, // TESTING TASK
                     AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
                     IsMilestone: false,
@@ -774,7 +773,7 @@ export default {
                   })
                   let emailPayload = {
                     emails: taskEmail,
-                    //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       data.FirstName +
@@ -877,7 +876,7 @@ export default {
                   let payload = {
                     Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
                     //AssignedToId: taskUserId,
-                    AssignedToId: 63, // TESTING TASK
+                    AssignedToId: 25, // TESTING TASK
                     Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -898,7 +897,7 @@ export default {
                   })
                   let emailPayload = {
                     //emails: taskEmail,
-                    emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                    emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>AFRL Completed ' +
                       persons +
@@ -1131,7 +1130,7 @@ export default {
                     let payload = {
                       Title: 'Government Reject ' + persons + ' ' + vm2.GovRejectType + ' Request',
                       //AssignedToId: taskUserId,
-                      AssignedToId: 63, // TESTING TASK
+                      AssignedToId: 25, // TESTING TASK
                       Description: 'Reason: ' + vm2.GovRejectReason,
                       IsMilestone: false,
                       PercentComplete: 0,
@@ -1151,7 +1150,7 @@ export default {
                       console.log('ERROR: ' + error.message)
                     })
                     let emailPayload = {
-                      emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                      emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                       //emails: taskEmail,
                       body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
                       subject: '(F3I-2 Portal) Government Rejected ' + vm2.GovRejectType + ' Request'

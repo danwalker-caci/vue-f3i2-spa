@@ -824,7 +824,7 @@ export default {
         })
         let payload = {
           Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-          AssignedToId: 63, // TESTING TASK
+          AssignedToId: 25, // TESTING TASK
           //AssignedToId: taskUserId,
           Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
           IsMilestone: false,
@@ -846,7 +846,7 @@ export default {
         })
         let emailPayload = {
           //emails: taskEmail,
-          emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+          emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
           body:
             '<h3>Please complete or reject the following.</h3> <p>Name: ' +
             persons +
@@ -900,7 +900,7 @@ export default {
         // Add a task for the designated government employees for review
         let payload = {
           Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-          AssignedToId: 63, // TESTING TASK
+          AssignedToId: 25, // TESTING TASK
           //AssignedToId: taskUserId,
           Description: 'Complete or reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
           IsMilestone: false,
@@ -1034,7 +1034,7 @@ export default {
         })
         let payload = {
           Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
-          AssignedToId: 63, // TESTING TASK
+          AssignedToId: 25, // TESTING TASK
           //AssignedToId: taskUserId,
           Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
           IsMilestone: false,
@@ -1055,7 +1055,7 @@ export default {
           console.log('ERROR: ' + error.message)
         })
         let emailPayload = {
-          emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+          emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
           //emails: taskEmail,
           body: '<h3>AFRL Completed ' + persons + ' ' + type + ' Request</h3> <p>Names: ' + persons + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/tracker/">Review ' + persons + '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
           subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
@@ -1286,7 +1286,7 @@ export default {
           })
           let payload = {
             Title: 'Government Reject ' + persons + ' ' + this.govRejectType + ' Request',
-            AssignedToId: 63, // TESTING TASK
+            AssignedToId: 25, // TESTING TASK
             //AssignedToId: taskUserId,
             Description: 'Reason: ' + this.govRejectReason,
             IsMilestone: false,
@@ -1307,7 +1307,7 @@ export default {
             console.log('ERROR: ' + error.message)
           })
           let emailPayload = {
-            emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+            emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
             //emails: taskEmail,
             body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
             subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'

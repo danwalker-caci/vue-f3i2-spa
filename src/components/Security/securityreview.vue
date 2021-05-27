@@ -572,7 +572,7 @@ export default {
           payload = {
             Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
             //AssignedToId: afrlTask,
-            AssignedToId: 63,
+            AssignedToId: 25,
             Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
             IsMilestone: false,
             PercentComplete: 0,
@@ -583,7 +583,7 @@ export default {
           let newTaskId = results.data.d.Id
           let emailPayload = {
             //emails: afrlEmail,
-            emails: ['drew.ahrens@caci.com'],
+            emails: ['alexie.hazen@caci.com'],
             body:
               '<h3>Please complete or reject the following.</h3><p>Name: ' +
               vm.name +
@@ -614,7 +614,6 @@ export default {
             vm.asyncForEach(vm.persons, async person => {
               let security = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
               security.SCI = JSON.stringify(vm.securityForms)
-              if (console) console.log('UPDATING SECURITY INFORMATION: ' + security)
               await Security.dispatch('updateSecurityForm', security)
             })
             vm.showNotify = false

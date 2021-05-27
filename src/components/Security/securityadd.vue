@@ -247,7 +247,7 @@
         </div>
         <b-form-row>
           <b-col>
-            <b-form-group>
+            <b-form-group class="pt-3">
               <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
             </b-form-group>
           </b-col>
@@ -318,22 +318,6 @@ export default {
     },
     scigroup() {
       return Security.getters('SCIGroup')
-    },
-    personnelColumns() {
-      var columns = []
-      var itemsPerColumn = 6
-      if (this.filteredPersonnelColumns !== undefined && this.filteredPersonnelColumns !== null) {
-        for (var i = 0; i < this.filteredPersonnelColumns.length; i += itemsPerColumn) {
-          var col = []
-          for (var z = 0; z < itemsPerColumn; z++) {
-            if (this.filteredPersonnelColumns[i + z] !== null) {
-              col.push(this.filteredPersonnelColumns[i + z])
-            }
-          }
-          columns.push(col)
-        }
-      }
-      return columns
     }
   },
   data: function() {
@@ -389,6 +373,7 @@ export default {
       securityByPersonnel: [],
       filteredData: null,
       filteredPersonnelColumns: null,
+      personnelColumns: [],
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
       sciTransferPersons: [],
       sciTransferMP: 'No',
@@ -458,23 +443,23 @@ export default {
     },
     sciTransferFiltering: e => {
       e.preventDefault()
-      console.log(e.target.value.toLowerCase())
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        vm.filteredPersonnelColumns = vm.personnel.filter(data => {
+        vm.filteredPersonnelColumns = vm.personnel.filter(data =>
           JSON.stringify(data)
             .toLowerCase()
             .includes(e.target.value.toLowerCase())
-        })
-      }, 25)
+        )
+      }, 250)
     },
     sciTransferSearchFiltering: e => {
       e.preventDefault()
-      vm.filteredPersonnelColumns = vm.personnel.filter(data => {
+      vm.filteredPersonnelColumns = vm.personnel.filter(data =>
         JSON.stringify(data)
           .toLowerCase()
           .includes(vm.sciTransferFilterInput.toLowerCase())
-      })
+      )
+      //vm.personnelColumns = vm.setupPersonnelColumns()
     },
     loadSCITransferFilteredData: async () => {
       vm.filteredPersonnelColumns = vm.personnel
@@ -505,6 +490,7 @@ export default {
         }
         this.filteredData = this.personnel
         this.filteredPersonnelColumns = this.personnel
+        //this.personnelColumns = this.setupPersonnelColumns()
         this.checkSecurityForms()
         clearInterval(this.$options.interval)
       }
@@ -519,6 +505,7 @@ export default {
       }
       this.filteredData = this.personnel
       this.filteredPersonnelColumns = this.personnel
+      //this.personnelColumns = this.setupPersonnelColumns()
     },
     onPersonnelChange: function(value) {
       this.personnel.forEach(person => {
@@ -686,7 +673,7 @@ export default {
         if (vm.form.Historical !== 'Yes') {
           let taskPayload = {
             Title: 'Approve SCI Transfer Submission for ' + persons,
-            AssignedToId: 63, // Hardcoding the Security Group
+            AssignedToId: 25, // Hardcoding the Security Group
             //AssignedToId: this.taskUserId,
             Description: 'Approve or reject SCI Transfer request for ' + persons,
             IsMilestone: false,
@@ -708,7 +695,7 @@ export default {
           })
           let emailPayload = {
             //emails: this.taskEmail,
-            emails: ['drew.ahrens@caci.com'],
+            emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               persons +
@@ -1035,7 +1022,7 @@ export default {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-            //AssignedToId: 63, // TESTING TASK
+            //AssignedToId: 25, // TESTING TASK
             AssignedToId: this.taskUserId,
             Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
             IsMilestone: false,
@@ -1057,7 +1044,7 @@ export default {
           })
           let emailPayload = {
             emails: this.taskEmail,
-            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+            //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               vm.form.Name +
@@ -1362,6 +1349,22 @@ export default {
     // eslint-disable-next-line no-unused-vars
     $route(to, from) {
       this.checkType(to.params.formType)
+    },
+    filteredPersonnelColumns: function() {
+      this.personnelColumns = []
+      var itemsPerColumn = 6
+      if (this.filteredPersonnelColumns !== undefined && this.filteredPersonnelColumns !== null) {
+        for (var i = 0; i < this.filteredPersonnelColumns.length; i += itemsPerColumn) {
+          var col = []
+          for (var z = 0; z < itemsPerColumn; z++) {
+            if (this.filteredPersonnelColumns[i + z] !== null) {
+              console.log(JSON.stringify(this.filteredPersonnelColumns[i + z]))
+              col.push(this.filteredPersonnelColumns[i + z])
+            }
+          }
+          this.personnelColumns.push(col)
+        }
+      }
     }
   }
 }
