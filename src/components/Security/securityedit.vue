@@ -2,7 +2,7 @@
   <b-container fluid class="contentHeight p-0 m-0 overflow-auto">
     <b-row no-gutters>
       <b-col cols="12" class="m-0 p-0">
-        <b-card>
+        <b-card v-if="!isSCITransfer">
           <div class="ml-4 mr-4" v-if="loaded">
             <b-form-row>
               <b-col>
@@ -550,6 +550,8 @@ export default {
       SCIAccessCheckDate: '',
       SCIFormType: '',
       SCIFormSubmitted: '',
+      SCITransferId: '',
+      isSCITransfer: false,
       CAC: {},
       CACStatus: '',
       CACRequestDate: '',
@@ -579,6 +581,7 @@ export default {
       statusesUpdated: false,
       selectedSecurityFormType: null,
       cacTab: false,
+      sciTransfer: {},
       securityFormTypes: [
         { value: 'NIPR', text: 'NIPR' },
         { value: 'SIPR', text: 'SIPR' },
@@ -627,7 +630,11 @@ export default {
       vm = this
       await Security.dispatch('getDigest')
       if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
-      await this.getForms()
+      if (this.$route.query.sciTransfer) {
+        this.isSCITransfer = true
+      } else {
+        await this.getForms()
+      }
       if (this.$route.query.disscheck) {
         this.cacTab = true
       }
@@ -692,9 +699,26 @@ export default {
       this.SIPR = result.SIPR
       this.DREN = result.DREN
       this.JWICS = result.JWICS
+      this.SCITransferId = result.SCITransferId
+      this.isSCITransfer = false
       this.taskId = result.taskId
       await Security.dispatch('getDigest')
       this.loaded = true
+    },
+    async getSCITransfer() {
+      this.sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.id }).catch(e => {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e)
+      })
     },
     AccessDateChange() {
       this.SCIStatus = 'SSO Processed'
@@ -723,86 +747,174 @@ export default {
         taskUserId.push(user.Id)
         taskEmail.push(user.Email)
       })
-      // Add a task for the designated government employees for review
-      let payload = {
-        Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-        //AssignedToId: vm.userid, // Hardcode to Juan
-        AssignedToId: taskUserId,
-        Description: 'Complete or reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-        IsMilestone: false,
-        PercentComplete: 0,
-        TaskType: type + ' Request',
-        TaskLink: '/security/tracker'
-      }
-      let results = await Todo.dispatch('addTodo', payload).catch(error => {
+      if ((type === 'SCI' && this.SCITransferId) || this.isSCITransfer) {
+        let sciTransfer = {}
+        if (this.isSCITransfer) {
+          sciTransfer = this.sciTransfer
+        } else {
+          sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.SCITransferId })
+        }
+        sciTransfer.Form.GovSentDate = this.$moment().format('MM/DD/YYYY')
+        taskId = sciTransfer.TaskId
+        console.log(JSON.stringify(sciTransfer))
+        let persons = ''
+        await this.asyncForEach(sciTransfer.People, async (person, index) => {
+          persons += person.FirstName + ' ' + person.LastName
+          if (sciTransfer.People.length !== index + 1) {
+            persons += ', '
+          }
+        })
+        let payload = {
+          Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
+          //AssignedToId: 63, // TESTING TASK
+          AssignedToId: taskUserId,
+          Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: type + ' Request',
+          TaskLink: '/security/edit/' + this.SCITransferId + '?sciTransfer=true'
+        }
+        let results = await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+        let emailPayload = {
+          emails: taskEmail,
+          //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+          body:
+            '<h3>Please complete or reject the following.</h3> <p>Name: ' +
+            persons +
+            '</p><p>Form: ' +
+            type +
+            ' Request</p><br/><a href="' +
+            url +
+            '/Pages/Home.aspx#/security/edit/' +
+            this.SCITransferId +
+            '?sciTransfer=true">Review ' +
+            persons +
+            '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          subject: '(F3I-2 Portal) ' + type + ' Request'
+        }
+        await Security.dispatch('sendEmail', emailPayload)
+        await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
+          // get each Security form
+          let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+
+          // update the persons security form
+          securityFormInfo.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          securityFormInfo.SCI.task = results.data.d.Id
+          if (sciTransfer.Persons.length !== index) {
+            vm.updateForm(securityFormInfo)
+          } else {
+            // Last update, complete the task
+            vm.updateForm(securityFormInfo, taskId)
+          }
+        })
+        let transferPayload = {
+          TaskId: results.data.d.Id,
+          Persons: JSON.stringify(sciTransfer.Persons),
+          Form: JSON.stringify(sciTransfer.Form),
+          etag: sciTransfer.etag,
+          uri: sciTransfer.uri
+        }
+        await Security.dispatch('updateSecuritySCITransfer', transferPayload)
         const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
+          type: 'success',
+          title: 'Succesfully Updated Security Form',
+          message: 'Updated Security form for ' + persons + ' in ' + this.Company,
           push: true
         }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+        vm.$store.dispatch('notification/add', notification, { root: true })
+      } else {
+        // Add a task for the designated government employees for review
+        let payload = {
+          Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
+          //AssignedToId: vm.userid, // Hardcode to Juan
+          AssignedToId: taskUserId,
+          Description: 'Complete or reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: type + ' Request',
+          TaskLink: '/security/tracker'
+        }
+        let results = await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
         })
-        console.log('ERROR: ' + error.message)
-      })
-      let emailPayload = {
-        emails: taskEmail,
-        body:
-          '<h3>Please complete or reject the following.</h3> <p>Name: ' +
-          this.FirstName +
-          ' ' +
-          this.LastName +
-          '</p><p>Form: ' +
-          type +
-          ' Request</p><br/><a href="' +
-          url +
-          '/Pages/Home.aspx#/security/edit/' +
-          this.Id +
-          '">Review ' +
-          this.FirstName +
-          ' ' +
-          this.LastName +
-          '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
-        subject: '(F3I-2 Portal) ' + type + ' Request'
+        let emailPayload = {
+          emails: taskEmail,
+          body:
+            '<h3>Please complete or reject the following.</h3> <p>Name: ' +
+            this.FirstName +
+            ' ' +
+            this.LastName +
+            '</p><p>Form: ' +
+            type +
+            ' Request</p><br/><a href="' +
+            url +
+            '/Pages/Home.aspx#/security/edit/' +
+            this.Id +
+            '">Review ' +
+            this.FirstName +
+            ' ' +
+            this.LastName +
+            '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          subject: '(F3I-2 Portal) ' + type + ' Request'
+        }
+        await Security.dispatch('sendEmail', emailPayload)
+        // Update the task to the new one for AFRL
+        // get the current item data
+        switch (type) {
+          case 'NIPR':
+            taskId = this.NIPR.task
+            this.NIPR.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.NIPR.task = results.data.d.Id
+            break
+          case 'SIPR':
+            taskId = this.SIPR.task
+            this.SIPR.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.SIPR.task = results.data.d.Id
+            break
+          case 'DREN':
+            taskId = this.DREN.task
+            this.DREN.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.DREN.task = results.data.d.Id
+            break
+          case 'JWICS':
+            taskId = this.JWICS.task // original taskId\
+            this.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.JWICS.task = results.data.d.Id
+            break
+          case 'SCI':
+            taskId = this.SCI.task
+            this.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.SCI.task = results.data.d.Id
+            break
+          case 'CAC':
+            taskId = this.CAC.task
+            this.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
+            this.CAC.task = results.data.d.Id
+            break
+        }
+        this.Active = true
+        this.updateForm(taskId)
       }
-      await Security.dispatch('sendEmail', emailPayload)
-      // Update the task to the new one for AFRL
-      // get the current item data
-      switch (type) {
-        case 'NIPR':
-          taskId = this.NIPR.task
-          this.NIPR.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.NIPR.task = results.data.d.Id
-          break
-        case 'SIPR':
-          taskId = this.SIPR.task
-          this.SIPR.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.SIPR.task = results.data.d.Id
-          break
-        case 'DREN':
-          taskId = this.DREN.task
-          this.DREN.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.DREN.task = results.data.d.Id
-          break
-        case 'JWICS':
-          taskId = this.JWICS.task // original taskId\
-          this.JWICS.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.JWICS.task = results.data.d.Id
-          break
-        case 'SCI':
-          taskId = this.SCI.task
-          this.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.SCI.task = results.data.d.Id
-          break
-        case 'CAC':
-          taskId = this.CAC.task
-          this.CAC.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          this.CAC.task = results.data.d.Id
-          break
-      }
-      this.Active = true
-      this.updateForm(taskId)
     },
     async CompleteGov(event) {
       await Security.dispatch('getDigest')
@@ -813,148 +925,228 @@ export default {
         taskUserId = [],
         taskEmail = [],
         group = []
-
-      // get the current item data
-      switch (type) {
-        case 'NIPR':
-          taskId = this.NIPR.task
-          this.NIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
-            if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
-              submitterId.push(this.NIPR.forms[nipr].submitterId)
-              submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
-            }
-            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.NIPR.forms[nipr].href, '_blank')
+      if ((type === 'SCI' && this.SCITransferId) || this.isSCITransfer) {
+        let sciTransfer = {}
+        if (this.isSCITransfer) {
+          sciTransfer = this.sciTransfer
+        } else {
+          sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.SCITransferId })
+        }
+        taskId = sciTransfer.TaskId
+        console.log(JSON.stringify(sciTransfer))
+        sciTransfer.Form.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+        // First delete the Form from the SCI Transfer Form entry
+        for (var s = 0; s < sciTransfer.Form.forms.length; s++) {
+          if (!submitterId.includes(sciTransfer.Form.forms[s].submitterId)) {
+            submitterId.push(sciTransfer.Form.forms[s].submitterId)
+            submitterEmail.push(sciTransfer.Form.forms[s].submitterEmail)
           }
-          group = this.accountgroup
-          break
-        case 'SIPR':
-          taskId = this.SIPR.task
-          this.SIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
-            if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
-              submitterId.push(this.SIPR.forms[sipr].submitterId)
-              submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
-            }
-            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SIPR.forms[sipr].href, '_blank')
+        }
+        this.scigroup.forEach(user => {
+          taskUserId.push(user.Id)
+          taskEmail.push(user.Email)
+        })
+        taskUserId.concat(submitterId)
+        taskEmail.concat(submitterEmail)
+        let persons = ''
+        await this.asyncForEach(sciTransfer.People, async (person, index) => {
+          persons += person.FirstName + ' ' + person.LastName
+          // update each person with the reject reason
+          let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+          securityFormInfo.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          if (sciTransfer.People.length !== index + 1) {
+            persons += ','
+            this.updateForm(securityFormInfo)
+          } else {
+            // Last call - complete the task
+            this.updateForm(securityFormInfo, taskId)
           }
-          group = this.accountgroup
-          break
-        case 'DREN':
-          taskId = this.DREN.task
-          this.DREN.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var dren = 0; dren < this.DREN.forms.length; dren++) {
-            if (!submitterId.includes(this.DREN.forms[dren])) {
-              submitterId.push(this.DREN.forms[dren].submitterId)
-              submitterEmail.push(this.DREN.forms[dren].submitterEmail)
-            }
-            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.DREN.forms[dren].href, '_blank')
+        })
+        let payload = {
+          Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
+          AssignedToId: taskUserId,
+          Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'gov-complete',
+          TaskLink: '/security/tracker'
+        }
+        await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
           }
-          group = this.accountgroup
-          break
-        case 'JWICS':
-          taskId = this.JWICS.task // original taskId\
-          this.JWICS.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
-            if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
-              submitterId.push(this.JWICS.forms[jwics].submitterId)
-              submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
-            }
-            window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.JWICS.forms[jwics].href, '_blank')
-          }
-          group = this.accountgroup
-          break
-        case 'SCI':
-          taskId = this.SCI.task // original taskId\
-          this.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var sci = 0; sci < this.SCI.forms.length; sci++) {
-            if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
-              submitterId.push(this.SCI.forms[sci].submitterId)
-              submitterEmail.push(this.SCI.forms[sci].submitterEmail)
-            }
-          }
-          group = this.scigroup
-          break
-        case 'CAC':
-          taskId = this.CAC.task // original taskId\
-          this.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          for (var cac = 0; cac < this.CAC.forms.length; cac++) {
-            if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
-              submitterId.push(this.CAC.forms[cac].submitterId)
-              submitterEmail.push(this.CAC.forms[cac].submitterEmail)
-            }
-          }
-          group = this.cacgroup
-          break
-      }
-      await this.updateForm(taskId).catch(e => {
-        // Add user notification and system logging
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+        let emailPayload = {
+          emails: taskEmail,
+          body: '<h3>AFRL Completed ' + persons + ' ' + type + ' Request</h3> <p>Names: ' + persons + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/tracker/">Review ' + persons + '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
+        }
+        await Security.dispatch('sendEmail', emailPayload)
+        let transferPayload = {
+          TaskId: null,
+          Persons: JSON.stringify(sciTransfer.Persons),
+          Form: JSON.stringify(sciTransfer.Form),
+          etag: sciTransfer.etag,
+          uri: sciTransfer.uri
+        }
+        await Security.dispatch('updateSecuritySCITransfer', transferPayload)
         const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
+          type: 'success',
+          title: 'Succesfully Updated Security Form',
+          message: 'Updated Security form for ' + persons + ' in ' + this.Company,
           push: true
         }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + e.message)
-      })
-      group.forEach(user => {
-        taskUserId.push(user.Id)
-        taskEmail.push(user.Email)
-      })
-      taskUserId.concat(submitterId)
-      taskEmail.concat(submitterEmail)
-      let payload = {
-        Title: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-        AssignedToId: taskUserId,
-        Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request.',
-        IsMilestone: false,
-        PercentComplete: 0,
-        TaskType: 'gov-complete',
-        TaskLink: '/security/tracker'
-      }
-      await Todo.dispatch('addTodo', payload).catch(error => {
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: error.message,
-          push: true
+        vm.$store.dispatch('notification/add', notification, { root: true })
+      } else {
+        // get the current item data
+        switch (type) {
+          case 'NIPR':
+            taskId = this.NIPR.task
+            this.NIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+              if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+                submitterId.push(this.NIPR.forms[nipr].submitterId)
+                submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+              }
+              window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.NIPR.forms[nipr].href, '_blank')
+            }
+            group = this.accountgroup
+            break
+          case 'SIPR':
+            taskId = this.SIPR.task
+            this.SIPR.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+              if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+                submitterId.push(this.SIPR.forms[sipr].submitterId)
+                submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+              }
+              window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.SIPR.forms[sipr].href, '_blank')
+            }
+            group = this.accountgroup
+            break
+          case 'DREN':
+            taskId = this.DREN.task
+            this.DREN.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+              if (!submitterId.includes(this.DREN.forms[dren])) {
+                submitterId.push(this.DREN.forms[dren].submitterId)
+                submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+              }
+              window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.DREN.forms[dren].href, '_blank')
+            }
+            group = this.accountgroup
+            break
+          case 'JWICS':
+            taskId = this.JWICS.task // original taskId\
+            this.JWICS.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+              if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+                submitterId.push(this.JWICS.forms[jwics].submitterId)
+                submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+              }
+              window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.JWICS.forms[jwics].href, '_blank')
+            }
+            group = this.accountgroup
+            break
+          case 'SCI':
+            taskId = this.SCI.task // original taskId\
+            this.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+              if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+                submitterId.push(this.SCI.forms[sci].submitterId)
+                submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+              }
+            }
+            group = this.scigroup
+            break
+          case 'CAC':
+            taskId = this.CAC.task // original taskId\
+            this.CAC.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+            for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+              if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+                submitterId.push(this.CAC.forms[cac].submitterId)
+                submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+              }
+            }
+            group = this.cacgroup
+            break
         }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
+        await this.updateForm(taskId).catch(e => {
+          // Add user notification and system logging
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e.message)
         })
-        console.log('ERROR: ' + error.message)
-      })
-      let emailPayload = {
-        emails: taskEmail,
-        body:
-          '<h3>AFRL Completed ' +
-          this.FirstName +
-          ' ' +
-          this.LastName +
-          ' ' +
-          type +
-          ' Request</h3> <p>Name: ' +
-          this.FirstName +
-          ' ' +
-          this.LastName +
-          '</p><p>Form: ' +
-          type +
-          ' Request</p><br/><a href="' +
-          url +
-          '/Pages/Home.aspx#/security/edit/' +
-          this.Id +
-          '">Review ' +
-          this.FirstName +
-          ' ' +
-          this.LastName +
-          '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
-        subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
+        group.forEach(user => {
+          taskUserId.push(user.Id)
+          taskEmail.push(user.Email)
+        })
+        taskUserId.concat(submitterId)
+        taskEmail.concat(submitterEmail)
+        let payload = {
+          Title: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
+          AssignedToId: taskUserId,
+          Description: 'AFRL Completed ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request.',
+          IsMilestone: false,
+          PercentComplete: 0,
+          TaskType: 'gov-complete',
+          TaskLink: '/security/tracker'
+        }
+        await Todo.dispatch('addTodo', payload).catch(error => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: error.message,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + error.message)
+        })
+        let emailPayload = {
+          emails: taskEmail,
+          body:
+            '<h3>AFRL Completed ' +
+            this.FirstName +
+            ' ' +
+            this.LastName +
+            ' ' +
+            type +
+            ' Request</h3> <p>Name: ' +
+            this.FirstName +
+            ' ' +
+            this.LastName +
+            '</p><p>Form: ' +
+            type +
+            ' Request</p><br/><a href="' +
+            url +
+            '/Pages/Home.aspx#/security/edit/' +
+            this.Id +
+            '">Review ' +
+            this.FirstName +
+            ' ' +
+            this.LastName +
+            '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+          subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
+        }
+        await Security.dispatch('sendEmail', emailPayload)
+        // Remove the button and display current Date
       }
-      await Security.dispatch('sendEmail', emailPayload)
-      // Remove the button and display current Date
     },
     async RejectGov(event) {
       await Security.dispatch('getDigest')
@@ -972,147 +1164,233 @@ export default {
           taskUserId = [],
           taskEmail = [],
           group = []
-
-        switch (this.govRejectType) {
-          case 'NIPR':
-            taskId = this.NIPR.task
-            group = this.accountgroup
-            this.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.NIPR.GovRejectReason = this.govRejectReason
-            for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
-              if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
-                submitterId.push(this.NIPR.forms[nipr].submitterId)
-                submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
-              }
-              this.deleteForm(this.NIPR.forms[nipr])
+        if ((this.govRejectType === 'SCI' && this.SCITransferId) || this.isSCITransfer) {
+          let sciTransfer = {}
+          if (this.isSCITransfer) {
+            sciTransfer = this.sciTransfer
+          } else {
+            sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.SCITransferId })
+          }
+          taskId = sciTransfer.TaskId
+          console.log(JSON.stringify(sciTransfer))
+          sciTransfer.Form.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+          sciTransfer.Form.GovRejectReason = this.govRejectReason
+          // First delete the Form from the SCI Transfer Form entry
+          for (var s = 0; s < sciTransfer.Form.forms.length; s++) {
+            if (!submitterId.includes(sciTransfer.Form.forms[s].submitterId)) {
+              submitterId.push(sciTransfer.Form.forms[s].submitterId)
+              submitterEmail.push(sciTransfer.Form.forms[s].submitterEmail)
             }
-            this.NIPR.forms = []
-            break
-          case 'SIPR':
-            taskId = this.SIPR.task
-            group = this.accountgroup
-            this.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.SIPR.GovRejectReason = this.govRejectReason
-            for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
-              // Getting all of the original submitters for notification
-              if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
-                submitterId.push(this.SIPR.forms[sipr].submitterId)
-                submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
-              }
-              this.deleteForm(this.SIPR.forms[sipr])
+            this.deleteForm(sciTransfer.Form.forms[s])
+          }
+          sciTransfer.Form.forms = []
+          this.scigroup.forEach(user => {
+            taskUserId.push(user.Id)
+            taskEmail.push(user.Email)
+          })
+          taskUserId.concat(submitterId)
+          taskEmail.concat(submitterEmail)
+          let persons = ''
+          await this.asyncForEach(sciTransfer.People, async (person, index) => {
+            persons += person.FirstName + ' ' + person.LastName
+            // update each person with the reject reason
+            let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+            securityFormInfo.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            securityFormInfo.SCI.GovRejectReason = this.govRejectReason
+            if (sciTransfer.People.length !== index + 1) {
+              persons += ','
+              this.updateForm(securityFormInfo)
+            } else {
+              // Last call - complete the task
+              this.updateForm(securityFormInfo, taskId)
             }
-            this.SIPR.forms = []
-            break
-          case 'DREN':
-            taskId = this.DREN.task
-            group = this.accountgroup
-            this.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.DREN.GovRejectReason = this.govRejectReason
-            for (var dren = 0; dren < this.DREN.forms.length; dren++) {
-              if (!submitterId.includes(this.DREN.forms[dren].submitterId)) {
-                submitterId.push(this.DREN.forms[dren].submitterId)
-                submitterEmail.push(this.DREN.forms[dren].submitterEmail)
-              }
-              this.deleteForm(this.DREN.forms[dren])
+          })
+          let payload = {
+            Title: 'Government Reject ' + persons + ' ' + this.govRejectType + ' Request',
+            //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+            AssignedToId: taskUserId,
+            Description: 'Reason: ' + this.govRejectReason,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'gov-reject',
+            TaskLink: '/security/tracker'
+          }
+          await Todo.dispatch('addTodo', payload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
             }
-            this.DREN.forms = []
-            break
-          case 'JWICS':
-            taskId = this.JWICS.task // original taskId\
-            group = this.accountgroup
-            this.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.JWICS.GovRejectReason = this.govRejectReason
-            for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
-              if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
-                submitterId.push(this.JWICS.forms[jwics].submitterId)
-                submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
-              }
-              this.deleteForm(this.JWICS.forms[jwics])
-            }
-            this.JWICS.forms = []
-            break
-          case 'SCI':
-            taskId = this.SCI.task // original taskId\
-            group = this.scigroup
-            this.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.SCI.GovRejectReason = this.govRejectReason
-            for (var sci = 0; sci < this.SCI.forms.length; sci++) {
-              if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
-                submitterId.push(this.SCI.forms[sci].submitterId)
-                submitterEmail.push(this.SCI.forms[sci].submitterEmail)
-              }
-              this.deleteForm(this.SCI.forms[sci])
-            }
-            this.SCI.forms = []
-            break
-          case 'CAC':
-            taskId = this.CAC.task // original taskId\
-            group = this.cacgroup
-            this.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            this.CAC.GovRejectReason = this.govRejectReason
-            for (var cac = 0; cac < this.CAC.forms.length; cac++) {
-              if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
-                submitterId.push(this.CAC.forms[cac].submitterId)
-                submitterEmail.push(this.CAC.forms[cac].submitterEmail)
-              }
-              this.deleteForm(this.CAC.forms[cac])
-            }
-            this.CAC.forms = []
-            break
-        }
-        await this.updateForm(taskId).catch(error => {
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          let emailPayload = {
+            // emails: emails // TO DO: push original submitters email into the emails array
+            emails: taskEmail,
+            body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
+            subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload)
+          let transferPayload = {
+            TaskId: null,
+            Persons: JSON.stringify(sciTransfer.Persons),
+            Form: JSON.stringify(sciTransfer.Form),
+            etag: sciTransfer.etag,
+            uri: sciTransfer.uri
+          }
+          await Security.dispatch('updateSecuritySCITransfer', transferPayload)
           const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: error.message,
+            type: 'success',
+            title: 'Succesfully Updated Security Form',
+            message: 'Updated Security form for ' + persons + ' in ' + this.Company,
             push: true
           }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
-          })
-          console.log('ERROR: ' + error.message)
-        })
-        group.forEach(user => {
-          taskUserId.push(user.Id)
-          taskEmail.push(user.Email)
-        })
-        taskUserId.concat(submitterId)
-        taskEmail.concat(submitterEmail)
-        // Notify Accounts Admin or Security via task list
-        let payload = {
-          Title: 'Government Rejection: ' + this.FirstName + ' ' + this.LastName + ' ' + this.govRejectType + ' Request',
-          //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-          AssignedToId: taskUserId,
-          Description: 'Reason: ' + this.govRejectReason,
-          IsMilestone: false,
-          PercentComplete: 0,
-          TaskType: 'gov-reject',
-          TaskLink: '/security/tracker'
-        }
-        await Todo.dispatch('addTodo', payload).catch(error => {
-          const notification = {
-            type: 'danger',
-            title: 'Portal Error',
-            message: error.message,
-            push: true
+          vm.$store.dispatch('notification/add', notification, { root: true })
+        } else {
+          switch (this.govRejectType) {
+            case 'NIPR':
+              taskId = this.NIPR.task
+              group = this.accountgroup
+              this.NIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.NIPR.GovRejectReason = this.govRejectReason
+              for (var nipr = 0; nipr < this.NIPR.forms.length; nipr++) {
+                if (!submitterId.includes(this.NIPR.forms[nipr].submitterId)) {
+                  submitterId.push(this.NIPR.forms[nipr].submitterId)
+                  submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
+                }
+                this.deleteForm(this.NIPR.forms[nipr])
+              }
+              this.NIPR.forms = []
+              break
+            case 'SIPR':
+              taskId = this.SIPR.task
+              group = this.accountgroup
+              this.SIPR.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.SIPR.GovRejectReason = this.govRejectReason
+              for (var sipr = 0; sipr < this.SIPR.forms.length; sipr++) {
+                // Getting all of the original submitters for notification
+                if (!submitterId.includes(this.SIPR.forms[sipr].submitterId)) {
+                  submitterId.push(this.SIPR.forms[sipr].submitterId)
+                  submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
+                }
+                this.deleteForm(this.SIPR.forms[sipr])
+              }
+              this.SIPR.forms = []
+              break
+            case 'DREN':
+              taskId = this.DREN.task
+              group = this.accountgroup
+              this.DREN.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.DREN.GovRejectReason = this.govRejectReason
+              for (var dren = 0; dren < this.DREN.forms.length; dren++) {
+                if (!submitterId.includes(this.DREN.forms[dren].submitterId)) {
+                  submitterId.push(this.DREN.forms[dren].submitterId)
+                  submitterEmail.push(this.DREN.forms[dren].submitterEmail)
+                }
+                this.deleteForm(this.DREN.forms[dren])
+              }
+              this.DREN.forms = []
+              break
+            case 'JWICS':
+              taskId = this.JWICS.task // original taskId\
+              group = this.accountgroup
+              this.JWICS.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.JWICS.GovRejectReason = this.govRejectReason
+              for (var jwics = 0; jwics < this.JWICS.forms.length; jwics++) {
+                if (!submitterId.includes(this.JWICS.forms[jwics].submitterId)) {
+                  submitterId.push(this.JWICS.forms[jwics].submitterId)
+                  submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
+                }
+                this.deleteForm(this.JWICS.forms[jwics])
+              }
+              this.JWICS.forms = []
+              break
+            case 'SCI':
+              taskId = this.SCI.task // original taskId\
+              group = this.scigroup
+              this.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.SCI.GovRejectReason = this.govRejectReason
+              for (var sci = 0; sci < this.SCI.forms.length; sci++) {
+                if (!submitterId.includes(this.SCI.forms[sci].submitterId)) {
+                  submitterId.push(this.SCI.forms[sci].submitterId)
+                  submitterEmail.push(this.SCI.forms[sci].submitterEmail)
+                }
+                this.deleteForm(this.SCI.forms[sci])
+              }
+              this.SCI.forms = []
+              break
+            case 'CAC':
+              taskId = this.CAC.task // original taskId\
+              group = this.cacgroup
+              this.CAC.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+              this.CAC.GovRejectReason = this.govRejectReason
+              for (var cac = 0; cac < this.CAC.forms.length; cac++) {
+                if (!submitterId.includes(this.CAC.forms[cac].submitterId)) {
+                  submitterId.push(this.CAC.forms[cac].submitterId)
+                  submitterEmail.push(this.CAC.forms[cac].submitterEmail)
+                }
+                this.deleteForm(this.CAC.forms[cac])
+              }
+              this.CAC.forms = []
+              break
           }
-          this.$store.dispatch('notification/add', notification, {
-            root: true
+          await this.updateForm(taskId).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
           })
-          console.log('ERROR: ' + error.message)
-        })
-        let emailPayload = {
-          emails: taskEmail, // TO DO: push the original submitters email in there.
-          body: '<h3>Government Rejected Submission</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
-          subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
+          group.forEach(user => {
+            taskUserId.push(user.Id)
+            taskEmail.push(user.Email)
+          })
+          taskUserId.concat(submitterId)
+          taskEmail.concat(submitterEmail)
+          // Notify Accounts Admin or Security via task list
+          let payload = {
+            Title: 'Government Rejection: ' + this.FirstName + ' ' + this.LastName + ' ' + this.govRejectType + ' Request',
+            //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
+            AssignedToId: taskUserId,
+            Description: 'Reason: ' + this.govRejectReason,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'gov-reject',
+            TaskLink: '/security/tracker'
+          }
+          await Todo.dispatch('addTodo', payload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          let emailPayload = {
+            emails: taskEmail, // TO DO: push the original submitters email in there.
+            body: '<h3>Government Rejected Submission</h3> <p>Name: ' + this.FirstName + ' ' + this.LastName + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
+            subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
+          }
+          await Security.dispatch('sendEmail', emailPayload).then(() => {
+            // Reset Reject form
+            vm.showGovRejectError = false
+            vm.showGovRejectForm = false
+            vm.govRejectReason = ''
+            vm.govRejectType = ''
+          })
         }
-        await Security.dispatch('sendEmail', emailPayload).then(() => {
-          // Reset Reject form
-          vm.showGovRejectError = false
-          vm.showGovRejectForm = false
-          vm.govRejectReason = ''
-          vm.govRejectType = ''
-        })
       }
     },
     async deleteForm(payload) {
