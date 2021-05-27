@@ -625,7 +625,7 @@ export default {
           var persArray = person.split('-')
           let result = await Security.dispatch('getSecurityFormByPersonnelId', { PersonnelID: persArray[0] })
           vm.securityByPersonnel.push(result)
-          transferPersons.push({ PersonnelID: result.PersonnelId, SecurityID: result.Id, FirstName: result.FirstName, LastName: result.LastName, Company: result.Company })
+          transferPersons.push({ PersonnelID: result.PersonnelId, SecurityID: result.Id, FirstName: result.FirstName, LastName: result.LastName, Company: result.Company, submittedDate: this.$moment().format('MM/DD/YYYY') })
           persons += result.FirstName + ' ' + result.LastName + ', '
         })
         transferPayload.Persons = JSON.stringify(transferPersons)
@@ -706,7 +706,6 @@ export default {
             })
             console.log('ERROR: ' + error.message)
           })
-          console.log('Task Results: ' + JSON.stringify(taskResults))
           let emailPayload = {
             //emails: this.taskEmail,
             emails: ['drew.ahrens@caci.com'],
@@ -741,7 +740,6 @@ export default {
           securityPayload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
           securityPayload.SCIStatus = 'CACI Review'
           securityPayload.SCITransferId = transferResults.data.d.Id
-          console.log('PERSON: ' + JSON.stringify(securityPayload))
           await Security.dispatch('updateSecurityForm', securityPayload).catch(error => {
             const notification = {
               type: 'danger',
@@ -916,7 +914,6 @@ export default {
           payload.file = pdfName
           payload.name = name
           payload.buffer = file.fileBuffer
-          if (console) console.log('PAYLOAD TO UPLOAD FORM: ' + JSON.stringify(payload))
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri

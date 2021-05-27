@@ -92,6 +92,7 @@ const actions = {
     return response
   },
   async updateSecurityForm({ state }, payload) {
+    if (console) console.log('UPDATING SECURITY INFORMATION: ' + JSON.stringify(payload))
     let response = await SecurityService.updateSecurityForm(payload, state.digest)
     return response
   },

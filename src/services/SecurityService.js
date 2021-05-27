@@ -192,6 +192,7 @@ export default {
       })
   },
   async updateSecurityForm(payload, digest) {
+    console.log('UPDATING SECURITY INFORMATION: ' + JSON.stringify(payload))
     let endpoint = payload.uri
     let headers = {
       'Content-Type': 'application/json;odata=verbose',

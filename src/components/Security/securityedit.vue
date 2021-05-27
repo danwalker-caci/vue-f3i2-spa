@@ -2,6 +2,64 @@
   <b-container fluid class="contentHeight p-0 m-0 overflow-auto">
     <b-row no-gutters>
       <b-col cols="12" class="m-0 p-0">
+        <b-card v-if="isSCITransfer">
+          <div class="ml-4 mr-4" v-if="loaded">
+            <b-form-row>
+              <b-col>
+                <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
+              </b-col>
+            </b-form-row>
+            <div v-if="sciTransfer.Persons && sciTransfer.Persons.length > 0">
+              <b-form-row v-for="person in sciTransfer.Persons" :key="person.SecurityID">
+                <b-col>
+                  Company: <strong>{{ person.Company }}</strong>
+                  <!--<b-form-group label="Company: " label-for="company">
+                <b-form-input id="company" v-model="company" value="{{ company }}" disabled />
+              </b-form-group>-->
+                </b-col>
+                <b-col>
+                  Name: <strong>{{ person.FirstName }} {{ person.LastName }}</strong>
+                </b-col>
+                <b-col>
+                  Date Submitted: <strong>{{ person.submittedDate }}</strong>
+                </b-col>
+              </b-form-row>
+            </div>
+            <b-row v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
+              <span v-if="sciTransfer.Form.GovSentDate !== ''" class="p-2">{{ sciTransfer.Form.GovSentDate }}</span>
+              <span v-if="sciTransfer.Form.GovCompleteDate !== ''" class="p-2">{{ sciTransfer.Form.GovCompleteDate }}</span>
+              <span v-if="sciTransfer.Form.GovRejectDate !== ''" class="p-2">{{ sciTransfer.Form.GovRejectDate }}</span>
+              <span v-if="sciTransfer.Form.GovSentDate === ''" class="p-2">
+                <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+              </span>
+              <span v-if="sciTransfer.Form.GovCompleteDate === ''" class="p-2">
+                <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+              </span>
+              <span v-if="sciTransfer.Form.GovCompleteDate === '' && sciTransfer.Form.GovRejectDate === ''" class="p-2">
+                <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+              </span>
+            </b-row>
+            <b-row v-if="showGovRejectForm">
+              <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+              <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+              <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+              <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+            </b-row>
+            <b-row v-if="sciTransfer.Form.GovRejectReason">
+              <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ sciTransfer.Form.GovRejectReason }}</p>
+            </b-row>
+            <div v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
+              <div v-for="form in sciTransfer.Form.forms" :key="form.id">
+                <b-form-row class="p-1" v-if="form.href !== ''">
+                  <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+                </b-form-row>
+                <b-form-row class="p-1" v-else-if="form.rejectReason">
+                  <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
+                </b-form-row>
+              </div>
+            </div>
+          </div>
+        </b-card>
         <b-card v-if="!isSCITransfer">
           <div class="ml-4 mr-4" v-if="loaded">
             <b-form-row>
@@ -9,14 +67,10 @@
                 <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
               </b-col>
               <b-col>
-                <b-form-group label="Company: " label-for="company">
-                  <b-form-input id="company" v-model="Company" value="{{ Company }}" disabled />
-                </b-form-group>
+                Company: <strong>{{ Company }}</strong>
               </b-col>
               <b-col>
-                <b-form-group label="Name: " label-for="name">
-                  <b-form-input id="name" v-model="Name" value="{{ Name }}" disabled />
-                </b-form-group>
+                Name: <strong>{{ Name }}</strong>
               </b-col>
               <b-col>
                 <b-form-group label="PR Due Date" label-for="PRDueDate">
@@ -632,6 +686,7 @@ export default {
       if (this.afrlgroup.length === 0 || this.accountgroup === 0 || this.cacgroup === 0 || this.scigroup === 0) await Security.dispatch('getSecurityGroups')
       if (this.$route.query.sciTransfer) {
         this.isSCITransfer = true
+        this.getSCITransfer()
       } else {
         await this.getForms()
       }
@@ -706,6 +761,8 @@ export default {
       this.loaded = true
     },
     async getSCITransfer() {
+      await Security.dispatch('getDigest')
+      this.SCITransferId = this.id
       this.sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.id }).catch(e => {
         // Add user notification and system logging
         const notification = {
@@ -719,6 +776,7 @@ export default {
         })
         console.log('ERROR: ' + e)
       })
+      this.loaded = true
     },
     AccessDateChange() {
       this.SCIStatus = 'SSO Processed'
@@ -758,16 +816,16 @@ export default {
         taskId = sciTransfer.TaskId
         console.log(JSON.stringify(sciTransfer))
         let persons = ''
-        await this.asyncForEach(sciTransfer.People, async (person, index) => {
+        await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
           persons += person.FirstName + ' ' + person.LastName
-          if (sciTransfer.People.length !== index + 1) {
+          if (sciTransfer.Persons.length !== index + 1) {
             persons += ', '
           }
         })
         let payload = {
           Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-          //AssignedToId: 63, // TESTING TASK
-          AssignedToId: taskUserId,
+          AssignedToId: 63, // TESTING TASK
+          //AssignedToId: taskUserId,
           Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
           IsMilestone: false,
           PercentComplete: 0,
@@ -787,8 +845,8 @@ export default {
           console.log('ERROR: ' + error.message)
         })
         let emailPayload = {
-          emails: taskEmail,
-          //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+          //emails: taskEmail,
+          emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
           body:
             '<h3>Please complete or reject the following.</h3> <p>Name: ' +
             persons +
@@ -806,16 +864,21 @@ export default {
         await Security.dispatch('sendEmail', emailPayload)
         await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
           // get each Security form
-          let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
-
+          let formInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
           // update the persons security form
-          securityFormInfo.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
-          securityFormInfo.SCI.task = results.data.d.Id
+          formInfo.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
+          formInfo.SCI.task = results.data.d.Id
+          await vm.updateSecurityForm(formInfo)
           if (sciTransfer.Persons.length !== index) {
-            vm.updateForm(securityFormInfo)
-          } else {
             // Last update, complete the task
-            vm.updateForm(securityFormInfo, taskId)
+            Todo.dispatch('getTodoById', taskId).then(async function(task) {
+              let payload = {
+                etag: task.__metadata.etag,
+                uri: task.__metadata.uri,
+                id: task.Id
+              }
+              Todo.dispatch('completeTodo', payload)
+            })
           }
         })
         let transferPayload = {
@@ -837,8 +900,8 @@ export default {
         // Add a task for the designated government employees for review
         let payload = {
           Title: 'Complete or Reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
-          //AssignedToId: vm.userid, // Hardcode to Juan
-          AssignedToId: taskUserId,
+          AssignedToId: 63, // TESTING TASK
+          //AssignedToId: taskUserId,
           Description: 'Complete or reject ' + this.FirstName + ' ' + this.LastName + ' ' + type + ' Request',
           IsMilestone: false,
           PercentComplete: 0,
@@ -949,22 +1012,30 @@ export default {
         taskUserId.concat(submitterId)
         taskEmail.concat(submitterEmail)
         let persons = ''
-        await this.asyncForEach(sciTransfer.People, async (person, index) => {
+        await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
           persons += person.FirstName + ' ' + person.LastName
           // update each person with the reject reason
-          let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
-          securityFormInfo.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-          if (sciTransfer.People.length !== index + 1) {
+          let formInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+          formInfo.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
+          await vm.updateSecurityForm(formInfo)
+          if (sciTransfer.Persons.length !== index + 1) {
             persons += ','
-            this.updateForm(securityFormInfo)
           } else {
             // Last call - complete the task
-            this.updateForm(securityFormInfo, taskId)
+            Todo.dispatch('getTodoById', taskId).then(async function(task) {
+              let payload = {
+                etag: task.__metadata.etag,
+                uri: task.__metadata.uri,
+                id: task.Id
+              }
+              Todo.dispatch('completeTodo', payload)
+            })
           }
         })
         let payload = {
           Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
-          AssignedToId: taskUserId,
+          AssignedToId: 63, // TESTING TASK
+          //AssignedToId: taskUserId,
           Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
           IsMilestone: false,
           PercentComplete: 0,
@@ -984,7 +1055,8 @@ export default {
           console.log('ERROR: ' + error.message)
         })
         let emailPayload = {
-          emails: taskEmail,
+          emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+          //emails: taskEmail,
           body: '<h3>AFRL Completed ' + persons + ' ' + type + ' Request</h3> <p>Names: ' + persons + '</p><p>Form: ' + type + ' Request</p><br/><a href="' + url + '/Pages/Home.aspx#/security/tracker/">Review ' + persons + '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
           subject: '(F3I-2 Portal) Government Completed ' + type + ' Request'
         }
@@ -1191,24 +1263,31 @@ export default {
           taskUserId.concat(submitterId)
           taskEmail.concat(submitterEmail)
           let persons = ''
-          await this.asyncForEach(sciTransfer.People, async (person, index) => {
+          await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
             persons += person.FirstName + ' ' + person.LastName
             // update each person with the reject reason
-            let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
-            securityFormInfo.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
-            securityFormInfo.SCI.GovRejectReason = this.govRejectReason
-            if (sciTransfer.People.length !== index + 1) {
-              persons += ','
-              this.updateForm(securityFormInfo)
+            let formInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+            formInfo.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+            formInfo.SCI.GovRejectReason = this.govRejectReason
+            await vm.updateSecurityForm(formInfo)
+            if (sciTransfer.Persons.length !== index + 1) {
+              persons += ', '
             } else {
               // Last call - complete the task
-              this.updateForm(securityFormInfo, taskId)
+              Todo.dispatch('getTodoById', taskId).then(async function(task) {
+                let payload = {
+                  etag: task.__metadata.etag,
+                  uri: task.__metadata.uri,
+                  id: task.Id
+                }
+                Todo.dispatch('completeTodo', payload)
+              })
             }
           })
           let payload = {
             Title: 'Government Reject ' + persons + ' ' + this.govRejectType + ' Request',
-            //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-            AssignedToId: taskUserId,
+            AssignedToId: 63, // TESTING TASK
+            //AssignedToId: taskUserId,
             Description: 'Reason: ' + this.govRejectReason,
             IsMilestone: false,
             PercentComplete: 0,
@@ -1228,8 +1307,8 @@ export default {
             console.log('ERROR: ' + error.message)
           })
           let emailPayload = {
-            // emails: emails // TO DO: push original submitters email into the emails array
-            emails: taskEmail,
+            emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+            //emails: taskEmail,
             body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + this.govRejectType + ' Request</p><p>Reason: ' + this.govRejectReason + '</p>',
             subject: '(F3I-2 Portal) Government Rejected ' + this.govRejectType + ' Request'
           }
@@ -1242,6 +1321,7 @@ export default {
             uri: sciTransfer.uri
           }
           await Security.dispatch('updateSecuritySCITransfer', transferPayload)
+          this.showGovRejectForm = false
           const notification = {
             type: 'success',
             title: 'Succesfully Updated Security Form',
@@ -1407,6 +1487,69 @@ export default {
         console.log('ERROR: ' + error.message)
       })
     },
+    async updateSecurityForm(securityFormInfo) {
+      let securityPayload = {
+        Active: true,
+        Title: securityFormInfo.Title,
+        PersonnelID: securityFormInfo.PersonnelId,
+        PersonName: securityFormInfo.PersonName,
+        FirstName: securityFormInfo.FirstName,
+        LastName: securityFormInfo.LastName,
+        Company: securityFormInfo.Company,
+        CACValid: securityFormInfo.CACValid,
+        CACIssuedBy: securityFormInfo.CACIssuedBy,
+        CACExpirationDate: securityFormInfo.CACExpirationDate,
+        CACRequestDate: securityFormInfo.CACRequestDate,
+        CACExpiredOnDate: securityFormInfo.CACExpiredOnDate,
+        CACTurnedIn: securityFormInfo.CACTurnedIn,
+        CACStatus: securityFormInfo.CACStatus,
+        DISSCheckDate: securityFormInfo.DISSCheckDate,
+        SCIAccessCheckDate: securityFormInfo.SCIAccessCheckDate,
+        SCIStatus: securityFormInfo.SCIStatus,
+        SCIIndocAssistDate: securityFormInfo.SCIIndocAssistDate,
+        PRDueDate: securityFormInfo.PRDueDate,
+        CEDate: securityFormInfo.CEDate,
+        SCIFormType: securityFormInfo.SCIFormType,
+        SCIFormSubmitted: securityFormInfo.SCIFormSubmitted,
+        SCIIndoc: securityFormInfo.SCIIndoc,
+        SCITransferId: securityFormInfo.SCITransferId,
+        taskId: securityFormInfo.taskId,
+        DISSCheck: securityFormInfo.DISSCheck,
+        etag: securityFormInfo.etag,
+        uri: securityFormInfo.uri
+      }
+      if (securityFormInfo.NIPR) {
+        securityPayload.NIPR = JSON.stringify(securityFormInfo.NIPR)
+      }
+      if (securityFormInfo.SIPR) {
+        securityPayload.SIPR = JSON.stringify(securityFormInfo.SIPR)
+      }
+      if (securityFormInfo.DREN) {
+        securityPayload.DREN = JSON.stringify(securityFormInfo.DREN)
+      }
+      if (securityFormInfo.JWICS) {
+        securityPayload.JWICS = JSON.stringify(securityFormInfo.JWICS)
+      }
+      if (securityFormInfo.SCI) {
+        securityPayload.SCI = JSON.stringify(securityFormInfo.SCI)
+      }
+      if (securityFormInfo.CAC) {
+        securityPayload.CAC = JSON.stringify(securityFormInfo.CAC)
+      }
+      return await Security.dispatch('updateSecurityForm', securityPayload).catch(e => {
+        // Add user notification and system logging
+        const notification = {
+          type: 'danger',
+          title: 'Portal Error',
+          message: e,
+          push: true
+        }
+        this.$store.dispatch('notification/add', notification, {
+          root: true
+        })
+        console.log('ERROR: ' + e.message)
+      })
+    },
     async updateForm(tId) {
       await Security.dispatch('getDigest')
       this.lockSubmit = true
@@ -1473,7 +1616,6 @@ export default {
           payload.buffer = file.fileBuffer
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
-          if (console) console.log('UPLOADED FORM: ' + item)
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri
           let form = await Security.dispatch('getForm', itemlink)
           let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
@@ -1591,7 +1733,6 @@ export default {
 
       this.lockSubmit = false
       if (tId) {
-        console.log(tId)
         Todo.dispatch('getTodoById', tId).then(async function(task) {
           let payload = {
             etag: task.__metadata.etag,

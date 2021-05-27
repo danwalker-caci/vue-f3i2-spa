@@ -179,7 +179,6 @@ export default {
       let payload = {
         Id: this.id
       }
-      console.log(payload)
       if (this.isSCITransfer) {
         Security.dispatch('getSecuritySCITransfer', payload)
           .then(function(results) {
@@ -323,7 +322,7 @@ export default {
             //console.log('Update Security Results: ' + JSON.stringify(results))
             //vm.uri = results.header.uri
             vm.etag = results.headers.etag
-            document.getElementById(info.id).classList.toggle('hidden')
+            //document.getElementById("'" + info.id + "'").classList.toggle('hidden')
             const notification = {
               type: 'success',
               title: 'Approved Form',
@@ -392,7 +391,7 @@ export default {
             //console.log('Update Security Results: ' + JSON.stringify(results))
             //vm.uri = results.header.uri
             vm.etag = results.headers.etag
-            document.getElementById(info.id).classList.toggle('hidden')
+            //document.getElementById(info.id).classList.toggle('hidden')
             const notification = {
               type: 'success',
               title: 'Approved Form',
@@ -572,7 +571,8 @@ export default {
           })
           payload = {
             Title: 'Complete or Reject ' + vm.name + ' ' + vm.form + ' Request',
-            AssignedToId: afrlTask,
+            //AssignedToId: afrlTask,
+            AssignedToId: 63,
             Description: 'Complete or reject ' + vm.name + ' ' + vm.form + ' Request',
             IsMilestone: false,
             PercentComplete: 0,
@@ -582,7 +582,8 @@ export default {
           let results = await Todo.dispatch('addTodo', payload)
           let newTaskId = results.data.d.Id
           let emailPayload = {
-            emails: afrlEmail,
+            //emails: afrlEmail,
+            emails: ['drew.ahrens@caci.com'],
             body:
               '<h3>Please complete or reject the following.</h3><p>Name: ' +
               vm.name +
@@ -606,10 +607,17 @@ export default {
             uri: vm.uri,
             etag: vm.etag
           }
-          if (this.isSCITransfer) {
+          if (vm.isSCITransfer) {
             payload.Form = JSON.stringify(vm.securityForms)
             payload.TaskId = newTaskId
             await Security.dispatch('updateSecuritySCITransfer', payload)
+            vm.asyncForEach(vm.persons, async person => {
+              let security = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
+              security.SCI = JSON.stringify(vm.securityForms)
+              if (console) console.log('UPDATING SECURITY INFORMATION: ' + security)
+              await Security.dispatch('updateSecurityForm', security)
+            })
+            vm.showNotify = false
           } else {
             switch (vm.form) {
               case 'NIPR':
@@ -643,6 +651,11 @@ export default {
           }
         })
       })
+    },
+    async asyncForEach(array, callback) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array)
+      }
     }
   }
 }

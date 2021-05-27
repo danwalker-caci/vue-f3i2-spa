@@ -669,19 +669,18 @@ export default {
                 if (type === 'SCI' && data.SCITransferId) {
                   let sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: data.SCITransferId })
                   taskId = sciTransfer.TaskId
-                  sciTransfer.Form.GovSentDate = this.$moment().format('MM/DD/YYYY')
-                  console.log(JSON.stringify(sciTransfer))
+                  sciTransfer.Form.GovSentDate = 'Gov Notified On: ' + this.$moment().format('MM/DD/YYYY')
                   let persons = ''
-                  await this.asyncForEach(sciTransfer.People, async (person, index) => {
+                  await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
                     persons += person.FirstName + ' ' + person.LastName
-                    if (sciTransfer.People.length !== index + 1) {
+                    if (sciTransfer.Persons.length !== index + 1) {
                       persons += ', '
                     }
                   })
                   let payload = {
                     Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-                    //AssignedToId: 63, // TESTING TASK
-                    AssignedToId: taskUserId,
+                    AssignedToId: 63, // TESTING TASK
+                    //AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -701,8 +700,8 @@ export default {
                     console.log('ERROR: ' + error.message)
                   })
                   let emailPayload = {
-                    emails: taskEmail,
-                    //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                    //emails: taskEmail,
+                    emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       persons +
@@ -721,15 +720,16 @@ export default {
                   await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
                     // get each Security form
                     let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
-
+                    if (console) console.log('UPDATING SECURITY INFORMATION: ' + securityFormInfo)
                     // update the persons security form
                     securityFormInfo.SCI.GovSentDate = this.$moment().format('MM/DD/YYYY')
                     securityFormInfo.SCI.task = results.data.d.Id
-                    if (sciTransfer.Persons.length !== index) {
-                      vm.updateForm(securityFormInfo)
+                    if (sciTransfer.Persons.length !== index + 1) {
+                      vm2.updateForm(securityFormInfo)
                     } else {
                       // Last update, complete the task
-                      vm.updateForm(securityFormInfo, taskId)
+                      if (console) console.log('COMPLETING FSO TASK')
+                      vm2.updateForm(securityFormInfo, taskId)
                     }
                   })
                   let transferPayload = {
@@ -740,6 +740,7 @@ export default {
                     uri: sciTransfer.uri
                   }
                   await Security.dispatch('updateSecuritySCITransfer', transferPayload)
+                  data.SCI.GovSentDate = 'Gov Notified On: ' + this.$moment().format('MM/DD/YYYY')
                   const notification = {
                     type: 'success',
                     title: 'Succesfully Updated Security Form',
@@ -859,12 +860,12 @@ export default {
                   taskUserId.concat(submitterId)
                   taskEmail.concat(submitterEmail)
                   let persons = ''
-                  await this.asyncForEach(sciTransfer.People, async (person, index) => {
+                  await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
                     persons += person.FirstName + ' ' + person.LastName
                     // update each person with the reject reason
                     let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
                     securityFormInfo.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
-                    if (sciTransfer.People.length !== index + 1) {
+                    if (sciTransfer.Persons.length !== index + 1) {
                       persons += ','
                       this.updateForm(securityFormInfo)
                     } else {
@@ -872,9 +873,11 @@ export default {
                       this.updateForm(securityFormInfo, taskId)
                     }
                   })
+                  data.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                   let payload = {
                     Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
-                    AssignedToId: taskUserId,
+                    //AssignedToId: taskUserId,
+                    AssignedToId: 63, // TESTING TASK
                     Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -894,7 +897,8 @@ export default {
                     console.log('ERROR: ' + error.message)
                   })
                   let emailPayload = {
-                    emails: taskEmail,
+                    //emails: taskEmail,
+                    emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>AFRL Completed ' +
                       persons +
@@ -1108,24 +1112,26 @@ export default {
                     taskUserId.concat(submitterId)
                     taskEmail.concat(submitterEmail)
                     let persons = ''
-                    await this.asyncForEach(sciTransfer.People, async (person, index) => {
+                    await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
                       persons += person.FirstName + ' ' + person.LastName
                       // update each person with the reject reason
                       let securityFormInfo = await Security.dispatch('getSecurityFormById', { Id: person.SecurityID })
                       securityFormInfo.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
                       securityFormInfo.SCI.GovRejectReason = vm2.GovRejectReason
-                      if (sciTransfer.People.length !== index + 1) {
+                      if (sciTransfer.Persons.length !== index + 1) {
                         persons += ','
-                        this.updateForm(securityFormInfo)
+                        vm2.updateForm(securityFormInfo)
                       } else {
                         // Last call - complete the task
-                        this.updateForm(securityFormInfo, taskId)
+                        vm2.updateForm(securityFormInfo, taskId)
                       }
                     })
+                    data.SCI.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
+                    data.SCI.GovRejectReason = vm2.GovRejectReason
                     let payload = {
                       Title: 'Government Reject ' + persons + ' ' + vm2.GovRejectType + ' Request',
-                      //AssignedToId: vm.userid, // Hardcode to either Michelle or Monica
-                      AssignedToId: taskUserId,
+                      //AssignedToId: taskUserId,
+                      AssignedToId: 63, // TESTING TASK
                       Description: 'Reason: ' + vm2.GovRejectReason,
                       IsMilestone: false,
                       PercentComplete: 0,
@@ -1145,8 +1151,8 @@ export default {
                       console.log('ERROR: ' + error.message)
                     })
                     let emailPayload = {
-                      // emails: emails // TO DO: push original submitters email into the emails array
-                      emails: taskEmail,
+                      emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+                      //emails: taskEmail,
                       body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
                       subject: '(F3I-2 Portal) Government Rejected ' + vm2.GovRejectType + ' Request'
                     }
