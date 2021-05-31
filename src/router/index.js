@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ThemeLayout from '@/components/Layout/DashboardLayout.vue'
-import home from '@/components/Pages/home.vue'
 
 Vue.use(VueRouter)
 
@@ -14,6 +13,32 @@ let adminMenu = {
       path: 'home/:mode',
       name: 'Admin',
       component: () => import(/* webpackChunkName: "admin" */ '../components/Admin/admin.vue'),
+      props: true
+    }
+  ]
+}
+
+let pagesMenu = {
+  path: '/pages',
+  component: ThemeLayout,
+  redirect: '/pages/home/dashboard',
+  children: [
+    {
+      path: 'home/:mode',
+      name: 'Home',
+      component: () => import(/* webpackChunkName: "pages" */ '../components/Pages/Home.vue'),
+      props: true
+    },
+    {
+      path: 'page/home',
+      name: 'Dashboard',
+      component: () => import(/* webpackChunkName: "dashboard" */ '../components/Pages/Dashboard.vue'),
+      props: true
+    },
+    {
+      path: 'page/dropoff',
+      name: 'DropoffLibrary',
+      component: () => import(/* webpackChunkName: "dropoff" */ '../components/Pages/DropoffLibrary.vue'),
       props: true
     }
   ]
@@ -405,7 +430,7 @@ let workplanMenu = {
 const routes = [
   {
     path: '/',
-    redirect: '/pages/home'
+    redirect: '/pages/page/home'
   },
   adminMenu,
   msrMenu,
@@ -420,18 +445,7 @@ const routes = [
   securityMenu,
   workplanMenu,
   refreshMenu,
-  {
-    path: '/pages',
-    component: ThemeLayout,
-    redirect: '/pages/home',
-    children: [
-      {
-        path: 'home',
-        name: 'Home',
-        component: home
-      }
-    ]
-  }
+  pagesMenu
 ]
 
 const router = new VueRouter({

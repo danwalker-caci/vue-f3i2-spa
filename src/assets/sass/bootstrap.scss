@@ -205,6 +205,10 @@ input[type=button], input[type=reset], input[type=submit], button {
   border: none;
 }
 
+.table-full {
+  table-layout: fixed;
+}
+
 /* #region Travel Status Colors */
 
 .travel-Completed {

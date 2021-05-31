@@ -76,6 +76,7 @@ const actions = {
           if (console) { console.log('USER EMAIL: ' + response.data.d.Email) }
           state.userid = response.data.d.Id
           state.Email = response.data.d.Email
+          state.LoginName = response.data.d.LoginName
         })
         return response.data.d
       })
