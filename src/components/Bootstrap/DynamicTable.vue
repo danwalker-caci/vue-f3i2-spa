@@ -53,7 +53,7 @@
                     </b-tbody>
                   </b-table-simple>
                 </b-row>
-                <b-row v-if="table.allowPaging" no-gutters class="paging-row bg-light"></b-row>
+                <!-- <b-row v-if="table.allowPaging" no-gutters class="paging-row bg-light"></b-row> -->
               </b-container>
               <template #overlay>
                 <div class="text-center">
@@ -155,7 +155,11 @@ export default {
   },
   created: function() {
     vm = this
-    vm.init()
+    SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function() {
+      console.log('sp.js is loaded')
+      vm.init()
+    })
+    // vm.init()
   },
   methods: {
     init: async function() {
@@ -266,19 +270,35 @@ export default {
       let ret = ''
       if (field.field === 'Actions') {
         // loop through the actions and determine if the user can perform the action on this item
-        let p = vm.getUserPermissions(item)
-        // console.log(p)
-        let permissions = new SP.BasePermissions()
-        permissions.initPropertiesFromJson(p.d.GetUserEffectivePermissions)
-        let result = {}
-        for (var level in SP.PermissionKind.prototype) {
-          if (SP.PermissionKind.hasOwnProperty(level)) {
-            var permLevel = SP.PermissionKind.parse(level)
-            if (permissions.has(permLevel)) result[level] = true
-            else result[level] = false
+        vm.getUserPermissions(item).then(function(response) {
+          console.log('getUserPermissions: ' + response)
+          let permissions = new SP.BasePermissions()
+          permissions.initPropertiesFromJson(response.data.d.GetUserEffectivePermissions)
+          let result = {}
+          for (var level in SP.PermissionKind.prototype) {
+            if (SP.PermissionKind.hasOwnProperty(level)) {
+              var permLevel = SP.PermissionKind.parse(level)
+              if (permissions.has(permLevel)) result[level] = true
+              else result[level] = false
+            }
           }
-        }
-        console.log('PERMISSION RESULTS: ' + result)
+          console.log('PERMISSION RESULTS: ' + result)
+          for (let y = 0; y < field.actions.length; y++) {
+            switch (field.actions[y]) {
+              case 'Delete':
+                // can the user delete?
+                var w = result.hasOwnProperty('deleteListItems')
+                if (w) {
+                  if (result.deleteListItems) {
+                    // user can delete
+                    console.log('CAN DELETE')
+                    ret = 'CAN DELETE'
+                  }
+                }
+                break
+            }
+          }
+        })
       } else {
         if (field.format === 'link') {
           // let href = baseurl + '/' + vm.table.list + '/' + item[field.field]
@@ -426,5 +446,9 @@ export default {
 .table-bordered td,
 .table-bordered th {
   border: 1px solid #000000 !important;
+}
+.table th,
+.table td {
+  padding: 2px;
 }
 </style>

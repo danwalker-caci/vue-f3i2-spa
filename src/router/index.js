@@ -26,7 +26,7 @@ let pagesMenu = {
     {
       path: 'home/:mode',
       name: 'Home',
-      component: () => import(/* webpackChunkName: "pages" */ '../components/Pages/Home.vue'),
+      component: () => import(/* webpackChunkName: "pages" */ '../components/Pages/Home2.vue'),
       props: true
     },
     {
