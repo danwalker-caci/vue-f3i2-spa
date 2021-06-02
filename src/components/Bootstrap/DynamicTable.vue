@@ -43,12 +43,14 @@
                   <b-table-simple :id="getID('DynamicTable', table.id)" :ref="getID('DynamicTable', table.id)" table-variant="light" table-class="table-full" :bordered="bordered" :hover="hover">
                     <b-thead>
                       <b-tr>
-                        <b-th v-for="field in table.fields" :key="field">{{ field.label }}</b-th>
+                        <b-th v-for="field in table.fields" :key="field" :style="getStyle('th', field)">{{ field.label }}</b-th>
                       </b-tr>
                     </b-thead>
-                    <b-tbody>
-                      <b-tr v-for="item in items" :key="item" :style="getStyle('tr')">
-                        <b-td v-for="field in table.fields" :key="field" class="text-black"><span v-html="formatCell(item, field)"></span></b-td>
+                    <b-tbody :id="getID('DynamicTableBody', table.id)">
+                      <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
+                        <b-td v-for="field in table.fields" :key="field" class="text-black">
+                          <span :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
+                        </b-td>
                       </b-tr>
                     </b-tbody>
                   </b-table-simple>
@@ -71,6 +73,7 @@
 
 <script>
 /* eslint-disable no-prototype-builtins */
+import Vue from 'vue'
 import axios from 'axios'
 
 let vm = null
@@ -83,7 +86,29 @@ let SPCI = null
 if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
-// let baseurl = SPCI.webAbsoluteUrl
+
+const ActionButton = {
+  template: `
+    <b-button class="actionbutton text-black" @click="DeleteFile('item.id)" v-b-tooltip.hover.v-dark title="Delete File">
+      <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
+    </b-button>
+  `,
+  props: {
+    name: {
+      type: String
+    },
+    item: {
+      type: Object
+    }
+  },
+  methods: {
+    DeleteFile: function(id) {
+      alert(id)
+    }
+  }
+}
+
+const ActionButtonClass = Vue.extend(ActionButton)
 
 export default {
   name: 'dynamic-table',
@@ -127,6 +152,7 @@ export default {
   },
   data: function() {
     return {
+      bodyHTML: '',
       GoOn: 'No',
       Invalid: false,
       InvalidMessage: 'Not all fields are filled out correctly.',
@@ -159,22 +185,23 @@ export default {
       console.log('sp.js is loaded')
       vm.init()
     })
-    // vm.init()
+  },
+  mounted: async function() {
+    for (let i = 0; i < this.table.fields.length; i++) {
+      if (this.table.fields[i].required) {
+        // go get the field options if it is a lookup
+        if (this.table.fields[i].type === 'lookup') {
+          let ops = await vm.getOptions(this.table.fields[i])
+          this.table.fields[i].options = ops
+        }
+        this.validrefs.push('required_' + this.table.fields[i].field)
+      }
+    }
   },
   methods: {
-    init: async function() {
+    init: function() {
       // any preliminary stuff?
       this.getData()
-      for (let i = 0; i < this.table.fields.length; i++) {
-        if (this.table.fields[i].required) {
-          // go get the field options if it is a lookup
-          if (this.table.fields[i].type === 'lookup') {
-            let ops = await vm.getOptions(this.table.fields[i])
-            this.table.fields[i].options = ops
-          }
-          this.validrefs.push('required_' + this.table.fields[i].field)
-        }
-      }
       vm.timer = setInterval(vm.getData, 30000) // 1 minute
     },
     getID: function(text, id) {
@@ -198,7 +225,7 @@ export default {
           accept: 'application/json;odata=verbose'
         }
       })
-      console.log('GETITEMS RESPONSE: ' + response)
+      // console.log('GETITEMS RESPONSE: ' + response)
       let j = response.data.d.results
       let fields = this.table.fields
       for (let i = 0; i < j.length; i++) {
@@ -213,6 +240,7 @@ export default {
                 f[fields[k].field] = j[i]['File'][fields[k].field]
                 f['url'] = tp1 + slash + slash + tp2 + j[i]['File']['ServerRelativeUrl'] // ServerRelativeUrl must be in the query
                 f['rurl'] = j[i]['File']['ServerRelativeUrl'] // ServerRelativeUrl must be in the query
+                f['renderItems'] = []
                 break
 
               case 'user':
@@ -231,8 +259,11 @@ export default {
         }
         vm.items.push(f)
       }
-      vm.loading = false
-      vm.loaded = true
+      setTimeout(function() {
+        vm.loading = false
+        vm.loaded = true
+        vm.formatCells()
+      }, 1000)
     },
     getOptions: async function(field) {
       let url = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('" + field.list + "')/items?$select=*&$orderby=Title"
@@ -252,7 +283,7 @@ export default {
       }
       return p
     },
-    getStyle: function(element) {
+    getStyle: function(element, field) {
       var style = {}
       switch (element) {
         case 'tr':
@@ -262,52 +293,68 @@ export default {
             style.height = vm.table.rowHeight + 'px'
           }
           break
+
+        case 'th':
+          if (field.width) {
+            style.width = field.width + 'px'
+          }
+          break
       }
       return style
     },
-    formatCell: function(item, field) {
+    formatCells: function() {
+      for (let i = 0; i < vm.items.length; i++) {
+        let item = vm.items[i]
+        for (let j = 0; j < vm.table.fields.length; j++) {
+          let field = vm.table.fields[j]
+          vm.formatCell(item, field)
+        }
+      }
+    },
+    formatCell: async function(item, field) {
       // build cell based on passed in data and props
       let ret = ''
+      let element = '#' + field.field + '_' + item.id
       if (field.field === 'Actions') {
         // loop through the actions and determine if the user can perform the action on this item
-        vm.getUserPermissions(item).then(function(response) {
-          console.log('getUserPermissions: ' + response)
-          let permissions = new SP.BasePermissions()
-          permissions.initPropertiesFromJson(response.data.d.GetUserEffectivePermissions)
-          let result = {}
-          for (var level in SP.PermissionKind.prototype) {
-            if (SP.PermissionKind.hasOwnProperty(level)) {
-              var permLevel = SP.PermissionKind.parse(level)
-              if (permissions.has(permLevel)) result[level] = true
-              else result[level] = false
-            }
+        let response = await vm.getUserPermissions(item)
+        let permissions = new SP.BasePermissions()
+        permissions.initPropertiesFromJson(response.data.d.GetUserEffectivePermissions)
+        let result = {}
+        for (var level in SP.PermissionKind.prototype) {
+          if (SP.PermissionKind.hasOwnProperty(level)) {
+            var permLevel = SP.PermissionKind.parse(level)
+            if (permissions.has(permLevel)) result[level] = true
+            else result[level] = false
           }
-          console.log('PERMISSION RESULTS: ' + result)
-          for (let y = 0; y < field.actions.length; y++) {
-            switch (field.actions[y]) {
-              case 'Delete':
-                // can the user delete?
-                var w = result.hasOwnProperty('deleteListItems')
-                if (w) {
-                  if (result.deleteListItems) {
-                    // user can delete
-                    console.log('CAN DELETE')
-                    ret = 'CAN DELETE'
-                  }
+        }
+        for (let y = 0; y < field.actions.length; y++) {
+          switch (field.actions[y]) {
+            case 'Delete':
+              // can the user delete?
+              var w = result.hasOwnProperty('deleteListItems')
+              if (w) {
+                if (result.deleteListItems) {
+                  // user can delete
+                  new ActionButtonClass({
+                    propsData: {
+                      name: 'delete_' + item.id,
+                      item: item
+                    }
+                  }).$mount(element)
                 }
-                break
-            }
+              }
+              break
           }
-        })
+        }
       } else {
         if (field.format === 'link') {
-          // let href = baseurl + '/' + vm.table.list + '/' + item[field.field]
           ret = '<a href="' + item['url'] + '">' + item[field.field] + '</a>'
         } else {
           ret = item[field.field]
         }
+        document.getElementById(field.field + '_' + item.id).innerHTML = ret
       }
-      return ret
     },
     getUserPermissions: async function(item) {
       // go get the users permissions for the item
@@ -320,6 +367,10 @@ export default {
       })
       console.log('GETPERMISSIONS RESPONSE: ' + response)
       return response
+    },
+    DeleteFile: function(id) {
+      // just do it
+      if (console) console.log(id)
     },
     fileSelected: function(field) {
       vm.fileName = field.selected.name

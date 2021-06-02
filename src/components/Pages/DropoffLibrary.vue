@@ -26,7 +26,7 @@ export default {
       action: '',
       buttons: ['Upload'] /* Add, Edit, Export, Filter, Search, Upload, Print */,
       fields: [
-        /* { field: 'Actions', label: 'Actions', actions: ['Delete'] }, */ // actions should be permissions the users permissions can be checked to see if they can perform the actions on the given list/item
+        /* { field: 'Actions', label: 'Actions', actions: ['Delete'], width: '80' }, */ // actions should be permissions the users permissions can be checked to see if they can perform the actions on the given list/item
         { field: 'Name', label: 'Title', type: 'file', format: 'link', required: true, selected: '', url: '', rurl: '' },
         { field: 'Company', label: 'Company', type: 'default', format: 'text', usedInLink: true, linkOrder: 0 },
         { field: 'Author', label: 'Uploaded By', type: 'user', format: 'text' },
