@@ -614,8 +614,8 @@ export default {
         { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
         { text: 'Transfer Pending', value: 'Transfer Pending' },
         { text: 'Renewal', value: 'Renewal' },
-        { text: 'Add Revoked', value: 'Add Revoked' },
-        { text: 'Add Issuance Cancelled', value: 'Add Issuance Cancelled' }
+        { text: 'Revoked', value: 'Revoked' },
+        { text: 'Issuance Cancelled', value: 'Issuance Cancelled' }
       ],
       sciFormType: [
         { text: 'N/A', value: 'N/A' },
