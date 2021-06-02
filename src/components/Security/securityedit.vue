@@ -32,10 +32,8 @@
               <span v-if="sciTransfer.Form.GovSentDate === ''" class="p-2">
                 <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
               </span>
-              <span v-if="sciTransfer.Form.GovCompleteDate === ''" class="p-2">
-                <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
-              </span>
               <span v-if="sciTransfer.Form.GovCompleteDate === '' && sciTransfer.Form.GovRejectDate === ''" class="p-2">
+                <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
                 <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
               </span>
             </b-row>
@@ -378,10 +376,8 @@
                 <span v-if="SCI.GovSentDate === ''" class="p-2">
                   <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
                 </span>
-                <span v-if="this.SCI.GovCompleteDate === ''" class="p-2">
-                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
-                </span>
                 <span v-if="SCI.GovCompleteDate === '' && SCI.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
                   <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
                 </span>
               </b-row>
@@ -451,10 +447,8 @@
                 <span v-if="CAC.GovSentDate === ''" class="p-2">
                   <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'CAC'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
                 </span>
-                <span v-if="this.CAC.GovCompleteDate === ''" class="p-2">
-                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
-                </span>
                 <span v-if="CAC.GovCompleteDate === '' && CAC.GovRejectDate === ''" class="p-2">
+                  <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'CAC'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
                   <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'CAC'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
                 </span>
               </b-row>

@@ -1115,8 +1115,8 @@ export default {
         }
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.NIPR.GovCompleteDate ? vm.securityForm.NIPR.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.NIPR.GovSentDate ? vm.securityForm.NIPR.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'NIPR' ? results.data.d.Id : vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : '',
             forms: niprs
@@ -1124,8 +1124,8 @@ export default {
         }
         if (siprs.length > 0) {
           payload.SIPR = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SIPR.GovCompleteDate ? vm.securityForm.SIPR.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SIPR.GovSentDate ? vm.securityForm.SIPR.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SIPR' ? results.data.d.Id : vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : '',
             forms: siprs
@@ -1133,8 +1133,8 @@ export default {
         }
         if (drens.length > 0) {
           payload.DREN = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.DREN.GovCompleteDate ? vm.securityForm.DREN.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.DREN.GovSentDate ? vm.securityForm.DREN.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'DREN' ? results.data.d.Id : vm.securityForm.DREN.task ? vm.securityForm.DREN.task : '',
             forms: drens
@@ -1142,8 +1142,8 @@ export default {
         }
         if (jwics.length > 0) {
           payload.JWICS = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.JWICS.GovCompleteDate ? vm.securityForm.JWICS.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.JWICS.GovSentDate ? vm.securityForm.JWICS.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'JWICS' ? results.data.d.Id : vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : '',
             forms: jwics
@@ -1151,8 +1151,8 @@ export default {
         }
         if (scis.length > 0) {
           payload.SCI = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SCI.GovCompleteDate ? vm.securityForm.SCI.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SCI.GovSentDate ? vm.securityForm.SCI.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SCI' ? results.data.d.Id : vm.securityForm.SCI.task ? vm.securityForm.SCI.task : '',
             forms: scis
@@ -1160,8 +1160,8 @@ export default {
         }
         if (cacs.length > 0) {
           payload.CAC = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.CAC.GovCompleteDate ? vm.securityForm.CAC.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.CAC.GovSentDate ? vm.securityForm.CAC.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
             dissCheckTask: dissResults.data ? dissResults.data.d.Id : '',
