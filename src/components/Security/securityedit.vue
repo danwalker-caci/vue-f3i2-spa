@@ -706,7 +706,6 @@ export default {
     },
     async getForms() {
       // Run query to load the form
-      console.log(this.id)
       let payload = {
         Id: this.id
       }
@@ -814,7 +813,6 @@ export default {
         }
         sciTransfer.Form.GovSentDate = this.$moment().format('MM/DD/YYYY')
         taskId = sciTransfer.TaskId
-        console.log(JSON.stringify(sciTransfer))
         let persons = ''
         await this.asyncForEach(sciTransfer.Persons, async (person, index) => {
           persons += person.FirstName + ' ' + person.LastName
@@ -996,7 +994,6 @@ export default {
           sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.SCITransferId })
         }
         taskId = sciTransfer.TaskId
-        console.log(JSON.stringify(sciTransfer))
         sciTransfer.Form.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
         // First delete the Form from the SCI Transfer Form entry
         for (var s = 0; s < sciTransfer.Form.forms.length; s++) {
@@ -1244,7 +1241,6 @@ export default {
             sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: this.SCITransferId })
           }
           taskId = sciTransfer.TaskId
-          console.log(JSON.stringify(sciTransfer))
           sciTransfer.Form.GovRejectDate = 'Rejected On: ' + this.$moment().format('MM/DD/YYYY')
           sciTransfer.Form.GovRejectReason = this.govRejectReason
           // First delete the Form from the SCI Transfer Form entry
@@ -1784,9 +1780,14 @@ export default {
       immediate: true,
       async handler() {
         // do your stuff
-        await this.getForms()
-        if (this.$route.query.disscheck) {
-          this.cacTab = true
+        if (this.$route.query.sciTransfer) {
+          this.isSCITransfer = true
+          await this.getSCITransfer()
+        } else {
+          await this.getForms()
+          if (this.$route.query.disscheck) {
+            this.cacTab = true
+          }
         }
       }
     }
