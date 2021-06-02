@@ -670,7 +670,9 @@ export default {
         { text: 'Disposition-Transferred', value: 'Disposition-Transferred' },
         { text: 'Non-F3I2 CAC', value: 'Non-F3I2 CAC' },
         { text: 'Transfer Pending', value: 'Transfer Pending' },
-        { text: 'Renewal', value: 'Renewal' }
+        { text: 'Renewal', value: 'Renewal' },
+        { text: 'Revoked', value: 'Revoked' },
+        { text: 'Issuance Cancelled', value: 'Issuance Cancelled' }
       ],
       sciFormType: [
         { text: 'N/A', value: 'N/A' },
@@ -1656,6 +1658,16 @@ export default {
           vm.CAC.dissCheckTask = ''
         })
       }
+      if (tId) {
+        Todo.dispatch('getTodoById', tId).then(task => {
+          let payload = {
+            etag: task.__metadata.etag,
+            uri: task.__metadata.uri,
+            id: task.Id
+          }
+          Todo.dispatch('completeTodo', payload)
+        })
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -1728,16 +1740,6 @@ export default {
       vm.$store.dispatch('notification/add', notification, { root: true })
 
       this.lockSubmit = false
-      if (tId) {
-        Todo.dispatch('getTodoById', tId).then(async function(task) {
-          let payload = {
-            etag: task.__metadata.etag,
-            uri: task.__metadata.uri,
-            id: task.Id
-          }
-          Todo.dispatch('completeTodo', payload)
-        })
-      }
     },
     async viewForms(event) {
       event.preventDefault()
