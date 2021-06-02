@@ -1176,6 +1176,16 @@ export default {
                     d.CAC.dissCheckTask = ''
                   })
                 }
+                if (tId) {
+                  Todo.dispatch('getTodoById', tId).then(task => {
+                    let payload = {
+                      etag: task.__metadata.etag,
+                      uri: task.__metadata.uri,
+                      id: task.Id
+                    }
+                    Todo.dispatch('completeTodo', payload)
+                  })
+                }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
                 if (payload.NIPR) {
@@ -1253,16 +1263,6 @@ export default {
                     console.log('ERROR: ' + e)
                   })
                 this.lockSubmit = false
-                if (tId) {
-                  Todo.dispatch('getTodoById', tId).then(async function(task) {
-                    let payload = {
-                      etag: task.__metadata.etag,
-                      uri: task.__metadata.uri,
-                      id: task.Id
-                    }
-                    Todo.dispatch('completeTodo', payload)
-                  })
-                }
               },
               async viewForms(event) {
                 event.preventDefault()

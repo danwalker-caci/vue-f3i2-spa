@@ -1240,6 +1240,16 @@ export default {
           vm.CAC.dissCheckTask = ''
         })
       }
+      if (tId) {
+        Todo.dispatch('getTodoById', tId).then(task => {
+          let payload = {
+            etag: task.__metadata.etag,
+            uri: task.__metadata.uri,
+            id: task.Id
+          }
+          Todo.dispatch('completeTodo', payload)
+        })
+      }
       let payload = {}
       if (this.NIPR) {
         payload.NIPR = JSON.stringify(this.NIPR)
@@ -1312,17 +1322,6 @@ export default {
       vm.$store.dispatch('notification/add', notification, { root: true })
 
       this.lockSubmit = false
-      if (tId) {
-        console.log(tId)
-        Todo.dispatch('getTodoById', tId).then(async function(task) {
-          let payload = {
-            etag: task.__metadata.etag,
-            uri: task.__metadata.uri,
-            id: task.Id
-          }
-          Todo.dispatch('completeTodo', payload)
-        })
-      }
     },
     async viewForms(event) {
       event.preventDefault()
