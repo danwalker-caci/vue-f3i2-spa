@@ -1599,7 +1599,13 @@ export default {
         await this.asyncForEach(this.files, async file => {
           let payload = {}
           payload.library = vm.library
-          let pdfName = 'Completed-' + vm.PersonnelId + '-' + vm.FirstName + ' ' + vm.LastName + '-' + file.fileSelected
+          let pdfName = 'Completed-' + file.fileSelected
+          if (pdfName.length >= 260) {
+            let currentPDF = pdfName.split('.')
+            pdfName = pdfName.substring(0, 250)
+            pdfName += currentPDF[1]
+          }
+          if (console) console.log('NEW FORM NAME: ' + pdfName)
           let name = pdfName.split('.')[0]
           payload.file = pdfName
           payload.name = name
