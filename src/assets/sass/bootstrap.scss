@@ -84,6 +84,10 @@ $modal-sm:                          300px !default;
   height: calc(100vh - 50px);
 }
 
+.overflow-x-hidden {
+  overflow-x: hidden!important;
+}
+
 /* Override the search button in the ejs grid */
 .e-search-icon {
   color: #495057!important;

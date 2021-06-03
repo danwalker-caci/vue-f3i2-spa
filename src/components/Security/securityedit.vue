@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="contentHeight p-0 m-0 overflow-auto">
-    <b-row no-gutters class="h-100">
-      <div class="h-100 w-100 bg-light p-3" v-if="loaded">
+    <b-row no-gutters class="contentHeight">
+      <div class="w-100 h-100 bg-light p-3" v-if="loaded">
         <div v-if="isSCITransfer">
           <b-form-row>
             <b-col>

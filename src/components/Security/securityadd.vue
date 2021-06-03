@@ -7,7 +7,7 @@
     <!-- If user is SUBC, only load the related personnel to their company. 
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
-    <b-form class="bg-light w-100 h-100 p-0" @submit="onSubmit">
+    <b-form class="bg-light w-100 h-100 overflow-x-hidden" @submit="onSubmit">
       <b-row class="bg-light-blue formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
@@ -15,7 +15,7 @@
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <div class="p-4">
+      <div class="p-3">
         <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
         <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
         <p class="font-weight-bolder h4 text-danger">
