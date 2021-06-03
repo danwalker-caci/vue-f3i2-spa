@@ -1356,6 +1356,15 @@ export default {
                     })
                     // Need to clear out original forms
                     d[this.selectedSecurityFormType].forms = []
+                  } else {
+                    var date = new Date()
+                    // Create the Security Form Type for upload
+                    d[this.selectedSecurityFormType] = {
+                      GovSentDate: 'N/A',
+                      GovCompleteDate: date.getUTCMonth() + 1 + '/' + date.getUTCDate() + '/' + date.getUTCFullYear(),
+                      GovRejectDate: '',
+                      forms: []
+                    }
                   }
                   // Clear original form
                   switch (this.selectedSecurityFormType) {

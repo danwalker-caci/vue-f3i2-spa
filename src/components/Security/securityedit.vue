@@ -1565,6 +1565,15 @@ export default {
             })
           })
           this[this.selectedSecurityFormType].forms = []
+        } else {
+          var date = new Date()
+          // Create the Security Form Type for upload
+          this[this.selectedSecurityFormType] = {
+            GovSentDate: 'N/A',
+            GovCompleteDate: date.getUTCMonth() + 1 + '/' + date.getUTCDate() + '/' + date.getUTCFullYear(),
+            GovRejectDate: '',
+            forms: []
+          }
         }
         // Clear original form
         this[this.selectedSecurityFormType].forms = []
@@ -1736,7 +1745,6 @@ export default {
         push: true
       }
       vm.$store.dispatch('notification/add', notification, { root: true })
-
       this.lockSubmit = false
     },
     async viewForms(event) {

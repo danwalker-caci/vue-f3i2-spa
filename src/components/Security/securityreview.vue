@@ -1,7 +1,7 @@
 <template>
   <!-- Add Form where users can download master docs and upload the changed docs. -->
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <b-form class="bg-light w-100 h-100">
+    <b-form class="bg-light w-100 overflow-x-hidden">
       <b-row class="bg-light-blue formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
@@ -49,7 +49,7 @@
         </b-form-row>
         <!-- don't load until everything else has come in -->
         <!-- Loop through the type of account and each of the forms. -->
-        <div v-if="loaded && securityForms.forms.length > 0">
+        <div v-if="loaded && securityForms.forms && securityForms.forms.length > 0">
           <div v-for="form in securityForms.forms" :key="form.id">
             <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === '' && securityForms.GovRejectDate === ''">
               <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
@@ -73,6 +73,9 @@
               <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
             </b-form-row>
           </div>
+        </div>
+        <div v-else-if="!securityForms.forms">
+          <h4 class="pt-3 text-center">No Forms Uploaded</h4>
         </div>
         <!-- Add a Notify Government button -->
         <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1 float-right" @click="NotifyGov">Notify Government</b-button>
@@ -192,7 +195,9 @@ export default {
             vm.taskId = results.TaskId
             // Format the Created column using moment
             vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-            vm.totalForms = vm.securityForms.forms.length
+            if (vm.securityForms.forms) {
+              vm.totalForms = vm.securityForms.forms.length
+            }
             // need to check the response for the direct url to the document
             vm.loaded = true
           })
@@ -243,7 +248,9 @@ export default {
             vm.taskId = vm.securityForms.task
             // Format the Created column using moment
             vm.submittedDate = moment(results.Created).format('MM-DD-YYYY')
-            vm.totalForms = vm.securityForms.forms.length
+            if (vm.securityForms.forms) {
+              vm.totalForms = vm.securityForms.forms.length
+            }
             // need to check the response for the direct url to the document
             vm.loaded = true
           })
