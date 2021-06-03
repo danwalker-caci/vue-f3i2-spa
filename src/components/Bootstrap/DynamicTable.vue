@@ -370,7 +370,7 @@ export default {
           case 'date':
             switch (field.dateformat) {
               case 'date-time':
-                ret = new Date(item[field.field]).toLocaleTimeString()
+                ret = new Date(item[field.field]).toLocaleString()()
             }
             break
         }
