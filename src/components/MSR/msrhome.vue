@@ -11,22 +11,22 @@
     </b-toast> -->
     <b-row ref="MainRow" class="contentHeight">
       <b-col cols="12">
-        <b-overlay :show="msrs.length == 0" :variant="overlayVariant" z-index="3000">
-          <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" :height="rect.height - 80" :width="rect.width - 5" :actionComplete="actionComplete">
+        <b-overlay class="w-100" :show="msrs.length == 0" :variant="overlayVariant" z-index="3000">
+          <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" :height="rect.height - 80" width="100%" :actionComplete="actionComplete">
             <e-columns>
-              <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
-              <e-column field="WPMReview" headerText="WPM Review" textAlign width="100"></e-column>
-              <e-column field="QAReview" headerText="QA Review" textAlign width="100"></e-column>
-              <e-column field="PCAReview" headerText="PCA Review" textAlign width="100"></e-column>
-              <e-column field="WorkplanNumber" headerText="Work Plan Number" width="100"></e-column>
-              <e-column field="WorkplanTitle" headerText="Work Plan Title" textAlign="Left" width="200"></e-column>
-              <e-column field="Status" headerText="Status" width="100"></e-column>
-              <e-column field="Month" headerText="Month" textAlign="Left" width="50"></e-column>
-              <e-column field="Year" headerText="Year" textAlign="Left" width="50"></e-column>
-              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-              <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
-              <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-              <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column headerText="Actions" textAlign="Left" minWidth="300" :template="ActionsTemplate"></e-column>
+              <e-column field="WPMReview" headerText="WPM Review" textAlign minWidth="100"></e-column>
+              <e-column field="QAReview" headerText="QA Review" textAlign minWidth="100"></e-column>
+              <e-column field="PCAReview" headerText="PCA Review" textAlign minWidth="100"></e-column>
+              <e-column field="WorkplanNumber" headerText="Work Plan Number" minWidth="100"></e-column>
+              <e-column field="WorkplanTitle" headerText="Work Plan Title" textAlign="Left" minWidth="200"></e-column>
+              <e-column field="Status" headerText="Status" minWidth="100"></e-column>
+              <e-column field="Month" headerText="Month" textAlign="Left" minWidth="50"></e-column>
+              <e-column field="Year" headerText="Year" textAlign="Left" minWidth="50"></e-column>
+              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
+              <e-column field="ManagerEmail" :visible="false" textAlign="Left" minWidth="40"></e-column>
+              <e-column field="uri" :visible="false" textAlign="Left" minWidth="40"></e-column>
+              <e-column field="etag" :visible="false" textAlign="Left" minWidth="40"></e-column>
             </e-columns>
           </ejs-grid>
           <template #overlay>

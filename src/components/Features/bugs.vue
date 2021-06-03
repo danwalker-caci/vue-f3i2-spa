@@ -110,7 +110,7 @@
               </b-button>
             </b-row>
             <b-row no-gutters class="gridrow">
-              <b-overlay :show="filteredbugs.length == 0" :variant="overlayVariant" z-index="3000">
+              <b-overlay class="w-100" :show="filteredbugs.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
                   id="BugGrid"
                   ref="BugGrid"
@@ -129,16 +129,16 @@
                   :detailTemplate="detailTemplate"
                   rowHeight="20"
                   :height="rect.height - 175"
-                  :width="rect.width - 5"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-                    <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
-                    <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
-                    <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
-                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
-                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Priority" headerText="Priority" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Status" headerText="Status" textAlign="Left" minWidth="180"></e-column>
+                    <e-column field="Effort" headerText="Effort" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" minWidth="200"></e-column>
                   </e-columns>
                 </ejs-grid>
                 <template #overlay>

@@ -189,7 +189,7 @@
               </b-button>
             </b-row>
             <b-row no-gutters class="gridrow">
-              <b-overlay :show="filteredpersonnel.length == 0" :variant="overlayVariant" z-index="3000">
+              <b-overlay class="w-100" :show="filteredpersonnel.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
                   id="PersonnelGrid"
                   ref="PersonnelGrid"
@@ -208,24 +208,24 @@
                   :detailTemplate="detailTemplate"
                   rowHeight="20"
                   :height="rect.height - 175"
-                  :width="rect.width - 5"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column field="LastName" headerText="Last" textAlign="Left" width="100"></e-column>
-                    <e-column field="FirstName" headerText="First" width="100"></e-column>
-                    <e-column field="Middle" headerText="Middle" textAlign="Left" width="100"></e-column>
-                    <e-column field="Cadency" headerText="Cadency" textAlign="Left" width="100"></e-column>
-                    <e-column field="Position" headerText="Position" textAlign="Left" width="180"></e-column>
-                    <e-column field="Location" headerText="Location" textAlign="Left" width="150"></e-column>
-                    <e-column field="Email" headerText="Email" textAlign="Left" width="300"></e-column>
-                    <e-column field="Phone" headerText="Phone" textAlign="Left" width="100"></e-column>
-                    <e-column field="Company" headerText="Company" textAlign="Left" width="250"></e-column>
-                    <e-column field="SubET" headerText="Sub ET" textAlign="Left" width="100"></e-column>
-                    <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" width="70"></e-column>
-                    <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" width="70"></e-column>
-                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-                    <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" width="40"></e-column>
-                    <e-column field="WPMReview" headerText="WPMReview" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="LastName" headerText="Last" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="FirstName" headerText="First" minWidth="100"></e-column>
+                    <e-column field="Middle" headerText="Middle" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Cadency" headerText="Cadency" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Position" headerText="Position" textAlign="Left" minWidth="180"></e-column>
+                    <e-column field="Location" headerText="Location" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Email" headerText="Email" textAlign="Left" minWidth="300"></e-column>
+                    <e-column field="Phone" headerText="Phone" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Company" headerText="Company" textAlign="Left" minWidth="250"></e-column>
+                    <e-column field="SubET" headerText="Sub ET" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Contact" headerText="Contact" :visible="false" textAlign="Left" minWidth="70"></e-column>
+                    <e-column field="Active" headerText="Active" :visible="false" textAlign="Left" minWidth="70"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
+                    <e-column field="WPData" headerText="WPData" :visible="false" textAlign="Left" minWidth="40"></e-column>
+                    <e-column field="WPMReview" headerText="WPMReview" :visible="false" textAlign="Left" minWidth="40"></e-column>
                   </e-columns>
                 </ejs-grid>
                 <template #overlay>
