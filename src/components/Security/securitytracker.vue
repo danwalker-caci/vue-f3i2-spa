@@ -5,7 +5,7 @@
         <b-container fluid class="contentHeight m-0 p-0">
           <b-form @submit="onSubmit">
             <b-row no-gutters class="gridrow">
-              <b-overlay :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
+              <b-overlay class="w-100" :show="securityforms.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
                   id="SecurityGrid"
                   ref="SecurityGrid"
@@ -25,7 +25,7 @@
                   :detailTemplate="detailTemplate"
                   rowHeight="20"
                   :height="rect.height - 121"
-                  :width="rect.width - 1"
+                  width="100%"
                 >
                   <e-columns>
                     <e-column field="LastName" headerText="Last Name" minWidth="50" textAlign="Left"></e-column>

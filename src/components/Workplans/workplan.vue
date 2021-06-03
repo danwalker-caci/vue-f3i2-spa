@@ -180,7 +180,7 @@
                   </e-columns>
                 </ejs-grid>
               </b-row>
-              <b-row no-gutters class="gridrow" v-if="!isPM && !loadingData">
+              <b-row no-gutters class="gridrow w-100" v-if="!isPM && !loadingData">
                 <ejs-grid
                   id="WorkplanGrid"
                   ref="WorkplanGrid"
@@ -200,26 +200,26 @@
                   :actionComplete="actionComplete"
                   rowHeight="20"
                   :height="rect.height - 175"
-                  :width="rect.width - 5"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                    <e-column field="Number" headerText="Number" width="100"></e-column>
+                    <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
-                    <e-column field="Revision" headerText="Revision" textAlign="Left" width="100"></e-column>
-                    <e-column field="Increment" headerText="Increment" textAlign="Left" width="50"></e-column>
-                    <e-column field="DateApproved" headerText="Cover Page Date" format="M/d/y" textAlign="Left" width="150"></e-column>
+                    <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Increment" headerText="Increment" textAlign="Left" minWidth="50"></e-column>
+                    <e-column field="DateApproved" headerText="Cover Page Date" format="M/d/y" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Active" headerText="Active" textAlign="Left" minWidth="175"></e-column>
-                    <e-column field="Status" headerText="Status" width="125"></e-column>
-                    <e-column field="CACISubmittedDate" type="date" format="M/d/y" headerText="Submitted Date" textAlign="Left" width="150"></e-column>
-                    <e-column field="POPStart" headerText="POP Start" format="M/y" textAlign="Left" width="150"></e-column>
-                    <e-column field="POPEnd" headerText="POP End" format="M/y" textAlign="Left" width="150"></e-column>
-                    <e-column field="Manager" headerText="Manager" textAlign="Left" width="200"></e-column>
-                    <e-column field="Comments" headerText="Comments" textAlign="Left" width="200"></e-column>
-                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-                    <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
-                    <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-                    <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+                    <e-column field="Status" headerText="Status" minWidth="125"></e-column>
+                    <e-column field="CACISubmittedDate" type="date" format="M/d/y" headerText="Submitted Date" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="POPStart" headerText="POP Start" format="M/y" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="POPEnd" headerText="POP End" format="M/y" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Manager" headerText="Manager" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
+                    <e-column field="ManagerEmail" :visible="false" textAlign="Left" minWidth="40"></e-column>
+                    <e-column field="uri" :visible="false" textAlign="Left" minWidth="40"></e-column>
+                    <e-column field="etag" :visible="false" textAlign="Left" minWidth="40"></e-column>
                   </e-columns>
                 </ejs-grid>
               </b-row>

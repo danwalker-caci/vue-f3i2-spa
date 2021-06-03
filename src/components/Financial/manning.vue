@@ -74,7 +74,7 @@
           </b-row> -->
           <b-form @submit="onSubmit">
             <b-row no-gutters class="gridrow">
-              <b-overlay :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
+              <b-overlay class="w-100" :show="filtereddata.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
                   id="ManningGrid"
                   ref="ManningGrid"
@@ -91,18 +91,18 @@
                   :actionComplete="actionComplete"
                   rowHeight="20"
                   :height="rect.height - 120"
-                  :width="rect.width - 1"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-                    <e-column field="Title" :visible="false" headerText="Title" textAlign="Left" width="300"></e-column>
-                    <e-column field="Number" :visible="false" headerText="Number" width="100"></e-column>
-                    <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minWidth="50" :edit="MEParams"></e-column>
+                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Title" :visible="false" headerText="Title" textAlign="Left" minWidth="300"></e-column>
+                    <e-column field="Number" :visible="false" headerText="Number" minWidth="100"></e-column>
+                    <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minminWidth="50" :edit="MEParams"></e-column>
                     <e-column field="SubEffort" headerText="Sub Effort" minWidth="75" :edit="SEParams"></e-column>
                     <e-column field="EmployeeID" headerText="EmployeeID" minWidth="50"></e-column>
-                    <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" width="100"></e-column>
-                    <e-column field="First" :allowEditing="false" headerText="First" width="100"></e-column>
-                    <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" width="100"></e-column>
+                    <e-column field="Last" :allowEditing="false" headerText="Last" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="First" :allowEditing="false" headerText="First" minWidth="100"></e-column>
+                    <e-column field="Middle" :allowEditing="false" headerText="Middle" textAlign="Left" minWidth="100"></e-column>
                     <e-column field="FunctionalManager" headerText="Func. Manager" textAlign="Left" minWidth="75"></e-column>
                     <e-column field="FullBurdenedCost" headerText="Monthly Full Burdened Cost" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Location" :allowEditing="false" headerText="Location" textAlign="Left" minWidth="50"></e-column>
@@ -111,7 +111,7 @@
                     <e-column field="PercentSupport" headerText="Percent Support" textAlign="Left" minWidth="50" :edit="PSParams"></e-column>
                     <e-column field="StartDate" :allowEditing="false" headerText="Start Date" textAlign="Left" minWidth="40" type="date" format="yMd"></e-column>
                     <e-column field="EndDate" :allowEditing="false" headerText="End Date" textAlign="Left" minWidth="40" type="date" format="yMd"></e-column>
-                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+                    <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
                   </e-columns>
                 </ejs-grid>
                 <template #overlay>

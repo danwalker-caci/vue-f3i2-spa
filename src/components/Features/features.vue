@@ -124,7 +124,7 @@
               </b-button>
             </b-row>
             <b-row no-gutters class="gridrow">
-              <b-overlay :show="filteredfeatures.length == 0" :variant="overlayVariant" z-index="3000">
+              <b-overlay class="w-100" :show="filteredfeatures.length == 0" :variant="overlayVariant" z-index="3000">
                 <ejs-grid
                   id="FeatureGrid"
                   ref="FeatureGrid"
@@ -143,21 +143,21 @@
                   :detailTemplate="detailTemplate"
                   rowHeight="20"
                   :height="rect.height - 175"
-                  :width="rect.width - 5"
+                  width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Your Rating" textAlign="Left" width="150" :template="RatingsTemplate"></e-column>
-                    <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-                    <e-column field="Product" headerText="Product" width="100"></e-column>
-                    <e-column field="Category" headerText="Category" width="100"></e-column>
-                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-                    <e-column field="Priority" headerText="Priority" textAlign="Left" width="100"></e-column>
-                    <e-column field="Status" headerText="Status" textAlign="Left" width="180"></e-column>
-                    <e-column field="Effort" headerText="Effort" textAlign="Left" width="150"></e-column>
-                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" width="150"></e-column>
-                    <e-column field="Rating" headerText="Rating" textAlign="Left" width="150" :template="CombinedRatingsTemplate"></e-column>
-                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" width="200"></e-column>
-                    <e-column field="RatingData" :visible="false" headerText="Rating Data" width="110"></e-column>
+                    <e-column headerText="Your Rating" textAlign="Left" minWidth="150" :template="RatingsTemplate"></e-column>
+                    <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="Product" headerText="Product" minWidth="100"></e-column>
+                    <e-column field="Category" headerText="Category" minWidth="100"></e-column>
+                    <e-column field="DueDate" headerText="Due Date" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Priority" headerText="Priority" textAlign="Left" minWidth="100"></e-column>
+                    <e-column field="Status" headerText="Status" textAlign="Left" minWidth="180"></e-column>
+                    <e-column field="Effort" headerText="Effort" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="PercentComplete" headerText="% Complete" textAlign="Left" minWidth="150"></e-column>
+                    <e-column field="Rating" headerText="Rating" textAlign="Left" minWidth="150" :template="CombinedRatingsTemplate"></e-column>
+                    <e-column field="AssignedTo" headerText="Assigned To" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="RatingData" :visible="false" headerText="Rating Data" minWidth="110"></e-column>
                   </e-columns>
                 </ejs-grid>
                 <template #overlay>
