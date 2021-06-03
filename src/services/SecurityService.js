@@ -12,6 +12,7 @@ let relurl = SPCI.webServerRelativeUrl
 let formurlstart = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('"
 let formurlend = "')/RootFolder/Files/Add"
 let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('Security')/items"
+let securityscitransferurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('SecuritySCITransfers')/items"
 let sendemailurl = SPCI.webServerRelativeUrl + '/_api/SP.Utilities.Utility.SendEmail'
 let securitygroupurl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('$GROUP')/users"
 //let securityformurl = SPCI.webServerRelativeUrl + "/_api/Web/Lists/getbytitle('TestSecurityForms')/items"
@@ -119,7 +120,7 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  addSecurityForm(payload, digest) {
+  async addSecurityForm(payload, digest) {
     let endpoint = securityformurl
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
@@ -173,6 +174,7 @@ export default {
     itemprops.PRDueDate = payload.PRDueDate
     itemprops.CEDueDate = payload.CEDueDate
     itemprops.SCIIndoc = payload.SCIIndoc
+    itemprops.SCITransferId = payload.SCITransferId
     itemprops.taskId = payload.taskId
     return axios
       .post(endpoint, itemprops, config)
@@ -189,7 +191,8 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  updateSecurityForm(payload, digest) {
+  async updateSecurityForm(payload, digest) {
+    console.log('UPDATING SECURITY INFORMATION: ' + JSON.stringify(payload))
     let endpoint = payload.uri
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
@@ -227,6 +230,7 @@ export default {
       SCIFormType: payload.SCIFormType,
       SCIFormSubmitted: payload.SCIFormSubmitted,
       SCIIndoc: payload.SCIIndoc,
+      SCITransferId: payload.SCITransferId,
       taskId: payload.taskId
     }
     if (payload.DISSCheck !== undefined || payload.DISSCheck !== null) {
@@ -439,5 +443,88 @@ export default {
         }
         store.dispatch('notification/add', notification, { root: true })
       })
+  },
+  /**
+   * SECURITY SCI TRANSFER CRUD AREA
+   */
+  async getSecuritySCITransfer(payload) {
+    console.log(payload)
+    let url = securityscitransferurl + '?$filter=(Id eq ' + payload.Id + ')'
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    }).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Getting Security SCI Transfer Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response.data.d.results
+  },
+  async addSecuritySCITransfer(payload, digest) {
+    let endpoint = securityscitransferurl
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'POST',
+      'If-Match': '*'
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.SecuritySCITransfersListItem' },
+      Title: payload.Title,
+      Form: payload.Form,
+      Persons: payload.Persons,
+      TaskId: payload.TaskId
+    }
+    const response = await axios.post(endpoint, itemprops, config).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Approving Security Form Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response
+  },
+  async updateSecuritySCITransfer(payload, digest) {
+    let endpoint = payload.uri
+    let headers = {
+      'Content-Type': 'application/json;odata=verbose',
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest,
+      'X-HTTP-Method': 'MERGE',
+      'If-Match': payload.etag
+    }
+    let config = {
+      headers: headers
+    }
+    let itemprops = {
+      __metadata: { type: 'SP.Data.SecuritySCITransfersListItem' },
+      Title: payload.Title,
+      Form: payload.Form,
+      Persons: payload.Persons,
+      TaskId: payload.TaskId
+    }
+    const response = await axios.post(endpoint, itemprops, config).catch(function(error) {
+      const notification = {
+        type: 'danger',
+        title: 'Security Service Error: ' + error,
+        message: 'Error Updating Security SCI Transfer Form Data',
+        push: true
+      }
+      store.dispatch('notification/add', notification, { root: true })
+    })
+    return response
   }
 }

@@ -7,230 +7,262 @@
     <!-- If user is SUBC, only load the related personnel to their company. 
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
-    <div id="form" class="col-12 p-4">
-      <b-row class="bg-dark formheader">
-        <b-col cols="4" class="p-0 text-left"></b-col>
-        <b-col cols="4" class="p-0 text-center font-weight-bold">
-          <h3 class="text-white">{{ formTitle }}</h3>
-        </b-col>
-        <b-col cols="4" class="p-0 text-right"></b-col>
-      </b-row>
-      <b-card no-body class="p-3">
-        <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
-        <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
-        <p class="font-weight-bolder h4 text-danger">
-          <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine. Please limit the form names to 64 character length.</em>
-        </p>
-        <div v-show="formAccount">
-          <p class="h5">***Only for individuals sitting in AFRL***</p>
-          <p class="h5">Please complete the DD2875 Form through Box 12</p>
-          <p class="h5">All forms must be signed by a CAC.</p>
-        </div>
-        <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
-        <div v-show="formSCI">
-          <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted.</p>
-          <ul>
-            <li>
-              <p class="h5">
-                Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
-              </p>
-            </li>
-            <li>
-              <p class="h5">If an individual(s) is not read in to an AFRL contract(s), a nomination form with a prescreen is required. Individual must have a final TS clearance. Complete cells 1,2,4,6,11,12,13, 14 and 15. The SMO listed in box 11 must be a level 2 or 3. <strong>DO NOT sign these forms.</strong></p>
-            </li>
-          </ul>
-        </div>
-        <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-          <p class="h6">
-            Security has been notified that you will be working on the F3I-2 contract and your position requires you to have a TS clearance and be indoctrinated for SCI accesses. In order to process your clearance and access for this effort the customer has requested a completed SCI pre-screening questionnaire. The SCI pre-screening interview is
-            used to bring a previous investigation up-to-date when there is no current investigative information available.
-          </p>
-          <p class="h6">
-            Page 1: Fill in Last name, First Name, MI, SSN, DOB and POB only. Grade, AFSC, and Unit are not needed.
-          </p>
-          <p class="h6">
-            Page 2: Sign in SCI nominee box and <strong><em>NOT</em></strong> in the <mark><strong>Recertification at time of Indoctrination</strong></mark> section at this time.
-          </p>
-          <p class="h6">
-            Page 3: Be sure to initial and date along the top. Ensure all questions are answered. For questions with yes answers (with the exception of question 5) please provide a full narrative explanation on the next page. Answer no to question 5 if you attended counseling for marital, family, grief, victim of sexual assault, or PTSD.
-          </p>
-        </div>
-        <b-form-row>
-          <b-col cols="6">
-            <b-form-group label="Company: " label-for="formCompany">
-              <!-- Need to load personnel dropdown after making selection of company -->
-              <div v-if="!isSubcontractor">
-                <b-form-select id="formCompany" v-model="form.Company" @change="getPersonnelByCompany" :options="companies" required></b-form-select>
-                <b-form-invalid-feedback>
-                  Select a Company.
-                </b-form-invalid-feedback>
-              </div>
-              <div v-if="isSubcontractor">
-                <b-form-input id="formCompany" v-model="form.Company" value="{{ form.Company }}" disabled></b-form-input>
-                <b-form-invalid-feedback>
-                  Please use your current Company.
-                </b-form-invalid-feedback>
-              </div>
-            </b-form-group>
-            <b-form-group v-if="isSecurity && formAccount" label="Historical Data: " label-for="formHistorical">
-              <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
-            </b-form-group>
+    <b-form @submit="onSubmit">
+      <div id="form" class="col-12 p-4">
+        <b-row class="bg-dark formheader">
+          <b-col cols="4" class="p-0 text-left"></b-col>
+          <b-col cols="4" class="p-0 text-center font-weight-bold">
+            <h3 class="text-white">{{ formTitle }}</h3>
           </b-col>
-          <b-col cols="6">
-            <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
-            <b-form-group label="Type: " label-for="formType">
-              <div v-if="formAccount">
-                <b-form-select id="formType" v-model="form.Type" :options="accountOptions" :state="ValidateMe('Type')" required></b-form-select>
-                <b-form-invalid-feedback>
-                  Select an Account Type.
-                </b-form-invalid-feedback>
-              </div>
-              <div v-if="formCAC || formSCI">
-                <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
-              </div>
-              <div v-if="formSCI">
-                <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
-                <b-form-invalid-feedback>
-                  Select an SCI Option.
-                </b-form-invalid-feedback>
-              </div>
-            </b-form-group>
-            <p v-show="form.Type == 'JWICS'" class="h5">***For all individuals on F3I-2***</p>
-            <div id="masterDocs" v-show="this.form.Type !== 'Select...'">
-              <p>Download Form Templates</p>
-              <ul>
-                <li v-show="form.Type == 'NIPR'">
-                  <a :href="this.masterDocs + '/DD2875-NIPRNet.pdf'">DD2875</a>
-                </li>
-                <li v-show="form.Type == 'NIPR'">
-                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
-                </li>
-                <li v-show="form.Type == 'SIPR'">
-                  <a :href="this.masterDocs + '/DD2875-SIPRNet.pdf'">DD2875</a>
-                </li>
-                <li v-show="form.Type == 'SIPR'">
-                  <a :href="this.masterDocs + '/SIPREssentialsSign.pdf'">SIPR Essentials</a>
-                </li>
-                <li v-show="form.Type == 'SIPR'">
-                  <a :href="this.masterDocs + '/SIPRTraining.pdf'">SIPR Training</a>
-                </li>
-                <li v-show="form.Type == 'DREN'">
-                  <a :href="this.masterDocs + '/DD2875-DREN.pdf'">DD2875</a>
-                </li>
-                <li v-show="form.Type == 'JWICS'">
-                  <a :href="this.masterDocs + '/DD2875-JWICS.pdf'">DD2875</a>
-                </li>
-                <li v-show="form.Type == 'JWICS'">
-                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
-                </li>
-                <li v-show="form.Type == 'JWICS' || form.Type == 'NIPR'">
-                  <a href="https://public.cyber.mil/training/cyber-awareness-challenge/" target="_blank">Cyber Awareness Challenge</a>
-                </li>
-                <li v-show="form.Type == 'CAC'">
-                  <a :href="this.masterDocs + '/TASS-Form.pdf'">TASS Form</a>
-                </li>
-                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-                  <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
-                </li>
-                <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
-                  <a :href="this.masterDocs + '/SCIContractTransferForm-BlanktoF3I2.pdf'">SCI Contract Transfer Form</a>
-                </li>
-                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-                  <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form</a>
-                </li>
-                <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
-                  <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
-                </li>
-              </ul>
-            </div>
-          </b-col>
-        </b-form-row>
-        <b-form-row>
-          <b-col cols="6">
-            <b-form-group>
-              <b-form-group label="Form submission is for another Person: " label-for="formSetName">
-                <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
+          <b-col cols="4" class="p-0 text-right"></b-col>
+        </b-row>
+        <b-card no-body class="p-3">
+          <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
+          <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
+          <p class="font-weight-bolder h4 text-danger">
+            <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine. Please limit the form names to 64 character length.</em>
+          </p>
+          <div v-show="formAccount">
+            <p class="h5">***Only for individuals sitting in AFRL***</p>
+            <p class="h5">Please complete the DD2875 Form through Box 12</p>
+            <p class="h5">All forms must be signed by a CAC.</p>
+          </div>
+          <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
+          <div v-show="formSCI">
+            <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted.</p>
+            <ul>
+              <li>
+                <p class="h5">
+                  Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
+                </p>
+              </li>
+              <li>
+                <p class="h5">If an individual(s) is not read in to an AFRL contract(s), a nomination form with a prescreen is required. Individual must have a final TS clearance. Complete cells 1,2,4,6,11,12,13, 14 and 15. The SMO listed in box 11 must be a level 2 or 3. <strong>DO NOT sign these forms.</strong></p>
+              </li>
+            </ul>
+          </div>
+          <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+            <p class="h6">
+              Security has been notified that you will be working on the F3I-2 contract and your position requires you to have a TS clearance and be indoctrinated for SCI accesses. In order to process your clearance and access for this effort the customer has requested a completed SCI pre-screening questionnaire. The SCI pre-screening interview is
+              used to bring a previous investigation up-to-date when there is no current investigative information available.
+            </p>
+            <p class="h6">
+              Page 1: Fill in Last name, First Name, MI, SSN, DOB and POB only. Grade, AFSC, and Unit are not needed.
+            </p>
+            <p class="h6">
+              Page 2: Sign in SCI nominee box and <strong><em>NOT</em></strong> in the <mark><strong>Recertification at time of Indoctrination</strong></mark> section at this time.
+            </p>
+            <p class="h6">
+              Page 3: Be sure to initial and date along the top. Ensure all questions are answered. For questions with yes answers (with the exception of question 5) please provide a full narrative explanation on the next page. Answer no to question 5 if you attended counseling for marital, family, grief, victim of sexual assault, or PTSD.
+            </p>
+          </div>
+          <b-form-row>
+            <b-col cols="6">
+              <b-form-group label="Company: " label-for="formCompany">
+                <!-- Need to load personnel dropdown after making selection of company -->
+                <div v-if="!isSubcontractor">
+                  <b-form-select id="formCompany" v-model="form.Company" @change="getPersonnelByCompany" :options="companies" required></b-form-select>
+                  <b-form-invalid-feedback>
+                    Select a Company.
+                  </b-form-invalid-feedback>
+                </div>
+                <div v-if="isSubcontractor">
+                  <b-form-input id="formCompany" v-model="form.Company" value="{{ form.Company }}" disabled></b-form-input>
+                  <b-form-invalid-feedback>
+                    Please use your current Company.
+                  </b-form-invalid-feedback>
+                </div>
               </b-form-group>
-            </b-form-group>
-          </b-col>
-          <b-col cols="6">
-            <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
-            <div v-if="form.setName === 'Yes'">
-              <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
-                <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                  <b-dropdown-form v-on:submit.native.prevent>
-                    <b-input-group>
-                      <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" v-on:submit.native.prevent @keyup.native="filtering"></b-form-input>
-                      <b-input-group-append>
-                        <b-button variant="primary" v-on:submit.native.prevent @click="searchFiltering($event)">Search</b-button>
-                      </b-input-group-append>
-                    </b-input-group>
-                  </b-dropdown-form>
-                  <b-dropdown-divider></b-dropdown-divider>
-                  <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
-                </b-dropdown>
-                <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
-                <b-form-invalid-feedback>
-                  Select a Person
-                </b-form-invalid-feedback>
+              <b-form-group v-if="isSecurity && formAccount" label="Historical Data: " label-for="formHistorical">
+                <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
               </b-form-group>
-            </div>
-            <div v-if="form.setName === 'No'">
-              <b-form-group label="Your Name: " label-for="formPerson">
-                <b-form-input id="formName" v-model="form.Name" disabled />
+            </b-col>
+            <b-col cols="6">
+              <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
+              <b-form-group label="Type: " label-for="formType">
+                <div v-if="formAccount">
+                  <b-form-select id="formType" v-model="form.Type" :options="accountOptions" :state="ValidateMe('Type')" required></b-form-select>
+                  <b-form-invalid-feedback>
+                    Select an Account Type.
+                  </b-form-invalid-feedback>
+                </div>
+                <div v-if="formCAC || formSCI">
+                  <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
+                </div>
+                <!-- if the formSCI === 'Transfer', add a checkbox to denote it is for multiple people. If that checkbox is set to true then show three personnel selections which are added to an array. JSON stringify the array and add to SecuritySCITransfer -->
+                <div v-if="formSCI">
+                  <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
+                  <b-form-invalid-feedback>
+                    Select an SCI Option.
+                  </b-form-invalid-feedback>
+                </div>
               </b-form-group>
-            </div>
-          </b-col>
-        </b-form-row>
-        <div v-if="formCAC" class="m-1 p-1">
-          <b-form-row v-if="formCAC">
-            <!-- list a series of questions for the user to fill out -->
-            <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
-              <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
-            </b-form-group>
+              <p v-show="form.Type == 'JWICS'" class="h5">***For all individuals on F3I-2***</p>
+              <div id="masterDocs" v-show="this.form.Type !== 'Select...'">
+                <p>Download Form Templates</p>
+                <ul>
+                  <li v-show="form.Type == 'NIPR'">
+                    <a :href="this.masterDocs + '/DD2875-NIPRNet.pdf'">DD2875</a>
+                  </li>
+                  <li v-show="form.Type == 'NIPR'">
+                    <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
+                  </li>
+                  <li v-show="form.Type == 'SIPR'">
+                    <a :href="this.masterDocs + '/DD2875-SIPRNet.pdf'">DD2875</a>
+                  </li>
+                  <li v-show="form.Type == 'SIPR'">
+                    <a :href="this.masterDocs + '/SIPREssentialsSign.pdf'">SIPR Essentials</a>
+                  </li>
+                  <li v-show="form.Type == 'SIPR'">
+                    <a :href="this.masterDocs + '/SIPRTraining.pdf'">SIPR Training</a>
+                  </li>
+                  <li v-show="form.Type == 'DREN'">
+                    <a :href="this.masterDocs + '/DD2875-DREN.pdf'">DD2875</a>
+                  </li>
+                  <li v-show="form.Type == 'JWICS'">
+                    <a :href="this.masterDocs + '/DD2875-JWICS.pdf'">DD2875</a>
+                  </li>
+                  <li v-show="form.Type == 'JWICS'">
+                    <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
+                  </li>
+                  <li v-show="form.Type == 'JWICS' || form.Type == 'NIPR'">
+                    <a href="https://public.cyber.mil/training/cyber-awareness-challenge/" target="_blank">Cyber Awareness Challenge</a>
+                  </li>
+                  <li v-show="form.Type == 'CAC'">
+                    <a :href="this.masterDocs + '/TASS-Form.pdf'">TASS Form</a>
+                  </li>
+                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+                    <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
+                  </li>
+                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
+                    <a :href="this.masterDocs + '/SCIContractTransferForm-BlanktoF3I2.pdf'">SCI Contract Transfer Form</a>
+                  </li>
+                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+                    <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form</a>
+                  </li>
+                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
+                    <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
+                  </li>
+                </ul>
+              </div>
+            </b-col>
           </b-form-row>
-          <b-form-row v-if="form.CACValid === 'Yes'">
-            <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
-              <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-            </b-form-group>
+          <b-form-row>
+            <b-col cols="6" v-show="form.SCIType === 'Transfer'">
+              <b-form-group label="Multiple Persons in SCI Transfer? " label-for="sciTransferMP">
+                <b-form-checkbox v-model="sciTransferMP" value="Yes" unchecked-value="No" ref="sciTransferMP" id="sciTransferMP" @input="loadSCITransferFilteredData" switch></b-form-checkbox>
+              </b-form-group>
+            </b-col>
+            <b-col cols="6" v-show="sciTransferMP === 'Yes'">
+              <!-- add a filtering system here -->
+              <b-input-group v-on:submit.native.prevent>
+                <b-form-input id="sciTransferMPFilter" v-on:submit.native.prevent v-model="sciTransferFilterInput" placeholder="Search" type="text" @keyup.native="sciTransferFiltering"></b-form-input>
+                <b-input-group-append>
+                  <b-button variant="primary" v-on:submit.native.prevent @click="sciTransferSearchFiltering($event)">Search</b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-col>
           </b-form-row>
-          <b-form-row v-if="form.CACValid === 'Yes'">
-            <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
-              <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
-            </b-form-group>
+          <b-form-row>
+            <b-col cols="12" v-show="sciTransferMP === 'Yes'">
+              <!-- One idea is to have a component that would allow for the user to click add person and a new dropdown would be added -->
+              <!-- The other option is to dynamically render a grid of checkboxes which will reduce the amount of clicks -->
+              <b-row v-for="col in personnelColumns" :key="col.index">
+                <b-col v-for="(person, index) in col" :key="index" cols="2">
+                  <div v-if="person !== undefined && person !== null && person.value !== 'S'" class="mb-1">
+                    <b-form-checkbox v-model="sciTransferPersons" :id="person.value" :name="person.value" :value="person.value + '-' + person.text">{{ person.text }}</b-form-checkbox>
+                  </div>
+                </b-col>
+              </b-row>
+            </b-col>
           </b-form-row>
-          <b-form-row v-if="form.CACValid === 'No'">
-            <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
-              <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
-            </b-form-group>
+          <b-form-row>
+            <b-col cols="6">
+              <b-form-group v-if="sciTransferMP === 'No'">
+                <b-form-group label="Form submission is for another Person: " label-for="formSetName">
+                  <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
+                </b-form-group>
+              </b-form-group>
+            </b-col>
+            <b-col cols="6" v-if="sciTransferMP === 'No'">
+              <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
+              <div v-if="form.setName === 'Yes'">
+                <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
+                  <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
+                    <b-dropdown-form v-on:submit.native.prevent>
+                      <b-input-group>
+                        <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" v-on:submit.native.prevent @keyup.native="filtering"></b-form-input>
+                        <b-input-group-append>
+                          <b-button variant="primary" v-on:submit.native.prevent @click="searchFiltering($event)">Search</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-dropdown-form>
+                    <b-dropdown-divider></b-dropdown-divider>
+                    <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
+                  </b-dropdown>
+                  <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
+                  <b-form-invalid-feedback>
+                    Select a Person
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </div>
+              <div v-if="form.setName === 'No'">
+                <b-form-group label="Your Name: " label-for="formPerson">
+                  <b-form-input id="formName" v-model="form.Name" disabled />
+                </b-form-group>
+              </div>
+            </b-col>
           </b-form-row>
-          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-            <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
-              <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
-            </b-form-group>
+          <div v-if="formCAC" class="m-1 p-1">
+            <b-form-row v-if="formCAC">
+              <!-- list a series of questions for the user to fill out -->
+              <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
+                <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
+              </b-form-group>
+            </b-form-row>
+            <b-form-row v-if="form.CACValid === 'Yes'">
+              <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
+                <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+              </b-form-group>
+            </b-form-row>
+            <b-form-row v-if="form.CACValid === 'Yes'">
+              <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
+                <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
+              </b-form-group>
+            </b-form-row>
+            <b-form-row v-if="form.CACValid === 'No'">
+              <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+                <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
+              </b-form-group>
+            </b-form-row>
+            <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+              <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
+                <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
+              </b-form-group>
+            </b-form-row>
+            <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+              <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
+                <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+              </b-form-group>
+            </b-form-row>
+          </div>
+          <b-form-row>
+            <b-col>
+              <b-form-group class="pt-3">
+                <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
+              </b-form-group>
+            </b-col>
           </b-form-row>
-          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-            <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-            </b-form-group>
+          <b-form-row>
+            <b-col cols="10"></b-col>
+            <b-col cols="2">
+              <b-button variant="danger" class="formbutton" @click="closeForm">Cancel</b-button>
+              <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
+            </b-col>
           </b-form-row>
-        </div>
-        <b-form-row>
-          <b-col>
-            <b-form-group>
-              <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
-            </b-form-group>
-          </b-col>
-        </b-form-row>
-        <b-form-row>
-          <b-col cols="10"></b-col>
-          <b-col cols="2">
-            <b-button variant="danger" class="formbutton" @click="closeForm">Cancel</b-button>
-            <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
-          </b-col>
-        </b-form-row>
-      </b-card>
-    </div>
+        </b-card>
+      </div>
+    </b-form>
   </b-container>
 </template>
 <script>
@@ -340,11 +372,17 @@ export default {
       taskUserId: [],
       taskEmail: [],
       securityForm: null,
+      securityByPersonnel: [],
       filteredData: null,
+      filteredPersonnelColumns: null,
+      personnelColumns: [],
       sciOptions: ['Nomination', 'Transfer', 'Visit Request'],
+      sciTransferPersons: [],
+      sciTransferMP: 'No',
       url: '',
       person: '',
       personnelFiltering: '',
+      sciTransferFilterInput: '',
       cacvalid: [
         { text: 'No', value: 'No' },
         { text: 'Yes', value: 'Yes' }
@@ -405,8 +443,34 @@ export default {
           .includes(vm.personnelFiltering.toLowerCase())
       )
     },
+    sciTransferFiltering: e => {
+      e.preventDefault()
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        vm.filteredPersonnelColumns = vm.personnel.filter(data =>
+          JSON.stringify(data)
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+        )
+      }, 250)
+    },
+    sciTransferSearchFiltering: e => {
+      e.preventDefault()
+      vm.filteredPersonnelColumns = vm.personnel.filter(data =>
+        JSON.stringify(data)
+          .toLowerCase()
+          .includes(vm.sciTransferFilterInput.toLowerCase())
+      )
+      //vm.personnelColumns = vm.setupPersonnelColumns()
+    },
+    loadSCITransferFilteredData: async () => {
+      vm.filteredPersonnelColumns = vm.personnel
+    },
     loadFilterData: async () => {
       vm.filteredData = vm.personnel
+    },
+    onSubmit(event) {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     waitForPersonnel: async function() {
       if (this.currentuser) {
@@ -430,6 +494,8 @@ export default {
           this.form.CACStatus = result[0].CACStatus
         }
         this.filteredData = this.personnel
+        this.filteredPersonnelColumns = this.personnel
+        //this.personnelColumns = this.setupPersonnelColumns()
         this.checkSecurityForms()
         clearInterval(this.$options.interval)
       }
@@ -443,6 +509,8 @@ export default {
         this.form.PersonnelID = 'S'
       }
       this.filteredData = this.personnel
+      this.filteredPersonnelColumns = this.personnel
+      //this.personnelColumns = this.setupPersonnelColumns()
     },
     onPersonnelChange: function(value) {
       this.personnel.forEach(person => {
@@ -508,6 +576,7 @@ export default {
       vm.$router.push({ path: '/security/tracker' })
     },
     onFormSubmit: async function() {
+      await Security.dispatch('getDigest')
       // VALIDATE SUBK && FORM
       this.formError = false
       if (this.isSubcontractor && this.form.Company !== this.currentuser[0].Company) {
@@ -519,7 +588,234 @@ export default {
       if (this.files.length <= 0) {
         this.formError = true
       }
-      if (!this.formError) {
+      /* Checking to see if the form is just a regular submission compared to a SCI Transfer with multiple people */
+      if (!this.formError && this.form.Type === 'SCI' && this.form.SCIType === 'Transfer' && this.sciTransferMP === 'Yes') {
+        this.lockSubmit = true
+        let payload = {},
+          group = [],
+          sciInfo = null
+        this.taskUserId = []
+        this.taskEmail = []
+        this.library = 'SCIForms'
+        this.libraryUrl = this.SCIForms
+        group = this.scigroup
+        group.forEach(user => {
+          this.taskUserId.push(user.Id)
+          this.taskEmail.push(user.Email)
+        })
+        payload.library = this.library
+        payload.Company = vm.form.Company
+        // Time to loop through everyone added to the sciTransferPersons array to get all of the security information
+        let transferPayload = {
+          Persons: '',
+          Forms: '',
+          Title: ''
+        }
+        let transferPersons = []
+        let persons = ''
+        await this.asyncForEach(this.sciTransferPersons, async person => {
+          var persArray = person.split('-')
+          let result = await Security.dispatch('getSecurityFormByPersonnelId', { PersonnelID: persArray[0] })
+          vm.securityByPersonnel.push(result)
+          transferPersons.push({ PersonnelID: result.PersonnelId, SecurityID: result.Id, FirstName: result.FirstName, LastName: result.LastName, Company: result.Company, submittedDate: this.$moment().format('MM/DD/YYYY') })
+          persons += result.FirstName + ' ' + result.LastName + ', '
+        })
+        transferPayload.Persons = JSON.stringify(transferPersons)
+        transferPayload.Title += persons + ' Transfer Request'
+        // payload.PersonnelID = vm.form.PersonnelID // TO DO: loop through the sciTransferPersons array and then update each record in the SecurityForms list
+        await this.asyncForEach(this.files, async file => {
+          payload.library = vm.library
+          payload.Company = vm.form.Company
+          payload.PersonnelID = vm.form.PersonnelID
+          let pdfName = ''
+          // Loop through the sciTransferPersons array to append the ids to the PDF Name
+          vm.sciTransferPersons.forEach(person => {
+            let split = person.split('-')
+            pdfName += split[0] + '-'
+          })
+          pdfName += vm.form.Name + '-' + file.fileSelected //
+          let name = pdfName.split('.')[0]
+          file.fileName = name
+          payload.file = file.fileSelected
+          payload.name = name
+          payload.buffer = file.fileBuffer
+          let item = await Security.dispatch('uploadForm', payload)
+          //TO DO: Check if item contains the form Id. The update form could then be deleted
+          let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+          let form = await Security.dispatch('getForm', itemlink)
+          let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+          payload = form.data.d.__metadata
+          //payload.file = file.fileSelected
+          payload.name = pdfName
+          // payload.IndexNumber = this.IndexNumber
+          payload.SecurityFormId = vm.securityForm.Id
+          await Security.dispatch('updateForm', payload)
+          // Set the SCI information so that we can add it to the Security SCI Transfer list
+          sciInfo = {
+            id: formId,
+            library: vm.library,
+            name: pdfName,
+            // task: results.data.d.Id,
+            href: vm.libraryUrl + pdfName,
+            etag: form.data.d.__metadata.etag,
+            uri: form.data.d.__metadata.uri,
+            submitterId: vm.currentuser[0].id,
+            submitterEmail: vm.currentuser[0].Email,
+            rejectReason: '',
+            status: ''
+          }
+        })
+        transferPayload.Form = JSON.stringify({
+          GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+          GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+          GovRejectDate: '',
+          status: '',
+          forms: [sciInfo]
+        })
+        // Add a securitySCITransfer record
+        let transferResults = await Security.dispatch('addSecuritySCITransfer', transferPayload)
+        let taskResults = {}
+        if (vm.form.Historical !== 'Yes') {
+          let taskPayload = {
+            Title: 'Approve SCI Transfer Submission for ' + persons,
+            AssignedToId: 25, // Hardcoding the Security Group
+            //AssignedToId: this.taskUserId,
+            Description: 'Approve or reject SCI Transfer request for ' + persons,
+            IsMilestone: false,
+            PercentComplete: 0,
+            TaskType: 'SCI Transfer Request',
+            TaskLink: '/security/view/' + transferResults.data.d.Id + '/' + vm.form.Type + '?transfer=true'
+          }
+          taskResults = await Todo.dispatch('addTodo', taskPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          let emailPayload = {
+            //emails: this.taskEmail,
+            emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+            body:
+              '<h3>Please approve or reject the following.</h3><p>Name: ' +
+              persons +
+              '</p><p>Form: ' +
+              vm.form.Type +
+              ' Request</p><br/><a href="' +
+              url +
+              '/Pages/Home.aspx#/security/view/' +
+              transferResults.data.d.Id +
+              '/' +
+              vm.form.Type +
+              '?transfer=true">Review ' +
+              persons +
+              '</a><p><b>Please copy and paste the hyperlink into a modern browser such as Google Chrome if it is not your default.</b></p>',
+            subject: '(F3I-2 Portal) Approve ' + vm.form.Type + ' Submission for ' + persons
+          }
+          await Security.dispatch('sendEmail', emailPayload)
+        }
+        // Update each security record
+        this.asyncForEach(this.securityByPersonnel, async person => {
+          // Now we need to update
+          let securityPayload = person
+          securityPayload.SCI = JSON.stringify({
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovRejectDate: '',
+            forms: [sciInfo]
+          })
+          securityPayload.SCIIndoc = vm.form.SCIIndocDate !== '' ? vm.form.SCIIndocDate : null
+          securityPayload.SCIStatus = 'CACI Review'
+          securityPayload.SCITransferId = transferResults.data.d.Id
+          // Set original DATA
+          person.CAC ? (securityPayload.CAC = JSON.stringify(person.CAC)) : null
+          person.SIPR ? (securityPayload.SIPR = JSON.stringify(person.SIPR)) : null
+          person.NIPR ? (securityPayload.NIPR = JSON.stringify(person.NIPR)) : null
+          person.DREN ? (securityPayload.DREN = JSON.stringify(person.DREN)) : null
+          person.JWICS ? (securityPayload.JWICS = JSON.stringify(person.JWICS)) : null
+          await Security.dispatch('updateSecurityForm', securityPayload).catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+          // Don't forget to notify of each record change.
+        })
+        // Finally - Update the SCITransfer list with the task id and reset form
+        transferPayload.etag = transferResults.data.d.__metadata.etag
+        transferPayload.uri = transferResults.data.d.__metadata.uri
+        transferPayload.TaskId = taskResults.data.d.Id
+        await Security.dispatch('updateSecuritySCITransfer', transferPayload)
+          .then(() => {
+            if (vm.formType === 'account') {
+              vm.form.Type = vm.accountOptions[0]
+            }
+            // Clear form after submission
+            if (vm.formType === 'cac') {
+              vm.form.CACValid = ''
+              vm.form.CACExpirationDate = ''
+              vm.form.CACIssuedBy = ''
+              vm.form.CACStatus = ''
+            }
+            if (vm.formType === 'sci') {
+              vm.form.SCIIndocDate = ''
+              vm.form.SCIType = ''
+              vm.form.SCIStatus = ''
+            }
+            vm.form.Historical = 'No'
+            vm.form.Company = vm.currentuser[0].Company ? vm.currentuser[0].Company : vm.companies[0]
+            vm.form.setName = 'No'
+            vm.form.FirstName = vm.currentFirstName
+            vm.form.LastName = vm.currentLastName
+            vm.form.Name = vm.currentFirstName + ' ' + vm.currentLastName
+            vm.form.PersonnelID = vm.currentPersonnelID
+            vm.sciTransferMP = 'No'
+            vm.transferPersons = []
+            vm.securityByPersonnel = []
+            vm.person = ''
+            vm.personnelFiltering = ''
+            vm.files = []
+            vm.fileSelected = null
+            vm.fileBuffer = null
+            vm.lockSubmit = false
+            // need CAC and SCI clear here as well
+            let uploadedFiles = document.querySelector('.e-upload-files')
+            while (uploadedFiles.firstChild) {
+              uploadedFiles.removeChild(uploadedFiles.firstChild)
+            }
+          })
+          .catch(error => {
+            const notification = {
+              type: 'danger',
+              title: 'Portal Error',
+              message: error.message,
+              push: true
+            }
+            this.$store.dispatch('notification/add', notification, {
+              root: true
+            })
+            console.log('ERROR: ' + error.message)
+          })
+        const notification = {
+          type: 'success',
+          title: 'Succesfully Uploaded Form',
+          message: 'Uploaded SCI Transfer Form',
+          push: true
+        }
+        vm.$store.dispatch('notification/add', notification, { root: true })
+        vm.$store.dispatch('support/addActivity', '<div class="bg-success">' + vm.formType + ' Form Uploaded.</div>')
+      } else if (!this.formError && this.sciTransferMP === 'No') {
         // Add post to correct document library with required MetaData
         this.lockSubmit = true
         let payload = {}
@@ -616,7 +912,6 @@ export default {
           payload.file = pdfName
           payload.name = name
           payload.buffer = file.fileBuffer
-          if (console) console.log('PAYLOAD TO UPLOAD FORM: ' + JSON.stringify(payload))
           let item = await Security.dispatch('uploadForm', payload)
           //TO DO: Check if item contains the form Id. The update form could then be deleted
           let itemlink = item.data.d.ListItemAllFields.__deferred.uri
@@ -738,7 +1033,7 @@ export default {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-            //AssignedToId: 63, // TESTING TASK
+            //AssignedToId: 25, // TESTING TASK
             AssignedToId: this.taskUserId,
             Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
             IsMilestone: false,
@@ -760,7 +1055,7 @@ export default {
           })
           let emailPayload = {
             emails: this.taskEmail,
-            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
+            //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               vm.form.Name +
@@ -820,8 +1115,8 @@ export default {
         }
         if (niprs.length > 0) {
           payload.NIPR = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.NIPR.GovCompleteDate ? vm.securityForm.NIPR.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.NIPR.GovSentDate ? vm.securityForm.NIPR.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'NIPR' ? results.data.d.Id : vm.securityForm.NIPR.task ? vm.securityForm.NIPR.task : '',
             forms: niprs
@@ -829,8 +1124,8 @@ export default {
         }
         if (siprs.length > 0) {
           payload.SIPR = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SIPR.GovCompleteDate ? vm.securityForm.SIPR.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SIPR.GovSentDate ? vm.securityForm.SIPR.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SIPR' ? results.data.d.Id : vm.securityForm.SIPR.task ? vm.securityForm.SIPR.task : '',
             forms: siprs
@@ -838,8 +1133,8 @@ export default {
         }
         if (drens.length > 0) {
           payload.DREN = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.DREN.GovCompleteDate ? vm.securityForm.DREN.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.DREN.GovSentDate ? vm.securityForm.DREN.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'DREN' ? results.data.d.Id : vm.securityForm.DREN.task ? vm.securityForm.DREN.task : '',
             forms: drens
@@ -847,8 +1142,8 @@ export default {
         }
         if (jwics.length > 0) {
           payload.JWICS = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.JWICS.GovCompleteDate ? vm.securityForm.JWICS.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.JWICS.GovSentDate ? vm.securityForm.JWICS.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'JWICS' ? results.data.d.Id : vm.securityForm.JWICS.task ? vm.securityForm.JWICS.task : '',
             forms: jwics
@@ -856,8 +1151,8 @@ export default {
         }
         if (scis.length > 0) {
           payload.SCI = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SCI.GovCompleteDate ? vm.securityForm.SCI.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.SCI.GovSentDate ? vm.securityForm.SCI.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'SCI' ? results.data.d.Id : vm.securityForm.SCI.task ? vm.securityForm.SCI.task : '',
             forms: scis
@@ -865,8 +1160,8 @@ export default {
         }
         if (cacs.length > 0) {
           payload.CAC = JSON.stringify({
-            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
-            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : '',
+            GovCompleteDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.CAC.GovCompleteDate ? vm.securityForm.CAC.GovCompleteDate : '',
+            GovSentDate: vm.form.Historical === 'Yes' ? 'N/A' : vm.securityForm.CAC.GovSentDate ? vm.securityForm.CAC.GovSentDate : '',
             GovRejectDate: '',
             task: vm.form.Type === 'CAC' ? results.data.d.Id : vm.securityForm.CAC.task ? vm.securityForm.CAC.task : '',
             dissCheckTask: dissResults.data ? dissResults.data.d.Id : '',
@@ -945,8 +1240,12 @@ export default {
         let file = {}
         file.fileSelected = fileData.name
         // Need to perform a check here to see what the file will be named, if the corresponding type already has it and then set a flag to overwrite or modify based on user interaction
-        let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
-        if (console) console.log('FORMS: ' + JSON.stringify(vm.securityForm[vm.form.Type]))
+        let pdfName = ''
+        if (this.form.SCIType === 'Transfer') {
+          pdfName = file.fileSelected
+        } else {
+          pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
+        }
         if (console) console.log('NEW FORM NAME: ' + pdfName)
         if (
           vm.securityForm[vm.form.Type].forms &&
@@ -1061,6 +1360,22 @@ export default {
     // eslint-disable-next-line no-unused-vars
     $route(to, from) {
       this.checkType(to.params.formType)
+    },
+    filteredPersonnelColumns: function() {
+      this.personnelColumns = []
+      var itemsPerColumn = 6
+      if (this.filteredPersonnelColumns !== undefined && this.filteredPersonnelColumns !== null) {
+        for (var i = 0; i < this.filteredPersonnelColumns.length; i += itemsPerColumn) {
+          var col = []
+          for (var z = 0; z < itemsPerColumn; z++) {
+            if (this.filteredPersonnelColumns[i + z] !== null) {
+              console.log(JSON.stringify(this.filteredPersonnelColumns[i + z]))
+              col.push(this.filteredPersonnelColumns[i + z])
+            }
+          }
+          this.personnelColumns.push(col)
+        }
+      }
     }
   }
 }
