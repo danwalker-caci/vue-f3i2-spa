@@ -634,6 +634,12 @@ export default {
             pdfName += split[0] + '-'
           })
           pdfName += vm.form.Name + '-' + file.fileSelected //
+          if (pdfName.length >= 260) {
+            let currentPDF = pdfName.split('.')
+            pdfName = pdfName.substring(0, 250)
+            pdfName += currentPDF[1]
+          }
+          if (console) console.log('NEW FORM NAME: ' + pdfName)
           let name = pdfName.split('.')[0]
           file.fileName = name
           payload.file = file.fileSelected
@@ -907,7 +913,13 @@ export default {
           payload.library = vm.library
           payload.Company = vm.form.Company
           payload.PersonnelID = vm.form.PersonnelID
-          let pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
+          let pdfName = vm.form.PersonnelID + '-' + file.fileSelected
+          if (pdfName.length >= 260) {
+            let currentPDF = pdfName.split('.')
+            pdfName = pdfName.substring(0, 250)
+            pdfName += currentPDF[1]
+          }
+          if (console) console.log('NEW FORM NAME: ' + pdfName)
           let name = pdfName.split('.')[0]
           payload.file = pdfName
           payload.name = name
@@ -1244,7 +1256,12 @@ export default {
         if (this.form.SCIType === 'Transfer') {
           pdfName = file.fileSelected
         } else {
-          pdfName = vm.form.PersonnelID + '-' + vm.form.Name + '-' + file.fileSelected
+          pdfName = vm.form.PersonnelID + '-' + file.fileSelected
+        }
+        if (pdfName.length >= 260) {
+          let currentPDF = pdfName.split('.')
+          pdfName = pdfName.substring(0, 250)
+          pdfName += currentPDF[1]
         }
         if (console) console.log('NEW FORM NAME: ' + pdfName)
         if (
