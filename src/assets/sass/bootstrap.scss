@@ -84,11 +84,20 @@ $modal-sm:                          300px !default;
   height: calc(100vh - 50px);
 }
 
+/* Override the search button in the ejs grid */
+.e-search-icon {
+  color: #495057!important;
+}
+
+.e-search-icon:hover {
+  color: #fff!important;
+}
+
 .contentHeight { height: calc(100vh - 150px) !important; }
 
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
   color: #fff;
-  background-color: #007bff!important;
+  background-color: $light-blue!important;
 }
 
 .width-98 {

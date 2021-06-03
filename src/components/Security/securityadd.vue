@@ -7,16 +7,16 @@
     <!-- If user is SUBC, only load the related personnel to their company. 
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
-    <b-form @submit="onSubmit">
-      <div id="form" class="col-12 p-4">
-        <b-row class="bg-dark formheader">
+    <b-form class="w-100 h-100" @submit="onSubmit">
+      <div class="bg-light w-100 h-100 p-0">
+        <b-row class="bg-light-blue formheader">
           <b-col cols="4" class="p-0 text-left"></b-col>
           <b-col cols="4" class="p-0 text-center font-weight-bold">
             <h3 class="text-white">{{ formTitle }}</h3>
           </b-col>
           <b-col cols="4" class="p-0 text-right"></b-col>
         </b-row>
-        <b-card no-body class="p-3">
+        <div class="p-4">
           <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
           <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
           <p class="font-weight-bolder h4 text-danger">
@@ -260,7 +260,7 @@
               <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
             </b-col>
           </b-form-row>
-        </b-card>
+        </div>
       </div>
     </b-form>
   </b-container>
