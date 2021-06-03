@@ -74,6 +74,7 @@
 <script>
 /* eslint-disable no-prototype-builtins */
 import Vue from 'vue'
+// import User from '@/models/User'
 import axios from 'axios'
 
 let vm = null
@@ -117,6 +118,9 @@ export default {
       type: Boolean,
       default: false
     },
+    user: {
+      type: Object
+    },
     table: {
       type: Object,
       default: () => {
@@ -145,9 +149,6 @@ export default {
   computed: {
     hasComponents() {
       return this.hascomponents === true
-    },
-    currentUser() {
-      return this.$store.state.database.users
     }
   },
   data: function() {
@@ -194,9 +195,12 @@ export default {
           let ops = await vm.getOptions(this.table.fields[i])
           this.table.fields[i].options = ops
         }
-        this.validrefs.push('required_' + this.table.fields[i].field)
+        if (!this.table.fields[i].userProp) {
+          this.validrefs.push('required_' + this.table.fields[i].field)
+        }
       }
     }
+    console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].LoginName)
   },
   methods: {
     init: function() {
@@ -211,6 +215,12 @@ export default {
       if (!field.required) {
         return {
           display: 'none'
+        }
+      } else {
+        if (field.userProp) {
+          return {
+            display: 'none'
+          }
         }
       }
     },
@@ -348,17 +358,28 @@ export default {
           }
         }
       } else {
-        if (field.format === 'link') {
-          ret = '<a href="' + item['url'] + '">' + item[field.field] + '</a>'
-        } else {
-          ret = item[field.field]
+        switch (field.format) {
+          case 'link':
+            ret = '<a href="' + item['url'] + '">' + item[field.field] + '</a>'
+            break
+
+          case 'text':
+            ret = item[field.field]
+            break
+
+          case 'date':
+            switch (field.dateformat) {
+              case 'date-time':
+                ret = new Date(item[field.field]).toLocaleTimeString()
+            }
+            break
         }
         document.getElementById(field.field + '_' + item.id).innerHTML = ret
       }
     },
     getUserPermissions: async function(item) {
       // go get the users permissions for the item
-      let url = tp1 + slash + slash + tp2 + slash + "sites/f3i2/_api/web/lists/getByTitle('" + vm.table.list + "')/items(" + item['id'] + ')/getusereffectivepermissions(@v)?@v=%27' + encodeURIComponent(vm.currentUser.LoginName) + '%27'
+      let url = tp1 + slash + slash + tp2 + slash + "sites/f3i2/_api/web/lists/getByTitle('" + vm.table.list + "')/items(" + item['id'] + ')/getusereffectivepermissions(@v)?@v=%27' + encodeURIComponent(vm.user[0].LoginName) + '%27'
       // console.log('GETPERMISSIONS URL: ' + url)
       let response = await axios.get(url, {
         headers: {
@@ -400,10 +421,12 @@ export default {
           headers: { Accept: 'application/json; odata=verbose' }
         })
         let digest = response.data.d.GetContextWebInformation.FormDigestValue
-        let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/Files/Add"
+        let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/folders('" + vm.user[0].Company + "')/Files/Add"
+        // let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/Files/Add"
         let part = "(url='"
         part += vm.fileName + "',overwrite=true)"
         url = url + part
+        console.log('UPLOADURL: ' + url)
         let data = vm.fileBuffer
         let headers = {
           Accept: 'application/json;odata=verbose',
@@ -448,9 +471,16 @@ export default {
               // must use field name with Id
               itemprops[this.table.fields[i].lookupfield] = this.table.fields[i].selected
             }
+            if (this.table.fields[i].type === 'default') {
+              // is this a user property
+              if (this.table.fields[i].userProp === true) {
+                itemprops[this.table.fields[i].field] = this.user[0][this.table.fields[i].field]
+              }
+            }
             // TODO: add other types if needed?
           }
         }
+        this.$store.dispatch('support/addActivity', '<div class="bg-info">' + JSON.stringify(itemprops) + '</div>')
         return axios
           .post(endpoint, itemprops, config)
           .then(function() {

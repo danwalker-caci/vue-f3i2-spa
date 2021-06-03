@@ -432,6 +432,10 @@ const routes = [
     path: '/',
     redirect: '/pages/page/home'
   },
+  {
+    path: '/pages/home',
+    redirect: '/pages/page/home'
+  },
   adminMenu,
   msrMenu,
   financialMenu,

@@ -107,6 +107,7 @@ const actions = {
         let properties = response.data.d.UserProfileProperties.results
         profile.id = String(userid)
         profile.Account = response.data.d.AccountName
+        profile.LoginName = state.LoginName
         profile.PictureUrl = response.data.d.PictureUrl
         profile.PersonalUrl = response.data.d.PersonalUrl
         profile.Email = state.Email !== null || state.Email !== '' ? state.Email : response.data.d.Email

@@ -36,6 +36,7 @@ export default class User extends Model {
       id: this.uid(),
       // userid: this.string(null),
       Account: this.attr(''),
+      LoginName: this.attr(''),
       PictureUrl: this.attr(''),
       PersonalUrl: this.attr(''),
       Email: this.attr(''),
