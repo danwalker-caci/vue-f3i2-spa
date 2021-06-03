@@ -1,64 +1,62 @@
 <template>
   <b-container fluid class="contentHeight p-0 m-0 overflow-auto">
-    <b-row no-gutters>
-      <b-col cols="12" class="m-0 p-0">
-        <b-card v-if="isSCITransfer">
-          <div class="ml-4 mr-4" v-if="loaded">
-            <b-form-row>
+    <b-row no-gutters class="contentHeight">
+      <div class="w-100 h-100 bg-light p-3" v-if="loaded">
+        <div v-if="isSCITransfer">
+          <b-form-row>
+            <b-col>
+              <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
+            </b-col>
+          </b-form-row>
+          <div v-if="sciTransfer.Persons && sciTransfer.Persons.length > 0">
+            <b-form-row v-for="person in sciTransfer.Persons" :key="person.SecurityID">
               <b-col>
-                <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
-              </b-col>
-            </b-form-row>
-            <div v-if="sciTransfer.Persons && sciTransfer.Persons.length > 0">
-              <b-form-row v-for="person in sciTransfer.Persons" :key="person.SecurityID">
-                <b-col>
-                  Company: <strong>{{ person.Company }}</strong>
-                  <!--<b-form-group label="Company: " label-for="company">
+                Company: <strong>{{ person.Company }}</strong>
+                <!--<b-form-group label="Company: " label-for="company">
                 <b-form-input id="company" v-model="company" value="{{ company }}" disabled />
               </b-form-group>-->
-                </b-col>
-                <b-col>
-                  Name: <strong>{{ person.FirstName }} {{ person.LastName }}</strong>
-                </b-col>
-                <b-col>
-                  Date Submitted: <strong>{{ person.submittedDate }}</strong>
-                </b-col>
+              </b-col>
+              <b-col>
+                Name: <strong>{{ person.FirstName }} {{ person.LastName }}</strong>
+              </b-col>
+              <b-col>
+                Date Submitted: <strong>{{ person.submittedDate }}</strong>
+              </b-col>
+            </b-form-row>
+          </div>
+          <b-row v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
+            <span v-if="sciTransfer.Form.GovSentDate !== ''" class="p-2">{{ sciTransfer.Form.GovSentDate }}</span>
+            <span v-if="sciTransfer.Form.GovCompleteDate !== ''" class="p-2">{{ sciTransfer.Form.GovCompleteDate }}</span>
+            <span v-if="sciTransfer.Form.GovRejectDate !== ''" class="p-2">{{ sciTransfer.Form.GovRejectDate }}</span>
+            <span v-if="sciTransfer.Form.GovSentDate === ''" class="p-2">
+              <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
+            </span>
+            <span v-if="sciTransfer.Form.GovCompleteDate === '' && sciTransfer.Form.GovRejectDate === ''" class="p-2">
+              <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
+              <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
+            </span>
+          </b-row>
+          <b-row v-if="showGovRejectForm">
+            <p class="pr-3 pl-3">Please enter the reason for rework:</p>
+            <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
+            <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
+            <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
+          </b-row>
+          <b-row v-if="sciTransfer.Form.GovRejectReason">
+            <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ sciTransfer.Form.GovRejectReason }}</p>
+          </b-row>
+          <div v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
+            <div v-for="form in sciTransfer.Form.forms" :key="form.id">
+              <b-form-row class="p-1" v-if="form.href !== ''">
+                <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+              </b-form-row>
+              <b-form-row class="p-1" v-else-if="form.rejectReason">
+                <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
               </b-form-row>
             </div>
-            <b-row v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
-              <span v-if="sciTransfer.Form.GovSentDate !== ''" class="p-2">{{ sciTransfer.Form.GovSentDate }}</span>
-              <span v-if="sciTransfer.Form.GovCompleteDate !== ''" class="p-2">{{ sciTransfer.Form.GovCompleteDate }}</span>
-              <span v-if="sciTransfer.Form.GovRejectDate !== ''" class="p-2">{{ sciTransfer.Form.GovRejectDate }}</span>
-              <span v-if="sciTransfer.Form.GovSentDate === ''" class="p-2">
-                <b-button v-if="isSecurity || isDeveloper" ref="NotifyGov" variant="success" :data-type="'SCI'" class="btn-sm" @click="NotifyGov($event)">Notify Government</b-button>
-              </span>
-              <span v-if="sciTransfer.Form.GovCompleteDate === '' && sciTransfer.Form.GovRejectDate === ''" class="p-2">
-                <b-button v-if="isAFRL || isDeveloper" ref="CompleteGov" variant="primary" :data-type="'SCI'" class="btn-sm" @click="CompleteGov($event)">Complete</b-button>
-                <b-button v-if="isAFRL || isDeveloper" ref="RejectGov" variant="danger" :data-type="'SCI'" class="btn-sm" @click="RejectGov($event)">Rework</b-button>
-              </span>
-            </b-row>
-            <b-row v-if="showGovRejectForm">
-              <p class="pr-3 pl-3">Please enter the reason for rework:</p>
-              <b-form-textarea id="GovReworkReason" v-model="govRejectReason" placeholder="Enter at least 10 characters..." rows="3" max-rows="6" :state="govRejectReason.length >= 10"></b-form-textarea>
-              <span v-show="showGovRejectError" class="text-danger">Please enter a reason before submitting.</span>
-              <b-button v-if="isAFRL || isDeveloper" ref="SubmitRejectGov" variant="outline-primary" class="btn-sm" @click="SubmitRejectGov">Submit</b-button>
-            </b-row>
-            <b-row v-if="sciTransfer.Form.GovRejectReason">
-              <p class="pr-3 pl-3"><span class="font-weight-bold">SCI Rejection Reason:</span> {{ sciTransfer.Form.GovRejectReason }}</p>
-            </b-row>
-            <div v-if="sciTransfer.Form.forms && sciTransfer.Form.forms.length > 0">
-              <div v-for="form in sciTransfer.Form.forms" :key="form.id">
-                <b-form-row class="p-1" v-if="form.href !== ''">
-                  <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
-                </b-form-row>
-                <b-form-row class="p-1" v-else-if="form.rejectReason">
-                  <p><span class="font-weight-bold">FSO Reject Reason: </span>{{ form.rejectReason }}</p>
-                </b-form-row>
-              </div>
-            </div>
           </div>
-        </b-card>
-        <b-card v-if="!isSCITransfer">
+        </div>
+        <div v-if="!isSCITransfer">
           <div class="ml-4 mr-4" v-if="loaded">
             <b-form-row>
               <b-col>
@@ -525,8 +523,8 @@
               </div>
             </b-tab>
           </b-tabs>
-        </b-card>
-      </b-col>
+        </div>
+      </div>
     </b-row>
   </b-container>
 </template>

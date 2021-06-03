@@ -1,85 +1,83 @@
 <template>
   <!-- Add Form where users can download master docs and upload the changed docs. -->
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <div id="form" class="col-12 p-0">
-      <b-row class="bg-dark formheader">
+    <b-form class="bg-light w-100 h-100">
+      <b-row class="bg-light-blue formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
           <h3 class="text-white">{{ formTitle }}</h3>
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <b-card no-body class="p-0">
-        <div class="p-1">
-          <b-form-row>
+      <div class="p-3">
+        <b-form-row>
+          <b-col>
+            <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
+          </b-col>
+        </b-form-row>
+        <div v-if="persons.length > 0">
+          <b-form-row v-for="person in persons" :key="person.SecurityID">
             <b-col>
-              <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
-            </b-col>
-          </b-form-row>
-          <div v-if="persons.length > 0">
-            <b-form-row v-for="person in persons" :key="person.SecurityID">
-              <b-col>
-                Company: <strong>{{ person.Company }}</strong>
-                <!--<b-form-group label="Company: " label-for="company">
+              Company: <strong>{{ person.Company }}</strong>
+              <!--<b-form-group label="Company: " label-for="company">
                 <b-form-input id="company" v-model="company" value="{{ company }}" disabled />
               </b-form-group>-->
-              </b-col>
-              <b-col>
-                Name: <strong>{{ person.FirstName }} {{ person.LastName }}</strong>
-              </b-col>
-              <b-col>
-                Date Submitted: <strong>{{ submittedDate }}</strong>
-              </b-col>
-            </b-form-row>
-          </div>
-          <b-form-row v-else>
-            <b-col>
-              Company: <strong>{{ company }}</strong>
             </b-col>
             <b-col>
-              Name: <strong>{{ name }}</strong>
+              Name: <strong>{{ person.FirstName }} {{ person.LastName }}</strong>
             </b-col>
             <b-col>
               Date Submitted: <strong>{{ submittedDate }}</strong>
             </b-col>
           </b-form-row>
-          <b-form-row v-if="sciType">
-            <b-col>
-              SCI Type: <strong>{{ sciType }}</strong>
-            </b-col>
-          </b-form-row>
-          <!-- don't load until everything else has come in -->
-          <!-- Loop through the type of account and each of the forms. -->
-          <div v-if="loaded && securityForms.forms.length > 0">
-            <div v-for="form in securityForms.forms" :key="form.id">
-              <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === '' && securityForms.GovRejectDate === ''">
-                <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
-                  <b-col cols="10"></b-col>
-                  <b-col cols="2" v-if="isSecurity && form.rejectReason === ''" v-bind:id="form.id">
-                    <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
-                    <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
-                  </b-col>
-                </b-form-row>
-                <b-form-row v-if="showDenial" class="pl-2 pr-2">
-                  <p class="font-weight-bold">FSO Denial Reason:</p>
-                  <b-textarea id="fsoDenial" v-model="fsoDenialInput" :state="fsoDenialInput.length >= 20" placeholder="Please enter at least 20 characters..." rows="2" max-rows="4"></b-textarea>
-                  <p class="text-danger" v-show="showDenialError">Please fill out a valid reason for rejection.</p>
-                  <b-button variant="outline-primary" class="mt-2" @click="submitRejection(form)">Submit</b-button>
-                </b-form-row>
-                <b-form-row class="pl-2 pr-2" v-if="form.rejectReason && form.rejectReason !== ''">
-                  <p><span class="font-weight-bold">FSO Rejection Reason: </span>{{ form.rejectReason }}</p>
-                </b-form-row>
-              </div>
-              <b-form-row class="p-1" v-if="form.href">
-                <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+        </div>
+        <b-form-row v-else>
+          <b-col>
+            Company: <strong>{{ company }}</strong>
+          </b-col>
+          <b-col>
+            Name: <strong>{{ name }}</strong>
+          </b-col>
+          <b-col>
+            Date Submitted: <strong>{{ submittedDate }}</strong>
+          </b-col>
+        </b-form-row>
+        <b-form-row v-if="sciType">
+          <b-col>
+            SCI Type: <strong>{{ sciType }}</strong>
+          </b-col>
+        </b-form-row>
+        <!-- don't load until everything else has come in -->
+        <!-- Loop through the type of account and each of the forms. -->
+        <div v-if="loaded && securityForms.forms.length > 0">
+          <div v-for="form in securityForms.forms" :key="form.id">
+            <div v-if="securityForms.GovCompleteDate === '' && securityForms.GovSentDate === '' && securityForms.GovRejectDate === ''">
+              <b-form-row v-if="form.status !== 'Approved' && form.status !== 'Rejected'">
+                <b-col cols="10"></b-col>
+                <b-col cols="2" v-if="isSecurity && form.rejectReason === ''" v-bind:id="form.id">
+                  <b-button variant="danger" class="formbutton" @click="rejectForm(form)">Reject</b-button>
+                  <b-button variant="success" class="formbutton" @click="approveForm(form)">Approve</b-button>
+                </b-col>
+              </b-form-row>
+              <b-form-row v-if="showDenial" class="pl-2 pr-2">
+                <p class="font-weight-bold">FSO Denial Reason:</p>
+                <b-textarea id="fsoDenial" v-model="fsoDenialInput" :state="fsoDenialInput.length >= 20" placeholder="Please enter at least 20 characters..." rows="2" max-rows="4"></b-textarea>
+                <p class="text-danger" v-show="showDenialError">Please fill out a valid reason for rejection.</p>
+                <b-button variant="outline-primary" class="mt-2" @click="submitRejection(form)">Submit</b-button>
+              </b-form-row>
+              <b-form-row class="pl-2 pr-2" v-if="form.rejectReason && form.rejectReason !== ''">
+                <p><span class="font-weight-bold">FSO Rejection Reason: </span>{{ form.rejectReason }}</p>
               </b-form-row>
             </div>
+            <b-form-row class="p-1" v-if="form.href">
+              <b-embed type="iframe" :src="form.href" allowfullscreen></b-embed>
+            </b-form-row>
           </div>
-          <!-- Add a Notify Government button -->
-          <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1 float-right" @click="NotifyGov">Notify Government</b-button>
         </div>
-      </b-card>
-    </div>
+        <!-- Add a Notify Government button -->
+        <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1 float-right" @click="NotifyGov">Notify Government</b-button>
+      </div>
+    </b-form>
   </b-container>
 </template>
 <script>
