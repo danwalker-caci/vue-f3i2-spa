@@ -49,7 +49,10 @@
                     <b-tbody :id="getID('DynamicTableBody', table.id)">
                       <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
                         <b-td v-for="field in table.fields" :key="field" class="text-black">
-                          <span :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
+                          <span v-if="field.field === 'Actions'" :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id">
+                            <component v-for="comp in item.renderItems" :key="comp.id" :is="comp.component" v-bind="comp.props"></component>
+                          </span>
+                          <span v-else :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
                         </b-td>
                       </b-tr>
                     </b-tbody>
@@ -87,29 +90,6 @@ let SPCI = null
 if (window._spPageContextInfo) {
   SPCI = window._spPageContextInfo
 }
-
-const ActionButton = {
-  template: `
-    <b-button class="actionbutton text-black" @click="DeleteFile('item.id)" v-b-tooltip.hover.v-dark title="Delete File">
-      <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
-    </b-button>
-  `,
-  props: {
-    name: {
-      type: String
-    },
-    item: {
-      type: Object
-    }
-  },
-  methods: {
-    DeleteFile: function(id) {
-      alert(id)
-    }
-  }
-}
-
-const ActionButtonClass = Vue.extend(ActionButton)
 
 export default {
   name: 'dynamic-table',
@@ -183,7 +163,7 @@ export default {
   created: function() {
     vm = this
     SP.SOD.executeFunc('sp.js', 'SP.ClientContext', function() {
-      console.log('sp.js is loaded')
+      // console.log('sp.js is loaded')
       vm.init()
     })
   },
@@ -206,7 +186,7 @@ export default {
     init: function() {
       // any preliminary stuff?
       this.getData()
-      vm.timer = setInterval(vm.getData, 30000) // 1 minute
+      vm.timer = setInterval(vm.getData, 10000) // 1 minute
     },
     getID: function(text, id) {
       return text + '_' + id
@@ -282,7 +262,7 @@ export default {
           accept: 'application/json;odata=verbose'
         }
       })
-      console.log('RESPONSE: ' + response)
+      // console.log('RESPONSE: ' + response)
       let j = response.data.d.results
       let p = []
       for (let i = 0; i < j.length; i++) {
@@ -324,7 +304,7 @@ export default {
     formatCell: async function(item, field) {
       // build cell based on passed in data and props
       let ret = ''
-      let element = '#' + field.field + '_' + item.id
+      // let element = '#' + field.field + '_' + item.id
       if (field.field === 'Actions') {
         // loop through the actions and determine if the user can perform the action on this item
         let response = await vm.getUserPermissions(item)
@@ -346,12 +326,30 @@ export default {
               if (w) {
                 if (result.deleteListItems) {
                   // user can delete
-                  new ActionButtonClass({
-                    propsData: {
-                      name: 'delete_' + item.id,
-                      item: item
+                  let button = Vue.component('delete_' + item.id, {
+                    template: `
+                      <b-button class="actionbutton text-white bg-light-blue" @click="DeleteFile(deleteId)" v-b-tooltip.hover.v-dark title="Delete File">
+                        <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
+                      </b-button>
+                    `,
+                    props: {
+                      deleteId: {
+                        type: Number
+                      }
+                    },
+                    methods: {
+                      DeleteFile: function(id) {
+                        vm.DeleteFile(id)
+                      }
                     }
-                  }).$mount(element)
+                  })
+                  item.renderItems.push({
+                    id: 'delete_' + item.id,
+                    component: button,
+                    props: {
+                      deleteId: item.id
+                    }
+                  })
                 }
               }
               break
@@ -380,24 +378,41 @@ export default {
     getUserPermissions: async function(item) {
       // go get the users permissions for the item
       let url = tp1 + slash + slash + tp2 + slash + "sites/f3i2/_api/web/lists/getByTitle('" + vm.table.list + "')/items(" + item['id'] + ')/getusereffectivepermissions(@v)?@v=%27' + encodeURIComponent(vm.user[0].LoginName) + '%27'
-      // console.log('GETPERMISSIONS URL: ' + url)
       let response = await axios.get(url, {
         headers: {
           accept: 'application/json;odata=verbose'
         }
       })
-      console.log('GETPERMISSIONS RESPONSE: ' + response)
       return response
     },
-    DeleteFile: function(id) {
+    DeleteFile: async function(id) {
       // just do it
+      this.loaded = false
+      this.loading = true
+
       if (console) console.log(id)
+      let response = await axios.request({
+        url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+        method: 'post',
+        headers: { Accept: 'application/json; odata=verbose' }
+      })
+      let digest = response.data.d.GetContextWebInformation.FormDigestValue
+      let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/items(" + id + ')'
+      let headers = {
+        Accept: 'application/json;odata=verbose',
+        'X-RequestDigest': digest,
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'DELETE'
+      }
+      response = await axios({
+        url: url,
+        method: 'POST',
+        headers: headers
+      })
     },
     fileSelected: function(field) {
       vm.fileName = field.selected.name
-      // vm.fileName = vm.uploadfile.name
       let buffer = vm.getFileBuffer(field.selected)
-      // let buffer = vm.getFileBuffer(vm.uploadfile)
       buffer.then(function(buff) {
         vm.fileBuffer = buff
       })
@@ -485,8 +500,11 @@ export default {
           .post(endpoint, itemprops, config)
           .then(function() {
             vm.isUploading = false
+            vm.loaded = false
+            vm.loading = true
             vm.$bvModal.hide('FileModal')
-            vm.timer = setInterval(vm.getData, 30000) // 1 minute
+            window.setTimeout(vm.getData, 5000)
+            vm.timer = setInterval(vm.getData, 10000) // 1 minute
           })
           .catch(function(error) {
             console.log(error)
