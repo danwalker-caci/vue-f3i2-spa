@@ -1,7 +1,7 @@
 <template>
   <!-- Add Form where users can download master docs and upload the changed docs. -->
   <b-container fluid class="contentHeight p-0" id="MainContainer">
-    <div id="form" class="w-100 h-100 p-0">
+    <b-form class="bg-light w-100 h-100">
       <b-row class="bg-light-blue formheader">
         <b-col cols="4" class="p-0 text-left"></b-col>
         <b-col cols="4" class="p-0 text-center font-weight-bold">
@@ -9,7 +9,7 @@
         </b-col>
         <b-col cols="4" class="p-0 text-right"></b-col>
       </b-row>
-      <div class="bg-light w-100 h-100 p-3">
+      <div class="p-3">
         <b-form-row>
           <b-col>
             <b-button @click="$router.push({ path: '/security/tracker' })" variant="secondary">Return to Tracker</b-button>
@@ -77,7 +77,7 @@
         <!-- Add a Notify Government button -->
         <b-button v-if="isSecurity && showNotify" variant="primary" class="formbutton p-1 float-right" @click="NotifyGov">Notify Government</b-button>
       </div>
-    </div>
+    </b-form>
   </b-container>
 </template>
 <script>
