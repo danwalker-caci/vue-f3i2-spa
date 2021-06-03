@@ -782,7 +782,7 @@ export default {
     },
     async statusChange() {
       if (console) console.log('STATUS CHANGED: ' + this.SCIStatus + ' ' + this.CACStatus)
-      if ((this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') && (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info')) {
+      if (this.SCIStatus !== '' && this.CACStatus !== '') {
         this.statusesUpdated = true
       }
     },
