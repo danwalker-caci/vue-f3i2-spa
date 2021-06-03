@@ -7,260 +7,258 @@
     <!-- If user is SUBC, only load the related personnel to their company. 
          Otherwise, load companies into dropdown and on user selection load all personnel related to that company into a dropdown. -->
     <!-- on submission, split the personnel first name, last name out of the dropdown. -->
-    <b-form @submit="onSubmit">
-      <div class="bg-light w-100 h-100 p-0">
-        <b-row class="bg-light-blue formheader">
-          <b-col cols="4" class="p-0 text-left"></b-col>
-          <b-col cols="4" class="p-0 text-center font-weight-bold">
-            <h3 class="text-white">{{ formTitle }}</h3>
-          </b-col>
-          <b-col cols="4" class="p-0 text-right"></b-col>
-        </b-row>
-        <div class="p-4">
-          <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
-          <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
-          <p class="font-weight-bolder h4 text-danger">
-            <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine. Please limit the form names to 64 character length.</em>
+    <b-form class="bg-light w-100 h-100 p-0" @submit="onSubmit">
+      <b-row class="bg-light-blue formheader">
+        <b-col cols="4" class="p-0 text-left"></b-col>
+        <b-col cols="4" class="p-0 text-center font-weight-bold">
+          <h3 class="text-white">{{ formTitle }}</h3>
+        </b-col>
+        <b-col cols="4" class="p-0 text-right"></b-col>
+      </b-row>
+      <div class="p-4">
+        <b-alert v-model="formError" variant="danger" dismissible>Please correct the Form</b-alert>
+        <p v-show="formAccount" class="font-weight-bolder h4">Please complete and submit the forms for each account you require.</p>
+        <p class="font-weight-bolder h4 text-danger">
+          <em>Downloaded Forms <u>must</u> be opened by the Adobe Acrobat Reader DC program on your local machine. Please limit the form names to 64 character length.</em>
+        </p>
+        <div v-show="formAccount">
+          <p class="h5">***Only for individuals sitting in AFRL***</p>
+          <p class="h5">Please complete the DD2875 Form through Box 12</p>
+          <p class="h5">All forms must be signed by a CAC.</p>
+        </div>
+        <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
+        <div v-show="formSCI">
+          <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted.</p>
+          <ul>
+            <li>
+              <p class="h5">
+                Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
+              </p>
+            </li>
+            <li>
+              <p class="h5">If an individual(s) is not read in to an AFRL contract(s), a nomination form with a prescreen is required. Individual must have a final TS clearance. Complete cells 1,2,4,6,11,12,13, 14 and 15. The SMO listed in box 11 must be a level 2 or 3. <strong>DO NOT sign these forms.</strong></p>
+            </li>
+          </ul>
+        </div>
+        <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+          <p class="h6">
+            Security has been notified that you will be working on the F3I-2 contract and your position requires you to have a TS clearance and be indoctrinated for SCI accesses. In order to process your clearance and access for this effort the customer has requested a completed SCI pre-screening questionnaire. The SCI pre-screening interview is
+            used to bring a previous investigation up-to-date when there is no current investigative information available.
           </p>
-          <div v-show="formAccount">
-            <p class="h5">***Only for individuals sitting in AFRL***</p>
-            <p class="h5">Please complete the DD2875 Form through Box 12</p>
-            <p class="h5">All forms must be signed by a CAC.</p>
-          </div>
-          <p v-show="formCAC" class="font-italic h5">Please fill in section 1 (do not change pre-filled out information).</p>
-          <div v-show="formSCI">
-            <p class="h5">For those who require SCI access on this contract, SCI forms <u>must</u> be submitted.</p>
-            <ul>
-              <li>
-                <p class="h5">
-                  Use a transfer form if an individual is transferring from one AFRL contract to another AFRL contract. If the individual requires access on multiple AFRL contracts, please notate that on the transfer form in the remark section.
-                </p>
-              </li>
-              <li>
-                <p class="h5">If an individual(s) is not read in to an AFRL contract(s), a nomination form with a prescreen is required. Individual must have a final TS clearance. Complete cells 1,2,4,6,11,12,13, 14 and 15. The SMO listed in box 11 must be a level 2 or 3. <strong>DO NOT sign these forms.</strong></p>
-              </li>
-            </ul>
-          </div>
-          <div v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-            <p class="h6">
-              Security has been notified that you will be working on the F3I-2 contract and your position requires you to have a TS clearance and be indoctrinated for SCI accesses. In order to process your clearance and access for this effort the customer has requested a completed SCI pre-screening questionnaire. The SCI pre-screening interview is
-              used to bring a previous investigation up-to-date when there is no current investigative information available.
-            </p>
-            <p class="h6">
-              Page 1: Fill in Last name, First Name, MI, SSN, DOB and POB only. Grade, AFSC, and Unit are not needed.
-            </p>
-            <p class="h6">
-              Page 2: Sign in SCI nominee box and <strong><em>NOT</em></strong> in the <mark><strong>Recertification at time of Indoctrination</strong></mark> section at this time.
-            </p>
-            <p class="h6">
-              Page 3: Be sure to initial and date along the top. Ensure all questions are answered. For questions with yes answers (with the exception of question 5) please provide a full narrative explanation on the next page. Answer no to question 5 if you attended counseling for marital, family, grief, victim of sexual assault, or PTSD.
-            </p>
-          </div>
-          <b-form-row>
-            <b-col cols="6">
-              <b-form-group label="Company: " label-for="formCompany">
-                <!-- Need to load personnel dropdown after making selection of company -->
-                <div v-if="!isSubcontractor">
-                  <b-form-select id="formCompany" v-model="form.Company" @change="getPersonnelByCompany" :options="companies" required></b-form-select>
-                  <b-form-invalid-feedback>
-                    Select a Company.
-                  </b-form-invalid-feedback>
-                </div>
-                <div v-if="isSubcontractor">
-                  <b-form-input id="formCompany" v-model="form.Company" value="{{ form.Company }}" disabled></b-form-input>
-                  <b-form-invalid-feedback>
-                    Please use your current Company.
-                  </b-form-invalid-feedback>
-                </div>
-              </b-form-group>
-              <b-form-group v-if="isSecurity && formAccount" label="Historical Data: " label-for="formHistorical">
-                <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
-              </b-form-group>
-            </b-col>
-            <b-col cols="6">
-              <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
-              <b-form-group label="Type: " label-for="formType">
-                <div v-if="formAccount">
-                  <b-form-select id="formType" v-model="form.Type" :options="accountOptions" :state="ValidateMe('Type')" required></b-form-select>
-                  <b-form-invalid-feedback>
-                    Select an Account Type.
-                  </b-form-invalid-feedback>
-                </div>
-                <div v-if="formCAC || formSCI">
-                  <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
-                </div>
-                <!-- if the formSCI === 'Transfer', add a checkbox to denote it is for multiple people. If that checkbox is set to true then show three personnel selections which are added to an array. JSON stringify the array and add to SecuritySCITransfer -->
-                <div v-if="formSCI">
-                  <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
-                  <b-form-invalid-feedback>
-                    Select an SCI Option.
-                  </b-form-invalid-feedback>
-                </div>
-              </b-form-group>
-              <p v-show="form.Type == 'JWICS'" class="h5">***For all individuals on F3I-2***</p>
-              <div id="masterDocs" v-show="this.form.Type !== 'Select...'">
-                <p>Download Form Templates</p>
-                <ul>
-                  <li v-show="form.Type == 'NIPR'">
-                    <a :href="this.masterDocs + '/DD2875-NIPRNet.pdf'">DD2875</a>
-                  </li>
-                  <li v-show="form.Type == 'NIPR'">
-                    <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
-                  </li>
-                  <li v-show="form.Type == 'SIPR'">
-                    <a :href="this.masterDocs + '/DD2875-SIPRNet.pdf'">DD2875</a>
-                  </li>
-                  <li v-show="form.Type == 'SIPR'">
-                    <a :href="this.masterDocs + '/SIPREssentialsSign.pdf'">SIPR Essentials</a>
-                  </li>
-                  <li v-show="form.Type == 'SIPR'">
-                    <a :href="this.masterDocs + '/SIPRTraining.pdf'">SIPR Training</a>
-                  </li>
-                  <li v-show="form.Type == 'DREN'">
-                    <a :href="this.masterDocs + '/DD2875-DREN.pdf'">DD2875</a>
-                  </li>
-                  <li v-show="form.Type == 'JWICS'">
-                    <a :href="this.masterDocs + '/DD2875-JWICS.pdf'">DD2875</a>
-                  </li>
-                  <li v-show="form.Type == 'JWICS'">
-                    <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
-                  </li>
-                  <li v-show="form.Type == 'JWICS' || form.Type == 'NIPR'">
-                    <a href="https://public.cyber.mil/training/cyber-awareness-challenge/" target="_blank">Cyber Awareness Challenge</a>
-                  </li>
-                  <li v-show="form.Type == 'CAC'">
-                    <a :href="this.masterDocs + '/TASS-Form.pdf'">TASS Form</a>
-                  </li>
-                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-                    <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
-                  </li>
-                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
-                    <a :href="this.masterDocs + '/SCIContractTransferForm-BlanktoF3I2.pdf'">SCI Contract Transfer Form</a>
-                  </li>
-                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
-                    <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form</a>
-                  </li>
-                  <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
-                    <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
-                  </li>
-                </ul>
+          <p class="h6">
+            Page 1: Fill in Last name, First Name, MI, SSN, DOB and POB only. Grade, AFSC, and Unit are not needed.
+          </p>
+          <p class="h6">
+            Page 2: Sign in SCI nominee box and <strong><em>NOT</em></strong> in the <mark><strong>Recertification at time of Indoctrination</strong></mark> section at this time.
+          </p>
+          <p class="h6">
+            Page 3: Be sure to initial and date along the top. Ensure all questions are answered. For questions with yes answers (with the exception of question 5) please provide a full narrative explanation on the next page. Answer no to question 5 if you attended counseling for marital, family, grief, victim of sexual assault, or PTSD.
+          </p>
+        </div>
+        <b-form-row>
+          <b-col cols="6">
+            <b-form-group label="Company: " label-for="formCompany">
+              <!-- Need to load personnel dropdown after making selection of company -->
+              <div v-if="!isSubcontractor">
+                <b-form-select id="formCompany" v-model="form.Company" @change="getPersonnelByCompany" :options="companies" required></b-form-select>
+                <b-form-invalid-feedback>
+                  Select a Company.
+                </b-form-invalid-feedback>
               </div>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="6" v-show="form.SCIType === 'Transfer'">
-              <b-form-group label="Multiple Persons in SCI Transfer? " label-for="sciTransferMP">
-                <b-form-checkbox v-model="sciTransferMP" value="Yes" unchecked-value="No" ref="sciTransferMP" id="sciTransferMP" @input="loadSCITransferFilteredData" switch></b-form-checkbox>
-              </b-form-group>
-            </b-col>
-            <b-col cols="6" v-show="sciTransferMP === 'Yes'">
-              <!-- add a filtering system here -->
-              <b-input-group v-on:submit.native.prevent>
-                <b-form-input id="sciTransferMPFilter" v-on:submit.native.prevent v-model="sciTransferFilterInput" placeholder="Search" type="text" @keyup.native="sciTransferFiltering"></b-form-input>
-                <b-input-group-append>
-                  <b-button variant="primary" v-on:submit.native.prevent @click="sciTransferSearchFiltering($event)">Search</b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="12" v-show="sciTransferMP === 'Yes'">
-              <!-- One idea is to have a component that would allow for the user to click add person and a new dropdown would be added -->
-              <!-- The other option is to dynamically render a grid of checkboxes which will reduce the amount of clicks -->
-              <b-row v-for="col in personnelColumns" :key="col.index">
-                <b-col v-for="(person, index) in col" :key="index" cols="2">
-                  <div v-if="person !== undefined && person !== null && person.value !== 'S'" class="mb-1">
-                    <b-form-checkbox v-model="sciTransferPersons" :id="person.value" :name="person.value" :value="person.value + '-' + person.text">{{ person.text }}</b-form-checkbox>
-                  </div>
-                </b-col>
-              </b-row>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="6">
-              <b-form-group v-if="sciTransferMP === 'No'">
-                <b-form-group label="Form submission is for another Person: " label-for="formSetName">
-                  <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
-                </b-form-group>
-              </b-form-group>
-            </b-col>
-            <b-col cols="6" v-if="sciTransferMP === 'No'">
-              <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
-              <div v-if="form.setName === 'Yes'">
-                <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
-                  <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
-                    <b-dropdown-form v-on:submit.native.prevent>
-                      <b-input-group>
-                        <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" v-on:submit.native.prevent @keyup.native="filtering"></b-form-input>
-                        <b-input-group-append>
-                          <b-button variant="primary" v-on:submit.native.prevent @click="searchFiltering($event)">Search</b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-dropdown-form>
-                    <b-dropdown-divider></b-dropdown-divider>
-                    <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
-                  </b-dropdown>
-                  <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
-                  <b-form-invalid-feedback>
-                    Select a Person
-                  </b-form-invalid-feedback>
-                </b-form-group>
+              <div v-if="isSubcontractor">
+                <b-form-input id="formCompany" v-model="form.Company" value="{{ form.Company }}" disabled></b-form-input>
+                <b-form-invalid-feedback>
+                  Please use your current Company.
+                </b-form-invalid-feedback>
               </div>
-              <div v-if="form.setName === 'No'">
-                <b-form-group label="Your Name: " label-for="formPerson">
-                  <b-form-input id="formName" v-model="form.Name" disabled />
-                </b-form-group>
+            </b-form-group>
+            <b-form-group v-if="isSecurity && formAccount" label="Historical Data: " label-for="formHistorical">
+              <b-form-checkbox v-model="form.Historical" value="Yes" unchecked-value="No" ref="formHistorical" id="formHistorical" switch></b-form-checkbox>
+            </b-form-group>
+          </b-col>
+          <b-col cols="6">
+            <!-- account Type should only be loaded for the account form. Build out some nifty logic that will separate this from -->
+            <b-form-group label="Type: " label-for="formType">
+              <div v-if="formAccount">
+                <b-form-select id="formType" v-model="form.Type" :options="accountOptions" :state="ValidateMe('Type')" required></b-form-select>
+                <b-form-invalid-feedback>
+                  Select an Account Type.
+                </b-form-invalid-feedback>
               </div>
-            </b-col>
+              <div v-if="formCAC || formSCI">
+                <b-form-input id="formType" v-model="form.Type" class="hidden" disabled></b-form-input>
+              </div>
+              <!-- if the formSCI === 'Transfer', add a checkbox to denote it is for multiple people. If that checkbox is set to true then show three personnel selections which are added to an array. JSON stringify the array and add to SecuritySCITransfer -->
+              <div v-if="formSCI">
+                <b-form-select id="SCIType" v-model="form.SCIType" :options="sciOptions" :state="ValidateMe('SCIType')" required></b-form-select>
+                <b-form-invalid-feedback>
+                  Select an SCI Option.
+                </b-form-invalid-feedback>
+              </div>
+            </b-form-group>
+            <p v-show="form.Type == 'JWICS'" class="h5">***For all individuals on F3I-2***</p>
+            <div id="masterDocs" v-show="this.form.Type !== 'Select...'">
+              <p>Download Form Templates</p>
+              <ul>
+                <li v-show="form.Type == 'NIPR'">
+                  <a :href="this.masterDocs + '/DD2875-NIPRNet.pdf'">DD2875</a>
+                </li>
+                <li v-show="form.Type == 'NIPR'">
+                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
+                </li>
+                <li v-show="form.Type == 'SIPR'">
+                  <a :href="this.masterDocs + '/DD2875-SIPRNet.pdf'">DD2875</a>
+                </li>
+                <li v-show="form.Type == 'SIPR'">
+                  <a :href="this.masterDocs + '/SIPREssentialsSign.pdf'">SIPR Essentials</a>
+                </li>
+                <li v-show="form.Type == 'SIPR'">
+                  <a :href="this.masterDocs + '/SIPRTraining.pdf'">SIPR Training</a>
+                </li>
+                <li v-show="form.Type == 'DREN'">
+                  <a :href="this.masterDocs + '/DD2875-DREN.pdf'">DD2875</a>
+                </li>
+                <li v-show="form.Type == 'JWICS'">
+                  <a :href="this.masterDocs + '/DD2875-JWICS.pdf'">DD2875</a>
+                </li>
+                <li v-show="form.Type == 'JWICS'">
+                  <a :href="this.masterDocs + '/af4394.pdf'">AF4394</a>
+                </li>
+                <li v-show="form.Type == 'JWICS' || form.Type == 'NIPR'">
+                  <a href="https://public.cyber.mil/training/cyber-awareness-challenge/" target="_blank">Cyber Awareness Challenge</a>
+                </li>
+                <li v-show="form.Type == 'CAC'">
+                  <a :href="this.masterDocs + '/TASS-Form.pdf'">TASS Form</a>
+                </li>
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+                  <a :href="this.masterDocs + '/AF-PSI-Form.pdf'">AF PSI Form</a>
+                </li>
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Transfer'">
+                  <a :href="this.masterDocs + '/SCIContractTransferForm-BlanktoF3I2.pdf'">SCI Contract Transfer Form</a>
+                </li>
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Nomination'">
+                  <a :href="this.masterDocs + '/SCI-Nomination-Form.pdf'">SCI Nomination Form</a>
+                </li>
+                <li v-show="form.Type == 'SCI' && form.SCIType == 'Visit Request'">
+                  <a :href="this.masterDocs + '/SSO-Visit-Form.pdf'">SSO Visit Form</a>
+                </li>
+              </ul>
+            </div>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col cols="6" v-show="form.SCIType === 'Transfer'">
+            <b-form-group label="Multiple Persons in SCI Transfer? " label-for="sciTransferMP">
+              <b-form-checkbox v-model="sciTransferMP" value="Yes" unchecked-value="No" ref="sciTransferMP" id="sciTransferMP" @input="loadSCITransferFilteredData" switch></b-form-checkbox>
+            </b-form-group>
+          </b-col>
+          <b-col cols="6" v-show="sciTransferMP === 'Yes'">
+            <!-- add a filtering system here -->
+            <b-input-group v-on:submit.native.prevent>
+              <b-form-input id="sciTransferMPFilter" v-on:submit.native.prevent v-model="sciTransferFilterInput" placeholder="Search" type="text" @keyup.native="sciTransferFiltering"></b-form-input>
+              <b-input-group-append>
+                <b-button variant="primary" v-on:submit.native.prevent @click="sciTransferSearchFiltering($event)">Search</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col cols="12" v-show="sciTransferMP === 'Yes'">
+            <!-- One idea is to have a component that would allow for the user to click add person and a new dropdown would be added -->
+            <!-- The other option is to dynamically render a grid of checkboxes which will reduce the amount of clicks -->
+            <b-row v-for="col in personnelColumns" :key="col.index">
+              <b-col v-for="(person, index) in col" :key="index" cols="2">
+                <div v-if="person !== undefined && person !== null && person.value !== 'S'" class="mb-1">
+                  <b-form-checkbox v-model="sciTransferPersons" :id="person.value" :name="person.value" :value="person.value + '-' + person.text">{{ person.text }}</b-form-checkbox>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col cols="6">
+            <b-form-group v-if="sciTransferMP === 'No'">
+              <b-form-group label="Form submission is for another Person: " label-for="formSetName">
+                <b-form-checkbox id="formSetName" v-model="form.setName" value="Yes" unchecked-value="No" @input="loadFilterData" switch></b-form-checkbox>
+              </b-form-group>
+            </b-form-group>
+          </b-col>
+          <b-col cols="6" v-if="sciTransferMP === 'No'">
+            <input type="hidden" id="formPerson" v-model="form.PersonnelID" />
+            <div v-if="form.setName === 'Yes'">
+              <b-form-group v-on:submit.native.prevent label="Select Person: " label-for="formPerson">
+                <b-dropdown id="formDropdownPerson" block variant="outline-dark" :text="person ? person : 'Personnel'" v-model="form.PersonSelect">
+                  <b-dropdown-form v-on:submit.native.prevent>
+                    <b-input-group>
+                      <b-form-input id="personnelFiltering" v-model="personnelFiltering" placeholder="Name" type="text" v-on:submit.native.prevent @keyup.native="filtering"></b-form-input>
+                      <b-input-group-append>
+                        <b-button variant="primary" v-on:submit.native.prevent @click="searchFiltering($event)">Search</b-button>
+                      </b-input-group-append>
+                    </b-input-group>
+                  </b-dropdown-form>
+                  <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-item v-for="person in filteredData" :key="person.value" :value="person.value" @click="onPersonnelChange(person.value)">{{ person.text }}</b-dropdown-item>
+                </b-dropdown>
+                <!--<b-select id="formPerson" v-model="form.PersonSelect" @change="onPersonnelChange" @keyup.native="filtering" :options="filteredData"></b-select>-->
+                <b-form-invalid-feedback>
+                  Select a Person
+                </b-form-invalid-feedback>
+              </b-form-group>
+            </div>
+            <div v-if="form.setName === 'No'">
+              <b-form-group label="Your Name: " label-for="formPerson">
+                <b-form-input id="formName" v-model="form.Name" disabled />
+              </b-form-group>
+            </div>
+          </b-col>
+        </b-form-row>
+        <div v-if="formCAC" class="m-1 p-1">
+          <b-form-row v-if="formCAC">
+            <!-- list a series of questions for the user to fill out -->
+            <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
+              <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
+            </b-form-group>
           </b-form-row>
-          <div v-if="formCAC" class="m-1 p-1">
-            <b-form-row v-if="formCAC">
-              <!-- list a series of questions for the user to fill out -->
-              <b-form-group label="Do you currently have a CAC? " label-for="formCACValid">
-                <b-form-select id="formCACValid" v-model="form.CACValid" :options="cacvalid"> </b-form-select>
-              </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="form.CACValid === 'Yes'">
-              <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
-                <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-              </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="form.CACValid === 'Yes'">
-              <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
-                <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
-              </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="form.CACValid === 'No'">
-              <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
-                <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
-              </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-              <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
-                <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
-              </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
-              <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
-                <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
-              </b-form-group>
-            </b-form-row>
-          </div>
-          <b-form-row>
-            <b-col>
-              <b-form-group class="pt-3">
-                <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
-              </b-form-group>
-            </b-col>
+          <b-form-row v-if="form.CACValid === 'Yes'">
+            <b-form-group label="Who was the CAC Issued By? " label-for="formCACIssuedBy">
+              <b-form-input id="formCACIssuedBy" type="text" v-model="form.CACIssuedBy" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+            </b-form-group>
           </b-form-row>
-          <b-form-row>
-            <b-col cols="10"></b-col>
-            <b-col cols="2">
-              <b-button variant="danger" class="formbutton" @click="closeForm">Cancel</b-button>
-              <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
-            </b-col>
+          <b-form-row v-if="form.CACValid === 'Yes'">
+            <b-form-group label="When does it expire? " label-for="formCACExpirationDate">
+              <ejs-datepicker id="formCACExpirationDate" v-model="form.CACExpirationDate"></ejs-datepicker>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACValid === 'No'">
+            <b-form-group label="Have you ever had a CAC? " label-for="formCACExpirationDate">
+              <b-form-select id="formCACValid" v-model="form.CACEver" :options="cacever"> </b-form-select>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+            <b-form-group label="When was it turned in? " label-for="formCACExpiredOnDate">
+              <ejs-datepicker id="formCACExpiredOnDate" v-model="form.CACExpiredOnDate"></ejs-datepicker>
+            </b-form-group>
+          </b-form-row>
+          <b-form-row v-if="form.CACEver === 'Yes' && form.CACValid === 'No'">
+            <b-form-group label="Where was it turned in? " label-for="formCACTurnedInLoc">
+              <b-form-input id="formCACTurnedInLoc" type="text" v-model="form.CACTurnedIn" placeholder="AF, NAVY, Langley AFB, etc..."></b-form-input>
+            </b-form-group>
           </b-form-row>
         </div>
+        <b-form-row>
+          <b-col>
+            <b-form-group class="pt-3">
+              <ejs-uploader id="formFileUpload" name="formFileUpload" :selected="onFileSelect" :multiple="true"></ejs-uploader>
+            </b-form-group>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col cols="10"></b-col>
+          <b-col cols="2">
+            <b-button variant="danger" class="formbutton" @click="closeForm">Cancel</b-button>
+            <b-button :disabled="lockSubmit" variant="success" class="formbutton" @click="onFormSubmit">Submit</b-button>
+          </b-col>
+        </b-form-row>
       </div>
     </b-form>
   </b-container>
