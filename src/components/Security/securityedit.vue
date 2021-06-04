@@ -781,8 +781,7 @@ export default {
       this.SCIStatus = 'Indoc Assist Pending'
     },
     async statusChange() {
-      if (console) console.log('STATUS CHANGED: ' + this.SCIStatus + ' ' + this.CACStatus)
-      if (this.SCIStatus !== '' && this.CACStatus !== '') {
+      if (this.SCIStatus !== '' && this.SCIStatus !== null && this.CACStatus !== '' && this.CACStatus !== null) {
         this.statusesUpdated = true
       }
     },
