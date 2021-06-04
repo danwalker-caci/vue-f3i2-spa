@@ -681,8 +681,8 @@ export default {
                   })
                   let payload = {
                     Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-                    AssignedToId: 25, // TESTING TASK
-                    //AssignedToId: taskUserId,
+                    //AssignedToId: 25, // TESTING TASK
+                    AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -702,8 +702,8 @@ export default {
                     console.log('ERROR: ' + error.message)
                   })
                   let emailPayload = {
-                    //emails: taskEmail,
-                    emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                    emails: taskEmail,
+                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       persons +
@@ -877,8 +877,8 @@ export default {
                   data.SCI.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                   let payload = {
                     Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
-                    //AssignedToId: taskUserId,
-                    AssignedToId: 25, // TESTING TASK
+                    AssignedToId: taskUserId,
+                    //AssignedToId: 25, // TESTING TASK
                     Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -898,8 +898,8 @@ export default {
                     console.log('ERROR: ' + error.message)
                   })
                   let emailPayload = {
-                    //emails: taskEmail,
-                    emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                    emails: taskEmail,
+                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>AFRL Completed ' +
                       persons +
@@ -1131,8 +1131,8 @@ export default {
                     data.SCI.GovRejectReason = vm2.GovRejectReason
                     let payload = {
                       Title: 'Government Reject ' + persons + ' ' + vm2.GovRejectType + ' Request',
-                      //AssignedToId: taskUserId,
-                      AssignedToId: 25, // TESTING TASK
+                      AssignedToId: taskUserId,
+                      //AssignedToId: 25, // TESTING TASK
                       Description: 'Reason: ' + vm2.GovRejectReason,
                       IsMilestone: false,
                       PercentComplete: 0,
@@ -1152,8 +1152,8 @@ export default {
                       console.log('ERROR: ' + error.message)
                     })
                     let emailPayload = {
-                      emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
-                      //emails: taskEmail,
+                      //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                      emails: taskEmail,
                       body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
                       subject: '(F3I-2 Portal) Government Rejected ' + vm2.GovRejectType + ' Request'
                     }

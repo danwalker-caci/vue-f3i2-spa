@@ -682,8 +682,8 @@ export default {
         if (vm.form.Historical !== 'Yes') {
           let taskPayload = {
             Title: 'Approve SCI Transfer Submission for ' + persons,
-            AssignedToId: 25, // Hardcoding the Security Group
-            //AssignedToId: this.taskUserId,
+            //AssignedToId: 25, // Hardcoding the Security Group
+            AssignedToId: this.taskUserId,
             Description: 'Approve or reject SCI Transfer request for ' + persons,
             IsMilestone: false,
             PercentComplete: 0,
@@ -703,8 +703,8 @@ export default {
             console.log('ERROR: ' + error.message)
           })
           let emailPayload = {
-            //emails: this.taskEmail,
-            emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+            emails: this.taskEmail,
+            //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               persons +
