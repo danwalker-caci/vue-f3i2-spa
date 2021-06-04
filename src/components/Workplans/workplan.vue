@@ -160,7 +160,7 @@
                   width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Actions" textAlign="Left" minWidth="50" :template="ActionsTemplate"></e-column>
+                    <e-column headerText="Actions" textAlign="Left" width="50" :template="ActionsTemplate"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Revision" headerText="Rev" textAlign="Left" minWidth="25"></e-column>
@@ -203,7 +203,7 @@
                   width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Number" headerText="Number" minWidth="100"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minwidth="200"></e-column>
                     <e-column field="Revision" headerText="Revision" textAlign="Left" minWidth="100"></e-column>

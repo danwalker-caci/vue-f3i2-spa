@@ -99,8 +99,8 @@
                   width="100%"
                 >
                   <e-columns>
-                    <e-column headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
-                    <e-column field="Status" headerText="Status" minWidth="150"></e-column>
+                    <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+                    <e-column field="Status" headerText="Status" width="150"></e-column>
                     <e-column field="Title" headerText="Title" textAlign="Left" minWidth="400"></e-column>
                     <e-column field="WorkPlanNumber" headerText="Workplan Number" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="WorkPlanText" headerText="Workplan Name" textAlign="Left" minWidth="250"></e-column>
