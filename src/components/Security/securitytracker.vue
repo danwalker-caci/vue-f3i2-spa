@@ -1359,10 +1359,11 @@ export default {
                     d[this.selectedSecurityFormType].forms = []
                   } else {
                     var date = new Date()
+                    var month = date.getUTCMonth() + 1
                     // Create the Security Form Type for upload
                     d[this.selectedSecurityFormType] = {
                       GovSentDate: 'N/A',
-                      GovCompleteDate: 'Completed On: ' + date.getUTCMonth() + 1 + '/' + date.getUTCDate() + '/' + date.getUTCFullYear(),
+                      GovCompleteDate: 'Completed On: ' + month + '/' + date.getUTCDate() + '/' + date.getUTCFullYear(),
                       GovRejectDate: '',
                       forms: []
                     }
