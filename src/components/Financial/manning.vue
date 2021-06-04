@@ -94,7 +94,7 @@
                   width="100%"
                 >
                   <e-columns>
-                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" minWidth="100" :template="ActionsTemplate"></e-column>
+                    <e-column :allowEditing="false" headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
                     <e-column field="Title" :visible="false" headerText="Title" textAlign="Left" minWidth="300"></e-column>
                     <e-column field="Number" :visible="false" headerText="Number" minWidth="100"></e-column>
                     <e-column field="MasterEffort" headerText="Master Effort" textAlign="Left" minminWidth="50" :edit="MEParams"></e-column>
