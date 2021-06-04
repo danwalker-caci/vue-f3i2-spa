@@ -1173,7 +1173,7 @@ export default {
                       push: true
                     }
                     vm.$store.dispatch('notification/add', notification, { root: true })
-                    vm2.showGovReject = true
+                    vm2.showGovReject = false
                   } else {
                     switch (vm2.GovRejectType) {
                       case 'NIPR':
