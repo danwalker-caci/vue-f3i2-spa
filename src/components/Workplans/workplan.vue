@@ -817,7 +817,6 @@ export default {
           this.originalRowData = Object.assign({}, args.rowData)
           break
         case 'save':
-          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
           this.showIncrementAlert = false
           if (activeObj.value) {
             let newActive = Object.assign({}, { value: activeObj.value })
@@ -854,25 +853,25 @@ export default {
             let newPopEnd = Object.assign({}, { value: popEndObj.value })
             this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
           } else {
-            this.rowData.POPEnd = null
+            this.rowData.POPEnd = this.originalRowData.POPEnd ? this.originalRowData.POPEnd : null
           }
           if (popStartObj.value) {
             let newPopStart = Object.assign({}, { value: popStartObj.value })
             this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
           } else {
-            this.rowData.POPStart = null
+            this.rowData.POPStart = this.originalRowData.POPStart ? this.originalRowData.POPStart : null
           }
           if (dateApprovedObj.value) {
             let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
             this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
           } else {
-            this.rowData.DateApproved = null
+            this.rowData.DateApproved = this.originalRowData.DateApproved ? this.originalRowData.DateApproved : null
           }
           if (submitDateObj && submitDateObj.value) {
             let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
             this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
           } else {
-            this.rowData.CACISubmittedDate = null
+            this.rowData.CACISubmittedDate = this.originalRowData.CACISubmittedDate ? this.originalRowData.CACISubmittedDate : null
           }
           this.rowData.Revision = args.rowData.Revision
 
@@ -880,9 +879,9 @@ export default {
             this.rowData.Increment = args.rowData.Increment
           } else if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
             this.showIncrementAlert = true
-            this.rowData.Increment = null
+            this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           } else {
-            this.rowData.Increment = null
+            this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           }
           this.rowData.Title = args.rowData.Title
           this.rowData.Comments = args.rowData.Comments
