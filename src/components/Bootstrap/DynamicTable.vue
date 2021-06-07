@@ -436,8 +436,12 @@ export default {
           headers: { Accept: 'application/json; odata=verbose' }
         })
         let digest = response.data.d.GetContextWebInformation.FormDigestValue
-        let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/folders('" + vm.user[0].Company + "')/Files/Add"
-        // let url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/Files/Add"
+        let url = ''
+        if (vm.table.hasFolders) {
+          url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/folders('" + vm.user[0].Company + "')/Files/Add" // TODO: Update if needed more complex folder hierarchy
+        } else {
+          url = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('" + vm.table.list + "')/RootFolder/Files/Add"
+        }
         let part = "(url='"
         part += vm.fileName + "',overwrite=true)"
         url = url + part

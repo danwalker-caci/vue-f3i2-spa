@@ -18,6 +18,9 @@ export default {
     if (this.mode == 'dropoff') {
       this.$router.push({ name: 'DropoffLibrary' })
     }
+    if (this.mode == 'documents') {
+      this.$router.push({ name: 'GovernmentLibrary' })
+    }
   }
 }
 </script>
