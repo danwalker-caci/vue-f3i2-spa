@@ -1103,7 +1103,7 @@ export default {
                         submitterId.push(sciTransfer.Form.forms[s].submitterId)
                         submitterEmail.push(sciTransfer.Form.forms[s].submitterEmail)
                       }
-                      this.deleteForm(sciTransfer.Form.forms[s])
+                      await this.deleteForm(sciTransfer.Form.forms[s])
                     }
                     sciTransfer.Form.forms = []
                     this.scigroup.forEach(user => {
@@ -1186,7 +1186,7 @@ export default {
                             submitterId.push(data.NIPR.forms[nipr].submitterId)
                             submitterEmail.push(data.NIPR.forms[nipr].submitterEmail)
                           }
-                          this.deleteForm(data.NIPR.forms[nipr])
+                          await this.deleteForm(data.NIPR.forms[nipr])
                         }
                         data.NIPR.forms = []
                         break
@@ -1200,7 +1200,7 @@ export default {
                             submitterId.push(data.SIPR.forms[sipr].submitterId)
                             submitterEmail.push(data.SIPR.forms[sipr].submitterEmail)
                           }
-                          this.deleteForm(data.SIPR.forms[sipr])
+                          await this.deleteForm(data.SIPR.forms[sipr])
                         }
                         data.SIPR.forms = []
                         break
@@ -1214,7 +1214,7 @@ export default {
                             submitterId.push(data.DREN.forms[dren].submitterId)
                             submitterEmail.push(data.DREN.forms[dren].submitterEmail)
                           }
-                          this.deleteForm(data.DREN.forms[dren])
+                          await this.deleteForm(data.DREN.forms[dren])
                         }
                         data.DREN.forms = []
                         break
@@ -1228,7 +1228,7 @@ export default {
                             submitterId.push(data.JWICS.forms[jwics].submitterId)
                             submitterEmail.push(data.JWICS.forms[jwics].submitterEmail)
                           }
-                          this.deleteForm(data.JWICS.forms[jwics])
+                          await this.deleteForm(data.JWICS.forms[jwics])
                         }
                         data.JWICS.forms = []
                         break
@@ -1242,7 +1242,7 @@ export default {
                             submitterId.push(data.SCI.forms[sci].submitterId)
                             submitterEmail.push(data.SCI.forms[sci].submitterEmail)
                           }
-                          this.deleteForm(data.SCI.forms[sci])
+                          await this.deleteForm(data.SCI.forms[sci])
                         }
                         data.SCI.forms = []
                         break
@@ -1256,7 +1256,7 @@ export default {
                             submitterId.push(data.CAC.forms[cac].submitterId)
                             submitterEmail.push(data.CAC.forms[cac].submitterEmail)
                           }
-                          this.deleteForm(data.CAC.forms[cac])
+                          await this.deleteForm(data.CAC.forms[cac])
                         }
                         data.CAC.forms = []
                         break
@@ -1363,29 +1363,24 @@ export default {
                     case 'NIPR':
                       // set the url for the post of file
                       this.library = 'AccountsNIPR'
-                      this.libraryUrl = url + '/AccountsNIPR/'
                       break
                     case 'SIPR':
                       this.library = 'AccountsSIPR'
-                      this.libraryUrl = url + '/AccountsDREN/'
                       break
                     case 'DREN':
                       this.library = 'AccountsDREN'
-                      this.libraryUrl = url + '/AccountsSIPR/'
                       break
                     case 'JWICS':
                       this.library = 'AccountsJWICS'
-                      this.libraryUrl = url + '/AccountsJWICS/'
                       break
                     case 'CAC':
                       this.library = 'CACForms'
-                      this.libraryUrl = url + '/CACForms/'
                       break
                     case 'SCI':
                       this.library = 'SCIForms'
-                      this.libraryUrl = url + '/SCIForms/'
                       break
                   }
+                  this.libraryUrl = url + '/' + this.library + '/'
                   // loop and upload all attached files
 
                   await this.asyncForEach(this.files, async file => {
