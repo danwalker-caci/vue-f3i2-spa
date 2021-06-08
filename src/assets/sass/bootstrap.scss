@@ -222,6 +222,28 @@ input[type=button], input[type=reset], input[type=submit], button {
   table-layout: fixed;
 }
 
+/* #region WP Status Colors */
+
+.wp-approved {
+  background-color: #45b85e !important;
+  color: #fff !important;
+}
+
+.wp-caci-updating {
+  background-color: #c94d20 !important;
+  color: #fff !important;
+}
+
+.wp-caci-submitted {
+  background-color: #E7B129;
+  color: #000;
+}
+
+.wp-waiting-on-work-plan {
+  background-color: #970000 !important;
+  color: #fff !important;
+}
+
 /* #region Travel Status Colors */
 
 .travel-Completed {
