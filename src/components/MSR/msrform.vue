@@ -3774,7 +3774,6 @@ export default {
     },
     async publishMSR() {
       this.fileName = this.WorkplanNumber + '-' + this.msr.Month + '-' + this.msr.Year + '.docx'
-      this.fileDigest = await MSR.dispatch('getDigest')
       let y = String(
         this.$moment()
           .subtract(1, 'months')
@@ -4407,8 +4406,14 @@ export default {
       documentCreator.loadImages().then(baboon => {
         const doc = documentCreator.create()
         Packer.toBlob(doc).then(blob => {
-          vm.getFileBuffer(blob).then(function(b) {
+          vm.getFileBuffer(blob).then(async function(b) {
             vm.fileBuffer = b
+            let response = await axios.request({
+              url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
+              method: 'post',
+              headers: { Accept: 'application/json; odata=verbose' }
+            })
+            vm.fileDigest = response.data.d.GetContextWebInformation.FormDigestValue
             vm.uploadMSR(vm.fileName, vm.fileBuffer, vm.fileDigest).then(function(response) {
               console.log('FILE UPLOADED: ' + response)
               // TODO: Update the MSR Document with appropriate metadata
