@@ -385,7 +385,7 @@ export default {
       })
   },
   // TO DO: include type, form id, personnel id and update JSON object
-  ApproveForm(payload, digest) {
+  async ApproveForm(payload, digest) {
     let endpoint = payload.uri
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
@@ -416,9 +416,9 @@ export default {
         store.dispatch('notification/add', notification, { root: true })
       })
   },
-  DeleteForm(payload, digest) {
+  async DeleteForm(payload, digest) {
+    // First check if form is available
     let endpoint = absurl + "/_api/web/GetFileByServerRelativeUrl('" + relurl + '/' + payload.library + '/' + payload.name + "')"
-    //let endpoint = formurlstart + payload.library + "')/items(" + payload.id + ')'
     let headers = {
       'Content-Type': 'application/json;odata=verbose',
       Accept: 'application/json;odata=verbose',
@@ -429,19 +429,21 @@ export default {
     let config = {
       headers: headers
     }
-    return axios
+    return await axios
       .post(endpoint, null, config)
       .then(function(response) {
         return response
       })
       .catch(function(error) {
-        const notification = {
-          type: 'danger',
-          title: 'Security Service Error: ' + error,
-          message: 'Error Approving Security Form Data',
-          push: true
+        if (error.message.indexOf('500') > -1) {
+          const notification = {
+            type: 'info',
+            title: 'Security Form Not Found',
+            message: 'Security Form for Deletion Not Found. Overwriting Data.',
+            push: true
+          }
+          store.dispatch('notification/add', notification, { root: true })
         }
-        store.dispatch('notification/add', notification, { root: true })
       })
   },
   /**

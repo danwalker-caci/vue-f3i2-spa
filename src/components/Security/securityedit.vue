@@ -1243,7 +1243,7 @@ export default {
               submitterId.push(sciTransfer.Form.forms[s].submitterId)
               submitterEmail.push(sciTransfer.Form.forms[s].submitterEmail)
             }
-            this.deleteForm(sciTransfer.Form.forms[s])
+            await this.deleteForm(sciTransfer.Form.forms[s])
           }
           sciTransfer.Form.forms = []
           this.scigroup.forEach(user => {
@@ -1331,7 +1331,7 @@ export default {
                   submitterId.push(this.NIPR.forms[nipr].submitterId)
                   submitterEmail.push(this.NIPR.forms[nipr].submitterEmail)
                 }
-                this.deleteForm(this.NIPR.forms[nipr])
+                await this.deleteForm(this.NIPR.forms[nipr])
               }
               this.NIPR.forms = []
               break
@@ -1346,7 +1346,7 @@ export default {
                   submitterId.push(this.SIPR.forms[sipr].submitterId)
                   submitterEmail.push(this.SIPR.forms[sipr].submitterEmail)
                 }
-                this.deleteForm(this.SIPR.forms[sipr])
+                await this.deleteForm(this.SIPR.forms[sipr])
               }
               this.SIPR.forms = []
               break
@@ -1360,7 +1360,7 @@ export default {
                   submitterId.push(this.DREN.forms[dren].submitterId)
                   submitterEmail.push(this.DREN.forms[dren].submitterEmail)
                 }
-                this.deleteForm(this.DREN.forms[dren])
+                await this.deleteForm(this.DREN.forms[dren])
               }
               this.DREN.forms = []
               break
@@ -1374,7 +1374,7 @@ export default {
                   submitterId.push(this.JWICS.forms[jwics].submitterId)
                   submitterEmail.push(this.JWICS.forms[jwics].submitterEmail)
                 }
-                this.deleteForm(this.JWICS.forms[jwics])
+                await this.deleteForm(this.JWICS.forms[jwics])
               }
               this.JWICS.forms = []
               break
@@ -1388,7 +1388,7 @@ export default {
                   submitterId.push(this.SCI.forms[sci].submitterId)
                   submitterEmail.push(this.SCI.forms[sci].submitterEmail)
                 }
-                this.deleteForm(this.SCI.forms[sci])
+                await this.deleteForm(this.SCI.forms[sci])
               }
               this.SCI.forms = []
               break
@@ -1402,7 +1402,7 @@ export default {
                   submitterId.push(this.CAC.forms[cac].submitterId)
                   submitterEmail.push(this.CAC.forms[cac].submitterEmail)
                 }
-                this.deleteForm(this.CAC.forms[cac])
+                await this.deleteForm(this.CAC.forms[cac])
               }
               this.CAC.forms = []
               break
@@ -1582,29 +1582,24 @@ export default {
           case 'NIPR':
             // set the url for the post of file
             this.library = 'AccountsNIPR'
-            this.libraryUrl = url + '/AccountsNIPR/'
             break
           case 'SIPR':
             this.library = 'AccountsSIPR'
-            this.libraryUrl = url + '/AccountsDREN/'
             break
           case 'DREN':
             this.library = 'AccountsDREN'
-            this.libraryUrl = url + '/AccountsSIPR/'
             break
           case 'JWICS':
             this.library = 'AccountsJWICS'
-            this.libraryUrl = url + '/AccountsJWICS/'
             break
           case 'CAC':
             this.library = 'CACForms'
-            this.libraryUrl = url + '/CACForms/'
             break
           case 'SCI':
             this.library = 'SCIForms'
-            this.libraryUrl = url + '/SCIForms/'
             break
         }
+        this.libraryUrl = url + '/' + this.library + '/'
         // loop and upload all attached files
         await this.asyncForEach(this.files, async file => {
           let payload = {}
