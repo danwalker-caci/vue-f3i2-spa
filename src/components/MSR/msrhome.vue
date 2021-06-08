@@ -14,7 +14,7 @@
         <b-overlay class="w-100" :show="msrs.length == 0" :variant="overlayVariant" z-index="3000">
           <ejs-grid id="MSRGrid" ref="MSRGrid" :dataSource="msrs" :allowPaging="true" :pageSettings="pageSettings" :dataBound="dataBound" rowHeight="20" :height="rect.height - 80" width="100%" :actionComplete="actionComplete">
             <e-columns>
-              <e-column headerText="Actions" textAlign="Left" minWidth="300" :template="ActionsTemplate"></e-column>
+              <e-column headerText="Actions" textAlign="Left" width="300" :template="ActionsTemplate"></e-column>
               <e-column field="WPMReview" headerText="WPM Review" textAlign minWidth="100"></e-column>
               <e-column field="QAReview" headerText="QA Review" textAlign minWidth="100"></e-column>
               <e-column field="PCAReview" headerText="PCA Review" textAlign minWidth="100"></e-column>
