@@ -77,6 +77,14 @@ const actions = {
   async archive({ state }, payload) {
     let response = await WorkplanService.archive(payload, state.digest)
     return response
+  },
+  async getDocument({ state }, uri) {
+    let response = await WorkplanService.getDocument(state, uri)
+    return response
+  },
+  async uploadDocument({ state }, payload) {
+    let response = await WorkplanService.uploadDocument(payload, state.digest)
+    return response
   }
 }
 
@@ -102,6 +110,7 @@ function formatWorkplan(j) {
       Manager: j[i]['Manager']['Title'],
       ManagerId: j[i]['Manager']['ID'],
       ManagerEmail: j[i]['Manager']['EMail'],
+      DocInfo: j[i]['DocInfo'] ? JSON.parse(j[i]['DocInfo']) : null,
       etag: j[i]['__metadata']['etag'],
       uri: j[i]['__metadata']['uri']
     })

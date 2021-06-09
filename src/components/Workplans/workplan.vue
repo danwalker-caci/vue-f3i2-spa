@@ -66,33 +66,28 @@
           </ul>
         </div>
       </b-modal>
-      <b-modal id="EditModal" ref="EditModal" size="xl" centered @ok="editOk">
-        <template v-slot:modal-title>Edit Work Plan</template>
-        <b-container fluid>
-          <table id="EditTable" class="workplantable">
-            <tbody>
-              <tr class="bg-light-blue text-white">
-                <th>Title</th>
-                <th>Number</th>
-                <th>Revision</th>
-                <th>POP Start</th>
-                <th>POP End</th>
-                <th>Status</th>
-                <th>Manager</th>
-                <th>Cover Page Date</th>
-              </tr>
-              <tr>
-                <td class="px300"><input class="e-input" type="text" v-model="rowData.Title" /></td>
-                <td><input class="e-input" type="text" v-model="rowData.Number" /></td>
-                <td><input class="e-input" type="text" v-model="rowData.Revision" /></td>
-                <td><ejs-datepicker v-model="rowData.POPStart"></ejs-datepicker></td>
-                <td><ejs-datepicker v-model="rowData.POPEnd"></ejs-datepicker></td>
-                <td><ejs-dropdownlist id="ddStatusEdit" v-model="rowData.Status" :dataSource="status" :fields="ddfields"></ejs-dropdownlist></td>
-                <td><ejs-dropdownlist id="ddManagerEdit" v-model="rowData.ManagerId" :dataSource="managers" :fields="ddfields" @change="EditManagerSelected"></ejs-dropdownlist></td>
-                <td><ejs-datepicker v-model="rowData.DateApproved"></ejs-datepicker></td>
-              </tr>
-            </tbody>
-          </table>
+      <b-modal id="UploadDocModal" ref="UploadDocModal" size="xl" centered hide-footer header-bg-variant="light-blue" header-text-variant="light">
+        <template v-slot:modal-title>Upload File for {{ rowData.Title }}</template>
+        <b-container fluid class="p-0">
+          <b-row class="m-0">
+            <b-col cols="12" class="p-0">
+              <b-form-group>
+                <b-form-file placeholder="Choose a file" no-drop class="form-control" v-model="file" @input="fileSelected()"></b-form-file>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-container>
+        <b-container fluid class="p-0">
+          <b-row class="m-0">
+            <b-col cols="4" class="p-0">
+              <b-alert v-if="Invalid" variant="danger" show class="p-0">{{ InvalidMessage }}</b-alert>
+            </b-col>
+            <b-col cols="4" class="p-0"></b-col>
+            <b-col cols="4" class="p-0 text-right">
+              <b-button v-if="isUploading" variant="success"><b-spinner variant="danger" class="loading-spinner"></b-spinner>&nbsp;Uploading...</b-button>
+              <b-button variant="light-blue" @click.stop="UploadFile" title="Upload"><font-awesome-icon far icon="file-upload" class="icon"></font-awesome-icon>Upload</b-button>
+            </b-col>
+          </b-row>
         </b-container>
       </b-modal>
       <b-modal id="NewModal" ref="NewModal" size="xl" centered @ok="newOk">
@@ -173,6 +168,7 @@
                     <e-column field="POPEnd" headerText="POP End" type="date" format="M/y" :edit="popEndParams" textAlign="Left" minWidth="50"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="DocInfo" headerText="Document" textAlign="Left" :template="DocInfoTemplate" minWidth="250"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -216,6 +212,7 @@
                     <e-column field="POPEnd" headerText="POP End" format="M/y" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
+                    <e-column field="DocInfo" :visible="!isSubcontractor" headerText="Document" textAlign="Left" :template="DocInfoTemplate" minWidth="250"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" minWidth="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" minWidth="40"></e-column>
@@ -248,6 +245,11 @@ import { DropDownList } from '@syncfusion/ej2-dropdowns'
 import { DatePicker } from '@syncfusion/ej2-calendars'
 import { createElement } from '@syncfusion/ej2-base'
 import { Page, Edit, Toolbar, Resize, Reorder, VirtualScroll, ExcelExport, DetailRow, Freeze, Search } from '@syncfusion/ej2-vue-grids'
+
+let SPCI = null
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
 
 let vm = null,
   activeElem,
@@ -317,9 +319,12 @@ export default {
       sortfield: '',
       sortdir: '',
       unlockSubmitDate: false,
+      file: null,
+      fileName: '',
+      fileBuffer: null,
       data: [],
       locked: false,
-      WorkplanData: [],
+      WorkplanData: {},
       filtereddata: [],
       manager: null,
       managerId: null,
@@ -497,6 +502,9 @@ export default {
               <b-button :href="href" class="actionbutton ml-1" variant="success" v-b-tooltip.hover.v-dark title="Email Workplan Manager">
                 <font-awesome-icon far icon="envelope" class="icon"></font-awesome-icon>
               </b-button>
+              <b-button v-if="isPM" class="actionbutton" variant="light-blue" @click="uploaddoc(data)" v-b-tooltip.hover.v-dark title="Upload Workplan Document">
+                <font-awesome-icon far icon="arrow-circle-up" class="icon"></font-awesome-icon>
+              </b-button>
             </div>`,
             data: function() {
               return {
@@ -542,6 +550,35 @@ export default {
                   .catch(err => {
                     console.log(err)
                   })
+              },
+              uploaddoc: data => {
+                vm.locked = true
+                vm.rowData = data
+                vm.$bvModal.show('UploadDocModal')
+              }
+            }
+          })
+        }
+      },
+      DocInfoTemplate: function() {
+        return {
+          template: Vue.component('columnTemplate', {
+            template: `
+              <div>
+                <a :href="href" target="_blank">{{ docinfotitle }}</a>
+              </div>
+            `,
+            data: function() {
+              return {
+                data: {}
+              }
+            },
+            computed: {
+              docinfotitle() {
+                return this.data.DocInfo ? this.data.DocInfo.Name : ''
+              },
+              href() {
+                return this.data.DocInfo ? this.data.DocInfo.Link : ''
               }
             }
           })
@@ -921,6 +958,7 @@ export default {
         Title: data.Title,
         Comments: data.Comments,
         Active: data.Active,
+        DocInfo: data.DocInfo,
         Number: data.Number,
         CACISubmittedDate: data.CACISubmittedDate,
         DateApproved: data.DateApproved,
@@ -947,42 +985,83 @@ export default {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
       this.newData.ManagerId = document.getElementById('ddManagerNew').ej2_instances[0].value
     },
-    editRow: function(data) {
-      this.rowData = data
-      this.$bvModal.show('EditModal')
-    },
-    editOk: function(bvEvent) {
-      bvEvent.preventDefault()
-      try {
-        Workplan.dispatch('editWorkplan', this.rowData).then(function(response) {
-          let j = response.data.d
-          vm.rowData.etag = j['__metadata']['etag']
-          if (vm.manager === undefined || vm.manager === null) {
-            let currentManager = vm.managers.filter(obj => {
-              return obj.value === vm.rowData.ManagerId
-            })
-            vm.rowData.Manager = currentManager[0].text
-          } else {
-            vm.rowData.Manager = vm.manager
-          }
-          //vm.rowData.Manager = vm.manager
-          vm.$refs.WorkplanGrid.setRowData(vm.rowData.Id, vm.rowData)
-          vm.$bvModal.hide('EditModal')
-          vm.$refs.WorkplanGrid.refresh()
-        })
-      } catch (e) {
-        // include a notification to the user of an error and log that error for developers
-        const notification = {
-          type: 'danger',
-          title: 'Portal Error',
-          message: e,
-          push: true
-        }
-        this.$store.dispatch('notification/add', notification, {
-          root: true
-        })
-        console.log('ERROR: ' + e)
+    async UploadFile() {
+      // First check if a document exists
+      let url = SPCI.webServerRelativeUrl + '/WorkplanDocuments/'
+      let payload = {}
+      let pdfName = vm.fileName
+      if (pdfName.length >= 260) {
+        let currentPDF = pdfName.split('.')
+        pdfName = pdfName.substring(0, 250)
+        pdfName += currentPDF[1]
       }
+      if (console) console.log('NEW FORM NAME: ' + pdfName)
+      let name = pdfName.split('.')[0]
+      payload.file = vm.fileName
+      payload.name = name
+      payload.buffer = vm.fileBuffer
+      // then upload selected document
+      await Workplan.dispatch('uploadDocument', payload)
+      // let itemlink = item.data.d.ListItemAllFields.__deferred.uri
+      // let form = await Workplan.dispatch('getDocument', itemlink)
+      // let formId = form.data.d.Id // Form unlikely needed. itemLink definetely
+      //payload = form.data.d.__metadata
+      //payload.file = file.fileSelected
+      vm.rowData.DocInfo = {
+        Name: pdfName,
+        Link: url + pdfName
+      }
+      // Then update the workplan information with the correct file information
+      await vm
+        .updateWorkplan(vm.rowData)
+        .then(async workplan => {
+          //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
+          vm.$bvModal.hide('UploadDocModal')
+          vm.filtereddata = []
+          await Workplan.dispatch('getWorkplans')
+            .then(function() {
+              vm.$options.interval = setInterval(vm.waitForPlans, 1000)
+            })
+            .catch(e => {
+              this.throwError(e)
+            })
+        })
+        .then(() => {
+          vm.locked = false
+        })
+        .catch(e => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        })
+      // Throw a notification stating all is well
+    },
+    fileSelected: () => {
+      vm.fileName = vm.file.name
+      let buffer = vm.getFileBuffer(vm.file)
+      buffer.then(function(buff) {
+        vm.fileBuffer = buff
+      })
+    },
+    getFileBuffer(file) {
+      let p = new Promise(function(resolve, reject) {
+        var reader = new FileReader()
+        reader.onloadend = function(e) {
+          resolve(e.target.result)
+        }
+        reader.onerror = function(e) {
+          reject(e.target.error)
+        }
+        reader.readAsArrayBuffer(file)
+      })
+      return p
     },
     newOk: async function() {
       await Workplan.dispatch('getDigest')
