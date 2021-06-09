@@ -23,7 +23,7 @@
             <sidebar-item :link="{ name: 'Work Plans', library: 'fas', icon: 'briefcase' }">
               <sidebar-item :link="{ name: 'Active Work Plans', library: 'fas', icon: 'briefcase', path: '/workplans/home/active' }"></sidebar-item>
             </sidebar-item>
-            <sidebar-item :link="{ name: 'PMO Calendar', library: 'far', icon: 'calendar-alt', path: '/calendar/home' }"></sidebar-item>
+            <sidebar-item v-if="isDeveloper" :link="{ name: 'PMO Calendar', library: 'far', icon: 'calendar-alt', path: '/calendar/home' }"></sidebar-item>
             <sidebar-item :link="{ name: 'Features and Bugs', library: 'far', icon: 'lightbulb' }">
               <sidebar-item :link="{ name: 'Report Bug or Request Feature', library: 'fas', icon: 'bug', path: '/feature/home' }"></sidebar-item>
               <sidebar-item :link="{ name: 'Features', library: 'fas', icon: 'cubes', path: '/features/home' }"></sidebar-item>
