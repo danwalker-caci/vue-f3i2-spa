@@ -727,25 +727,25 @@ export default {
       this.Name = result.FirstName + ' ' + result.LastName
       this.Company = result.Company
       this.PersonnelId = result.PersonnelId
-      this.PRDueDate = result.PRDueDate
-      this.CEDate = result.CEDate
+      this.PRDueDate = this.$moment(result.PRDueDate).isValid() ? this.$moment(result.PRDueDate).format('MM/DD/YYYY') : null
+      this.CEDate = this.$moment(result.CEDate).isValid() ? this.$moment(result.CEDate).format('MM/DD/YYYY') : null
       this.SCI = result.SCI
       this.SCIStatus = result.SCIStatus
-      this.SCIIndoc = this.$moment(result.SCIIndoc).isValid() ? this.$moment(result.SCIIndoc).format('MM/DD/YYYY') : ''
-      this.SCIIndocAssistDate = this.$moment(result.SCIIndocAssistDate).isValid() ? this.$moment(result.SCIIndocAssistDate).format('MM/DD/YYYY') : ''
-      this.SCIAccessCheckDate = this.$moment(result.SCIAccessCheckDate).isValid() ? this.$moment(result.SCIAccessCheckDate).format('MM/DD/YYYY') : ''
+      this.SCIIndoc = this.$moment(result.SCIIndoc).isValid() ? this.$moment(result.SCIIndoc).format('MM/DD/YYYY') : null
+      this.SCIIndocAssistDate = this.$moment(result.SCIIndocAssistDate).isValid() ? this.$moment(result.SCIIndocAssistDate).format('MM/DD/YYYY') : null
+      this.SCIAccessCheckDate = this.$moment(result.SCIAccessCheckDate).isValid() ? this.$moment(result.SCIAccessCheckDate).format('MM/DD/YYYY') : null
       this.SCIFormType = result.SCIFormType
-      this.SCIFormSubmitted = this.$moment(result.SCIFormSubmitted).isValid() ? this.$moment(result.SCIFormSubmitted).format('MM/DD/YYYY') : ''
+      this.SCIFormSubmitted = this.$moment(result.SCIFormSubmitted).isValid() ? this.$moment(result.SCIFormSubmitted).format('MM/DD/YYYY') : null
       this.CAC = result.CAC
       this.CACStatus = result.CACStatus
-      this.CACRequestDate = this.$moment(result.CACRequestDate).isValid() ? this.$moment(result.CACRequestDate).format('MM/DD/YYYY') : ''
-      this.CACExpirationDate = this.$moment(result.CACExpirationDate).isValid() ? this.$moment(result.CACExpirationDate).format('MM/DD/YYYY') : ''
+      this.CACRequestDate = this.$moment(result.CACRequestDate).isValid() ? this.$moment(result.CACRequestDate).format('MM/DD/YYYY') : null
+      this.CACExpirationDate = this.$moment(result.CACExpirationDate).isValid() ? this.$moment(result.CACExpirationDate).format('MM/DD/YYYY') : null
       this.CACIssuedBy = result.CACIssuedBy
       this.CACValid = result.CACValid
-      this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : ''
+      this.CACExpiredOnDate = this.$moment(result.CACExpiredOnDate).isValid() ? this.$moment(result.CACExpiredOnDate).format('MM/DD/YYYY') : null
       this.CACTurnedIn = result.CACTurnedIn
       this.DISSCheck = result.DISSCheck
-      this.DISSCheckDate = this.$moment(result.DISSCheckDate).isValid() ? this.$moment(result.DISSCheckDate).format('MM/DD/YYYY') : ''
+      this.DISSCheckDate = this.$moment(result.DISSCheckDate).isValid() ? this.$moment(result.DISSCheckDate).format('MM/DD/YYYY') : null
       this.NIPR = result.NIPR
       this.SIPR = result.SIPR
       this.DREN = result.DREN
@@ -784,8 +784,7 @@ export default {
       this.SCIStatus = 'Indoc Assist Pending'
     },
     async statusChange() {
-      if (console) console.log('STATUS CHANGED: ' + this.SCIStatus + ' ' + this.CACStatus)
-      if ((this.SCIStatus === 'Not Required' || this.SCIStatus === 'Pending Info') && (this.CACStatus === 'Not Required' || this.CACStatus === 'Pending Info')) {
+      if (this.SCIStatus !== '' && this.SCIStatus !== null && this.CACStatus !== '' && this.CACStatus !== null) {
         this.statusesUpdated = true
       }
     },
