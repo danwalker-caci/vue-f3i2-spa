@@ -598,6 +598,8 @@ export default {
       SCIFormSubmitted: '',
       SCITransferId: '',
       isSCITransfer: false,
+      PRDueDate: '',
+      CEDate: '',
       CAC: {},
       CACStatus: '',
       CACRequestDate: '',
@@ -725,6 +727,7 @@ export default {
       this.Name = result.FirstName + ' ' + result.LastName
       this.Company = result.Company
       this.PersonnelId = result.PersonnelId
+      this.PRDueDate = result.PRDueDate
       this.CEDate = result.CEDate
       this.SCI = result.SCI
       this.SCIStatus = result.SCIStatus

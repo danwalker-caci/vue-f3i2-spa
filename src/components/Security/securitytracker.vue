@@ -1333,6 +1333,7 @@ export default {
                 })
               },
               async updateForm(d, tId) {
+                await Security.dispatch('getDigest')
                 if (this.files && this.files.length > 0 && (this.selectedSecurityFormType === null || this.selectedSecurityFormType === '')) {
                   this.lockSubmit = false
                   return true
