@@ -155,7 +155,6 @@
                   :dataBound="dataBound"
                   :actionBegin="actionBegin"
                   :actionComplete="actionComplete"
-                  :rowDataBound="rowDataBound"
                   :queryCellInfo="formatCell"
                   rowHeight="20"
                   :height="rect.height - 175"
@@ -200,7 +199,6 @@
                   :dataBound="dataBound"
                   :actionBegin="actionBegin"
                   :actionComplete="actionComplete"
-                  :rowDataBound="rowDataBound"
                   :queryCellInfo="formatCell"
                   rowHeight="20"
                   :height="rect.height - 175"
@@ -757,20 +755,14 @@ export default {
         this.waitForPlans()
       }
     },
-    rowDataBound: function(args) {
-      // set class based on status
-      let c = String(args.data['Status'])
-        .toLowerCase()
-        .replace(/ /g, '-')
-      c = 'wp-' + c
-      args.row.classList.add(c)
-    },
     formatCell: function(args) {
       let c = String(args.data['Status'])
         .toLowerCase()
         .replace(/ /g, '-')
       c = 'wp-' + c
-      args.cell.classList.add(c)
+      if (args.column.field == 'Status') {
+        args.cell.classList.add(c)
+      }
     },
     getRef: function(text, idx) {
       return text + '_' + idx
