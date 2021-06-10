@@ -168,7 +168,7 @@
                     <e-column field="POPEnd" headerText="POP End" type="date" format="M/y" :edit="popEndParams" textAlign="Left" minWidth="50"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" editType="dropdownedit" :edit="managerParams" minWidth="200"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
-                    <e-column field="DocInfo" headerText="Document" textAlign="Left" :template="DocInfoTemplate" minWidth="250"></e-column>
+                    <e-column field="DocInfo" :visible="false" headerText="Document" textAlign="Left" minWidth="20"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="20" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
@@ -212,7 +212,7 @@
                     <e-column field="POPEnd" headerText="POP End" format="M/y" textAlign="Left" minWidth="150"></e-column>
                     <e-column field="Manager" headerText="Manager" textAlign="Left" minWidth="200"></e-column>
                     <e-column field="Comments" headerText="Comments" textAlign="Left" minWidth="200"></e-column>
-                    <e-column field="DocInfo" :visible="!isSubcontractor" headerText="Document" textAlign="Left" :template="DocInfoTemplate" minWidth="250"></e-column>
+                    <e-column field="DocInfo" :visible="false" headerText="Document" textAlign="Left" minWidth="20"></e-column>
                     <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" minWidth="40" :isPrimaryKey="true"></e-column>
                     <e-column field="ManagerEmail" :visible="false" textAlign="Left" minWidth="40"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" minWidth="40"></e-column>
@@ -502,9 +502,14 @@ export default {
               <b-button :href="href" class="actionbutton ml-1" variant="success" v-b-tooltip.hover.v-dark title="Email Workplan Manager">
                 <font-awesome-icon far icon="envelope" class="icon"></font-awesome-icon>
               </b-button>
-              <b-button v-if="isPM" class="actionbutton" variant="light-blue" @click="uploaddoc(data)" v-b-tooltip.hover.v-dark title="Upload Workplan Document">
+              <b-button v-if="isPM" class="actionbutton ml-1" variant="light-blue" @click="uploaddoc(data)" v-b-tooltip.hover.v-dark title="Upload Workplan Document">
                 <font-awesome-icon far icon="arrow-circle-up" class="icon"></font-awesome-icon>
               </b-button>
+              <span v-if="data.DocInfo && data.DocInfo.Link">
+                <a v-if="!isSubcontractor" class="btn btn-primary actionbutton doclink ml-1" :href="data.DocInfo.Link" v-b-tooltip.hover.v-dark title="View Workplan Document" target="_blank">
+                  <font-awesome-icon far icon="file" class="icon"></font-awesome-icon>
+                </a>
+              </span>
             </div>`,
             data: function() {
               return {
@@ -514,6 +519,9 @@ export default {
             computed: {
               href: function() {
                 return 'mailto:' + this.data.ManagerEmail
+              },
+              isSubcontractor() {
+                return User.getters('isSubcontractor')
               },
               isPM() {
                 return User.getters('isPM')
@@ -555,30 +563,6 @@ export default {
                 vm.locked = true
                 vm.rowData = data
                 vm.$bvModal.show('UploadDocModal')
-              }
-            }
-          })
-        }
-      },
-      DocInfoTemplate: function() {
-        return {
-          template: Vue.component('columnTemplate', {
-            template: `
-              <div>
-                <a :href="href" target="_blank">{{ docinfotitle }}</a>
-              </div>
-            `,
-            data: function() {
-              return {
-                data: {}
-              }
-            },
-            computed: {
-              docinfotitle() {
-                return this.data.DocInfo ? this.data.DocInfo.Name : ''
-              },
-              href() {
-                return this.data.DocInfo ? this.data.DocInfo.Link : ''
               }
             }
           })
@@ -1355,6 +1339,14 @@ export default {
 }
 .gridrow {
   height: calc(100vh - 200px);
+}
+
+.doclink {
+  padding: 0.15rem !important;
+}
+
+.doclink:visited {
+  color: #fff !important;
 }
 
 .detailtable td {
