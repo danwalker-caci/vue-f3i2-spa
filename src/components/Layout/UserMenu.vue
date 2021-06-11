@@ -102,7 +102,7 @@ export default {
         return {
           template: Vue.component('columnTemplate', {
             template: `
-            <div v-if="data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
+            <div v-if="data.TaskType == 'DropoffDocument' || data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
               <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
