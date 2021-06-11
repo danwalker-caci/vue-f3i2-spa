@@ -40,12 +40,6 @@ let pagesMenu = {
       name: 'DropoffLibrary',
       component: () => import(/* webpackChunkName: "dropoff" */ '../components/Pages/DropoffLibrary.vue'),
       props: true
-    },
-    {
-      path: 'page/documents',
-      name: 'GovernmentLibrary',
-      component: () => import(/* webpackChunkName: "documents" */ '../components/Pages/GovernmentLibrary.vue'),
-      props: true
     }
   ]
 }

@@ -52,7 +52,6 @@
             </sidebar-item>
             <sidebar-item v-if="isDeveloper" :link="{ name: 'Documents', library: 'fas', icon: 'file-alt' }">
               <sidebar-item :link="{ name: 'Dropoff Library', library: 'fas', icon: 'box-open', path: '/pages/home/dropoff' }"></sidebar-item>
-              <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Government Library', library: 'fas', icon: 'folder-open', path: '/pages/home/documents' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
           </template>

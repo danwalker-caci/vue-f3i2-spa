@@ -2,6 +2,15 @@
   <b-container fluid class="contentHeight m-0 p-0">
     <b-modal id="FileModal" ref="FileModal" centered hide-footer header-bg-variant="light-blue" size="lg" header-text-variant="light">
       <template v-slot:modal-title>Upload File</template>
+      <b-container fluid class="p-0">
+        <b-row class="m-0">
+          <b-col cols="12" class="p-0">
+            <b-form-group label="NOTICE">
+              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" class="text-dark"></b-form-textarea>
+            </b-form-group>
+          </b-col>
+        </b-row>
+      </b-container>
       <b-container v-if="table.hasRequiredFields" fluid class="p-0">
         <b-row class="m-0" v-for="field in table.fields" :key="field" :style="showIfRequired(field)">
           <b-col cols="12" class="p-0">
@@ -11,6 +20,13 @@
             </b-form-group>
           </b-col>
         </b-row>
+      </b-container>
+      <b-container v-if="table.hasRecipients" fluid class="p-0">
+        <div v-for="(option, index) in table.recipientOptions" :key="index">
+          <keep-alive>
+            <component :key="option.id" :is="option.component" v-bind="option"></component>
+          </keep-alive>
+        </div>
       </b-container>
       <b-container fluid class="p-0">
         <b-row class="m-0">
@@ -28,7 +44,6 @@
     <b-row no-gutters class="contentHeight">
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <!-- <b-form @submit="onSubmit"> -->
           <b-row no-gutters class="contentHeight">
             <b-overlay :show="loaded == false" :variant="overlayVariant" z-index="3000">
               <b-container fluid class="contentHeight m-0 p-0">
@@ -58,7 +73,6 @@
                     </b-tbody>
                   </b-table-simple>
                 </b-row>
-                <!-- <b-row v-if="table.allowPaging" no-gutters class="paging-row bg-light"></b-row> -->
               </b-container>
               <template #overlay>
                 <div class="text-center">
@@ -67,7 +81,6 @@
               </template>
             </b-overlay>
           </b-row>
-          <!-- </b-form> -->
         </b-container>
       </b-col>
     </b-row>
@@ -77,8 +90,10 @@
 <script>
 /* eslint-disable no-prototype-builtins */
 import Vue from 'vue'
-// import User from '@/models/User'
 import axios from 'axios'
+import { EventBus } from '../../main'
+import PeoplePicker from '../Bootstrap/PeoplePicker'
+import Todo from '@/models/Todo'
 
 let vm = null
 
@@ -92,6 +107,7 @@ if (window._spPageContextInfo) {
 }
 
 export default {
+  components: { PeoplePicker },
   name: 'dynamic-table',
   props: {
     hascomponents: {
@@ -117,6 +133,11 @@ export default {
           hasFolders: false,
           folderField: '',
           hasRequiredFields: false,
+          permissionBase: 'SharePoint' /* Field or SharePoint */,
+          permissionField: '' /* Used for field permissions. Assumes upload will assign a 'Recipients' field */,
+          hasRecipients: false /* turns on recipient based permissions if true */,
+          recipientOptions: [] /* used to determine where recipients are pulled from. Company is special and based on current user company. Others are names of groups */,
+          recipients: [] /* comma separated list of user's who are selected to receive the document */,
           maximized: false,
           rowHeight: 20,
           pageSize: 0 /* 0 default means dynamic based on space available and rowHeight */,
@@ -133,8 +154,9 @@ export default {
   },
   data: function() {
     return {
-      bodyHTML: '',
+      notice: "Please select the file you wish to upload. Then select the users using the 'Select' buttons. All selected users will receive a notification email and task. The users will have 30 days to get the file before it is automatically deleted.",
       GoOn: 'No',
+      isAuthor: false,
       Invalid: false,
       InvalidMessage: 'Not all fields are filled out correctly.',
       validrefs: [],
@@ -147,7 +169,8 @@ export default {
       shownData: [],
       loading: true,
       loaded: false,
-      timer: '',
+      recipients: [],
+      permissions: null,
       striped: true,
       bordered: true,
       outlined: true,
@@ -180,16 +203,50 @@ export default {
         }
       }
     }
-    console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].LoginName)
+    console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].Email)
+    // add the current user to the recipients list. HOLDING FOR A DIFFERENT TEST OPTION
+    /* this.recipients.push({
+      name: this.user[0].DisplayName,
+      id: Number(this.user[0].id),
+      email: this.user[0].Email,
+      isAuthor: true
+    }) */
   },
   methods: {
     init: function() {
-      // any preliminary stuff?
+      EventBus.$on('AddRecipient', data => {
+        this.AddRecipient(data)
+      })
+      EventBus.$on('RemoveRecipient', data => {
+        this.RemoveRecipient(data)
+      })
       this.getData()
-      vm.timer = setInterval(vm.getData, 10000) // 1 minute
     },
     getID: function(text, id) {
       return text + '_' + id
+    },
+    fixString: function(s) {
+      s = String(s)
+      s = s.replace(/\s+/g, '').toLowerCase()
+      return s
+    },
+    AddRecipient: function(data) {
+      // add a user to recipients array
+      // if (console) console.log(data)
+      this.recipients.push(data)
+    },
+    RemoveRecipient: function(data) {
+      // remove a user from recipients array
+      // if (console) console.log(data)
+      let index = 0
+      for (let i = 0; i < this.recipients.length; i++) {
+        if (this.recipients[i]['id'] === data.id) {
+          index = i
+        }
+      }
+      if (index > 0) {
+        this.recipients.splice(index, 1)
+      }
     },
     showIfRequired: function(field) {
       if (!field.required) {
@@ -224,6 +281,8 @@ export default {
           if (fields[k].field !== 'Actions') {
             // actions are not part of the items array
             f['id'] = j[i]['Id'] // add id regardless
+            f['AuthorId'] = j[i]['Author']['Id']
+            // f['Permissions'] = j[i]['Permissions']
             let type = fields[k].type
             switch (type) {
               case 'file':
@@ -306,53 +365,84 @@ export default {
       let ret = ''
       // let element = '#' + field.field + '_' + item.id
       if (field.field === 'Actions') {
-        // loop through the actions and determine if the user can perform the action on this item
-        let response = await vm.getUserPermissions(item)
-        let permissions = new SP.BasePermissions()
-        permissions.initPropertiesFromJson(response.data.d.GetUserEffectivePermissions)
-        let result = {}
-        for (var level in SP.PermissionKind.prototype) {
-          if (SP.PermissionKind.hasOwnProperty(level)) {
-            var permLevel = SP.PermissionKind.parse(level)
-            if (permissions.has(permLevel)) result[level] = true
-            else result[level] = false
-          }
-        }
-        for (let y = 0; y < field.actions.length; y++) {
-          switch (field.actions[y]) {
-            case 'Delete':
-              // can the user delete?
-              var w = result.hasOwnProperty('deleteListItems')
-              if (w) {
-                if (result.deleteListItems) {
-                  // user can delete
-                  let button = Vue.component('delete_' + item.id, {
-                    template: `
-                      <b-button class="actionbutton text-white bg-light-blue" @click="DeleteFile(deleteId)" v-b-tooltip.hover.v-dark title="Delete File">
-                        <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
-                      </b-button>
-                    `,
-                    props: {
-                      deleteId: {
-                        type: Number
-                      }
-                    },
-                    methods: {
-                      DeleteFile: function(id) {
-                        vm.DeleteFile(id)
-                      }
-                    }
-                  })
-                  item.renderItems.push({
-                    id: 'delete_' + item.id,
-                    component: button,
-                    props: {
-                      deleteId: item.id
-                    }
-                  })
-                }
+        // if the current user is the author they can delete
+        if (Number(item.AuthorId) === Number(this.user[0].id)) {
+          let button = Vue.component('delete_' + item.id, {
+            template: `
+              <b-button class="actionbutton text-white bg-light-blue" @click="DeleteFile(deleteId)" v-b-tooltip.hover.v-dark title="Delete File">
+                <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
+              </b-button>
+            `,
+            props: {
+              deleteId: {
+                type: Number
               }
-              break
+            },
+            methods: {
+              DeleteFile: function(id) {
+                vm.DeleteFile(id)
+              }
+            }
+          })
+          item.renderItems.push({
+            id: 'delete_' + item.id,
+            component: button,
+            props: {
+              deleteId: item.id
+            }
+          })
+        }
+        // other ways?
+        if (this.table.permissionBase === 'Field') {
+          // based on field permissions so get field and information to determine if user can perform the action
+        } else {
+          let response = await vm.getUserPermissions(item)
+          let permissions = new SP.BasePermissions()
+          permissions.initPropertiesFromJson(response.data.d.GetUserEffectivePermissions)
+          let result = {}
+          for (var level in SP.PermissionKind.prototype) {
+            if (SP.PermissionKind.hasOwnProperty(level)) {
+              var permLevel = SP.PermissionKind.parse(level)
+              if (permissions.has(permLevel)) result[level] = true
+              else result[level] = false
+            }
+          }
+          for (let y = 0; y < field.actions.length; y++) {
+            switch (field.actions[y]) {
+              case 'Delete':
+                // can the user delete?
+                var w = result.hasOwnProperty('deleteListItems')
+                if (w) {
+                  if (result.deleteListItems) {
+                    // user can delete
+                    let button = Vue.component('delete_' + item.id, {
+                      template: `
+                        <b-button class="actionbutton text-white bg-light-blue" @click="DeleteFile(deleteId)" v-b-tooltip.hover.v-dark title="Delete File">
+                          <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
+                        </b-button>
+                      `,
+                      props: {
+                        deleteId: {
+                          type: Number
+                        }
+                      },
+                      methods: {
+                        DeleteFile: function(id) {
+                          vm.DeleteFile(id)
+                        }
+                      }
+                    })
+                    item.renderItems.push({
+                      id: 'delete_' + item.id,
+                      component: button,
+                      props: {
+                        deleteId: item.id
+                      }
+                    })
+                  }
+                }
+                break
+            }
           }
         }
       } else {
@@ -389,8 +479,6 @@ export default {
       // just do it
       this.loaded = false
       this.loading = true
-
-      if (console) console.log(id)
       let response = await axios.request({
         url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
         method: 'post',
@@ -409,13 +497,38 @@ export default {
         method: 'POST',
         headers: headers
       })
+      window.setTimeout(function() {
+        let deletepayload = {
+          url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('DocID:" + id + "',TaskInfo)"
+        }
+        Todo.dispatch('completeTodosByQuery', deletepayload)
+        vm.$router.push({ name: 'Refresh', params: { action: 'dropofflibrary' } })
+      }, 2000)
     },
     fileSelected: function(field) {
-      vm.fileName = field.selected.name
-      let buffer = vm.getFileBuffer(field.selected)
-      buffer.then(function(buff) {
-        vm.fileBuffer = buff
-      })
+      let regex = /^[a-zA-Z0-9\s_.-]*$/g
+      let matches = regex.test(String(field.selected.name))
+      let isLong = String(field.selected.name).length > 200
+      // console.log(matches + ', ' + isLong)
+      if (matches === true && isLong === false) {
+        vm.fileName = field.selected.name
+        let buffer = vm.getFileBuffer(field.selected)
+        buffer.then(function(buff) {
+          vm.fileBuffer = buff
+        })
+      } else {
+        vm.Invalid = true
+        let text = ''
+        if (matches === false) {
+          text += 'Document name contains invalid characters. '
+        }
+        if (isLong === true) {
+          text += 'Document name is too long. '
+        }
+        text += 'Rename the file.'
+        vm.InvalidMessage = text
+        field.selected = ''
+      }
     },
     UploadFile: async function() {
       // upload if options filled out
@@ -424,11 +537,15 @@ export default {
         let element = document.getElementById(vm.validrefs[s])
         if (element.classList.contains('is-invalid')) {
           vm.Invalid = true
+          vm.InvalidMessage = 'Not all required fields are filled out.'
         }
       }
-      console.log('Invalid: ' + vm.Invalid)
+      if (this.recipients.length < 1) {
+        vm.Invalid = true
+        vm.InvalidMessage = 'You must select at least one recipient.'
+      }
+      // console.log('Invalid: ' + vm.Invalid)
       if (!vm.Invalid) {
-        clearInterval(vm.timer)
         vm.isUploading = true
         let response = await axios.request({
           url: SPCI.webServerRelativeUrl + '/_api/contextinfo',
@@ -468,6 +585,8 @@ export default {
           }
         })
         data = response.data.d.__metadata
+        let DocID = response.data.d.Id
+        console.log('DocId: ' + DocID)
         let endpoint = data.uri
         headers = {
           'Content-Type': 'application/json;odata=verbose',
@@ -481,34 +600,75 @@ export default {
         }
         let itemprops = {
           __metadata: { type: data.type },
-          FileLeafRef: data.name,
-          Title: data.name
+          FileLeafRef: data.name
         }
-        for (let i = 0; i < this.table.fields.length; i++) {
+        /* for (let i = 0; i < this.table.fields.length; i++) {
           if (this.table.fields[i].required) {
             if (this.table.fields[i].type === 'lookup') {
-              // must use field name with Id
               itemprops[this.table.fields[i].lookupfield] = this.table.fields[i].selected
             }
             if (this.table.fields[i].type === 'default') {
-              // is this a user property
               if (this.table.fields[i].userProp === true) {
                 itemprops[this.table.fields[i].field] = this.user[0][this.table.fields[i].field]
               }
             }
-            // TODO: add other types if needed?
+          }
+        } */
+        // add recipients to the file. the Author will have delete permissions so must also set up Permissions object
+        let permissions = []
+        let recipients = []
+        let emails = []
+        for (let i = 0; i < this.recipients.length; i++) {
+          recipients.push(this.recipients[i].id)
+          emails.push(this.recipients[i].email)
+          if (this.recipients[i].isAuthor) {
+            permissions.push({
+              user: this.recipients[i].id,
+              permissions: ['Delete']
+            })
           }
         }
-        this.$store.dispatch('support/addActivity', '<div class="bg-info">' + JSON.stringify(itemprops) + '</div>')
+        itemprops['RecipientsId'] = { results: recipients }
+        itemprops['Permissions'] = JSON.stringify(permissions)
+        // this.$store.dispatch('support/addActivity', '<div class="bg-info">' + JSON.stringify(itemprops) + '</div>')
         return axios
           .post(endpoint, itemprops, config)
           .then(function() {
+            // send emails and tasks. A task for each recipient. Email sent to each recipient.
+            let emails = []
+            for (let i = 0; i < vm.recipients.length; i++) {
+              if (!vm.recipients[i].isAuthor) {
+                emails.push(vm.recipients[i].email)
+              }
+            }
+            let payload = {}
+            payload.id = DocID
+            payload.email = emails
+            payload.title = 'New Dropfoff Library Document'
+            payload.body = ''
+            payload.body += '<p>A new document has been added that requires your attention.</p>'
+            payload.body += '<p>The document will be automatically deleted after 30 days.</p>'
+            payload.body += '<p></p>'
+            payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName + '">' + vm.fileName + '</a></p>'
+            vm.$store.dispatch('support/SendEmail', payload)
+            let taskpayload = {
+              Title: 'New Dropfoff Library Document',
+              TaskType: 'DropoffDocument'
+            }
+            for (let i = 0; i < vm.recipients.length; i++) {
+              if (!vm.recipients[i].isAuthor) {
+                taskpayload['AssignedToId'] = [vm.recipients[i].id]
+                taskpayload['TaskInfo'] = 'Type:DropoffDocument, DocID:' + DocID + ', Email:' + vm.recipients[i].email
+                Todo.dispatch('addTodo', taskpayload)
+              }
+            }
             vm.isUploading = false
             vm.loaded = false
             vm.loading = true
             vm.$bvModal.hide('FileModal')
-            window.setTimeout(vm.getData, 5000)
-            vm.timer = setInterval(vm.getData, 10000) // 1 minute
+            window.setTimeout(function() {
+              vm.$router.push({ name: 'Refresh', params: { action: 'dropofflibrary' } })
+            }, 5000)
           })
           .catch(function(error) {
             console.log(error)
@@ -516,8 +676,6 @@ export default {
             vm.Invalid = true
             vm.InvalidMessage = error
           })
-      } else {
-        this.Valid
       }
     },
     getFileBuffer(file) {
@@ -533,9 +691,6 @@ export default {
       })
       return p
     }
-  },
-  beforeDestroy() {
-    clearInterval(this.timer)
   }
 }
 </script>
