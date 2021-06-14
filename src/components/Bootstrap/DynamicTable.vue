@@ -653,7 +653,8 @@ export default {
             vm.$store.dispatch('support/SendEmail', payload)
             let taskpayload = {
               Title: 'New Dropfoff Library Document',
-              TaskType: 'DropoffDocument'
+              TaskType: 'DropoffDocument',
+              TaskLink: SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName
             }
             for (let i = 0; i < vm.recipients.length; i++) {
               if (!vm.recipients[i].isAuthor) {

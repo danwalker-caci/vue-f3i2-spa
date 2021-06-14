@@ -106,6 +106,9 @@ export default {
               <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
+              <b-button v-if="data.TaskType == 'DropoffDocument'" class="actionbutton" variant="info" @click="reviewdocument(data)" title="Review Document">
+                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
             </div>
             <div v-else>
               <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
@@ -149,6 +152,9 @@ export default {
                   })
               },
               reviewtr: function(data) {
+                window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
+              },
+              reviewdocument: function(data) {
                 window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
               },
               goto: function(data) {

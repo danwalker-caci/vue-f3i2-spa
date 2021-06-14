@@ -116,9 +116,9 @@ export default {
         url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company eq '"
         url += company
         url += "' and UserAccount/Id gt 0"
-        let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
-        const response = await promise
-        let j = response.data.d.results
+        /* let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } }) */
+        let promise = vm.getAllItems(url)
+        const j = await promise
         // if (console) console.log('RESPONSE: ' + JSON.stringify(j))
         let z = []
         for (let i = 0; i < j.length; i++) {
@@ -158,10 +158,11 @@ export default {
           label: 'Company'
         })
         url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company gt '' and UserAccount/Id gt 0"
-        let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
-        const response = await promise
-        let j = response.data.d.results
-        if (console) console.log('RESPONSE: ' + JSON.stringify(j))
+        // let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
+        let promise = vm.getAllItems(url)
+        const j = await promise
+        // let j = response.data.d.results
+        // if (console) console.log('RESPONSE: ' + JSON.stringify(j))
         let x = []
         for (let i = 0; i < j.length; i++) {
           x.push({
@@ -175,6 +176,26 @@ export default {
         this.totalRows = x.length
         return x
       }
+    },
+    async getAllItems(iurl) {
+      let allItems = []
+      async function getAllItems(purl) {
+        let response = await axios.get(purl, {
+          headers: {
+            accept: 'application/json;odata=verbose'
+          }
+        })
+        let results = response.data.d.results
+        allItems = allItems.concat(results)
+        // recursively load
+        if (response.data.d.__next) {
+          purl = response.data.d.__next
+          return getAllItems(purl)
+        } else {
+          return allItems
+        }
+      }
+      return getAllItems(iurl)
     },
     showPicker: function(id, kind) {
       let m = 'modal_' + id
