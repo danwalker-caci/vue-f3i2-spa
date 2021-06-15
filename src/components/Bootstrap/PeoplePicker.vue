@@ -138,7 +138,7 @@ export default {
       }
       if (this.kind === 'Group') {
         vm.searchPlaceholder = 'Type to search by name.'
-        url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/Web/SiteGroups/GetByName('" + this.title + "')/users"
+        url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/Web/SiteGroups/GetByName('" + this.group + "')/users"
         console.log('GROUP URL: ' + url)
         let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
         const response = await promise

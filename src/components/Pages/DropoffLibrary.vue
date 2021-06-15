@@ -90,17 +90,17 @@ export default {
       this.recipientOptions = []
       this.recipientOptions.push(
         { kind: 'Companies', title: 'Select individuals from companies', id: 'Companies', component: 'PeoplePicker', user: this.currentUser },
-        { kind: 'Group', title: 'Select individuals from Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser },
-        { kind: 'Group', title: 'Select individuals from AFRL', component: 'PeoplePicker', id: 'AFRL', user: this.currentUser }
+        { kind: 'Group', title: 'Select individuals from Workplan Managers', group: 'Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser },
+        { kind: 'Group', title: 'Select individuals from AFRL', group: 'AFRL', component: 'PeoplePicker', id: 'AFRL', user: this.currentUser }
       )
     }
     if (this.isAFRL) {
       this.recipientOptions = []
-      this.recipientOptions.push({ kind: 'Group', title: 'Select individuals from Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser })
+      this.recipientOptions.push({ kind: 'Group', title: 'Workplan Managers', group: 'Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser })
     }
     if (this.isSubcontractor) {
       this.recipientOptions = []
-      this.recipientOptions.push({ kind: 'Company', title: 'Select individuals from ' + this.currentUser[0].Company, id: 'Company', component: 'PeoplePicker', user: this.currentUser }, { kind: 'Group', title: 'Select individuals from Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser })
+      this.recipientOptions.push({ kind: 'Company', title: this.currentUser[0].Company, id: 'Company', component: 'PeoplePicker', user: this.currentUser }, { kind: 'Group', title: 'Workplan Managers', group: 'Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser })
     }
     let url =
       "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('DropoffLibrary')/items?$select=*,Author/Title,Author/EMail,Author/Id,File/Name,File/ServerRelativeUrl,Recipients/Id,Recipients/Title,Recipients/EMail&$expand=Author,File,Recipients&$filter=(Recipients/Id eq " +
