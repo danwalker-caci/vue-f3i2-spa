@@ -107,7 +107,7 @@ export default {
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
               <b-button v-if="data.TaskType == 'DropoffDocument'" class="actionbutton" variant="info" @click="reviewdocument(data)" title="Review Document">
-                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+                <font-awesome-icon far icon="folder-open" class="icon"></font-awesome-icon>
               </b-button>
             </div>
             <div v-else>

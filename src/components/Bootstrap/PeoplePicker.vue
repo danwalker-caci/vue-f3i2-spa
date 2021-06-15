@@ -8,7 +8,7 @@
             <b-col cols="12">
               <b-form-group label="Filter" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
                 <b-input-group size="sm">
-                  <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
+                  <b-form-input id="filter-input" v-model="filter" type="search" :placeholder="searchPlaceholder"></b-form-input>
                   <b-input-group-append>
                     <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
                   </b-input-group-append>
@@ -87,12 +87,13 @@ export default {
   props: ['kind', 'title', 'id', 'user'],
   data: function() {
     return {
+      searchPlaceholder: 'Type to search.',
       items: [],
       selected: [],
       shownData: [],
       fields: [
         { key: 'actions', label: 'Select' },
-        { key: 'name', label: 'Name' }
+        { key: 'name', label: 'Name', sortable: true }
       ],
       totalRows: 1,
       currentPage: 1,
@@ -100,7 +101,8 @@ export default {
       sortBy: 'name',
       sortDesc: false,
       sortDirection: 'asc',
-      filter: null
+      filter: null,
+      filterOn: []
     }
   },
   created() {
@@ -112,6 +114,7 @@ export default {
       let that = this
       let url = null
       if (this.kind === 'Company') {
+        vm.searchPlaceholder = 'Type to search by name.'
         let company = this.user[0].Company
         url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company eq '"
         url += company
@@ -134,6 +137,7 @@ export default {
         return z
       }
       if (this.kind === 'Group') {
+        vm.searchPlaceholder = 'Type to search by name.'
         url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/Web/SiteGroups/GetByName('" + this.title + "')/users"
         console.log('GROUP URL: ' + url)
         let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
@@ -155,8 +159,10 @@ export default {
       if (this.kind === 'Companies') {
         this.fields.push({
           key: 'company',
-          label: 'Company'
+          label: 'Company',
+          sortable: true
         })
+        vm.searchPlaceholder = 'Type to search by name or company.'
         url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company gt '' and UserAccount/Id gt 0"
         // let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
         let promise = vm.getAllItems(url)
@@ -225,29 +231,45 @@ export default {
         name: item.name,
         email: item.email
       }
-      // if the user is in the array already, then remove them
-      if (this.selected.length > 0) {
-        // loop through the array and see if the user is in there
-        let index = 0
-        for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i] === item.id) {
-            index = i
+      if (console) console.log('CHECKED: ' + event.target.checked)
+      if (event.target.checked) {
+        // user should be added if not already
+        if (vm.selected.length > 0) {
+          // loop through the array and see if the user is in there
+          let index = 0
+          for (let i = 0; i < vm.selected.length; i++) {
+            if (vm.selected[i] === item.id) {
+              index = i
+            }
           }
-        }
-        if (index > 0) {
-          this.items.splice(index, 1)
-          this.selected.splice(index, 1)
-          EventBus.$emit('RemoveRecipient', selecteduser)
+          if (index >= 0) {
+            // user is already selected so do nothing
+          } else {
+            vm.items.push(selecteduser)
+            EventBus.$emit('AddRecipient', selecteduser)
+            vm.selected.push(item.id)
+          }
         } else {
-          // user not found so add them
-          this.items.push(selecteduser)
+          vm.items.push(selecteduser)
           EventBus.$emit('AddRecipient', selecteduser)
-          this.selected.push(item.id)
+          vm.selected.push(item.id)
         }
       } else {
-        this.items.push(selecteduser)
-        EventBus.$emit('AddRecipient', selecteduser)
-        this.selected.push(item.id)
+        // user should be removed if in the selected array
+        if (vm.selected.length > 0) {
+          // loop through the array and see if the user is in there
+          let index = 0
+          for (let i = 0; i < vm.selected.length; i++) {
+            if (vm.selected[i] === item.id) {
+              index = i
+            }
+          }
+          if (index >= 0) {
+            vm.items.splice(index, 1)
+            vm.selected.splice(index, 1)
+            EventBus.$emit('RemoveRecipient', selecteduser)
+          }
+        }
       }
     },
     onFiltered: function(filteredItems) {

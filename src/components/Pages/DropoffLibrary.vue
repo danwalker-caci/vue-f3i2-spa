@@ -89,7 +89,7 @@ export default {
       // PMO Team
       this.recipientOptions = []
       this.recipientOptions.push(
-        { kind: 'Companies', title: '', id: 'Companies', component: 'PeoplePicker', user: this.currentUser },
+        { kind: 'Companies', title: 'Companies', id: 'Companies', component: 'PeoplePicker', user: this.currentUser },
         { kind: 'Group', title: 'Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser },
         { kind: 'Group', title: 'AFRL', component: 'PeoplePicker', id: 'AFRL', user: this.currentUser }
       )
