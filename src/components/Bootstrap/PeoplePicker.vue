@@ -84,7 +84,7 @@ if (window._spPageContextInfo) {
 
 export default {
   name: 'PeoplePicker',
-  props: ['kind', 'title', 'id', 'user'],
+  props: ['kind', 'title', 'id', 'user', 'group'],
   data: function() {
     return {
       searchPlaceholder: 'Type to search.',
