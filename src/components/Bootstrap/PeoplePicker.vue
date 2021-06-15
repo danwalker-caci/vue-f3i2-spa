@@ -54,7 +54,7 @@
       <b-form-group :label="title">
         <b-input-group>
           <template #prepend>
-            <b-button variant="light-blue" @click="showPicker(id, kind)" :id="'btn_' + id">Select</b-button>
+            <b-button variant="light-blue" @click="showPicker(id, kind)" :id="'btn_' + id">Add Recipients</b-button>
           </template>
           <b-form-checkbox-group stacked :name="'cbg_' + id" class="p-2" v-model="selected">
             <b-form-checkbox v-for="item in items" :key="item.id" @input.native="toggleUser(item, $event)" :value="item.value">{{ item.name }}</b-form-checkbox>
@@ -231,43 +231,45 @@ export default {
         name: item.name,
         email: item.email
       }
-      if (console) console.log('CHECKED: ' + event.target.checked)
+      if (console) console.log('CHECKED: ' + event.target.checked + ', SELECTED LENGTH: ' + this.selected.length)
       if (event.target.checked) {
         // user should be added if not already
-        if (vm.selected.length > 0) {
+        if (this.selected.length > 0) {
           // loop through the array and see if the user is in there
           let index = 0
-          for (let i = 0; i < vm.selected.length; i++) {
-            if (vm.selected[i] === item.id) {
-              index = i
+          for (let i = 0; i < this.selected.length; i++) {
+            if (this.selected[i] === item.id) {
+              index += 1
             }
           }
-          if (index >= 0) {
-            // user is already selected so do nothing
-          } else {
-            vm.items.push(selecteduser)
+          if (index === 0) {
+            this.items.push(selecteduser)
             EventBus.$emit('AddRecipient', selecteduser)
-            vm.selected.push(item.id)
+            this.selected.push(item.id)
           }
         } else {
-          vm.items.push(selecteduser)
+          this.items.push(selecteduser)
           EventBus.$emit('AddRecipient', selecteduser)
-          vm.selected.push(item.id)
+          this.selected.push(item.id)
         }
       } else {
         // user should be removed if in the selected array
-        if (vm.selected.length > 0) {
+        if (console) console.log('REMOVING USER: ' + item.id + ', SELECTED LENGTH: ' + this.selected.length)
+        if (this.selected.length > 0) {
           // loop through the array and see if the user is in there
           let index = 0
-          for (let i = 0; i < vm.selected.length; i++) {
-            if (vm.selected[i] === item.id) {
-              index = i
+          for (let i = 0; i < this.selected.length; i++) {
+            if (Number(this.selected[i]) === Number(item.id)) {
+              this.items.splice(i, 1)
+              this.selected.splice(i, 1)
+              EventBus.$emit('RemoveRecipient', selecteduser)
             }
           }
-          if (index >= 0) {
-            vm.items.splice(index, 1)
-            vm.selected.splice(index, 1)
-            EventBus.$emit('RemoveRecipient', selecteduser)
+          for (let i = 0; i < this.items.length; i++) {
+            if (Number(this.items[i].id) === Number(item.id)) {
+              this.items.splice(i, 1)
+              EventBus.$emit('RemoveRecipient', selecteduser)
+            }
           }
         }
       }

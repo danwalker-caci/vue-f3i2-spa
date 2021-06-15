@@ -15,7 +15,7 @@
         <b-row class="m-0" v-for="field in table.fields" :key="field" :style="showIfRequired(field)">
           <b-col cols="12" class="p-0">
             <b-form-group :label="field.label">
-              <b-form-file v-if="field.type == 'file'" placeholder="Choose a file" no-drop class="form-control" v-model="field.selected" :id="'required_' + field.field" @input="fileSelected(field)" :state="field.selected !== ''" :ref="field.field"></b-form-file>
+              <b-form-file v-if="field.type == 'file'" placeholder="Choose a file" no-drop class="form-control" v-model="field.selected" :id="'required_' + field.field" @input="fileSelected(field)" :state="Invalid" :ref="field.field"></b-form-file>
               <b-form-select v-if="field.type == 'lookup'" class="form-control" :options="field.options" v-model="field.selected" :id="'required_' + field.field" :state="field.selected !== ''" :ref="field.field"></b-form-select>
             </b-form-group>
           </b-col>
@@ -47,7 +47,7 @@
           <b-row no-gutters class="contentHeight">
             <b-overlay :show="loaded == false" :variant="overlayVariant" z-index="3000">
               <b-container fluid class="contentHeight m-0 p-0">
-                <b-row v-if="table.buttons.length > 0" no-gutters :class="table.headerClass" class="button-row">
+                <b-row v-if="table.buttons.length > 0" no-gutters :class="table.headerClass" class="dt-button-row">
                   <b-col cols="12" class="m-0 p-0">
                     <span v-for="button in table.buttons" :key="button">
                       <b-button v-if="button == 'Upload'" v-b-modal.FileModal variant="light-blue"><font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>&nbsp;Upload</b-button>
@@ -154,7 +154,7 @@ export default {
   },
   data: function() {
     return {
-      notice: "Please select the file you wish to upload. Then select the users using the 'Select' buttons. All selected users will receive a notification email and task. The users will have 30 days to get the file before it is automatically deleted.",
+      notice: 'Please select the file you wish to upload into the F3I-2 Portal.  Please identify which user will have access to the document by using the add recipients button. Please note, selected users will have the ability to view/download the document.',
       GoOn: 'No',
       isAuthor: false,
       Invalid: false,
@@ -204,13 +204,6 @@ export default {
       }
     }
     console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].Email)
-    // add the current user to the recipients list. HOLDING FOR A DIFFERENT TEST OPTION
-    /* this.recipients.push({
-      name: this.user[0].DisplayName,
-      id: Number(this.user[0].id),
-      email: this.user[0].Email,
-      isAuthor: true
-    }) */
   },
   methods: {
     init: function() {
@@ -244,7 +237,7 @@ export default {
           index = i
         }
       }
-      if (index > 0) {
+      if (index >= 0) {
         this.recipients.splice(index, 1)
       }
     },
@@ -505,12 +498,26 @@ export default {
         vm.$router.push({ name: 'Refresh', params: { action: 'dropofflibrary' } })
       }, 2000)
     },
-    fileSelected: function(field) {
+    fileSelected: async function(field) {
+      // TODO: Add file exists validation
+      let doesExist = false
+      let url = SPCI.webServerRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('DropoffLibrary')/Files?$select=*&$filter=Name eq '" + field.selected.name + "'"
+      console.log('GETDOCUMENTS URL: ' + url)
+      let response = await axios.get(url, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      // console.log('GETDOCUMENTS RESPONSE: ' + JSON.stringify(response))
+      let dog = response.data.d.results
+      if (dog.length > 0) {
+        doesExist = true
+      }
       let regex = /^[a-zA-Z0-9\s_.-]*$/g
       let matches = regex.test(String(field.selected.name))
       let isLong = String(field.selected.name).length > 200
       // console.log(matches + ', ' + isLong)
-      if (matches === true && isLong === false) {
+      if (matches === true && isLong === false && doesExist === false) {
         vm.fileName = field.selected.name
         let buffer = vm.getFileBuffer(field.selected)
         buffer.then(function(buff) {
@@ -525,9 +532,12 @@ export default {
         if (isLong === true) {
           text += 'Document name is too long. '
         }
+        if (doesExist === true) {
+          text += 'The selected document already exists. '
+        }
         text += 'Rename the file.'
         vm.InvalidMessage = text
-        field.selected = ''
+        // field.selected = ''
       }
     },
     UploadFile: async function() {
@@ -696,18 +706,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.button-row,
-.paging-row {
+<style lang="scss">
+.dt-button-row,
+.dt-paging-row {
   height: 40px !important;
 }
-.table-bordered,
-.table-bordered td,
-.table-bordered th {
+.table-full,
+.table-full td,
+.table-full th {
   border: 1px solid #000000 !important;
-}
-.table th,
-.table td {
-  padding: 2px;
 }
 </style>
