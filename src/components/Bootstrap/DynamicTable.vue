@@ -443,7 +443,7 @@ export default {
       } else {
         switch (field.format) {
           case 'link':
-            ret = '<a href="' + item['url'] + '">' + item[field.field] + '</a>'
+            ret = '<a href="' + item['url'] + '" target="_blank">' + item[field.field] + '</a>'
             break
 
           case 'text':
