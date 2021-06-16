@@ -34,6 +34,7 @@ export default class Workplan extends Model {
       Status: this.attr(''),
       Subs: this.attr(''),
       LastIndex: this.attr(''),
+      DocInfo: this.attr(''),
       etag: this.attr(null), // Used for updating
       uri: this.attr(null) // Used for updating
     }

@@ -11,6 +11,7 @@ let geturl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('WorkPlans')/it
 geturl += '?$select=*,Manager/Title,Manager/ID,Manager/Name,Manager/EMail&$expand=Manager'
 geturl += '&$filter=(Archived eq 0)'
 let murl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('Workplan Managers')/users"
+const furl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('WorkplanDocuments')/RootFolder/Files/Add"
 
 export default {
   getFormDigest() {
@@ -163,7 +164,8 @@ export default {
         ? moment(payload.CACISubmittedDate)
             .add(6, 'hours')
             .format('YYYY-MM-DD[T]HH:MM:[00Z]')
-        : null
+        : null,
+      DocInfo: payload.DocInfo ? JSON.stringify(payload.DocInfo) : null
     }
 
     try {
@@ -279,5 +281,37 @@ export default {
     } catch (error) {
       console.log('WorkplanService Error Updating Workplan Index: ' + error)
     }
+  },
+  async uploadDocument(payload, digest) {
+    let part = "(url='"
+    part += payload.file + "',overwrite=true)"
+    let url = furl + part
+    let data = payload.buffer
+    let headers = {
+      Accept: 'application/json;odata=verbose',
+      'X-RequestDigest': digest
+    }
+    // doing the upload
+    const response = await axios({
+      url: url,
+      method: 'POST',
+      data: data,
+      processData: false,
+      async: false,
+      headers: headers
+    }).catch(e => {
+      console.log('WorkplanService Error Adding Form: ' + e)
+    })
+    return response
+  },
+  async getDocument(state, uri) {
+    const response = await axios({
+      method: 'GET',
+      url: uri,
+      headers: {
+        Accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
   }
 }
