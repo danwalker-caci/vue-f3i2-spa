@@ -51,7 +51,7 @@
               <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="isDeveloper" :link="{ name: 'Documents', library: 'fas', icon: 'file-alt' }">
-              <sidebar-item v-if="isDeveloper" :link="{ name: 'Dropoff Library', library: 'fas', icon: 'box-open', path: '/pages/home/dropoff' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'Dropoff Library', library: 'fas', icon: 'box-open', path: '/pages/home/dropoff' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
           </template>

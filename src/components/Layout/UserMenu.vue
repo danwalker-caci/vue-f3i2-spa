@@ -102,9 +102,12 @@ export default {
         return {
           template: Vue.component('columnTemplate', {
             template: `
-            <div v-if="data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
+            <div v-if="data.TaskType == 'DropoffDocument' || data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
               <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button v-if="data.TaskType == 'DropoffDocument'" class="actionbutton" variant="info" @click="reviewdocument(data)" title="Review Document">
+                <font-awesome-icon far icon="folder-open" class="icon"></font-awesome-icon>
               </b-button>
             </div>
             <div v-else>
@@ -149,6 +152,9 @@ export default {
                   })
               },
               reviewtr: function(data) {
+                window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
+              },
+              reviewdocument: function(data) {
                 window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
               },
               goto: function(data) {
