@@ -155,6 +155,7 @@
                   :dataBound="dataBound"
                   :actionBegin="actionBegin"
                   :actionComplete="actionComplete"
+                  :queryCellInfo="formatCell"
                   rowHeight="20"
                   :height="rect.height - 175"
                   width="100%"
@@ -198,6 +199,7 @@
                   :dataBound="dataBound"
                   :actionBegin="actionBegin"
                   :actionComplete="actionComplete"
+                  :queryCellInfo="formatCell"
                   rowHeight="20"
                   :height="rect.height - 175"
                   width="100%"
@@ -325,6 +327,24 @@ export default {
       managerId: null,
       origStatus: null,
       showIncrementAlert: false,
+      legenditems: [
+        {
+          name: 'Approved',
+          class: 'wp-approved'
+        },
+        {
+          name: 'CACI Updating',
+          class: 'wp-caci-updating'
+        },
+        {
+          name: 'CACI Submitted',
+          class: 'wp-caci-submitted'
+        },
+        {
+          name: 'Waiting on Work Plan',
+          class: 'wp-waiting-on-work-plan'
+        }
+      ],
       fields: [
         {
           FieldName: 'Version',
@@ -716,6 +736,9 @@ export default {
         })
     })
   },
+  beforeDestroy() {
+    this.$store.dispatch('support/setLegendItems', [])
+  },
   methods: {
     waitForPlans: function() {
       if (this.workplans && this.workplans.length > 0) {
@@ -724,11 +747,21 @@ export default {
         this.filtereddata = this.workplans
         this.loadingData = false
         // document.getElementById('PageTitle').innerHTML = ' -  Active Work Plans'
+        this.$store.dispatch('support/setLegendItems', this.legenditems)
         this.$bvToast.hide('busy-toast')
         // load any saved filters
         this.loadfilters()
       } else {
         this.waitForPlans()
+      }
+    },
+    formatCell: function(args) {
+      let c = String(args.data['Status'])
+        .toLowerCase()
+        .replace(/ /g, '-')
+      c = 'wp-' + c
+      if (args.column.field == 'Status') {
+        args.cell.classList.add(c)
       }
     },
     getRef: function(text, idx) {
