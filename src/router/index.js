@@ -37,7 +37,7 @@ let pagesMenu = {
     },
     {
       path: 'page/dropoff',
-      name: 'DropoffLibrary',
+      name: 'FileExchange',
       component: () => import(/* webpackChunkName: "dropoff" */ '../components/Pages/DropoffLibrary.vue'),
       props: true
     }

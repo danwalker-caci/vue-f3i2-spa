@@ -6,7 +6,7 @@
         <b-row class="m-0">
           <b-col cols="12" class="p-0">
             <b-form-group label="NOTICE">
-              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" disabled class="text-dark"></b-form-textarea>
+              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" disabled no-resize class="text-dark"></b-form-textarea>
             </b-form-group>
           </b-col>
         </b-row>
@@ -656,15 +656,15 @@ export default {
             let payload = {}
             payload.id = DocID
             payload.email = emails
-            payload.title = 'New Dropfoff Library Document'
+            payload.title = 'New File Exchange Document'
             payload.body = ''
             payload.body += '<p>A new document has been added that requires your attention.</p>'
             payload.body += '<p>The document will be automatically deleted after 30 days.</p>'
             payload.body += '<p></p>'
             payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName + '">' + vm.fileName + '</a></p>'
-            vm.$store.dispatch('support/SendEmail', payload)
+            // vm.$store.dispatch('support/SendEmail', payload)
             let taskpayload = {
-              Title: 'New Dropfoff Library Document',
+              Title: 'New File Exchange Document',
               TaskType: 'DropoffDocument',
               TaskLink: SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName
             }
