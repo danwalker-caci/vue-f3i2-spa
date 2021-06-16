@@ -2,23 +2,30 @@
   <div class="user">
     <b-modal id="Todos" ref="Todos" scrollable size="xl" centered hide-footer header-bg-variant="light-blue" header-text-variant="white">
       <template v-slot:modal-title>My Tasks</template>
-      <b-form>
-        <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
-          <e-columns>
-            <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-            <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-            <e-column field="Status" headerText="Status" width="100"></e-column>
-            <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
-            <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-            <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
-            <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
-            <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
-            <e-column field="TaskLink" :visible="false" textAlign="Left" width="40"></e-column>
-          </e-columns>
-        </ejs-grid>
-      </b-form>
+      <b-overlay class="w-100" :show="showLoading" :variant="overlayVariant" z-index="3000">
+        <b-form>
+          <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
+            <e-columns>
+              <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
+              <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
+              <e-column field="Status" headerText="Status" width="100"></e-column>
+              <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
+              <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
+              <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
+              <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
+              <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
+              <e-column field="TaskLink" :visible="false" textAlign="Left" width="40"></e-column>
+            </e-columns>
+          </ejs-grid>
+        </b-form>
+        <template #overlay>
+          <div class="text-center">
+            <p id="busy-label">{{ overlayText }}</p>
+          </div>
+        </template>
+      </b-overlay>
     </b-modal>
     <div class="info">
       <a data-toggle="collapse" :aria-expanded="!isClosed" @click.stop="toggleMenu" href="#">
@@ -85,6 +92,9 @@ export default {
   },
   data: function() {
     return {
+      overlayText: 'Getting Task. Please Wait...',
+      overlayVariant: 'light',
+      showLoading: false,
       todocount: 0,
       userdisplayname: '',
       userurl: '#',
@@ -158,8 +168,12 @@ export default {
                 window.open(data.TaskLink, 'blank', 'width=1200, height=800, scrollbars=yes, resizable=yes')
               },
               goto: function(data) {
-                this.$bvModal.hide('Todos')
-                this.$router.push({ path: data.TaskLink })
+                vm.showLoading = true
+                setTimeout(() => {
+                  vm.$bvModal.hide('Todos')
+                  vm.showLoading = false
+                  vm.$router.push({ path: data.TaskLink })
+                }, 1000)
               },
               approveme: function(data) {
                 Travel.dispatch('getDigest')
