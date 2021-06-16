@@ -7,11 +7,11 @@
           <ejs-grid id="TodoGrid" ref="TodoGrid" :dataSource="mytodos" :allowPaging="true" :allowReordering="false" :pageSettings="pageSettings" :editSettings="editSettings" :filterSettings="filterSettings" :toolbar="toolbar" :allowExcelExport="false" :detailTemplate="detailTemplate" rowHeight="20" height="100%" width="100%">
             <e-columns>
               <e-column headerText="Actions" textAlign="Left" width="100" :template="ActionsTemplate"></e-column>
-              <e-column field="Title" headerText="Title" textAlign="Left" width="200"></e-column>
-              <e-column field="Status" headerText="Status" width="100"></e-column>
-              <e-column field="StartDate" headerText="Start Date" textAlign="Left" width="100"></e-column>
-              <e-column field="DueDate" headerText="Due Date" textAlign="Left" width="100"></e-column>
-              <e-column field="TaskType" headerText="Task Type" textAlign="Left" width="160"></e-column>
+              <e-column field="Title" headerText="Title" textAlign="Left" minwidth="250"></e-column>
+              <e-column field="Status" headerText="Status" :visible="false" width="100"></e-column>
+              <e-column field="StartDate" headerText="Start Date" :visible="false" textAlign="Left" width="100"></e-column>
+              <e-column field="DueDate" headerText="Due Date" :visible="false" textAlign="Left" width="100"></e-column>
+              <e-column field="TaskType" headerText="Task Type" textAlign="Left" minWidth="160"></e-column>
               <e-column field="Id" headerText="Id" :visible="false" textAlign="Left" width="40" :isPrimaryKey="true"></e-column>
               <e-column field="Body" :visible="false" textAlign="Left" width="40"></e-column>
               <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
