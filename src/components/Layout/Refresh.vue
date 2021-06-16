@@ -36,7 +36,7 @@ export default {
         break
 
       case 'dropofflibrary':
-        this.$router.push({ name: 'DropoffLibrary',  path: '/pages/home/dropoff' })
+        this.$router.push({ name: 'File Exchange',  path: '/pages/home/dropoff' })
         break
 
       case 'manning':

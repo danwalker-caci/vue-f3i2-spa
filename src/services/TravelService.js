@@ -460,6 +460,7 @@ export default {
     }
     let itemprops = {
       __metadata: { type: 'SP.Data.TravelListItem' },
+      FundingAvailable: 'Select...',
       Status: payload[0].Status,
       Title: payload[0].Subject,
       StartDate: moment(payload[0].StartTime).add(8, 'hours'), // .format('YYYY-MM-DD[T]HH:MM:[00Z]'), // adding 8 hours to remove the timezone offset
