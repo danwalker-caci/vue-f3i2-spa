@@ -1,12 +1,12 @@
 <template>
   <b-container fluid class="contentHeight m-0 p-0">
-    <b-modal id="FileModal" ref="FileModal" centered hide-footer header-bg-variant="light-blue" size="lg" header-text-variant="light">
+    <b-modal id="FileModal" ref="FileModal" centered hide-footer header-bg-variant="light-blue" size="lg" header-text-variant="light" @show="resetModal">
       <template v-slot:modal-title>Upload File</template>
       <b-container fluid class="p-0">
         <b-row class="m-0">
           <b-col cols="12" class="p-0">
             <b-form-group label="NOTICE">
-              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" class="text-dark"></b-form-textarea>
+              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" disabled class="text-dark"></b-form-textarea>
             </b-form-group>
           </b-col>
         </b-row>
@@ -15,7 +15,7 @@
         <b-row class="m-0" v-for="field in table.fields" :key="field" :style="showIfRequired(field)">
           <b-col cols="12" class="p-0">
             <b-form-group :label="field.label">
-              <b-form-file v-if="field.type == 'file'" placeholder="Choose a file" no-drop class="form-control" v-model="field.selected" :id="'required_' + field.field" @input="fileSelected(field)" :state="Invalid" :ref="field.field"></b-form-file>
+              <b-form-file v-if="field.type == 'file'" placeholder="Choose a file" no-drop class="form-control" v-model="field.selected" :id="'required_' + field.field" @input="fileSelected(field)" :state="!Invalid" :ref="field.field"></b-form-file>
               <b-form-select v-if="field.type == 'lookup'" class="form-control" :options="field.options" v-model="field.selected" :id="'required_' + field.field" :state="field.selected !== ''" :ref="field.field"></b-form-select>
             </b-form-group>
           </b-col>
@@ -223,14 +223,16 @@ export default {
       s = s.replace(/\s+/g, '').toLowerCase()
       return s
     },
+    resetModal: function() {
+      this.Invalid = false
+      this.InvalidMessage = 'Not all fields are filled out correctly.'
+    },
     AddRecipient: function(data) {
       // add a user to recipients array
-      // if (console) console.log(data)
       this.recipients.push(data)
     },
     RemoveRecipient: function(data) {
       // remove a user from recipients array
-      // if (console) console.log(data)
       let index = 0
       for (let i = 0; i < this.recipients.length; i++) {
         if (this.recipients[i]['id'] === data.id) {
@@ -499,7 +501,7 @@ export default {
       }, 2000)
     },
     fileSelected: async function(field) {
-      // TODO: Add file exists validation
+      this.Invalid = false
       let doesExist = false
       let url = SPCI.webServerRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('DropoffLibrary')/Files?$select=*&$filter=Name eq '" + field.selected.name + "'"
       console.log('GETDOCUMENTS URL: ' + url)
