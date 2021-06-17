@@ -50,7 +50,7 @@
               <sidebar-item :link="{ name: 'Add SCI', library: 'fas', icon: 'id-card', path: '/security/add/sci' }"></sidebar-item>
               <sidebar-item :link="{ name: 'Security Actions Tracker', library: 'fas', icon: 'id-card', path: '/security/tracker' }"></sidebar-item>
             </sidebar-item>
-            <sidebar-item v-if="isDeveloper" :link="{ name: 'Documents', library: 'fas', icon: 'file-alt' }">
+            <sidebar-item v-if="isAFRL || isSubcontractor || isMember" :link="{ name: 'Documents', library: 'fas', icon: 'file-alt' }">
               <sidebar-item :link="{ name: 'File Exchange', library: 'fas', icon: 'box-open', path: '/pages/home/dropoff' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="isAdmin" :link="{ name: 'Portal Administration', library: 'fas', icon: 'user-lock', path: '/admin/home/home' }"></sidebar-item>
