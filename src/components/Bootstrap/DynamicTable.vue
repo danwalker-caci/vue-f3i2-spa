@@ -6,7 +6,7 @@
         <b-row class="m-0">
           <b-col cols="12" class="p-0">
             <b-form-group label="NOTICE">
-              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" disabled no-resize class="text-dark"></b-form-textarea>
+              <b-form-textarea id="textarea_notice" v-html="notice" rows="3" disabled class="text-dark" style="resize: none;"></b-form-textarea>
             </b-form-group>
           </b-col>
         </b-row>
@@ -443,7 +443,7 @@ export default {
       } else {
         switch (field.format) {
           case 'link':
-            ret = '<a href="' + item['url'] + '">' + item[field.field] + '</a>'
+            ret = '<a href="' + item['url'] + '" target="_blank">' + item[field.field] + '</a>'
             break
 
           case 'text':
@@ -661,17 +661,17 @@ export default {
             payload.body += '<p>A new document has been added that requires your attention.</p>'
             payload.body += '<p>The document will be automatically deleted after 30 days.</p>'
             payload.body += '<p></p>'
-            payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName + '">' + vm.fileName + '</a></p>'
+            payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName + '" target="_blank">' + vm.fileName + '</a></p>'
             // vm.$store.dispatch('support/SendEmail', payload)
             let taskpayload = {
               Title: 'New File Exchange Document',
-              TaskType: 'DropoffDocument',
+              TaskType: 'FileExchangeDocument',
               TaskLink: SPCI.webAbsoluteUrl + slash + vm.table.list + slash + vm.fileName
             }
             for (let i = 0; i < vm.recipients.length; i++) {
               if (!vm.recipients[i].isAuthor) {
                 taskpayload['AssignedToId'] = [vm.recipients[i].id]
-                taskpayload['TaskInfo'] = 'Type:DropoffDocument, DocID:' + DocID + ', Email:' + vm.recipients[i].email
+                taskpayload['TaskInfo'] = 'Type:FileExchangeDocument, DocID:' + DocID + ', Email:' + vm.recipients[i].email
                 Todo.dispatch('addTodo', taskpayload)
               }
             }

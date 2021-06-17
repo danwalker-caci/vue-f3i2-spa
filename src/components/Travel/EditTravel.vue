@@ -986,7 +986,7 @@ export default {
         let giraffe = JSON.parse(this.selectedtrip.Travelers)
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
-        this.travelmodel.FundingAvailable = this.selectedtrip.FundingAvailable
+        this.travelmodel.FundingAvailable = this.selectedtrip.FundingAvailable === 'Yes' || this.selectedtrip.FundingAvailable === 'No' ? this.selectedtrip.FundingAvailable : ''
         this.travelmodel.WorkPlan = this.selectedtrip.WorkPlan
         this.travelmodel.WorkPlanNumber = this.selectedtrip.WorkPlanNumber
         this.travelmodel.OriginalWorkPlanNumber = this.selectedtrip.OriginalWorkPlanNumber
@@ -2253,7 +2253,7 @@ export default {
         StartTime: start,
         EndTime: end,
         Status: status,
-        FundingAvailable: this.travelmodel.FundingAvailable,
+        FundingAvailable: this.travelmodel.FundingAvailable === 'Yes' || this.travelmodel.FundingAvailable === 'No' ? this.travelmodel.FundingAvailable : '',
         WorkPlan: this.travelmodel.WorkPlan,
         WorkPlanNumber: this.travelmodel.WorkPlanNumber,
         OriginalWorkPlanNumber: this.travelmodel.OriginalWorkPlanNumber,

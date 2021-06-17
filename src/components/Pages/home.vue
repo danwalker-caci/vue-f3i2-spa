@@ -16,7 +16,7 @@ export default {
       this.$router.push({ name: 'Dashboard' })
     }
     if (this.mode == 'dropoff') {
-      this.$router.push({ name: 'FileExchange' })
+      this.$router.push({ name: 'File Exchange' })
     }
   }
 }
