@@ -320,6 +320,7 @@ export default {
       loadingData: true,
       sortfield: '',
       sortdir: '',
+      currentStatus: '',
       unlockSubmitDate: false,
       file: null,
       fileName: '',
@@ -599,11 +600,12 @@ export default {
         destroy: () => {
           activeObj.destroy()
         },
-        write: () => {
+        write: args => {
           activeObj = new DropDownList({
             dataSource: vm.active,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData[args.column.field],
             placeholder: 'Select active or retired',
             floatLabelType: 'Never'
           })
@@ -621,11 +623,12 @@ export default {
         destroy: () => {
           managerObj.destroy()
         },
-        write: () => {
+        write: args => {
           managerObj = new DropDownList({
             dataSource: vm.managers,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData.ManagerId,
             placeholder: 'Select a manager',
             floatLabelType: 'Never'
           })
@@ -648,6 +651,7 @@ export default {
             dataSource: vm.status,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData['Status'],
             placeholder: 'Select a status',
             floatLabelType: 'Never'
           })
@@ -662,6 +666,9 @@ export default {
                 floatLabelType: 'Never'
               })
               submitDateObj.appendTo(submitDateElem)
+            } else {
+              submitDateElem.value = null
+              submitDateElem.disabled = true
             }
           })
         }
@@ -724,9 +731,9 @@ export default {
         }
       },
       submitDateParams: {
-        create: function() {
+        create: args => {
           submitDateElem = document.createElement('input')
-          submitDateElem.disabled = true
+          submitDateElem.disabled = vm.currentStatus === 'CACI Submitted' ? false : true
           return submitDateElem
         },
         read: () => {
@@ -735,7 +742,17 @@ export default {
         destroy: () => {
           submitDateObj ? submitDateObj.destroy() : null
         },
-        write: () => {}
+        write: args => {
+          if (vm.currentStatus === 'CACI Submitted') {
+            submitDateElem.disabled = false
+            submitDateObj = new DatePicker({
+              value: args.rowData['CACISubmittedDate'] ? new Date(args.rowData['CACISubmittedDate']) : null,
+              enabled: true,
+              floatLabelType: 'Never'
+            })
+            submitDateObj.appendTo(submitDateElem)
+          }
+        }
       }
     }
   },
@@ -830,16 +847,9 @@ export default {
       //if (console) console.log('ACTION BEGIN: ' + args.requestType)
       switch (args.requestType) {
         case 'beginEdit':
-          /*if (!this.isSubcontractor) {
-            this.editRow(args.rowData)
-          }*/
-          console.log(JSON.stringify(args.rowData))
-          // Save the dropdown information before editing so that it can be restored if there aren't changes to those fields.
-
-          // Get the information so that
+          this.currentStatus = args.rowData.Status
           //args.cancel = true
           break
-
         case 'add':
           args.cancel = true
           if (this.isPM) {
@@ -847,9 +857,6 @@ export default {
           }
           break
         case 'save':
-          // Create immutable objects and update related fields
-          if (console) console.log('SAVING ACTION BEGIN')
-          this.rowData = Object.assign({}, args.rowData)
           break
       }
     },
@@ -869,39 +876,40 @@ export default {
           break
         case 'beginEdit':
           this.originalRowData = Object.assign({}, args.rowData)
+          this.rowData = null
           break
         case 'save':
+          // Create immutable objects and update related fields
+          if (console) console.log('SAVING ACTION BEGIN')
+          this.rowData = Object.assign({}, args.rowData)
+          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
           this.showIncrementAlert = false
           if (activeObj.value) {
             let newActive = Object.assign({}, { value: activeObj.value })
             this.rowData.Active = newActive.value
-            args.rowData.Active = newActive.value
           } else {
-            activeElem.value = null
+            //activeElem.value = null
             this.rowData.Active = this.originalRowData.Active
-            args.rowData.Active = this.originalRowData.Active
           }
           if (managerObj.value) {
             let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
             this.rowData.ManagerId = Number(newManager.value)
             this.rowData.Manager = newManager.text
-            args.rowData.ManagerId = Number(newManager.value)
             args.rowData.Manager = newManager.text
+            args.rowData.ManagerId = Number(newManager.value)
           } else {
-            managerElem.value = null
+            //managerElem.value = null
             this.rowData.ManagerId = this.originalRowData.ManagerId
             this.rowData.Manager = this.originalRowData.Manager
-            args.rowData.ManagerId = this.originalRowData.ManagerId
             args.rowData.Manager = this.originalRowData.Manager
+            args.rowData.ManagerId = this.originalRowData.ManagerId
           }
           if (statusObj.value) {
             let newStatus = Object.assign({}, { value: statusObj.value })
             this.rowData.Status = newStatus.value
-            args.rowData.Status = newStatus.value
           } else {
-            statusElem.value = null
+            //statusElem.value = null
             this.rowData.Status = this.originalRowData.Status
-            args.rowData.Status = this.originalRowData.Status
           }
           if (popEndObj.value) {
             let newPopEnd = Object.assign({}, { value: popEndObj.value })
@@ -927,6 +935,12 @@ export default {
           } else {
             this.rowData.CACISubmittedDate = this.originalRowData.CACISubmittedDate ? this.originalRowData.CACISubmittedDate : null
           }
+
+          if (this.rowData.Status === 'Approved') {
+            this.rowData.CACISubmittedDate = null
+            args.rowData.CACISubmittedDate = null
+          }
+
           this.rowData.Revision = args.rowData.Revision
 
           if (Number.isFinite(args.rowData.Increment)) {
@@ -945,9 +959,9 @@ export default {
           await this.updateWorkplan(this.rowData)
             .then(workplan => {
               //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
-              vm.rowData.etag = Number(workplan.headers.etag)
+              vm.rowData.etag = Number(workplan.headers.etag.replace(/"/g, ''))
               vm.$refs['WorkplanGrid'].setRowData(vm.rowData.Id, vm.rowData)
-              vm.$refs['WorkplanGrid'].refresh()
+              //vm.$refs['WorkplanGrid'].refresh()
             })
             .then(() => {
               vm.locked = false
@@ -964,7 +978,14 @@ export default {
               })
               console.log('ERROR: ' + e)
             })
-
+          vm.currentStatus = ''
+          vm.submitDateParams.destroy()
+          vm.popStartParams.destroy()
+          vm.popEndParams.destroy()
+          vm.dateApprovedParams.destroy()
+          vm.activeParams.destroy()
+          vm.managerParams.destroy()
+          vm.statusParams.destroy()
           break
       }
     },
@@ -992,10 +1013,6 @@ export default {
     },
     dataBound: function() {
       this.$refs.WorkplanGrid.autoFitColumns()
-    },
-    EditManagerSelected: function() {
-      this.manager = document.getElementById('ddManagerEdit').ej2_instances[0].text
-      this.rowData.Manager = this.manager
     },
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
