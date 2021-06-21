@@ -467,13 +467,17 @@
                                 Show helpful video on Travel Approvals.
                               </b-tooltip>
                             </template>
-                            <b-row v-show="showApprovalHelp" class="mb-1">
-                              <video width="100%" controls>
-                                <source src="/sites/f3i2/TrainingVideos/Travel%20Approval.mp4" type="video/mp4" />
-                                Your Browser does not support this video.
-                              </video>
-                              <b-button size="sm" class="helpHide" @click="showApprovalHelp = !showApprovalHelp" variant="primary">Hide</b-button>
-                            </b-row>
+                            <div v-show="showApprovalHelp" class="mb-1">
+                              <b-row class="mb-1">
+                                <video width="75%" controls>
+                                  <source src="/sites/f3i2/TrainingVideos/Travel%20Approval.mp4" type="video/mp4" />
+                                  Your Browser does not support this video.
+                                </video>
+                              </b-row>
+                              <b-row class="mb-1">
+                                <b-button size="sm" class="helpHide" @click="showApprovalHelp = !showApprovalHelp" variant="primary">Close Video</b-button>
+                              </b-row>
+                            </div>
                             <b-row v-if="travelmodel.InternalData.OCONUSTravel !== 'Yes'" class="mb-1">
                               <b-col cols="4">PreApproved</b-col>
                               <b-col cols="8">
