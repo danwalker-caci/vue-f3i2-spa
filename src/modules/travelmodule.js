@@ -49,6 +49,10 @@ const actions = {
     let response = await TravelService.getGovTrvlApprovers()
     state.govapprovers = formatGovApprovers(response.data.d.results)
   },
+  async getGovTrvlDefaultApprovers({ state }) {
+    let response = await TravelService.getGovTrvlDefaultApprovers()
+    state.defaultgovrecipients = formatGovApprovers(response.data.d.results)
+  },
   async getDelegates() {
     TravelService.getDelegates()
       .then(response => {

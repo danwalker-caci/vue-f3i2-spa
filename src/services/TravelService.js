@@ -29,6 +29,7 @@ let reporturl = SPCI.webServerRelativeUrl + "/_api/web/lists/getbytitle('TripRep
 // let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$select=*&$filter=(EndDate ge datetime'" + a + "') and (EndDate le datetime'" + b + "')"
 let trurl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$orderby=Id desc&$select=*&$filter=(EndDate le datetime'" + b + "') and (Status ne 'Completed')"
 let GovTrvlApproversUrl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('AFRL Travel Approvers')/users"
+let getGovTrvlDefaultApproversUrl = SPCI.webServerRelativeUrl + "/_api/Web/SiteGroups/GetByName('Default Gov Travel Recipients')/users"
 /* #endregion */
 
 export default {
@@ -43,6 +44,14 @@ export default {
   },
   async getGovTrvlApprovers() {
     let response = await axios.get(GovTrvlApproversUrl, {
+      headers: {
+        accept: 'application/json;odata=verbose'
+      }
+    })
+    return response
+  },
+  async getGovTrvlDefaultApprovers() {
+    let response = await axios.get(getGovTrvlDefaultApproversUrl, {
       headers: {
         accept: 'application/json;odata=verbose'
       }
