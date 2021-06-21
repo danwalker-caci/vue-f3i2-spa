@@ -58,10 +58,20 @@
                 <span>Add a page</span>
               </div>
             </b-dropdown-item>
-            <b-dropdown-item
+            <!-- <b-dropdown-item
               v-if="isDeveloper"
               href="#"
               onclick="javascript:SP.SOD.executeFunc('sp.ui.pub.ribbon.js', 'Pub.Ribbon.PubCommands', function() {Pub.Ribbon.PubCommands.notifyProgress(SP.Publishing.Resources.notificationMessageLoading);if (document.forms['aspnetForm']['MSOLayout_InDesignMode'] != null) document.forms['aspnetForm']['MSOLayout_InDesignMode'].value = 1;if (document.forms['aspnetForm']['MSOAuthoringConsole_FormContext'] != null) document.forms['aspnetForm']['MSOAuthoringConsole_FormContext'].value = 1;if (document.forms['aspnetForm']['MSOSPWebPartManager_DisplayModeName'] != null) document.forms['aspnetForm']['MSOSPWebPartManager_DisplayModeName'].value = 'Design';__doPostBack('ctl05','edit')});"
+            >
+              <div class="row">
+                <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
+                <span>Edit page</span>
+              </div>
+            </b-dropdown-item> -->
+            <b-dropdown-item
+              v-if="isDeveloper"
+              href="#"
+              onclick="javascript:if (document.forms['aspnetForm']['MSOLayout_InDesignMode'] != null) document.forms['aspnetForm']['MSOLayout_InDesignMode'].value = 1;if (document.forms['aspnetForm']['MSOAuthoringConsole_FormContext'] != null) document.forms['aspnetForm']['MSOAuthoringConsole_FormContext'].value = 1;if (document.forms['aspnetForm']['MSOSPWebPartManager_DisplayModeName'] != null) document.forms['aspnetForm']['MSOSPWebPartManager_DisplayModeName'].value = 'Design';__doPostBack('ctl05','edit')"
             >
               <div class="row">
                 <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
