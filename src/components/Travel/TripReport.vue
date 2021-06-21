@@ -26,6 +26,9 @@ Actions Supported
               </b-row>
               <b-row class="m-2 p-0"><ejs-uploader id="fileuploadwpm" name="UploadFilesWPM" :selected="onFileSelect" :multiple="false"></ejs-uploader></b-row>
               <b-row class="m-2 p-0">
+                <b-alert v-if="fileInvalid" variant="danger" show class="p-0">{{ InvalidMessage }}</b-alert>
+              </b-row>
+              <b-row class="m-2 p-0">
                 <span class="mx-auto" style="width: 200px;">
                   Approve Trip Report
                 </span>
@@ -61,6 +64,9 @@ Actions Supported
                 </span>
               </b-row>
               <b-row class="m-2 p-0"><ejs-uploader id="fileupload" name="UploadFiles" :selected="onFileSelect" :multiple="false"></ejs-uploader></b-row>
+              <b-row class="m-2 p-0">
+                <b-alert v-if="fileInvalid" variant="danger" show class="p-0">{{ InvalidMessage }}</b-alert>
+              </b-row>
               <b-row class="m-2 p-0">
                 <b-button-group class="mx-auto" style="width: 200px;">
                   <b-button variant="danger" ref="btnCancel" class="mr-2" @click="onCancel">Cancel</b-button>
@@ -178,6 +184,8 @@ export default {
   data: function() {
     return {
       fileSelected: null,
+      InvalidMessage: '',
+      fileInvalid: false,
       fileBuffer: null,
       fileName: null,
       travelmodel: {
@@ -496,35 +504,54 @@ export default {
     },
     async onFileSelect(args) {
       vm.fileSelected = args.filesData[0].name
-      let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
-      buffer.then(function(buff) {
-        vm.fileBuffer = buff
-        // create frame with buffered file assuming it is a PDF and display
-        document.getElementById('FrameColumn').innerHTML = ''
-        if (String(vm.fileSelected).indexOf('.pdf') > 0) {
-          let blob = new Blob([buff], { type: 'application/pdf' })
-          let link = window.URL.createObjectURL(blob)
-          let iframe = document.createElement('iframe')
-          iframe.style.width = '100%'
-          iframe.style.height = '100%'
-          iframe.id = 'TripReportFrame'
-          iframe.src = link
-          document.getElementById('FrameColumn').appendChild(iframe)
+      // validate the selected filename for special characters and length
+      let regex = /^[a-zA-Z0-9\s_.-]*$/g
+      let matches = regex.test(String(vm.fileSelected))
+      let isLong = String(vm.fileSelected).length > 200
+      // console.log(matches + ', ' + isLong)
+      if (matches === true && isLong === false) {
+        let buffer = vm.getFileBuffer(args.filesData[0].rawFile)
+        buffer.then(function(buff) {
+          vm.fileBuffer = buff
+          // create frame with buffered file assuming it is a PDF and display
+          document.getElementById('FrameColumn').innerHTML = ''
+          if (String(vm.fileSelected).indexOf('.pdf') > 0) {
+            let blob = new Blob([buff], { type: 'application/pdf' })
+            let link = window.URL.createObjectURL(blob)
+            let iframe = document.createElement('iframe')
+            iframe.style.width = '100%'
+            iframe.style.height = '100%'
+            iframe.id = 'TripReportFrame'
+            iframe.src = link
+            document.getElementById('FrameColumn').appendChild(iframe)
+          }
+          if (String(vm.fileSelected).indexOf('.docx') > 0) {
+            let blob = new Blob([buff], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+            let link = window.URL.createObjectURL(blob)
+            let iframe = document.createElement('iframe')
+            iframe.style.width = '100%'
+            iframe.style.height = '100%'
+            iframe.id = 'TripReportFrame'
+            iframe.src = link
+            document.getElementById('FrameColumn').appendChild(iframe)
+          }
+        })
+        if (this.isWPManager) {
+          // autoset approval to yes
+          vm.travelmodel.TripReportApproval = 'Yes'
         }
-        if (String(vm.fileSelected).indexOf('.docx') > 0) {
-          let blob = new Blob([buff], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
-          let link = window.URL.createObjectURL(blob)
-          let iframe = document.createElement('iframe')
-          iframe.style.width = '100%'
-          iframe.style.height = '100%'
-          iframe.id = 'TripReportFrame'
-          iframe.src = link
-          document.getElementById('FrameColumn').appendChild(iframe)
+      } else {
+        vm.fileInvalid = true
+        let text = ''
+        if (matches === false) {
+          text += 'Document name contains invalid characters. '
         }
-      })
-      if (this.isWPManager) {
-        // autoset approval to yes
-        vm.travelmodel.TripReportApproval = 'Yes'
+        if (isLong === true) {
+          text += 'Document name is too long. '
+        }
+        text += 'Rename the file.'
+        vm.InvalidMessage = text
+        vm.fileSelected = ''
       }
     },
     getFileBuffer(file) {
