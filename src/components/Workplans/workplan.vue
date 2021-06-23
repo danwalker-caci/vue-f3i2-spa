@@ -951,9 +951,9 @@ export default {
           } else {
             this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           }
-          this.rowData.Title = args.rowData.Title
-          this.rowData.Comments = args.rowData.Comments
-          this.rowData.Number = args.rowData.Number
+          //this.rowData.Title = args.rowData.Title
+          //this.rowData.Comments = args.rowData.Comments
+          //this.rowData.Number = args.rowData.Number
           // Create an immutable manager object and update related fields
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
           await this.updateWorkplan(this.rowData)
