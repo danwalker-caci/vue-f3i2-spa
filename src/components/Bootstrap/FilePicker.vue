@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="m-0 p-0">
+  <b-container fluid class="m-0 p-0" id="FilePickerContainer">
     <b-row no-gutters class="m-0">
       <b-col cols="12" class="p-0">
         <b-modal id="FilePickerModal" centered header-bg-variant="light-blue" size="xl" header-text-variant="light">
@@ -9,7 +9,6 @@
               <b-col cols="12">
                 <b-table v-model="shownData" :id="'table_' + id" :ref="'table_' + id" :items="items" :fields="fields" :current-page="currentPage" no-provider-paging="true" no-provider-filtering="true" no-provider-sorting="true" :per-page="perPage">
                   <template #cell(actions)="row">
-                    <!-- <b-form-checkbox v-model="row.item.selected" @input.native="toggleUser(row.item, $event)"></b-form-checkbox> -->
                     <b-button class="actionbutton text-white m-1" variant="danger" @click="removeFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Remove File">
                       <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
@@ -155,7 +154,7 @@ export default {
       }
     },
     onInput(id) {
-      // TODO: check updated filename to see if it is in compliance again and update accordingly
+      // check updated filename to see if it is in compliance again and update accordingly
       let regex = /^[a-zA-Z0-9\s_.-]*$/g
       let issues = []
       for (let i = 0; i < this.shownData.length; i++) {
@@ -189,4 +188,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss"></style>
