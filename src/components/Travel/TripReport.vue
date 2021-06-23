@@ -128,6 +128,9 @@ export default {
     },
     govTrvlApprovers() {
       return this.$store.state.database.travel.govapprovers
+    },
+    govDefaultTrvlRcpnts() {
+      return this.$store.state.database.travel.defaultgovrecipients
     }
   },
   mounted: function() {
@@ -157,6 +160,7 @@ export default {
         Travel.dispatch('getDigest')
         Travel.dispatch('getDelegates')
         Travel.dispatch('getGetGovTrvlApprovers')
+        Travel.dispatch('getGovTrvlDefaultApprovers')
         Travel.dispatch('getTripById', payload).then(function() {
           vm.$options.interval = setInterval(vm.waitForTrip, 1000)
         })
@@ -184,6 +188,9 @@ export default {
         id: 0,
         Status: '',
         Company: '',
+        Travelers: [],
+        TravelFrom: '',
+        TravelTo: '',
         TripReport: '',
         TripReportLink: '',
         TripReportApproval: '',
@@ -210,6 +217,9 @@ export default {
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
         this.travelmodel.Company = this.selectedtrip.Company
+        this.travelmodel.Travelers = this.selectedtrip.Travelers
+        this.travelmodel.TravelFrom = this.selectedtrip.TravelFrom
+        this.travelmodel.TravelTo = this.selectedtrip.TravelTo
         this.travelmodel.TripReport = this.selectedtrip.TripReport
         this.travelmodel.TripReportLink = this.selectedtrip.TripReportLink
         this.travelmodel.StartTime = this.$moment(this.selectedtrip.StartTime).format('YYYY-MM-DD')
@@ -263,7 +273,7 @@ export default {
         payload.file = this.fileSelected
         payload.name = name
         payload.IndexNumber = this.travelmodel.IndexNumber
-        Travel.dispatch('updateReportItem', payload).then(function() {
+        Travel.dispatch('updateReportItem', payload).then(async function() {
           // Refresh trip with trip report data
           console.log('WPMSubmit ReportItemUpdated')
           // vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-UPDATEREPORTITEM COMPLETED.</div>')
@@ -297,6 +307,7 @@ export default {
           Travel.dispatch('editTripReport', event).then(function() {
             vm.$router.push({ name: 'Travel Tracker' })
           })
+          await vm.sendDefaultNotification()
         })
       } else {
         // perform actions based on approval or denial. Task should be cleared in either case. Update trip status.
@@ -421,7 +432,7 @@ export default {
             etag: vm.travelmodel.etag,
             uri: vm.travelmodel.uri
           })
-          Travel.dispatch('editTripReport', event).then(function() {
+          Travel.dispatch('editTripReport', event).then(async function() {
             vm.$store.dispatch('support/addActivity', '<div class="bg-success">TripReport-EDITRIPREPORT COMPLETED.</div>')
             // Create task for WP Manager to approve reject trip report
             let taskdata = {
@@ -478,6 +489,7 @@ export default {
                 vm.$router.push({ name: 'Travel Tracker' })
               })
             })
+            await vm.sendDefaultNotification()
           })
         })
       } catch (e) {
@@ -493,6 +505,52 @@ export default {
         })
         console.log('ERROR: ' + e)
       }
+    },
+    async sendDefaultNotification() {
+      let emailto = []
+      let taskto = []
+      let afremails = this.govDefaultTrvlRcpnts
+      for (let i = 0; i < afremails.length; i++) {
+        let a = afremails[i].value.split(',')
+        emailto.push(a[1])
+        taskto.push(a[0])
+      }
+      console.log('SEND DEFAULT RECIPIENTS EMAILS: ' + emailto.toString())
+      let payload = {}
+      payload.id = vm.travelmodel.id
+      payload.email = emailto
+      payload.title = '(F3I-2 Portal) Travel Request'
+      payload.body = ''
+      payload.body += '<p>Trip Report Uploaded</p>'
+      payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WPNumber
+      payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
+      let t = vm.travelmodel.Travelers
+      let s = ''
+      for (let i = 0; i < t.length; i++) {
+        if (i == 0) {
+          s += t[i].firstName + ' ' + t[i].lastName
+        } else {
+          s += ', ' + t[i].firstName + ' ' + t[i].lastName
+        }
+      }
+      payload.body += '<p>Travelers: ' + s
+      payload.body += '<p>From: ' + vm.travelmodel.TravelFrom
+      payload.body += '<p>To: ' + vm.travelmodel.TravelTo
+      payload.body += '<p>Start: ' + vm.travelmodel.StartTime
+      payload.body += '<p>End: ' + vm.travelmodel.EndTime
+      payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
+      this.$store.dispatch('support/SendEmail', payload)
+      let taskpayload = {
+        Title: 'Review Travel ',
+        AssignedToId: taskto,
+        Description: 'Please Review The Trip',
+        IsMilestone: false,
+        PercentComplete: 0,
+        TaskType: 'Review Trip Report',
+        TaskLink: '/travel/page/view?id=' + vm.travelmodel.id,
+        TaskInfo: 'Type:TravelReview, TrvlID:' + vm.travelmodel.id + ', IN:' + vm.travelmodel.IndexNumber
+      }
+      Todo.dispatch('addTodo', taskpayload)
     },
     async onFileSelect(args) {
       vm.fileSelected = args.filesData[0].name
