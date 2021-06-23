@@ -214,10 +214,11 @@ export default {
       // Waits for the travel item to load
       if (this.triploaded) {
         clearInterval(this.$options.interval)
+        let travelers = JSON.parse(this.selectedtrip.Travelers)
         this.travelmodel.id = this.selectedtrip.id
         this.travelmodel.Status = this.selectedtrip.Status
         this.travelmodel.Company = this.selectedtrip.Company
-        this.travelmodel.Travelers = this.selectedtrip.Travelers
+        this.travelmodel.Travelers = travelers.length > 0 ? travelers : []
         this.travelmodel.TravelFrom = this.selectedtrip.TravelFrom
         this.travelmodel.TravelTo = this.selectedtrip.TravelTo
         this.travelmodel.TripReport = this.selectedtrip.TripReport
