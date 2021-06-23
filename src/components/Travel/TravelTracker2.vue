@@ -730,6 +730,9 @@ export default {
                 </b-button>
               </div>
               <div>
+                <b-button class="actionbutton transparent text-white" @click="view(data)" v-b-tooltip.hover.v-dark title="View Trip Summary">
+                  <font-awesome-icon far icon="eye" class="icon"></font-awesome-icon>
+                </b-button>
                 <b-button v-if="isWPManager || isAdmin" class="actionbutton transparent text-white" @click="edit(data)" v-b-tooltip.hover.v-dark title="Edit Travel">
                   <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
                 </b-button>
@@ -772,6 +775,9 @@ export default {
             methods: {
               edit: function(data) {
                 vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
+              },
+              view: function(data) {
+                vm.$router.push({ name: 'View Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               report: function(data) {
                 vm.$router.push({ name: 'Trip Report', params: { back: 'Travel Tracker', TripId: data.Id, IndexNumber: data.IndexNumber } })

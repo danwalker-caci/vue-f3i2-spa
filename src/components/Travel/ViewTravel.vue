@@ -24,7 +24,7 @@
               <b-card no-body>
                 <table id="SummaryTable" class="summarytable">
                   <tbody>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="4">Subject</td>
                       <td>Travel Index</td>
                     </tr>
@@ -32,7 +32,7 @@
                       <td colspan="4">{{ travelmodel.Subject }}</td>
                       <td>{{ travelmodel.IndexNumber }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="2">Company</td>
                       <td colspan="3">WorkPlan</td>
                     </tr>
@@ -40,7 +40,7 @@
                       <td colspan="2">{{ travelmodel.Company }}</td>
                       <td colspan="3">{{ travelmodel.WorkPlanText }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td>Start Date</td>
                       <td>End Date</td>
                       <td>Traveling From</td>
@@ -54,7 +54,7 @@
                       <td>{{ travelmodel.TravelTo }}</td>
                       <td>${{ travelmodel.EstimatedCost }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td>Gov Sponsor</td>
                       <td>Gov POC Name</td>
                       <td colspan="2">Gov POC Email</td>
@@ -66,7 +66,7 @@
                       <td colspan="2">{{ travelmodel.POCEmail }}</td>
                       <td>{{ travelmodel.POCPhone }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="3">Purpose</td>
                       <td>Visit Request</td>
                       <td>Required Clearance</td>
@@ -80,12 +80,12 @@
                       <td colspan="5">
                         <table class="summarytable">
                           <thead>
-                            <tr class="bg-warning text-white">
+                            <tr class="bg-deep-blue text-white">
                               <td colspan="4">Travelers</td>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr class="bg-warning text-white">
+                            <tr class="bg-light-blue text-white">
                               <th>First Name</th>
                               <th>Last Name</th>
                               <th>Email</th>
@@ -100,6 +100,62 @@
                           </tbody>
                         </table>
                       </td>
+                    </tr>
+                    <tr class="bg-light-blue text-white">
+                      <td v-if="travelmodel.InternalData.PreApproved !== ''">PreApproved</td>
+                      <td v-if="travelmodel.InternalData.OCONUSTravel !== ''">OCONUSTravel</td>
+                      <td v-if="travelmodel.InternalData.Rejected !== ''">Rejected</td>
+                      <td v-if="travelmodel.InternalData.RejectedComments !== ''">RejectedComments</td>
+                    </tr>
+                    <tr>
+                      <td v-if="travelmodel.InternalData.PreApproved !== ''">{{ travelmodel.InternalData.PreApproved }}</td>
+                      <td v-if="travelmodel.InternalData.OCONUSTravel !== ''">{{ travelmodel.InternalData.OCONUSTravel }}</td>
+                      <td v-if="travelmodel.InternalData.Rejected !== ''">{{ travelmodel.InternalData.Rejected }}</td>
+                      <td v-if="travelmodel.InternalData.RejectedComments !== ''">{{ travelmodel.InternalData.RejectedComments }}</td>
+                    </tr>
+                    <tr class="bg-light-blue text-white">
+                      <td v-if="travelmodel.InternalData.DeniedForAdmin !== ''">DeniedForAdmin</td>
+                      <td v-if="travelmodel.InternalData.RequiredCorrections !== ''">RequiredCorrections</td>
+                      <td v-if="travelmodel.InternalData.ApprovalRequested !== ''">ApprovalRequested</td>
+                      <td v-if="travelmodel.InternalData.Approval !== ''">Approval</td>
+                      <td v-if="travelmodel.InternalData.ApprovedBy !== ''">ApprovedBy</td>
+                    </tr>
+                    <tr>
+                      <td v-if="travelmodel.InternalData.DeniedForAdmin !== ''">{{ travelmodel.InternalData.DeniedForAdmin }}</td>
+                      <td v-if="travelmodel.InternalData.RequiredCorrections !== ''">{{ travelmodel.InternalData.RequiredCorrections }}</td>
+                      <td v-if="travelmodel.InternalData.ApprovalRequested !== ''">{{ travelmodel.InternalData.ApprovalRequested }}</td>
+                      <td v-if="travelmodel.InternalData.Approval !== ''">{{ travelmodel.InternalData.Approval }}</td>
+                      <td v-if="travelmodel.InternalData.ApprovedBy !== ''">{{ travelmodel.InternalData.ApprovedBy }}</td>
+                    </tr>
+                    <tr class="bg-light-blue text-white">
+                      <td v-if="travelmodel.InternalData.ApprovedOn !== ''">ApprovedOn</td>
+                      <td v-if="travelmodel.InternalData.DeniedBy !== ''">DeniedBy</td>
+                      <td v-if="travelmodel.InternalData.DeniedOn !== ''">DeniedOn</td>
+                      <td v-if="travelmodel.InternalData.DenialComments !== ''">DenialComments</td>
+                      <td v-if="travelmodel.InternalData.ATPRequested !== ''">ATPRequested</td>
+                    </tr>
+                    <tr>
+                      <td v-if="travelmodel.InternalData.ApprovedOn !== ''">{{ travelmodel.InternalData.ApprovedOn }}</td>
+                      <td v-if="travelmodel.InternalData.DeniedBy !== ''">{{ travelmodel.InternalData.DeniedBy }}</td>
+                      <td v-if="travelmodel.InternalData.DeniedOn !== ''">{{ travelmodel.InternalData.DeniedOn }}</td>
+                      <td v-if="travelmodel.InternalData.DenialComments !== ''">{{ travelmodel.InternalData.DenialComments }}</td>
+                      <td v-if="travelmodel.InternalData.ATPRequested !== ''">{{ travelmodel.InternalData.ATPRequested }}</td>
+                    </tr>
+                    <tr class="bg-light-blue text-white">
+                      <td v-if="travelmodel.InternalData.ATP !== ''">ATP</td>
+                      <td v-if="travelmodel.InternalData.ATPGrantedBy !== ''">ATPGrantedBy</td>
+                      <td v-if="travelmodel.InternalData.ATPGrantedOn !== ''">ATPGrantedOn</td>
+                      <td v-if="travelmodel.InternalData.ATPDeniedBy !== ''">ATPDeniedBy</td>
+                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">ATPDeniedOn</td>
+                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">ATPDenialComments</td>
+                    </tr>
+                    <tr>
+                      <td v-if="travelmodel.InternalData.ATP !== ''">{{ travelmodel.InternalData.ATP }}</td>
+                      <td v-if="travelmodel.InternalData.ATPGrantedBy !== ''">{{ travelmodel.InternalData.ATPGrantedBy }}</td>
+                      <td v-if="travelmodel.InternalData.ATPGrantedOn !== ''">{{ travelmodel.InternalData.ATPGrantedOn }}</td>
+                      <td v-if="travelmodel.InternalData.ATPDeniedBy !== ''">{{ travelmodel.InternalData.ATPDeniedBy }}</td>
+                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">{{ travelmodel.InternalData.ATPDeniedOn }}</td>
+                      <td v-if="travelmodel.InternalData.ATPDenialComments !== ''">{{ travelmodel.InternalData.ATPDenialComments }}</td>
                     </tr>
                   </tbody>
                 </table>
