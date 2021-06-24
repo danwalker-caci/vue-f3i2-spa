@@ -9,11 +9,14 @@
               <b-col cols="12">
                 <b-table v-model="shownData" :id="'table_' + id" :ref="'table_' + id" :items="items" :fields="fields" :current-page="currentPage" no-provider-paging="true" no-provider-filtering="true" no-provider-sorting="true" :per-page="perPage">
                   <template #cell(actions)="row">
-                    <b-button class="actionbutton text-white m-1" variant="danger" @click="removeFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Remove File">
-                      <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
+                    <b-button class="actionbutton text-white m-1" variant="danger" @click="removeFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Remove File From Upload">
+                      <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
                     <b-button class="actionbutton text-white" variant="success" @click="fixFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Fix File Name Issues">
                       <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
+                    </b-button>
+                    <b-button v-if="fileExists(shownData[row.index].id)" class="actionbutton text-white m-1" variant="danger" @click="deleteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
+                      <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
                   <template #cell(name)="row">
@@ -24,6 +27,7 @@
                       <p v-if="issue == 'isOk'">No issues in the selected file.</p>
                       <p v-if="issue == 'isLong'">The selected file is too long.</p>
                       <p v-if="issue == 'isSpecial'">The selected file contains special characters.</p>
+                      <p v-if="issue == 'isExisting'">The selected file already exists.</p>
                     </div>
                   </template>
                 </b-table>
@@ -40,7 +44,19 @@
 </template>
 
 <script>
+/* ------------- FilePicker ----------------------------------------------------------------------------------------------------
+props: (passed from parent component)
+  id: string - represents the name/id of the component.
+  library: string - represents the name of the document library the files will be uploaded to.
+  checkExists: boolean - determines if selected files should be checked for existence in the document library.
+  config: string[JSON] - contains the configuration for file naming conventions and other rules.
+
+items: array - Array of selected files. Manually created with a globally unique id (guid) and fileBuffer
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
 /* eslint-disable no-unused-vars */
+import axios from 'axios'
 import Vue from 'vue'
 import { EventBus } from '../../main'
 
@@ -52,11 +68,10 @@ if (window._spPageContextInfo) {
 
 export default {
   name: 'FilePicker',
-  props: ['id'],
+  props: ['id', 'library', 'checkExists', 'config'],
   data: function() {
     return {
       SelectedFiles: [],
-      ReturnFiles: [],
       items: [],
       shownData: [],
       fields: [
@@ -101,6 +116,10 @@ export default {
         if (!isLong && !isSpecial) {
           issues.push('isOk')
         }
+        let isExisting = await this.fileExistsInLibrary(name, this.library)
+        if (isExisting) {
+          issues.push('isExisting')
+        }
         item.id = Math.uuid()
         item.name = name
         item.issues = issues
@@ -130,6 +149,7 @@ export default {
     },
     fixFile(id) {
       // loop through files for the id and then automatically fix the file name
+      // TODO: determine if we need to check if the file exists after name modification
       for (let i = 0; i < this.items.length; i++) {
         if (this.items[i].id === id) {
           // remove special characters and then trim file name size
@@ -155,6 +175,7 @@ export default {
     },
     onInput(id) {
       // check updated filename to see if it is in compliance again and update accordingly
+      // TODO: determine if we need to check if the file exists after name modification
       let regex = /^[a-zA-Z0-9\s_.-]*$/g
       let issues = []
       for (let i = 0; i < this.shownData.length; i++) {
@@ -178,6 +199,34 @@ export default {
           this.items[i].issues = issues
         }
       }
+    },
+    fileExists(id) {
+      let exists = false
+      for (let i = 0; i < this.items.length; i++) {
+        if (this.items[i].id === id) {
+          let test = []
+          test = new Array(this.items[i].issues)
+          if (test.indexOf('isExisting') >= 0) {
+            exists = true
+          }
+        }
+      }
+      return exists
+    },
+    async fileExistsInLibrary(name, library) {
+      let doesExist = false
+      let url = SPCI.webServerRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + library + "')/Files?$select=*&$filter=Name eq '" + name + "'"
+      console.log('GETDOCUMENTS URL: ' + url)
+      let response = await axios.get(url, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let dog = response.data.d.results
+      if (dog.length > 0) {
+        doesExist = true
+      }
+      return doesExist
     },
     asyncForEach: async function(array, callback) {
       for (let index = 0; index < array.length; index++) {
