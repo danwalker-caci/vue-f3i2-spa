@@ -20,12 +20,12 @@ async function logToSharePoint(err) {
     __metadata: { type: 'SP.Data.ErrorLogListItem' }
   }
   if (err.vm !== undefined) {
-    console.log('VUE ERROR')
+    console.log('VUE ERROR ' + err)
     itemprops.Message = err.err.message
     itemprops.Stack = err.err.stack
     itemprops.Component = err.vm.$vnode ? err.vm.$vnode.tag : ''
   } else {
-    console.log('WINDOW ERROR')
+    console.log('WINDOW ERRO ' + err)
     itemprops.Message = err.message
     itemprops.Stack = err.stack
     itemprops.Component = err.source
