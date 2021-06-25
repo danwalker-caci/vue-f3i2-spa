@@ -8,6 +8,7 @@ module.exports = {
   //publicPath: '/sites/f3i2/SiteAssets/dev/',
 
   configureWebpack: {
+    devtool: 'source-map',
     optimization: {
       splitChunks: {
         chunks: 'all',
@@ -25,7 +26,7 @@ module.exports = {
   },
 
   filenameHashing: true,
-  productionSourceMap: false,
+  productionSourceMap: true,
   runtimeCompiler: true,
   css: {
     loaderOptions: {

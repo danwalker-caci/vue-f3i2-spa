@@ -28,9 +28,9 @@ Vue.config.devtools = true
 
 export const EventBus = new Vue()
 
-Vue.config.errorHandler = (err, vm, info) => {
+/* Vue.config.errorHandler = (err, vm, info) => {
   logger.logToServer({ err, vm, info });
-}
+} */
 
 window.onerror = function(message, source, lineno, colno, error) {
   logger.logToServer({ message, source, lineno, colno, error });
