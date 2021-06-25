@@ -9,57 +9,58 @@
               <b-col cols="12">
                 <b-table v-model="shownData" :id="'table_' + id" :ref="'table_' + id" :items="items" :fields="fields" :current-page="currentPage" no-provider-paging="true" no-provider-filtering="true" no-provider-sorting="true" :per-page="perPage">
                   <template #cell(actions)="row">
-                    <b-button class="actionbutton text-white m-1" variant="danger" @click="removeFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Remove File From Upload">
+                    <b-button class="actionbutton text-white" variant="danger" @click="removeFile(row.item.id)" v-b-tooltip.hover.v-dark title="Remove File From Upload">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button class="actionbutton text-white m-1" variant="success" @click="replaceFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Replace Selected File">
+                    <b-button class="actionbutton text-white ml-1" variant="success" @click="replaceFile(row.item.id)" v-b-tooltip.hover.v-dark title="Replace Selected File">
                       <font-awesome-icon far icon="redo-alt" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button class="actionbutton text-white" variant="success" @click="fixFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Fix File Name Issues">
+                    <b-button class="actionbutton text-white ml-1" variant="success" @click="fixFile(row.item.id)" v-b-tooltip.hover.v-dark title="Fix File Name Issues">
                       <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-if="shownData[row.index].isExisting" class="actionbutton text-white m-1" variant="warning" @click="overwriteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
+                    <b-button v-if="row.item.doesExist" class="actionbutton text-white ml-1" variant="warning" @click="overwriteFile(row.item.id)" v-b-tooltip.hover.v-dark title="Overwrite Existing File">
                       <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-if="shownData[row.index].isExisting" class="actionbutton text-white m-1" variant="danger" @click="deleteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
+                    <b-button v-if="row.item.doesExist" class="actionbutton text-white ml-1" variant="danger" @click="deleteFile(row.item.id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
                       <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
                   <template #cell(name)="row">
-                    <b-form-input class="form-control" size="sm" v-model="shownData[row.index].name" :id="getID('txt-', shownData[row.index].id)" @input="onInput(shownData[row.index].id)"></b-form-input>
+                    <b-form-input size="sm" v-model="row.item.name" :id="getID('txt-', row.item.id)" @input="onInput(row.item.id)"></b-form-input>
                     <div style="display: none;">
-                      <input type="file" :id="'file-' + shownData[row.index].id" @change.native="onFileReplaced" />
+                      <!-- <input type="file" :id="'file-' + row.item.id" @change.native="onFileReplaced" /> -->
+                      <b-form-file :id="'file-' + row.item.id" v-model="row.item.replacement" @change="onFileReplaced(row.item.id, $event)"></b-form-file>
                     </div>
                   </template>
                   <template #cell(isNotAllowed)="row">
-                    <b-button v-if="shownData[row.index].isNotAllowed" class="actionbutton text-white m-1" variant="danger">
+                    <b-button v-if="row.item.isNotAllowed" class="actionbutton text-white mx-auto" variant="danger">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-else class="actionbutton text-white m-1" variant="success">
+                    <b-button v-else class="actionbutton text-white mx-auto" variant="success">
                       <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
                   <template #cell(isSpecial)="row">
-                    <b-button v-if="shownData[row.index].isSpecial" class="actionbutton text-white m-1" variant="danger">
+                    <b-button v-if="row.item.isSpecial" class="actionbutton text-white mx-auto" variant="danger">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-else class="actionbutton text-white m-1" variant="success">
+                    <b-button v-else class="actionbutton text-white mx-auto" variant="success">
                       <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
                   <template #cell(isLong)="row">
-                    <b-button v-if="shownData[row.index].isLong" class="actionbutton text-white m-1" variant="danger">
+                    <b-button v-if="row.item.isLong" class="actionbutton text-white mx-auto" variant="danger">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-else class="actionbutton text-white m-1" variant="success">
+                    <b-button v-else class="actionbutton text-white mx-auto" variant="success">
                       <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
-                  <template #cell(isExisting)="row">
-                    <b-button v-if="shownData[row.index].isExisting" class="actionbutton text-white m-1" variant="danger">
+                  <template #cell(doesExist)="row">
+                    <b-button v-if="row.item.doesExist" class="actionbutton text-white mx-auto" variant="danger">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-else class="actionbutton text-white m-1" variant="success">
+                    <b-button v-else class="actionbutton text-white mx-auto" variant="success">
                       <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
@@ -143,11 +144,11 @@ export default {
       shownData: [],
       fields: [
         { key: 'actions', label: 'Actions' },
-        { key: 'name', label: 'Name', thClass: 'px300' },
-        { key: 'isSpecial', label: 'File has special characters.' },
-        { key: 'isLong', label: 'File is too long.' },
-        { key: 'isExisting', label: 'File already exists.' },
-        { key: 'isNotAllowed', label: 'File type not allowed.' }
+        { key: 'name', label: 'Name', thClass: 'px400' },
+        { key: 'isSpecial', label: 'Has special characters.', tdClass: 'px200 text-center' },
+        { key: 'isLong', label: 'Is too long.', tdClass: 'px100 text-center' },
+        { key: 'doesExist', label: 'Already exists.', tdClass: 'px150 text-center' },
+        { key: 'isNotAllowed', label: 'Type not allowed.', tdClass: 'px150 text-center' }
         /* { key: 'issues', label: 'Issues', thClass: 'px300' } */
       ],
       hasIssues: false,
@@ -178,6 +179,9 @@ export default {
         // build item array
         let name = String(SelectedFile.name)
         item.originalName = name
+        item.doesExist = false // set to false initially to ensure property exists.
+        item.isSpecial = false // set to false initially to ensure property exists.
+        item.isLong = false // set to false initially to ensure property exists.
         /* let isLong = name.length > 100 ? true : false
         if (isLong) {
           item.isLong = true
@@ -204,10 +208,11 @@ export default {
           if (this.rules.hasRules) {
             // add rules to name
           }
-          let isExisting = await this.fileExistsInLibrary(name, this.library)
-          if (isExisting) {
-            // issues.push('isExisting')
-            item.isExisting = true
+          let Exists = await this.fileExistsInLibrary(name, this.library)
+          if (Exists) {
+            // issues.push('doesExist')
+            item.doesExist = true
+            this.hasIssues = true
           }
         }
         item.id = Math.uuid()
@@ -229,9 +234,9 @@ export default {
       let element = 'file-' + id
       document.getElementById(element).click()
     },
-    onFileReplaced(e) {
-      let files = e.target.files
-      let id = e.target.id
+    onFileReplaced(id, event) {
+      if (console) console.log('FILE REPLACEMENT: ' + id + ', EVENT: ' + event)
+      let files = event.target.files
       if (files.length < 1) {
         // no file was actually selected
       } else {
@@ -322,7 +327,7 @@ export default {
         if (this.items[i].id === id) {
           let test = []
           test = new Array(this.items[i].issues)
-          if (test.indexOf('isExisting') >= 0) {
+          if (test.indexOf('doesExist') >= 0) {
             exists = true
           }
         }

@@ -26,7 +26,7 @@ module.exports = {
   },
 
   filenameHashing: true,
-  productionSourceMap: true,
+  productionSourceMap: false,
   runtimeCompiler: true,
   css: {
     loaderOptions: {
