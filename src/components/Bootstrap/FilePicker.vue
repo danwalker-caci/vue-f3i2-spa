@@ -12,18 +12,32 @@
                     <b-button class="actionbutton text-white m-1" variant="danger" @click="removeFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Remove File From Upload">
                       <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
                     </b-button>
+                    <b-button class="actionbutton text-white m-1" variant="success" @click="replaceFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Replace Selected File">
+                      <font-awesome-icon far icon="redo-alt" class="icon"></font-awesome-icon>
+                    </b-button>
                     <b-button class="actionbutton text-white" variant="success" @click="fixFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Fix File Name Issues">
                       <font-awesome-icon far icon="edit" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-if="fileExists(shownData[row.index].id)" class="actionbutton text-white m-1" variant="warning" @click="overwriteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
+                    <b-button v-if="shownData[row.index].isExisting" class="actionbutton text-white m-1" variant="warning" @click="overwriteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
                       <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
-                    <b-button v-if="fileExists(shownData[row.index].id)" class="actionbutton text-white m-1" variant="danger" @click="deleteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
+                    <b-button v-if="shownData[row.index].isExisting" class="actionbutton text-white m-1" variant="danger" @click="deleteFile(shownData[row.index].id)" v-b-tooltip.hover.v-dark title="Delete Existing File">
                       <font-awesome-icon far icon="trash-alt" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
                   <template #cell(name)="row">
                     <b-form-input class="form-control" size="sm" v-model="shownData[row.index].name" :id="getID('txt-', shownData[row.index].id)" @input="onInput(shownData[row.index].id)"></b-form-input>
+                    <div style="display: none;">
+                      <input type="file" :id="'file-' + shownData[row.index].id" @change.native="onFileReplaced" />
+                    </div>
+                  </template>
+                  <template #cell(isNotAllowed)="row">
+                    <b-button v-if="shownData[row.index].isNotAllowed" class="actionbutton text-white m-1" variant="danger">
+                      <font-awesome-icon far icon="times-circle" class="icon"></font-awesome-icon>
+                    </b-button>
+                    <b-button v-else class="actionbutton text-white m-1" variant="success">
+                      <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+                    </b-button>
                   </template>
                   <template #cell(isSpecial)="row">
                     <b-button v-if="shownData[row.index].isSpecial" class="actionbutton text-white m-1" variant="danger">
@@ -49,14 +63,6 @@
                       <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
                     </b-button>
                   </template>
-                  <!-- <template #cell(issues)="row">
-                    <div v-for="issue in shownData[row.index].issues" :key="issue">
-                      <p v-if="issue == 'isOk'">No issues in the selected file.</p>
-                      <p v-if="issue == 'isLong'">The selected file is too long.</p>
-                      <p v-if="issue == 'isSpecial'">The selected file contains special characters.</p>
-                      <p v-if="issue == 'isExisting'">The selected file already exists.</p>
-                    </div>
-                  </template> -->
                 </b-table>
               </b-col>
             </b-row>
@@ -76,14 +82,13 @@ props: (passed from parent component)
   id: string - represents the name/id of the component.
   library: string - represents the name of the document library the files will be uploaded to.
   checkExists: boolean - determines if selected files should be checked for existence in the document library.
-  config: string[JSON] - contains the configuration for file naming conventions and other rules.
+  rules: string[JSON] - contains the configuration for file naming conventions and other rules.
     {
-      allowedFiles: ['.pdf', '.docx'] (or pass empty array [] for no restrictions)
+      hasRules: false (pass true if there are rules to follow)
       addTimestamp: true/false (unix based on date/time)
       addPrefix: 'Prefix'
       addSuffix: 'Suffix'
-      preLength: 100 (size to initially test length of filenames)
-      postLength: 250 (tested last to be sure rules don't create file name that is too large.)
+      delimiter: '-' can be dash underscore or space. default is dash. Separates rules
     }
 
 items: array - Array of selected files. Manually created with a globally unique id (guid) and fileBuffer
@@ -103,7 +108,34 @@ if (window._spPageContextInfo) {
 
 export default {
   name: 'FilePicker',
-  props: ['id', 'library', 'checkExists', 'config'],
+  props: {
+    id: {
+      type: String
+    },
+    library: {
+      type: String
+    },
+    checkExists: {
+      type: Boolean,
+      default: false
+    },
+    allowedFiles: {
+      type: Array,
+      default: () => [] // ['.pdf', '.docx']
+    },
+    rules: {
+      type: Object,
+      default: () => {
+        return {
+          hasRules: false,
+          addTimestamp: false,
+          addPrefix: '',
+          addSuffix: '',
+          delimiter: '-' // can be a dash, underscore, or space. Default is dash
+        }
+      }
+    }
+  },
   data: function() {
     return {
       SelectedFiles: [],
@@ -114,17 +146,22 @@ export default {
         { key: 'name', label: 'Name', thClass: 'px300' },
         { key: 'isSpecial', label: 'File has special characters.' },
         { key: 'isLong', label: 'File is too long.' },
-        { key: 'isExisting', label: 'File already exists.' }
+        { key: 'isExisting', label: 'File already exists.' },
+        { key: 'isNotAllowed', label: 'File type not allowed.' }
         /* { key: 'issues', label: 'Issues', thClass: 'px300' } */
       ],
       hasIssues: false,
       totalRows: 1,
       currentPage: 1,
-      perPage: 20
+      perPage: 20,
+      maxSize: 150 // size of any filename after any naming conventions are added.
     }
   },
   created() {
     vm = this
+  },
+  changed() {
+    if (console) console.log('CHANGED')
   },
   methods: {
     getID: function(text, id) {
@@ -140,22 +177,33 @@ export default {
         let item = {}
         // build item array
         let name = String(SelectedFile.name)
-        // let issues = []
-        let isLong = name.length > 100 ? true : false
+        item.originalName = name
+        /* let isLong = name.length > 100 ? true : false
         if (isLong) {
-          // issues.push('isLong')
           item.isLong = true
-          vm.hasIssues = true
-        }
+          this.hasIssues = true
+        } */
         let isSpecial = regex.test(name) == true ? false : true
         if (isSpecial) {
-          // issues.push('isSpecial')
           item.isSpecial = true
-          vm.hasIssues = true
+          this.hasIssues = true
+        }
+        let isNotAllowed = false
+        let temp = name.split('.')
+        if (this.allowedFiles.length > 0) {
+          if (this.allowedFiles.indexOf(temp[1]) >= 0) {
+            isNotAllowed = true
+            item.isNotAllowed = true // will not actually get passed to parent
+            this.hasIssues = true
+          }
         }
         // Only check existing files if they are not too long or if they don't have special characters as those files would not exist in the library
         // TODO: add naming convention rules first before checking if the file exists. Need to build the name from the rules and then check
-        if (!isSpecial && !isLong) {
+        if (!isSpecial && !isNotAllowed) {
+          // Add naming convention rules if any
+          if (this.rules.hasRules) {
+            // add rules to name
+          }
           let isExisting = await this.fileExistsInLibrary(name, this.library)
           if (isExisting) {
             // issues.push('isExisting')
@@ -175,6 +223,21 @@ export default {
       } else {
         // TODO: return the array of files to the parent component
         console.log('NOTHING TO SEE HERE')
+      }
+    },
+    replaceFile(id) {
+      let element = 'file-' + id
+      document.getElementById(element).click()
+    },
+    onFileReplaced(e) {
+      let files = e.target.files
+      let id = e.target.id
+      if (files.length < 1) {
+        // no file was actually selected
+      } else {
+        let file = files[0]
+        alert('File changed to: ' + file.name)
+        // TODO: recheck new file for all the things and update items array.
       }
     },
     getFileBuffer(file) {
@@ -225,6 +288,7 @@ export default {
       }
     },
     onInput(id) {
+      if (console) console.log('onInput')
       // check updated filename to see if it is in compliance again and update accordingly
       // TODO: determine if we need to check if the file exists after name modification
       let regex = /^[a-zA-Z0-9\s_.-]*$/g
@@ -252,6 +316,7 @@ export default {
       }
     },
     fileExists(id) {
+      if (console) console.log('fileExists')
       let exists = false
       for (let i = 0; i < this.items.length; i++) {
         if (this.items[i].id === id) {
