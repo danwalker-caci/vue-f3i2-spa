@@ -12,154 +12,151 @@
       </b-toast>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
-          <b-row no-gutters class="bg-black text-white formheader">
-            <b-col cols="4" class="p-0 text-center"></b-col>
-            <b-col cols="4" class="p-0 text-center">
-              <h3 class="text-white">View Travel For: {{ travelmodel.Subject }}</h3>
-            </b-col>
-            <b-col cols="4" class="p-0 text-right"></b-col>
-          </b-row>
           <b-row no-gutters class="bg-white formbody">
-            <div class="col-12 p-0">
-              <b-card no-body>
-                <table id="SummaryTable" class="summarytable">
-                  <tbody>
-                    <tr class="bg-light-blue text-white">
-                      <td colspan="4">Subject</td>
-                      <td>Travel Index</td>
-                    </tr>
-                    <tr>
-                      <td colspan="4">{{ travelmodel.Subject }}</td>
-                      <td>{{ travelmodel.IndexNumber }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td colspan="2">Company</td>
-                      <td colspan="3">WorkPlan</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">{{ travelmodel.Company }}</td>
-                      <td colspan="3">{{ travelmodel.WorkPlanText }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td>Start Date</td>
-                      <td>End Date</td>
-                      <td>Traveling From</td>
-                      <td>Traveling To</td>
-                      <td>Estimated Cost</td>
-                    </tr>
-                    <tr>
-                      <td>{{ travelmodel.StartTime }}</td>
-                      <td>{{ travelmodel.EndTime }}</td>
-                      <td>{{ travelmodel.TravelFrom }}</td>
-                      <td>{{ travelmodel.TravelTo }}</td>
-                      <td>${{ travelmodel.EstimatedCost }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td>Gov Sponsor</td>
-                      <td>Gov POC Name</td>
-                      <td colspan="2">Gov POC Email</td>
-                      <td>Gov POC Phone</td>
-                    </tr>
-                    <tr>
-                      <td>{{ travelmodel.Sponsor }}</td>
-                      <td>{{ travelmodel.POCName }}</td>
-                      <td colspan="2">{{ travelmodel.POCEmail }}</td>
-                      <td>{{ travelmodel.POCPhone }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td colspan="3">Purpose</td>
-                      <td>Visit Request</td>
-                      <td>Required Clearance</td>
-                    </tr>
-                    <tr>
-                      <td colspan="3">{{ travelmodel.Comments }}</td>
-                      <td>{{ travelmodel.VisitRequest }}</td>
-                      <td>{{ travelmodel.Clearance }}</td>
-                    </tr>
-                    <tr>
-                      <td colspan="5">
-                        <table class="summarytable">
-                          <thead>
-                            <tr class="bg-deep-blue text-white">
-                              <td colspan="4">Travelers</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr class="bg-light-blue text-white">
-                              <th>First Name</th>
-                              <th>Last Name</th>
-                              <th>Email</th>
-                              <th>Phone</th>
-                            </tr>
-                            <tr v-for="traveler in travelmodel.Travelers" :key="traveler">
-                              <td>{{ traveler.firstName }}</td>
-                              <td>{{ traveler.lastName }}</td>
-                              <td>{{ traveler.email }}</td>
-                              <td>{{ traveler.phone }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td v-if="travelmodel.InternalData.PreApproved !== ''">PreApproved</td>
-                      <td v-if="travelmodel.InternalData.OCONUSTravel !== ''">OCONUSTravel</td>
-                      <td v-if="travelmodel.InternalData.Rejected !== ''">Rejected</td>
-                      <td v-if="travelmodel.InternalData.RejectedComments !== ''">RejectedComments</td>
-                    </tr>
-                    <tr>
-                      <td v-if="travelmodel.InternalData.PreApproved !== ''">{{ travelmodel.InternalData.PreApproved }}</td>
-                      <td v-if="travelmodel.InternalData.OCONUSTravel !== ''">{{ travelmodel.InternalData.OCONUSTravel }}</td>
-                      <td v-if="travelmodel.InternalData.Rejected !== ''">{{ travelmodel.InternalData.Rejected }}</td>
-                      <td v-if="travelmodel.InternalData.RejectedComments !== ''">{{ travelmodel.InternalData.RejectedComments }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td v-if="travelmodel.InternalData.DeniedForAdmin !== ''">DeniedForAdmin</td>
-                      <td v-if="travelmodel.InternalData.RequiredCorrections !== ''">RequiredCorrections</td>
-                      <td v-if="travelmodel.InternalData.ApprovalRequested !== ''">ApprovalRequested</td>
-                      <td v-if="travelmodel.InternalData.Approval !== ''">Approval</td>
-                      <td v-if="travelmodel.InternalData.ApprovedBy !== ''">ApprovedBy</td>
-                    </tr>
-                    <tr>
-                      <td v-if="travelmodel.InternalData.DeniedForAdmin !== ''">{{ travelmodel.InternalData.DeniedForAdmin }}</td>
-                      <td v-if="travelmodel.InternalData.RequiredCorrections !== ''">{{ travelmodel.InternalData.RequiredCorrections }}</td>
-                      <td v-if="travelmodel.InternalData.ApprovalRequested !== ''">{{ travelmodel.InternalData.ApprovalRequested }}</td>
-                      <td v-if="travelmodel.InternalData.Approval !== ''">{{ travelmodel.InternalData.Approval }}</td>
-                      <td v-if="travelmodel.InternalData.ApprovedBy !== ''">{{ travelmodel.InternalData.ApprovedBy }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td v-if="travelmodel.InternalData.ApprovedOn !== ''">ApprovedOn</td>
-                      <td v-if="travelmodel.InternalData.DeniedBy !== ''">DeniedBy</td>
-                      <td v-if="travelmodel.InternalData.DeniedOn !== ''">DeniedOn</td>
-                      <td v-if="travelmodel.InternalData.DenialComments !== ''">DenialComments</td>
-                      <td v-if="travelmodel.InternalData.ATPRequested !== ''">ATPRequested</td>
-                    </tr>
-                    <tr>
-                      <td v-if="travelmodel.InternalData.ApprovedOn !== ''">{{ travelmodel.InternalData.ApprovedOn }}</td>
-                      <td v-if="travelmodel.InternalData.DeniedBy !== ''">{{ travelmodel.InternalData.DeniedBy }}</td>
-                      <td v-if="travelmodel.InternalData.DeniedOn !== ''">{{ travelmodel.InternalData.DeniedOn }}</td>
-                      <td v-if="travelmodel.InternalData.DenialComments !== ''">{{ travelmodel.InternalData.DenialComments }}</td>
-                      <td v-if="travelmodel.InternalData.ATPRequested !== ''">{{ travelmodel.InternalData.ATPRequested }}</td>
-                    </tr>
-                    <tr class="bg-light-blue text-white">
-                      <td v-if="travelmodel.InternalData.ATP !== ''">ATP</td>
-                      <td v-if="travelmodel.InternalData.ATPGrantedBy !== ''">ATPGrantedBy</td>
-                      <td v-if="travelmodel.InternalData.ATPGrantedOn !== ''">ATPGrantedOn</td>
-                      <td v-if="travelmodel.InternalData.ATPDeniedBy !== ''">ATPDeniedBy</td>
-                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">ATPDeniedOn</td>
-                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">ATPDenialComments</td>
-                    </tr>
-                    <tr>
-                      <td v-if="travelmodel.InternalData.ATP !== ''">{{ travelmodel.InternalData.ATP }}</td>
-                      <td v-if="travelmodel.InternalData.ATPGrantedBy !== ''">{{ travelmodel.InternalData.ATPGrantedBy }}</td>
-                      <td v-if="travelmodel.InternalData.ATPGrantedOn !== ''">{{ travelmodel.InternalData.ATPGrantedOn }}</td>
-                      <td v-if="travelmodel.InternalData.ATPDeniedBy !== ''">{{ travelmodel.InternalData.ATPDeniedBy }}</td>
-                      <td v-if="travelmodel.InternalData.ATPDeniedOn !== ''">{{ travelmodel.InternalData.ATPDeniedOn }}</td>
-                      <td v-if="travelmodel.InternalData.ATPDenialComments !== ''">{{ travelmodel.InternalData.ATPDenialComments }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </b-card>
+            <div class="col-12 p-3">
+              <h3>Travel Information</h3>
+              <b-row class="pt-2">
+                <b-col colS="3">
+                  <p>
+                    Index Number:
+                  </p>
+                  <b v-if="travelmodel.IndexNumber" class="information">{{ travelmodel.IndexNumber }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Work Plan Name:
+                  </p>
+                  <b v-if="travelmodel.WorkPlanText" class="information">{{ travelmodel.WorkPlanText }}</b>
+                </b-col>
+                <b-col cols="6">
+                  <p>
+                    Subject:
+                  </p>
+                  <b v-if="travelmodel.Subject" class="information">{{ travelmodel.Subject }}</b>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    Start Date:
+                  </p>
+                  <b v-if="travelmodel.StartTime" class="information">{{ travelmodel.StartTime }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    End Date:
+                  </p>
+                  <b v-if="travelmodel.EndTime" class="information">{{ travelmodel.EndTime }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Traveling From:
+                  </p>
+                  <b v-if="travelmodel.TravelFrom" class="information">{{ travelmodel.TravelFrom }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Traveling To:
+                  </p>
+                  <b v-if="travelmodel.TravelTo" class="information">{{ travelmodel.TravelTo }}</b>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    Government Sponsor:
+                  </p>
+                  <b v-if="travelmodel.Sponsor" class="information">{{ travelmodel.Sponsor }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Government POC Name:
+                  </p>
+                  <b v-if="travelmodel.POCName" class="information">{{ travelmodel.POCName }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Government POC Email:
+                  </p>
+                  <b v-if="travelmodel.POCEmail" class="information">{{ travelmodel.POCEmail }}</b>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    Government POC Phone:
+                  </p>
+                  <b v-if="travelmodel.POCPhone" class="information">{{ travelmodel.POCPhone }}</b>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    Status:
+                  </p>
+                  <b v-if="travelmodel.Status" class="information">{{ travelmodel.Status }}</b>
+                </b-col>
+                <b-col cols="5">
+                  <p>
+                    Purpose:
+                  </p>
+                  <b v-if="travelmodel.Comments" class="information">{{ travelmodel.Comments }}</b>
+                </b-col>
+                <b-col cols="2">
+                  <p>
+                    Visit Request:
+                  </p>
+                  <b v-if="travelmodel.VisitRequest" class="information">{{ travelmodel.VisitRequest }}</b>
+                </b-col>
+                <b-col cols="2">
+                  <p>
+                    Required Clearance:
+                  </p>
+                  <b v-if="travelmodel.Clearance" class="information">{{ travelmodel.Clearance }}</b>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    Travel Cost:
+                  </p>
+                  <b v-if="travelmodel.EstimatedCost" class="information">${{ travelmodel.EstimatedCost }}</b>
+                </b-col>
+              </b-row>
+              <hr />
+              <h3>Traveler Details</h3>
+              <div v-for="traveler in travelmodel.Travelers" :key="traveler">
+                <b-row>
+                  <b-col>
+                    <p>
+                      Company:
+                    </p>
+                    <b v-if="travelmodel.Company" class="information">{{ travelmodel.Company }}</b>
+                  </b-col>
+                  <b-col>
+                    <p>
+                      Traveler Last Name:
+                    </p>
+                    <b class="information">{{ traveler.lastName }}</b>
+                  </b-col>
+                  <b-col>
+                    <p>
+                      Traveler First Name:
+                    </p>
+                    <b class="information">{{ traveler.firstName }}</b>
+                  </b-col>
+                  <b-col>
+                    <p>
+                      Traveler Email:
+                    </p>
+                    <b class="information">{{ traveler.email }}</b>
+                  </b-col>
+                  <b-col>
+                    <p>
+                      Traveler Phone:
+                    </p>
+                    <b class="information">{{ traveler.phone }}</b>
+                  </b-col>
+                </b-row>
+              </div>
             </div>
           </b-row>
           <b-row no-gutters class="bg-black formfooter">
@@ -167,6 +164,8 @@
             <div class="col-4 p-0 text-center"></div>
             <div class="col-4 p-0 text-right">
               <b-button-group class="mt-2">
+                <b-button variant="primary"></b-button>
+                <b-button variant="primary" ref="btnDownload" @click="AFRLCompleteTasks">Download Trip Report</b-button>
                 <b-button variant="success" ref="btnCancel" class="mr-2" @click="onModalHide">OK</b-button>
               </b-button-group>
             </div>
@@ -181,7 +180,13 @@
 import moment from 'moment'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import Todo from '@/models/Todo'
 
+let url, SPCI
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+  url = SPCI.webAbsoluteUrl
+}
 let vm = null
 
 export default {
@@ -426,12 +431,27 @@ export default {
       } else {
         this.$router.push({ name: back })
       }
+    },
+    AFRLCompleteTasks: function() {
+      window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.travelmodel.TripReport, '_blank')
+      let deletepayload = {
+        url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=(substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo) and TaskType eq 'Review Trip Report')"
+      }
+      Todo.dispatch('completeTodosByQuery', deletepayload)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.information {
+  border: solid;
+  border-width: thin;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
 .helpHide {
   margin: 1rem;
 }
