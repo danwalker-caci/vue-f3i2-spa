@@ -660,13 +660,10 @@ export default {
             //event.preventDefault()
             if (statusObj.value === 'CACI Submitted') {
               submitDateElem.disabled = false
-              submitDateObj = new DatePicker({
-                value: args.rowData['CACISubmittedDate'] ? new Date(args.rowData['CACISubmittedDate']) : null,
-                enabled: true,
-                floatLabelType: 'Never'
-              })
-              submitDateObj.appendTo(submitDateElem)
+              submitDateObj.enabled = true
             } else {
+              submitDateObj.enabled = false
+              submitDateObj.value = null
               submitDateElem.value = null
               submitDateElem.disabled = true
             }
@@ -740,18 +737,15 @@ export default {
           return submitDateObj ? submitDateObj.value : null
         },
         destroy: () => {
-          submitDateObj ? submitDateObj.destroy() : null
+          submitDateObj.destroy()
         },
         write: args => {
-          if (vm.currentStatus === 'CACI Submitted') {
-            submitDateElem.disabled = false
-            submitDateObj = new DatePicker({
-              value: args.rowData['CACISubmittedDate'] ? new Date(args.rowData['CACISubmittedDate']) : null,
-              enabled: true,
-              floatLabelType: 'Never'
-            })
-            submitDateObj.appendTo(submitDateElem)
-          }
+          submitDateObj = new DatePicker({
+            value: args.rowData[args.column.field] ? new Date(args.rowData[args.column.field]) : null,
+            enabled: vm.currentStatus === 'CACI Submitted' ? true : false,
+            floatLabelType: 'Never'
+          })
+          submitDateObj.appendTo(submitDateElem)
         }
       }
     }
@@ -914,24 +908,33 @@ export default {
           if (popEndObj.value) {
             let newPopEnd = Object.assign({}, { value: popEndObj.value })
             this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
+          } else if (popEndObj.value === null && this.originalRowData.POPEnd !== null) {
+            this.rowData.POPEnd = null
           } else {
             this.rowData.POPEnd = this.originalRowData.POPEnd ? this.originalRowData.POPEnd : null
           }
           if (popStartObj.value) {
             let newPopStart = Object.assign({}, { value: popStartObj.value })
             this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
+          } else if (popStartObj.value === null && this.originalRowData.POPStart !== null) {
+            this.rowData.POPStart = null
           } else {
             this.rowData.POPStart = this.originalRowData.POPStart ? this.originalRowData.POPStart : null
           }
           if (dateApprovedObj.value) {
             let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
             this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
+          } else if (dateApprovedObj.value === null && this.originalRowData.DateApproved !== null) {
+            this.rowData.DateApproved = null
           } else {
             this.rowData.DateApproved = this.originalRowData.DateApproved ? this.originalRowData.DateApproved : null
           }
           if (submitDateObj && submitDateObj.value) {
+            console.log('SUBMIT DATE OBJECT: ' + submitDateObj)
             let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
             this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
+          } else if (submitDateObj.value === null && this.originalRowData.CACISubmittedDate !== null) {
+            this.rowData.CACISubmittedDate = null
           } else {
             this.rowData.CACISubmittedDate = this.originalRowData.CACISubmittedDate ? this.originalRowData.CACISubmittedDate : null
           }
