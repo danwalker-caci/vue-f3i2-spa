@@ -124,6 +124,10 @@ export default {
       type: Array,
       default: () => [] // ['.pdf', '.docx']
     },
+    handleUpload: {
+      type: Boolean,
+      default: false
+    },
     rules: {
       type: Object,
       default: () => {
@@ -155,7 +159,7 @@ export default {
       totalRows: 1,
       currentPage: 1,
       perPage: 20,
-      maxSize: 150 // size of any filename after any naming conventions are added.
+      maxSize: 200 // size of any filename after any naming conventions are added.
     }
   },
   created() {
@@ -170,7 +174,7 @@ export default {
     },
     async filesSelected() {
       // loop through the SelectedFiles array and assemble the files to be returned.
-      // create an items array for display in the table if there are files with errors.
+      // create an items array for display in the table.
       this.items = []
       let regex = /^[a-zA-Z0-9\s_.-]*$/g
       await this.asyncForEach(this.SelectedFiles, async SelectedFile => {
@@ -182,11 +186,6 @@ export default {
         item.doesExist = false // set to false initially to ensure property exists.
         item.isSpecial = false // set to false initially to ensure property exists.
         item.isLong = false // set to false initially to ensure property exists.
-        /* let isLong = name.length > 100 ? true : false
-        if (isLong) {
-          item.isLong = true
-          this.hasIssues = true
-        } */
         let isSpecial = regex.test(name) == true ? false : true
         if (isSpecial) {
           item.isSpecial = true
@@ -207,17 +206,34 @@ export default {
           // Add naming convention rules if any
           if (this.rules.hasRules) {
             // add rules to name
+            let temp = name.split('.')
+            let prename = temp[0]
+            if (this.rules.addPrefix.length > 0) {
+              prename = this.rules.addPrefix + this.rules.delimiter + prename
+            }
+            if (this.rules.addSuffix.length > 0) {
+              prename = prename + this.rules.delimiter + this.rules.addSuffix
+            }
+            if (this.rules.addTimestamp) {
+              prename = prename + this.rules.delimiter + Date.now().toString()
+            }
+            name = prename + temp[1]
           }
-          let Exists = await this.fileExistsInLibrary(name, this.library)
-          if (Exists) {
-            // issues.push('doesExist')
-            item.doesExist = true
+          let isLong = name.length > this.maxSize ? true : false
+          if (isLong) {
+            item.isLong = true
             this.hasIssues = true
+          } else {
+            // File existence tested after all other tests are complete
+            let Exists = await this.fileExistsInLibrary(name, this.library)
+            if (Exists) {
+              item.doesExist = true
+              this.hasIssues = true
+            }
           }
         }
         item.id = Math.uuid()
         item.name = name
-        // item.issues = issues
         item.buffer = await this.getFileBuffer(SelectedFile)
         item.overwrite = false
         this.items.push(item)
@@ -234,15 +250,63 @@ export default {
       let element = 'file-' + id
       document.getElementById(element).click()
     },
-    onFileReplaced(id, event) {
+    async onFileReplaced(id, event) {
       if (console) console.log('FILE REPLACEMENT: ' + id + ', EVENT: ' + event)
       let files = event.target.files
       if (files.length < 1) {
-        // no file was actually selected
+        // TODO: Since no file was actually selected do we need to do anything?
       } else {
         let file = files[0]
-        alert('File changed to: ' + file.name)
-        // TODO: recheck new file for all the things and update items array.
+        // alert('File changed to: ' + file.name)
+        // Recheck new file for all the things and update items array.
+        for (let i = 0; i < this.items.length; i++) {
+          if (this.items[i].id === id) {
+            let regex = /^[a-zA-Z0-9\s_.-]*$/g
+            let name = String(file.name)
+            let isSpecial = regex.test(name) == true ? false : true
+            if (isSpecial) {
+              this.items[i].isSpecial = true
+            }
+            let isNotAllowed = false
+            let temp = name.split('.')
+            if (this.allowedFiles.length > 0) {
+              if (this.allowedFiles.indexOf(temp[1]) >= 0) {
+                isNotAllowed = true
+                this.items[i].isNotAllowed = true // will not actually get passed to parent
+              }
+            }
+            if (!isSpecial && !isNotAllowed) {
+              // Add naming convention rules if any
+              if (this.rules.hasRules) {
+                // add rules to name
+                let temp = name.split('.')
+                let prename = temp[0]
+                if (this.rules.addPrefix.length > 0) {
+                  prename = this.rules.addPrefix + this.rules.delimiter + prename
+                }
+                if (this.rules.addSuffix.length > 0) {
+                  prename = prename + this.rules.delimiter + this.rules.addSuffix
+                }
+                if (this.rules.addTimestamp) {
+                  prename = prename + this.rules.delimiter + Date.now().toString()
+                }
+                name = prename + '.' + temp[1]
+              }
+              let isLong = name.length > this.maxSize ? true : false
+              if (isLong) {
+                this.items[i].isLong = true
+              } else {
+                // File existence tested after all other tests are complete
+                let Exists = await this.fileExistsInLibrary(name, this.library)
+                if (Exists) {
+                  this.items[i].doesExist = true
+                }
+              }
+            }
+            this.items[i].buffer = await this.getFileBuffer(file)
+            this.items[i].name = name
+          }
+        }
       }
     },
     getFileBuffer(file) {
