@@ -65,23 +65,30 @@
                   </b-col>
                 </b-row>
                 <b-row no-gutters class="table-row">
-                  <b-table-simple :id="getID('DynamicTable', table.id)" :ref="getID('DynamicTable', table.id)" table-variant="light" table-class="table-full" :bordered="bordered" :hover="hover">
-                    <b-thead>
-                      <b-tr>
-                        <b-th v-for="field in table.fields" :key="field" :style="getStyle('th', field)">{{ field.label }}</b-th>
-                      </b-tr>
-                    </b-thead>
-                    <b-tbody :id="getID('DynamicTableBody', table.id)">
-                      <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
-                        <b-td v-for="field in table.fields" :key="field" class="text-black">
-                          <span v-if="field.field === 'Actions'" :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id">
-                            <component v-for="comp in item.renderItems" :key="comp.id" :is="comp.component" v-bind="comp.props"></component>
-                          </span>
-                          <span v-else :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
-                        </b-td>
-                      </b-tr>
-                    </b-tbody>
-                  </b-table-simple>
+                  <b-overlay :show="noitems" :opacity="100" :variant="overlayVariant" z-index="3000">
+                    <b-table-simple :id="getID('DynamicTable', table.id)" :ref="getID('DynamicTable', table.id)" table-variant="light" table-class="table-full" :bordered="bordered" :hover="hover">
+                      <b-thead>
+                        <b-tr>
+                          <b-th v-for="field in table.fields" :key="field" :style="getStyle('th', field)">{{ field.label }}</b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody :id="getID('DynamicTableBody', table.id)">
+                        <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
+                          <b-td v-for="field in table.fields" :key="field" class="text-black">
+                            <span v-if="field.field === 'Actions'" :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id">
+                              <component v-for="comp in item.renderItems" :key="comp.id" :is="comp.component" v-bind="comp.props"></component>
+                            </span>
+                            <span v-else :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table-simple>
+                    <template #overlay>
+                      <div class="text-center">
+                        <p id="busy-label">No Items Found ...</p>
+                      </div>
+                    </template>
+                  </b-overlay>
                 </b-row>
               </b-container>
               <template #overlay>
@@ -179,6 +186,7 @@ export default {
       overlayVariant: 'light',
       modalOverlayText: 'Uploading Please Wait...',
       modalOverlayVariant: 'light',
+      noitems: false,
       items: [],
       filtereditems: [],
       shownData: [],
@@ -232,8 +240,13 @@ export default {
             .toLowerCase()
             .includes(e.target.value.toLowerCase())
         )
+        if (vm.items.length === 0) {
+          vm.noitems = true
+        } else {
+          vm.noitems = false
+        }
+        vm.formatCells()
       }, 25)
-      vm.formatCells()
     },
     searchFiltering: e => {
       e.preventDefault()
@@ -243,6 +256,11 @@ export default {
           .toLowerCase()
           .includes(vm.search.toLowerCase())
       )
+      if (vm.items.length === 0) {
+        vm.noitems = true
+      } else {
+        vm.noitems = false
+      }
       vm.formatCells()
     },
     onSubmit: event => {
