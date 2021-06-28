@@ -682,7 +682,7 @@ export default {
         if (vm.form.Historical !== 'Yes') {
           let taskPayload = {
             Title: 'Approve SCI Transfer Submission for ' + persons,
-            //AssignedToId: 25, // Hardcoding the Security Group
+            //AssignedToId: 63, // TESTING TASK
             AssignedToId: this.taskUserId,
             Description: 'Approve or reject SCI Transfer request for ' + persons,
             IsMilestone: false,
@@ -704,7 +704,7 @@ export default {
           })
           let emailPayload = {
             emails: this.taskEmail,
-            //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               persons +
@@ -1043,7 +1043,7 @@ export default {
           // Notification must be reworked to point to the id of SecurityForms and then the account type.
           let taskPayload = {
             Title: 'Approve ' + vm.form.Type + ' Submission for ' + vm.form.Name,
-            //AssignedToId: 25, // TESTING TASK
+            //AssignedToId: 63, // TESTING TASK
             AssignedToId: this.taskUserId,
             Description: 'Approve or reject ' + vm.form.Type + ' request for ' + vm.form.Name,
             IsMilestone: false,
@@ -1065,7 +1065,7 @@ export default {
           })
           let emailPayload = {
             emails: this.taskEmail,
-            //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+            //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
             body:
               '<h3>Please approve or reject the following.</h3><p>Name: ' +
               vm.form.Name +
@@ -1247,6 +1247,7 @@ export default {
     },
     onFileSelect: async function(args) {
       args.filesData.forEach(fileData => {
+        console.log('FILES DATA: ' + JSON.stringify(fileData))
         let file = {}
         file.fileSelected = fileData.name
         // Need to perform a check here to see what the file will be named, if the corresponding type already has it and then set a flag to overwrite or modify based on user interaction
