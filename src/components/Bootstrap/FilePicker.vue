@@ -2,7 +2,7 @@
   <b-container fluid class="m-0 p-0" id="FilePickerContainer">
     <b-row no-gutters class="m-0">
       <b-col cols="12" class="p-0">
-        <b-modal id="FilePickerModal" centered header-bg-variant="light-blue" size="xl" header-text-variant="light">
+        <b-modal id="FilePickerModal" centered header-bg-variant="light-blue" footer-bg-variant="light-blue" size="xl" header-text-variant="light">
           <template v-slot:modal-title>Selected Files Check</template>
           <b-container class="p-0">
             <b-row>
@@ -68,9 +68,28 @@
               </b-col>
             </b-row>
           </b-container>
+          <template v-slot:modal-footer>
+            <div class="container">
+              <div class="row">
+                <div class="col-sm"></div>
+                <div class="col-sm"></div>
+                <div class="col-sm text-right">
+                  <b-button class="text-white" @click="cancel()" v-b-tooltip.hover.v-dark title="Cancel">
+                    Cancel
+                  </b-button>
+                  <b-button v-if="handleUpload" class="text-white ml-1" variant="light-blue" @click="uploadFiles()" v-b-tooltip.hover.v-dark title="Upload Selected Files">
+                    Upload
+                  </b-button>
+                  <b-button class="text-white ml-1" variant="success" @click="returnToParent()" v-b-tooltip.hover.v-dark title="Accept Changes">
+                    Ok
+                  </b-button>
+                </div>
+              </div>
+            </div>
+          </template>
         </b-modal>
         <b-input-group>
-          <b-form-file placeholder="Select File(s)" multiple no-drop class="form-control" browse-text="Select File(s)" v-model="SelectedFiles" @input="filesSelected"></b-form-file>
+          <b-form-file placeholder="Select File(s)" multiple class="form-control" browse-text="Select File(s)" v-model="SelectedFiles" @input="filesSelected"></b-form-file>
         </b-input-group>
       </b-col>
     </b-row>
@@ -83,6 +102,7 @@ props: (passed from parent component)
   id: string - represents the name/id of the component.
   library: string - represents the name of the document library the files will be uploaded to.
   checkExists: boolean - determines if selected files should be checked for existence in the document library.
+  handleUpload: boolean - determines if this control will handle uploading the files.
   rules: string[JSON] - contains the configuration for file naming conventions and other rules.
     {
       hasRules: false (pass true if there are rules to follow)
@@ -266,6 +286,8 @@ export default {
             let isSpecial = regex.test(name) == true ? false : true
             if (isSpecial) {
               this.items[i].isSpecial = true
+            } else {
+              this.items[i].isSpecial = false
             }
             let isNotAllowed = false
             let temp = name.split('.')
@@ -296,10 +318,13 @@ export default {
               if (isLong) {
                 this.items[i].isLong = true
               } else {
+                this.items[i].isLong = false
                 // File existence tested after all other tests are complete
                 let Exists = await this.fileExistsInLibrary(name, this.library)
                 if (Exists) {
                   this.items[i].doesExist = true
+                } else {
+                  this.items[i].doesExist = false
                 }
               }
             }
@@ -330,13 +355,12 @@ export default {
           // remove special characters and then trim file name size
           let name = String(this.items[i].name)
           name = name.replace(/[^a-zA-Z0-9\s_.-]/g, '')
-          if (name.length >= 100) {
+          /* if (name.length >= 100) {
             let temp = name.split('.')
             name = temp[0].substring(0, 99)
             name += '.' + temp[1]
-          }
+          } */
           this.items[i].name = name
-          this.items[i].issues = ['isOk']
         }
       }
     },
