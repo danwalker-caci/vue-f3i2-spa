@@ -516,12 +516,6 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.PreApproved == 'Yes'" class="mb-1">
-                              <b-col v-if="isWPManager" cols="4">Select EMail Recipients</b-col>
-                              <b-col v-if="isWPManager" cols="8">
-                                <b-form-checkbox-group v-model="travelmodel.InternalData.PreApprovedEmails" stacked :options="govTrvlApprovers" name="selectedrecipients"></b-form-checkbox-group>
-                              </b-col>
-                            </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
