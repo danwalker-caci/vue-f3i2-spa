@@ -164,8 +164,7 @@
             <div class="col-4 p-0 text-center"></div>
             <div class="col-4 p-0 text-right">
               <b-button-group class="mt-2">
-                <b-button variant="primary"></b-button>
-                <b-button variant="primary" ref="btnDownload" @click="AFRLCompleteTasks">Download Trip Report</b-button>
+                <b-button variant="primary" v-if="travelmodel.TripReport && travelmodel.TripReport.length > 0" class="mr-2" ref="btnDownload" @click="AFRLCompleteTasks">Download Trip Report</b-button>
                 <b-button variant="success" ref="btnCancel" class="mr-2" @click="onModalHide">OK</b-button>
               </b-button-group>
             </div>
@@ -322,6 +321,7 @@ export default {
         TravelFrom: '',
         TravelTo: '',
         Travelers: [],
+        TripReport: '',
         Sponsor: '',
         POCName: '',
         POCEmail: '',
@@ -401,6 +401,7 @@ export default {
         this.travelmodel.EndTime = moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.TravelFrom = this.selectedtrip.TravelFrom
         this.travelmodel.TravelTo = this.selectedtrip.TravelTo
+        this.travelmodel.TripReport = this.selectedtrip.TripReportLink
         this.travelmodel.Sponsor = this.selectedtrip.Sponsor
         this.travelmodel.POCName = this.selectedtrip.POCName
         this.travelmodel.POCEmail = this.selectedtrip.POCEmail
