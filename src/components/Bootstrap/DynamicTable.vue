@@ -301,6 +301,7 @@ export default {
     getData: async function() {
       // currently support passed in query only
       vm.items = []
+      vm.filtereditems = []
       vm.loading = true
       vm.loaded = false
       let url = this.table.query
@@ -319,6 +320,7 @@ export default {
             // actions are not part of the items array
             f['id'] = j[i]['Id'] // add id regardless
             f['AuthorId'] = j[i]['Author']['Id']
+            f['CreatedDate'] = new Date(j[i]['Created']).toLocaleString()
             // f['Permissions'] = j[i]['Permissions']
             let type = fields[k].type
             switch (type) {
