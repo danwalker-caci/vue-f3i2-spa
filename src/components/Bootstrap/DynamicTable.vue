@@ -15,7 +15,7 @@
         <b-row class="m-0" v-for="field in table.fields" :key="field" :style="showIfRequired(field)">
           <b-col cols="12" class="p-0">
             <b-form-group :label="field.type == 'file' ? 'File(s)' : field.label">
-              <file-picker v-if="field.type == 'file'" :id="'required_' + field.field" :library="table.list" :checkExists="true" :rules="rules"></file-picker>
+              <file-picker v-if="field.type == 'file'" :id="'required_' + field.field" :library="table.list" :checkExists="true" :handleUpload="true" :rules="rules"></file-picker>
               <!-- <b-form-file v-if="field.type == 'file'" placeholder="Choose a file" no-drop class="form-control" v-model="field.selected" :id="'required_' + field.field" @input="fileSelected(field)" :state="!Invalid" :ref="field.field"></b-form-file> -->
               <b-form-select v-if="field.type == 'lookup'" class="form-control" :options="field.options" v-model="field.selected" :id="'required_' + field.field" :state="field.selected !== ''" :ref="field.field"></b-form-select>
             </b-form-group>
