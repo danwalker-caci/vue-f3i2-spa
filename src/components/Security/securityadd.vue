@@ -912,6 +912,7 @@ export default {
           payload.Company = vm.form.Company
           payload.PersonnelID = vm.form.PersonnelID
           let pdfName = vm.form.PersonnelID + '-' + file.fileSelected
+          pdfName = pdfName.replace(/\s/g, '_')
           if (pdfName.length >= 260) {
             let currentPDF = pdfName.split('.')
             pdfName = pdfName.substring(0, 250)

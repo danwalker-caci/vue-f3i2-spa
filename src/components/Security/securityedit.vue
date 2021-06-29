@@ -1606,6 +1606,7 @@ export default {
           let payload = {}
           payload.library = vm.library
           let pdfName = 'Completed-' + file.fileSelected
+          pdfName = pdfName.replace(/\s/g, '_')
           if (pdfName.length >= 260) {
             let currentPDF = pdfName.split('.')
             pdfName = pdfName.substring(0, 250)
