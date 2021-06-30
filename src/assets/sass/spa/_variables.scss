@@ -66,6 +66,7 @@ $colors: map-merge(
     "white":      $white,
     "gray":       $gray-600,
     "gray-dark":  $gray-800,
+    "gray-light": $gray-200,
     "black":      $black,
     "deep-blue":  $deep-blue,
     "light-blue": $light-blue  
@@ -108,6 +109,7 @@ $theme-colors: map-merge(
     "white":      $white,
     "gray":       $gray-600,
     "gray-dark":  $gray-800,
+    "gray-light": $gray-200,
     "black":      $black,
     "light-blue": $light-blue,
     "deep-blue":  $deep-blue
