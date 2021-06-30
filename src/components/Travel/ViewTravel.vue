@@ -90,7 +90,7 @@
                 </b-col>
                 <b-col>
                   <p>
-                    <b>Travel Cost:</b> <span v-if="travelmodel.EstimatedCost" class="ml-1 lead">${{ travelmodel.EstimatedCost }}</span>
+                    <b>Estimated Travel Cost:</b> <span v-if="travelmodel.EstimatedCost" class="ml-1 lead">${{ travelmodel.EstimatedCost }}</span>
                   </p>
                 </b-col>
               </b-row>
