@@ -774,10 +774,10 @@ export default {
             },
             methods: {
               edit: function(data) {
-                vm.$router.push({ name: 'Edit Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
+                vm.$router.push({ name: 'Edit Travel', query: { id: data.Id }, params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               view: function(data) {
-                vm.$router.push({ name: 'View Travel', params: { back: 'Travel Tracker', TripId: data.Id } })
+                vm.$router.push({ name: 'View Travel', query: { id: data.Id }, params: { back: 'Travel Tracker', TripId: data.Id } })
               },
               report: function(data) {
                 vm.$router.push({ name: 'Trip Report', params: { back: 'Travel Tracker', TripId: data.Id, IndexNumber: data.IndexNumber } })

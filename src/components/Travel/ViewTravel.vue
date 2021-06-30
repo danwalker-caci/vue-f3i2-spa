@@ -11,149 +11,161 @@
         <b-spinner style="width: 5rem; height: 5rem;" variant="success" label="Waiting Spinner"></b-spinner>
       </b-toast>
       <b-col cols="12" class="m-0 p-0">
-        <b-container fluid class="contentHeight m-0 p-0">
+        <b-row no-gutters class="bg-black text-white formheader">
+          <b-col cols="4" class="p-0 text-center"> </b-col>
+          <b-col cols="4" class="p-0 text-center">
+            <h3 class="text-white">Travel Information For: {{ travelmodel.Subject }}</h3>
+          </b-col>
+          <b-col cols="4" class="p-0 text-right"></b-col>
+        </b-row>
+        <b-container fluid class="contentHeight m-0 p-0" style="overflow-y: auto;">
           <b-row no-gutters class="bg-white formbody">
             <div class="col-12 p-3">
-              <h3>Travel Information</h3>
-              <b-row class="pt-2">
-                <b-col colS="3">
-                  <p>
-                    Index Number:
-                  </p>
-                  <b v-if="travelmodel.IndexNumber" class="information">{{ travelmodel.IndexNumber }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Work Plan Name:
-                  </p>
-                  <b v-if="travelmodel.WorkPlanText" class="information">{{ travelmodel.WorkPlanText }}</b>
-                </b-col>
-                <b-col cols="6">
-                  <p>
-                    Subject:
-                  </p>
-                  <b v-if="travelmodel.Subject" class="information">{{ travelmodel.Subject }}</b>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="3">
-                  <p>
-                    Start Date:
-                  </p>
-                  <b v-if="travelmodel.StartTime" class="information">{{ travelmodel.StartTime }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    End Date:
-                  </p>
-                  <b v-if="travelmodel.EndTime" class="information">{{ travelmodel.EndTime }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Traveling From:
-                  </p>
-                  <b v-if="travelmodel.TravelFrom" class="information">{{ travelmodel.TravelFrom }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Traveling To:
-                  </p>
-                  <b v-if="travelmodel.TravelTo" class="information">{{ travelmodel.TravelTo }}</b>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="3">
-                  <p>
-                    Government Sponsor:
-                  </p>
-                  <b v-if="travelmodel.Sponsor" class="information">{{ travelmodel.Sponsor }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Government POC Name:
-                  </p>
-                  <b v-if="travelmodel.POCName" class="information">{{ travelmodel.POCName }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Government POC Email:
-                  </p>
-                  <b v-if="travelmodel.POCEmail" class="information">{{ travelmodel.POCEmail }}</b>
-                </b-col>
-                <b-col cols="3">
-                  <p>
-                    Government POC Phone:
-                  </p>
-                  <b v-if="travelmodel.POCPhone" class="information">{{ travelmodel.POCPhone }}</b>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="3">
-                  <p>
-                    Status:
-                  </p>
-                  <b v-if="travelmodel.Status" class="information">{{ travelmodel.Status }}</b>
-                </b-col>
-                <b-col cols="5">
-                  <p>
-                    Purpose:
-                  </p>
-                  <b v-if="travelmodel.Comments" class="information">{{ travelmodel.Comments }}</b>
-                </b-col>
-                <b-col cols="2">
-                  <p>
-                    Visit Request:
-                  </p>
-                  <b v-if="travelmodel.VisitRequest" class="information">{{ travelmodel.VisitRequest }}</b>
-                </b-col>
-                <b-col cols="2">
-                  <p>
-                    Required Clearance:
-                  </p>
-                  <b v-if="travelmodel.Clearance" class="information">{{ travelmodel.Clearance }}</b>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="3">
-                  <p>
-                    Travel Cost:
-                  </p>
-                  <b v-if="travelmodel.EstimatedCost" class="information">${{ travelmodel.EstimatedCost }}</b>
-                </b-col>
-              </b-row>
+              <h4 class="pt-3">Approval Information</h4>
               <hr />
-              <h3>Traveler Details</h3>
+              <b-row class="pt-2">
+                <b-col cols="3">
+                  <p>
+                    <b>Status:</b> <span v-if="travelmodel.Status" class="ml-1 lead">{{ travelmodel.Status }}</span>
+                  </p>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    <b>Approved By:</b> <span v-if="travelmodel.InternalData.ApprovedBy" class="ml-1 lead">{{ travelmodel.InternalData.ApprovedBy }}</span>
+                  </p>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    <b>Approved On:</b> <span v-if="travelmodel.InternalData.ApprovedOn" class="ml-1 lead">{{ travelmodel.InternalData.ApprovedOn }}</span>
+                  </p>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    <b>Government Sponsor:</b> <span v-if="travelmodel.Sponsor" class="ml-1 lead">{{ travelmodel.Sponsor }}</span>
+                  </p>
+                </b-col>
+              </b-row>
+              <h4 class="pt-3">Workplan Information</h4>
+              <hr />
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    <b>Index Number:</b> <span v-if="travelmodel.IndexNumber" class="ml-1 lead">{{ travelmodel.IndexNumber }}</span>
+                  </p>
+                </b-col>
+                <b-col cols="3">
+                  <p>
+                    <b>Work Plan Number:</b> <span v-if="travelmodel.WorkPlanNumber" class="ml-1 lead">{{ travelmodel.WorkPlanNumber }}</span>
+                  </p>
+                </b-col>
+                <b-col>
+                  <p>
+                    <b>Work Plan Name:</b> <span v-if="travelmodel.WorkPlanText" class="ml-1 lead">{{ travelmodel.WorkPlanText }}</span>
+                  </p>
+                </b-col>
+              </b-row>
+              <h4 class="pt-3">Trip Information</h4>
+              <hr />
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    <b>Start Date:</b> <span v-if="travelmodel.StartTime" class="ml-1 lead">{{ travelmodel.StartTime }}</span>
+                  </p>
+                </b-col>
+                <b-col>
+                  <p>
+                    <b>End Date:</b> <span v-if="travelmodel.EndTime" class="ml-1 lead">{{ travelmodel.EndTime }}</span>
+                  </p>
+                </b-col>
+                <b-col>
+                  <p>
+                    <b>Traveling From:</b> <span v-if="travelmodel.TravelFrom" class="ml-1 lead">{{ travelmodel.TravelFrom }}</span>
+                  </p>
+                </b-col>
+                <b-col>
+                  <p>
+                    <b>Traveling To:</b> <span v-if="travelmodel.TravelTo" class="ml-1 lead">{{ travelmodel.TravelTo }}</span>
+                  </p>
+                </b-col>
+                <b-col>
+                  <p>
+                    <b>Travel Cost:</b> <span v-if="travelmodel.EstimatedCost" class="ml-1 lead">${{ travelmodel.EstimatedCost }}</span>
+                  </p>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="3">
+                  <p>
+                    <b>Subject:</b> <span v-if="travelmodel.Subject" class="ml-1 lead">{{ travelmodel.Subject }}</span>
+                  </p>
+                </b-col>
+                <b-col cols="9">
+                  <p>
+                    <b>Purpose:</b> <span v-if="travelmodel.Comments" class="ml-1 lead">{{ travelmodel.Comments }}</span>
+                  </p>
+                </b-col>
+              </b-row>
+              <div v-if="travelmodel.VisitRequest === 'Yes'">
+                <h4 class="pt-3">Security Information</h4>
+                <hr />
+                <b-row>
+                  <b-col cols="4">
+                    <p>
+                      <b>Government POC Name:</b> <span v-if="travelmodel.POCName" class="ml-1 lead">{{ travelmodel.POCName }}</span>
+                    </p>
+                  </b-col>
+                  <b-col cols="4">
+                    <p>
+                      <b>Government POC Email:</b> <span v-if="travelmodel.POCEmail" class="ml-1 lead">{{ travelmodel.POCEmail }}</span>
+                    </p>
+                  </b-col>
+                  <b-col>
+                    <p>
+                      <b>Government POC Phone:</b> <span v-if="travelmodel.POCPhone" class="ml-1 lead">{{ travelmodel.POCPhone }}</span>
+                    </p>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4">
+                    <p>
+                      <b>Visit Request:</b> <span v-if="travelmodel.VisitRequest" class="ml-1 lead">{{ travelmodel.VisitRequest }}</span>
+                    </p>
+                  </b-col>
+                  <b-col cols="4">
+                    <p>
+                      <b>Required Clearance:</b> <span v-if="travelmodel.Clearance" class="ml-1 lead">{{ travelmodel.Clearance }}</span>
+                    </p>
+                  </b-col>
+                </b-row>
+              </div>
+              <h4 class="pt-3">Traveler Details</h4>
+              <hr />
               <div v-for="traveler in travelmodel.Travelers" :key="traveler">
                 <b-row>
-                  <b-col>
+                  <b-col cols="2">
                     <p>
-                      Company:
+                      <b>Company:</b> <span v-if="travelmodel.Company" class="ml-1 lead">{{ travelmodel.Company }}</span>
                     </p>
-                    <b v-if="travelmodel.Company" class="information">{{ travelmodel.Company }}</b>
                   </b-col>
                   <b-col>
                     <p>
-                      Traveler Last Name:
+                      <b>Traveler Last Name:</b> <span class="ml-1 lead">{{ traveler.lastName }}</span>
                     </p>
-                    <b class="information">{{ traveler.lastName }}</b>
                   </b-col>
                   <b-col>
                     <p>
-                      Traveler First Name:
+                      <b>Traveler First Name:</b> <span class="ml-1 lead">{{ traveler.firstName }}</span>
                     </p>
-                    <b class="information">{{ traveler.firstName }}</b>
                   </b-col>
                   <b-col>
                     <p>
-                      Traveler Email:
+                      <b>Traveler Email:</b> <span class="ml-1 lead">{{ traveler.email }}</span>
                     </p>
-                    <b class="information">{{ traveler.email }}</b>
                   </b-col>
                   <b-col>
                     <p>
-                      Traveler Phone:
+                      <b>Traveler Phone:</b> <span class="ml-1 lead">{{ traveler.phone }}</span>
                     </p>
-                    <b class="information">{{ traveler.phone }}</b>
                   </b-col>
                 </b-row>
               </div>
@@ -445,14 +457,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.information {
-  border: solid;
-  border-width: thin;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
 .helpHide {
   margin: 1rem;
 }
