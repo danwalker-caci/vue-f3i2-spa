@@ -168,7 +168,7 @@
                 </b-col>
               </b-row>
             </div>
-            <b-row no-gutters class="bg-black formfooter">
+            <b-row no-gutters class="formfooter">
               <div class="col-4 p-0 text-left"></div>
               <div class="col-4 p-0 text-center"></div>
               <div class="col-4 p-0 text-right">
