@@ -44,7 +44,7 @@
                 </p>
               </b-col>
             </b-row>
-            <h4 class="pt-3">Workplan Information</h4>
+            <h4 class="pt-3 text-center">Workplan Information</h4>
             <hr />
             <b-row>
               <b-col cols="3">
@@ -63,7 +63,7 @@
                 </p>
               </b-col>
             </b-row>
-            <h4 class="pt-3">Trip Information</h4>
+            <h4 class="pt-3 text-center">Trip Information</h4>
             <hr />
             <b-row>
               <b-col cols="3">
@@ -105,7 +105,7 @@
               </b-col>
             </b-row>
             <div v-if="travelmodel.VisitRequest === 'Yes'">
-              <h4 class="pt-3">Security Information</h4>
+              <h4 class="pt-3 text-center">Security Information</h4>
               <hr />
               <b-row>
                 <b-col cols="4">
@@ -137,7 +137,7 @@
                 </b-col>
               </b-row>
             </div>
-            <h4 class="pt-3">Traveler Details</h4>
+            <h4 class="pt-3 text-center">Traveler Details</h4>
             <hr />
             <div v-for="traveler in travelmodel.Travelers" :key="traveler">
               <b-row>
