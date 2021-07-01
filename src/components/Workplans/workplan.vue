@@ -929,14 +929,18 @@ export default {
           }
           this.rowData.Revision = args.rowData.Revision
 
-          if (Number.isFinite(args.rowData.Increment)) {
+          if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
+            this.showIncrementAlert = true
+            this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
+          }
+          /*if (Number.isFinite(args.rowData.Increment)) {
             this.rowData.Increment = args.rowData.Increment
           } else if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
             this.showIncrementAlert = true
             this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           } else {
             this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
-          }
+          }*/
           this.rowData.Title = args.rowData.Title
           this.rowData.Comments = args.rowData.Comments
           this.rowData.Number = args.rowData.Number
