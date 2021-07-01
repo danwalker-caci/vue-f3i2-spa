@@ -681,8 +681,8 @@ export default {
                   })
                   let payload = {
                     Title: 'Complete or Reject ' + persons + ' ' + type + ' Request',
-                    //AssignedToId: 25, // TESTING TASK
-                    AssignedToId: taskUserId,
+                    AssignedToId: 63, // TESTING TASK
+                    //AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + persons + ' ' + type + ' Request',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -703,7 +703,7 @@ export default {
                   })
                   let emailPayload = {
                     emails: taskEmail,
-                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                    //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       persons +
@@ -753,7 +753,7 @@ export default {
                   // Add a task for the designated government employee for review
                   let payload = {
                     Title: 'Complete or Reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
-                    //AssignedToId: 25, // TESTING TASK
+                    //AssignedToId: 63, // TESTING TASK
                     AssignedToId: taskUserId,
                     Description: 'Complete or reject ' + data.FirstName + ' ' + data.LastName + ' ' + type + ' Request',
                     IsMilestone: false,
@@ -775,7 +775,7 @@ export default {
                   })
                   let emailPayload = {
                     emails: taskEmail,
-                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                    //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>Please complete or reject the following.</h3> <p>Name: ' +
                       data.FirstName +
@@ -878,7 +878,7 @@ export default {
                   let payload = {
                     Title: 'AFRL Completed ' + persons + ' ' + type + ' Request',
                     AssignedToId: taskUserId,
-                    //AssignedToId: 25, // TESTING TASK
+                    //AssignedToId: 63, // TESTING TASK
                     Description: 'AFRL Completed ' + persons + ' ' + type + ' Request.',
                     IsMilestone: false,
                     PercentComplete: 0,
@@ -899,7 +899,7 @@ export default {
                   })
                   let emailPayload = {
                     emails: taskEmail,
-                    //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                    //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                     body:
                       '<h3>AFRL Completed ' +
                       persons +
@@ -1132,7 +1132,7 @@ export default {
                     let payload = {
                       Title: 'Government Reject ' + persons + ' ' + vm2.GovRejectType + ' Request',
                       AssignedToId: taskUserId,
-                      //AssignedToId: 25, // TESTING TASK
+                      //AssignedToId: 63, // TESTING TASK
                       Description: 'Reason: ' + vm2.GovRejectReason,
                       IsMilestone: false,
                       PercentComplete: 0,
@@ -1152,7 +1152,7 @@ export default {
                       console.log('ERROR: ' + error.message)
                     })
                     let emailPayload = {
-                      //emails: ['alexie.hazen@caci.com'], // TESTING EMAIL
+                      //emails: ['drew.ahrens@caci.com'], // TESTING EMAIL
                       emails: taskEmail,
                       body: '<h3>Government Rejected Submission</h3> <p>Name: ' + persons + '</p><p>Form: ' + vm2.GovRejectType + ' Request</p><p>Reason: ' + vm2.GovRejectReason + '</p>',
                       subject: '(F3I-2 Portal) Government Rejected ' + vm2.GovRejectType + ' Request'
@@ -1398,6 +1398,7 @@ export default {
                     let payload = {}
                     payload.library = vm2.library
                     let pdfName = 'Completed-' + file.fileSelected
+                    pdfName = pdfName.replace(/\s/g, '_')
                     if (pdfName.length >= 260) {
                       let currentPDF = pdfName.split('.')
                       pdfName = pdfName.substring(0, 250)
@@ -1507,6 +1508,7 @@ export default {
                     /*Security.dispatch('getSecurityFormByPersonnelId', d.PersonnelId).then(function(response) {
                     d.etag = response.etag
                   })*/
+                    vm2.files = []
                     vm2.statusesUpdated = false
                     vm2.selectedSecurityFormType = null
                     let uploadedFiles = document.querySelector('.e-upload-files')
@@ -1556,6 +1558,7 @@ export default {
               },
               async onFileSelect(args) {
                 args.filesData.forEach(fileData => {
+                  console.log('FILES DATA: ' + JSON.stringify(fileData))
                   let file = {}
                   file.fileSelected = fileData.name
                   let buffer = vm2.getFileBuffer(fileData.rawFile)
