@@ -520,16 +520,18 @@
                                 </b-form-radio-group>
                               </b-col>
                             </b-row>
-                            <b-row v-if="travelmodel.InternalData.PreApproved == 'Yes'" class="mb-1">
-                              <b-col v-if="isWPManager" cols="4">Select EMail Recipients</b-col>
-                              <b-col v-if="isWPManager" cols="8">
-                                <b-form-checkbox-group v-model="travelmodel.InternalData.PreApprovedEmails" stacked :options="govTrvlApprovers" name="selectedrecipients"></b-form-checkbox-group>
-                              </b-col>
-                            </b-row>
                             <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes'" class="mb-1">
                               <b-col v-if="isWPManager" cols="4">Select Approver</b-col>
                               <b-col v-if="isWPManager" cols="8">
                                 <b-form-checkbox-group v-model="travelmodel.InternalData.ApproverSelected" stacked :options="govTrvlApprovers" name="selectedapprovers"></b-form-checkbox-group>
+                              </b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.ApprovalRequested == 'Yes' || travelmodel.InternalData.PreApproved == 'Yes'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Additional Recipients</b-col>
+                              <b-col v-if="isWPManager" cols="4">
+                                <ul v-for="rec in govDefaultTrvlRcpnts" :key="rec.value" class="no-bullets">
+                                  <li><font-awesome-icon fas icon="check" class="icon text-primary mr-1"></font-awesome-icon>{{ rec.text }}</li>
+                                </ul>
                               </b-col>
                             </b-row>
                           </b-tab>
@@ -595,6 +597,14 @@
                             <b-row v-if="travelmodel.InternalData.Approval == 'No'" class="mb-1">
                               <b-col cols="4">Travel Denial Comments</b-col>
                               <b-col cols="8"><b-form-textarea class="form-control-sm form-control-travel" v-model="travelmodel.InternalData.DenialComments"></b-form-textarea></b-col>
+                            </b-row>
+                            <b-row v-if="travelmodel.InternalData.Approval == 'Yes' || travelmodel.InternalData.Approval == 'No'" class="mb-1">
+                              <b-col v-if="isWPManager" cols="4">Additional Recipients</b-col>
+                              <b-col v-if="isWPManager" cols="4">
+                                <ul v-for="rec in govDefaultTrvlRcpnts" :key="rec.value" class="no-bullets">
+                                  <li><font-awesome-icon fas icon="check" class="icon text-primary mr-1"></font-awesome-icon>{{ rec.text }}</li>
+                                </ul>
+                              </b-col>
                             </b-row>
                           </b-tab>
                         </b-tabs>
@@ -727,6 +737,9 @@ export default {
     },
     govTrvlApprovers() {
       return this.$store.state.database.travel.govapprovers
+    },
+    govDefaultTrvlRcpnts() {
+      return this.$store.state.database.travel.defaultgovrecipients
     }
   },
   mounted: function() {
@@ -737,6 +750,7 @@ export default {
         Travel.dispatch('getDigest')
         Travel.dispatch('getDelegates')
         Travel.dispatch('getGetGovTrvlApprovers')
+        Travel.dispatch('getGovTrvlDefaultApprovers')
       } catch (e) {
         // Add user notification and system logging
         const notification = {
@@ -865,7 +879,8 @@ export default {
           ATPDeniedOn: '',
           ATPDenialComments: '',
           ManagerEmail: '',
-          date: moment().format('MM/DD/YYYY')
+          date: moment().format('MM/DD/YYYY'),
+          AFRLEmailRec: []
         },
         VisitRequest: '',
         SecurityAction: '',
@@ -1741,6 +1756,7 @@ export default {
         payload.body += '<p>End: ' + vm.travelmodel.EndTime
         payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
         this.$store.dispatch('support/SendEmail', payload)
+        await this.sendDefaultRecipients('New PreApproved Travel Submitted')
         try {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
@@ -1923,6 +1939,7 @@ export default {
         payload.body += '<p>Approved On: ' + vm.travelmodel.InternalData.ApprovedOn
         payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
         this.$store.dispatch('support/SendEmail', payload)
+        await this.sendDefaultRecipients('Travel Approved By WPM.')
         try {
           let deletepayload = {
             url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo)"
@@ -1994,6 +2011,7 @@ export default {
           Todo.dispatch('completeTodosByQuery', deletepayload).then(function() {
             Todo.dispatch('addTodo', taskpayload)
           })
+          await this.sendDefaultRecipients('Travel Rejected by AFRL.')
           Travel.dispatch('EditTripEmail', payload)
         } catch (e) {
           // Add user notification and system logging
@@ -2108,6 +2126,7 @@ export default {
           })
           /* Todo.dispatch('addTodo', taskpayload) */
           Travel.dispatch('EditTripEmail', payload)
+          await this.sendDefaultRecipients('Travel Aproved by WPM.')
         } catch (e) {
           // Add user notification and system logging
           const notification = {
@@ -2307,12 +2326,51 @@ export default {
         })
         console.log('ERROR: ' + e)
       }
+    },
+    async sendDefaultRecipients(message) {
+      let emailto = []
+      let afremails = this.govDefaultTrvlRcpnts
+      for (let i = 0; i < afremails.length; i++) {
+        let a = afremails[i].value.split(',')
+        emailto.push(a[1])
+      }
+      console.log('SEND DEFAULT RECIPIENTS EMAILS: ' + emailto.toString())
+      let payload = {}
+      payload.id = vm.travelmodel.id
+      payload.email = emailto
+      payload.title = '(F3I-2 Portal) Travel Request'
+      payload.body = ''
+      payload.body += '<p>' + message + '</p>'
+      payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
+      payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
+      let t = vm.travelmodel.Travelers
+      let s = ''
+      for (let i = 0; i < t.length; i++) {
+        if (i == 0) {
+          s += t[i].firstName + ' ' + t[i].lastName
+        } else {
+          s += ', ' + t[i].firstName + ' ' + t[i].lastName
+        }
+      }
+      payload.body += '<p>Travelers: ' + s
+      payload.body += '<p>From: ' + vm.travelmodel.TravelFrom
+      payload.body += '<p>To: ' + vm.travelmodel.TravelTo
+      payload.body += '<p>Start: ' + vm.travelmodel.StartTime
+      payload.body += '<p>End: ' + vm.travelmodel.EndTime
+      payload.body += '<p><a href="' + SPCI.webAbsoluteUrl + '/Pages/Home.aspx#/travel/page/view?id=' + vm.travelmodel.id + '">View Travel Details</a></p>'
+      this.$store.dispatch('support/SendEmail', payload)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.no-bullets {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .helpHide {
   margin: 1rem;
 }

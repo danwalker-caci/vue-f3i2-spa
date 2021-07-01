@@ -24,7 +24,7 @@
               <b-card no-body>
                 <table id="SummaryTable" class="summarytable">
                   <tbody>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="4">Subject</td>
                       <td>Travel Index</td>
                     </tr>
@@ -32,7 +32,7 @@
                       <td colspan="4">{{ travelmodel.Subject }}</td>
                       <td>{{ travelmodel.IndexNumber }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="2">Company</td>
                       <td colspan="3">WorkPlan</td>
                     </tr>
@@ -40,7 +40,7 @@
                       <td colspan="2">{{ travelmodel.Company }}</td>
                       <td colspan="3">{{ travelmodel.WorkPlanText }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td>Start Date</td>
                       <td>End Date</td>
                       <td>Traveling From</td>
@@ -54,7 +54,7 @@
                       <td>{{ travelmodel.TravelTo }}</td>
                       <td>${{ travelmodel.EstimatedCost }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td>Gov Sponsor</td>
                       <td>Gov POC Name</td>
                       <td colspan="2">Gov POC Email</td>
@@ -66,7 +66,7 @@
                       <td colspan="2">{{ travelmodel.POCEmail }}</td>
                       <td>{{ travelmodel.POCPhone }}</td>
                     </tr>
-                    <tr class="bg-warning text-white">
+                    <tr class="bg-light-blue text-white">
                       <td colspan="3">Purpose</td>
                       <td>Visit Request</td>
                       <td>Required Clearance</td>
@@ -80,12 +80,12 @@
                       <td colspan="5">
                         <table class="summarytable">
                           <thead>
-                            <tr class="bg-warning text-white">
+                            <tr class="bg-light-blue text-white">
                               <td colspan="4">Travelers</td>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr class="bg-warning text-white">
+                            <tr class="bg-light-blue text-white">
                               <th>First Name</th>
                               <th>Last Name</th>
                               <th>Email</th>
@@ -103,6 +103,7 @@
                     </tr>
                   </tbody>
                 </table>
+                <b-button variant="primary" ref="btnDownload" @click="AFRLCompleteTasks">Download Trip Report</b-button>
               </b-card>
             </div>
           </b-row>
@@ -125,7 +126,13 @@
 import moment from 'moment'
 import User from '@/models/User'
 import Travel from '@/models/Travel'
+import Todo from '@/models/Todo'
 
+let url, SPCI
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+  url = SPCI.webAbsoluteUrl
+}
 let vm = null
 
 export default {
@@ -238,6 +245,7 @@ export default {
       headerBgVariant: 'dark',
       showApprovalHelp: false,
       isAuthor: false,
+      downloadLink: '',
       travelmodel: {
         id: 0,
         Status: '',
@@ -261,6 +269,7 @@ export default {
         TravelFrom: '',
         TravelTo: '',
         Travelers: [],
+        TripReport: '',
         Sponsor: '',
         POCName: '',
         POCEmail: '',
@@ -340,6 +349,7 @@ export default {
         this.travelmodel.EndTime = moment(this.selectedtrip.EndTime).format('YYYY-MM-DD')
         this.travelmodel.TravelFrom = this.selectedtrip.TravelFrom
         this.travelmodel.TravelTo = this.selectedtrip.TravelTo
+        this.travelmodel.TripReport = this.selectedtrip.TripReportLink
         this.travelmodel.Sponsor = this.selectedtrip.Sponsor
         this.travelmodel.POCName = this.selectedtrip.POCName
         this.travelmodel.POCEmail = this.selectedtrip.POCEmail
@@ -370,6 +380,13 @@ export default {
       } else {
         this.$router.push({ name: back })
       }
+    },
+    AFRLCompleteTasks: function() {
+      window.open(url + '/_layouts/download.aspx?SourceUrl=' + this.travelmodel.TripReport, '_blank')
+      let deletepayload = {
+        url: SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Tasks')/items?$select=*&$filter=(substringof('TrvlID:" + vm.travelmodel.id + "',TaskInfo) and TaskType eq 'Review Trip Report')"
+      }
+      Todo.dispatch('completeTodosByQuery', deletepayload)
     }
   }
 }
