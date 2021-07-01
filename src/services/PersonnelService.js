@@ -63,7 +63,7 @@ export default {
     let allPersonnel = []
     async function getAllPersonnel(purl, company) {
       if (purl === '') {
-        purl = zurl + company + "'  and Active eq 1)"
+        purl = zurl + company + "'  and Active eq 1 and WPMReview ne 1)"
       }
       let response = await axios.get(purl, {
         headers: {
