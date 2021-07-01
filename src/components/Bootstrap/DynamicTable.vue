@@ -47,31 +47,48 @@
           <b-row no-gutters class="contentHeight">
             <b-overlay :show="loaded == false" :variant="overlayVariant" z-index="3000">
               <b-container fluid class="contentHeight m-0 p-0">
-                <b-row v-if="table.buttons.length > 0" no-gutters :class="table.headerClass" class="dt-button-row">
-                  <b-col cols="12" class="m-0 p-0">
+                <b-row no-gutters :class="table.headerClass" class="dt-button-row">
+                  <b-col cols="6" class="m-0 p-0" v-if="table.buttons.length > 0">
                     <span v-for="button in table.buttons" :key="button">
                       <b-button v-if="button == 'Upload'" v-b-modal.FileModal variant="light-blue"><font-awesome-icon fas icon="upload" class="icon"></font-awesome-icon>&nbsp;Upload</b-button>
                     </span>
                   </b-col>
+                  <b-col cols="6" v-if="searchEnabled" class="pr-3">
+                    <b-form @submit="onSubmit">
+                      <b-input-group v-on:submit.native.prevent class="w-50 float-right">
+                        <b-form-input v-on:submit.native.prevent size="small" v-model="search" placeholder="Search ..." @keyup.native="filtering"></b-form-input>
+                        <b-input-group-append>
+                          <b-button v-on:submit.native.prevent size="small" variant="primary" @click="searchFiltering($event)"><font-awesome-icon fas icon="search"></font-awesome-icon></b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form>
+                  </b-col>
                 </b-row>
                 <b-row no-gutters class="table-row">
-                  <b-table-simple :id="getID('DynamicTable', table.id)" :ref="getID('DynamicTable', table.id)" table-variant="light" table-class="table-full" :bordered="bordered" :hover="hover">
-                    <b-thead>
-                      <b-tr>
-                        <b-th v-for="field in table.fields" :key="field" :style="getStyle('th', field)">{{ field.label }}</b-th>
-                      </b-tr>
-                    </b-thead>
-                    <b-tbody :id="getID('DynamicTableBody', table.id)">
-                      <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
-                        <b-td v-for="field in table.fields" :key="field" class="text-black">
-                          <span v-if="field.field === 'Actions'" :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id">
-                            <component v-for="comp in item.renderItems" :key="comp.id" :is="comp.component" v-bind="comp.props"></component>
-                          </span>
-                          <span v-else :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
-                        </b-td>
-                      </b-tr>
-                    </b-tbody>
-                  </b-table-simple>
+                  <b-overlay :show="noitems" :opacity="100" :variant="overlayVariant" z-index="3000">
+                    <b-table-simple :id="getID('DynamicTable', table.id)" :ref="getID('DynamicTable', table.id)" table-variant="light" table-class="table-full" :bordered="bordered" :hover="hover">
+                      <b-thead>
+                        <b-tr>
+                          <b-th v-for="field in table.fields" :key="field" :style="getStyle('th', field)">{{ field.label }}</b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody :id="getID('DynamicTableBody', table.id)">
+                        <b-tr v-for="item in items" :key="item" :style="getStyle('tr', null)">
+                          <b-td v-for="field in table.fields" :key="field" class="text-black">
+                            <span v-if="field.field === 'Actions'" :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id">
+                              <component v-for="comp in item.renderItems" :key="comp.id" :is="comp.component" v-bind="comp.props"></component>
+                            </span>
+                            <span v-else :id="field.field + '_' + item.id" :ref="field.field + '_' + item.id"></span>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table-simple>
+                    <template #overlay>
+                      <div class="text-center">
+                        <p id="busy-label">No Items Found ...</p>
+                      </div>
+                    </template>
+                  </b-overlay>
                 </b-row>
               </b-container>
               <template #overlay>
@@ -96,6 +113,7 @@ import PeoplePicker from '../Bootstrap/PeoplePicker'
 import Todo from '@/models/Todo'
 
 let vm = null
+let timeout = null
 
 var slash = '/'
 var tp1 = String(window.location.protocol)
@@ -145,6 +163,10 @@ export default {
           width: 0 /* 0 for dynamic */
         }
       }
+    },
+    searchEnabled: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -164,6 +186,7 @@ export default {
       overlayVariant: 'light',
       modalOverlayText: 'Uploading Please Wait...',
       modalOverlayVariant: 'light',
+      noitems: false,
       items: [],
       filtereditems: [],
       shownData: [],
@@ -180,7 +203,8 @@ export default {
       fixed: false,
       isUploading: false,
       fileName: null,
-      fileBuffer: null
+      fileBuffer: null,
+      search: ''
     }
   },
   created: function() {
@@ -206,6 +230,42 @@ export default {
     console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].Email)
   },
   methods: {
+    filtering: e => {
+      e.preventDefault()
+      clearTimeout(timeout)
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      timeout = setTimeout(() => {
+        vm.items = vm.filtereditems.filter(data =>
+          JSON.stringify(data)
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+        )
+        if (vm.items.length === 0) {
+          vm.noitems = true
+        } else {
+          vm.noitems = false
+        }
+        vm.formatCells()
+      }, 25)
+    },
+    searchFiltering: e => {
+      e.preventDefault()
+      // https://stackoverflow.com/questions/44312924/filter-array-of-objects-whose-any-properties-contains-a-value
+      vm.items = vm.filtereditems.filter(data =>
+        JSON.stringify(data)
+          .toLowerCase()
+          .includes(vm.search.toLowerCase())
+      )
+      if (vm.items.length === 0) {
+        vm.noitems = true
+      } else {
+        vm.noitems = false
+      }
+      vm.formatCells()
+    },
+    onSubmit: event => {
+      event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
+    },
     init: function() {
       EventBus.$on('AddRecipient', data => {
         this.AddRecipient(data)
@@ -259,6 +319,7 @@ export default {
     getData: async function() {
       // currently support passed in query only
       vm.items = []
+      vm.filtereditems = []
       vm.loading = true
       vm.loaded = false
       let url = this.table.query
@@ -277,6 +338,7 @@ export default {
             // actions are not part of the items array
             f['id'] = j[i]['Id'] // add id regardless
             f['AuthorId'] = j[i]['Author']['Id']
+            f['CreatedDate'] = new Date(j[i]['Created']).toLocaleString()
             // f['Permissions'] = j[i]['Permissions']
             let type = fields[k].type
             switch (type) {
@@ -304,6 +366,7 @@ export default {
         vm.items.push(f)
       }
       setTimeout(function() {
+        vm.filtereditems = vm.items
         vm.loading = false
         vm.loaded = true
         vm.formatCells()
@@ -362,7 +425,8 @@ export default {
       if (field.field === 'Actions') {
         // if the current user is the author they can delete
         if (Number(item.AuthorId) === Number(this.user[0].id)) {
-          let button = Vue.component('delete_' + item.id, {
+          let id = 'delete_' + item.id
+          let button = Vue.component(id, {
             template: `
               <b-button class="actionbutton text-white bg-light-blue" @click="DeleteFile(deleteId)" v-b-tooltip.hover.v-dark title="Delete File">
                 <font-awesome-icon fas icon="trash-alt" class="icon"></font-awesome-icon>
@@ -379,13 +443,20 @@ export default {
               }
             }
           })
-          item.renderItems.push({
-            id: 'delete_' + item.id,
-            component: button,
-            props: {
-              deleteId: item.id
-            }
-          })
+
+          if (
+            !item.renderItems.filter(i => {
+              return i.id === id
+            }).length > 0
+          ) {
+            item.renderItems.push({
+              id: id,
+              component: button,
+              props: {
+                deleteId: item.id
+              }
+            })
+          }
         }
         // other ways?
         if (this.table.permissionBase === 'Field') {

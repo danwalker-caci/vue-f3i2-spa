@@ -25,6 +25,7 @@
             height: height,
             width: width
           }"
+          :searchEnabled="true"
         ></dynamic-table>
       </b-col>
     </b-row>
