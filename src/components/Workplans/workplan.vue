@@ -320,6 +320,7 @@ export default {
       loadingData: true,
       sortfield: '',
       sortdir: '',
+      currentStatus: '',
       unlockSubmitDate: false,
       file: null,
       fileName: '',
@@ -599,11 +600,12 @@ export default {
         destroy: () => {
           activeObj.destroy()
         },
-        write: () => {
+        write: args => {
           activeObj = new DropDownList({
             dataSource: vm.active,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData[args.column.field],
             placeholder: 'Select active or retired',
             floatLabelType: 'Never'
           })
@@ -621,11 +623,12 @@ export default {
         destroy: () => {
           managerObj.destroy()
         },
-        write: () => {
+        write: args => {
           managerObj = new DropDownList({
             dataSource: vm.managers,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData.ManagerId,
             placeholder: 'Select a manager',
             floatLabelType: 'Never'
           })
@@ -648,6 +651,7 @@ export default {
             dataSource: vm.status,
             fields: { value: 'value', text: 'text' },
             enabled: true,
+            value: args.rowData['Status'],
             placeholder: 'Select a status',
             floatLabelType: 'Never'
           })
@@ -656,12 +660,12 @@ export default {
             //event.preventDefault()
             if (statusObj.value === 'CACI Submitted') {
               submitDateElem.disabled = false
-              submitDateObj = new DatePicker({
-                value: args.rowData['CACISubmittedDate'] ? new Date(args.rowData['CACISubmittedDate']) : null,
-                enabled: true,
-                floatLabelType: 'Never'
-              })
-              submitDateObj.appendTo(submitDateElem)
+              submitDateObj.enabled = true
+            } else {
+              submitDateObj.enabled = false
+              submitDateObj.value = null
+              submitDateElem.value = null
+              submitDateElem.disabled = true
             }
           })
         }
@@ -724,18 +728,25 @@ export default {
         }
       },
       submitDateParams: {
-        create: function() {
+        create: args => {
           submitDateElem = document.createElement('input')
-          submitDateElem.disabled = true
+          submitDateElem.disabled = vm.currentStatus === 'CACI Submitted' ? false : true
           return submitDateElem
         },
         read: () => {
           return submitDateObj ? submitDateObj.value : null
         },
         destroy: () => {
-          submitDateObj ? submitDateObj.destroy() : null
+          submitDateObj.destroy()
         },
-        write: () => {}
+        write: args => {
+          submitDateObj = new DatePicker({
+            value: args.rowData[args.column.field] ? new Date(args.rowData[args.column.field]) : null,
+            enabled: vm.currentStatus === 'CACI Submitted' ? true : false,
+            floatLabelType: 'Never'
+          })
+          submitDateObj.appendTo(submitDateElem)
+        }
       }
     }
   },
@@ -830,16 +841,9 @@ export default {
       //if (console) console.log('ACTION BEGIN: ' + args.requestType)
       switch (args.requestType) {
         case 'beginEdit':
-          /*if (!this.isSubcontractor) {
-            this.editRow(args.rowData)
-          }*/
-          console.log(JSON.stringify(args.rowData))
-          // Save the dropdown information before editing so that it can be restored if there aren't changes to those fields.
-
-          // Get the information so that
+          this.currentStatus = args.rowData.Status
           //args.cancel = true
           break
-
         case 'add':
           args.cancel = true
           if (this.isPM) {
@@ -847,9 +851,6 @@ export default {
           }
           break
         case 'save':
-          // Create immutable objects and update related fields
-          if (console) console.log('SAVING ACTION BEGIN')
-          this.rowData = Object.assign({}, args.rowData)
           break
       }
     },
@@ -869,64 +870,80 @@ export default {
           break
         case 'beginEdit':
           this.originalRowData = Object.assign({}, args.rowData)
+          this.rowData = null
           break
         case 'save':
+          // Create immutable objects and update related fields
+          if (console) console.log('SAVING ACTION BEGIN')
+          this.rowData = Object.assign({}, args.rowData)
+          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
           this.showIncrementAlert = false
           if (activeObj.value) {
             let newActive = Object.assign({}, { value: activeObj.value })
             this.rowData.Active = newActive.value
-            args.rowData.Active = newActive.value
           } else {
-            activeElem.value = null
+            //activeElem.value = null
             this.rowData.Active = this.originalRowData.Active
-            args.rowData.Active = this.originalRowData.Active
           }
           if (managerObj.value) {
             let newManager = Object.assign({}, { value: managerObj.value, text: managerObj.text })
             this.rowData.ManagerId = Number(newManager.value)
             this.rowData.Manager = newManager.text
-            args.rowData.ManagerId = Number(newManager.value)
             args.rowData.Manager = newManager.text
+            args.rowData.ManagerId = Number(newManager.value)
           } else {
-            managerElem.value = null
+            //managerElem.value = null
             this.rowData.ManagerId = this.originalRowData.ManagerId
             this.rowData.Manager = this.originalRowData.Manager
-            args.rowData.ManagerId = this.originalRowData.ManagerId
             args.rowData.Manager = this.originalRowData.Manager
+            args.rowData.ManagerId = this.originalRowData.ManagerId
           }
           if (statusObj.value) {
             let newStatus = Object.assign({}, { value: statusObj.value })
             this.rowData.Status = newStatus.value
-            args.rowData.Status = newStatus.value
           } else {
-            statusElem.value = null
+            //statusElem.value = null
             this.rowData.Status = this.originalRowData.Status
-            args.rowData.Status = this.originalRowData.Status
           }
           if (popEndObj.value) {
             let newPopEnd = Object.assign({}, { value: popEndObj.value })
             this.rowData.POPEnd = newPopEnd.value.getUTCMonth() + 1 + '/' + newPopEnd.value.getUTCDate() + '/' + newPopEnd.value.getUTCFullYear()
+          } else if (popEndObj.value === null && this.originalRowData.POPEnd !== null) {
+            this.rowData.POPEnd = null
           } else {
             this.rowData.POPEnd = this.originalRowData.POPEnd ? this.originalRowData.POPEnd : null
           }
           if (popStartObj.value) {
             let newPopStart = Object.assign({}, { value: popStartObj.value })
             this.rowData.POPStart = newPopStart.value.getUTCMonth() + 1 + '/' + newPopStart.value.getUTCDate() + '/' + newPopStart.value.getUTCFullYear()
+          } else if (popStartObj.value === null && this.originalRowData.POPStart !== null) {
+            this.rowData.POPStart = null
           } else {
             this.rowData.POPStart = this.originalRowData.POPStart ? this.originalRowData.POPStart : null
           }
           if (dateApprovedObj.value) {
             let newDateApproved = Object.assign({}, { value: dateApprovedObj.value })
             this.rowData.DateApproved = newDateApproved.value.getUTCMonth() + 1 + '/' + newDateApproved.value.getUTCDate() + '/' + newDateApproved.value.getUTCFullYear()
+          } else if (dateApprovedObj.value === null && this.originalRowData.DateApproved !== null) {
+            this.rowData.DateApproved = null
           } else {
             this.rowData.DateApproved = this.originalRowData.DateApproved ? this.originalRowData.DateApproved : null
           }
           if (submitDateObj && submitDateObj.value) {
+            console.log('SUBMIT DATE OBJECT: ' + submitDateObj)
             let newSubmitDate = Object.assign({}, { value: submitDateObj.value })
             this.rowData.CACISubmittedDate = newSubmitDate.value.getUTCMonth() + 1 + '/' + newSubmitDate.value.getUTCDate() + '/' + newSubmitDate.value.getUTCFullYear()
+          } else if (submitDateObj.value === null && this.originalRowData.CACISubmittedDate !== null) {
+            this.rowData.CACISubmittedDate = null
           } else {
             this.rowData.CACISubmittedDate = this.originalRowData.CACISubmittedDate ? this.originalRowData.CACISubmittedDate : null
           }
+
+          if (this.rowData.Status === 'Approved') {
+            this.rowData.CACISubmittedDate = null
+            args.rowData.CACISubmittedDate = null
+          }
+
           this.rowData.Revision = args.rowData.Revision
 
           if (Number.isFinite(args.rowData.Increment)) {
@@ -937,17 +954,17 @@ export default {
           } else {
             this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           }
-          this.rowData.Title = args.rowData.Title
-          this.rowData.Comments = args.rowData.Comments
-          this.rowData.Number = args.rowData.Number
+          //this.rowData.Title = args.rowData.Title
+          //this.rowData.Comments = args.rowData.Comments
+          //this.rowData.Number = args.rowData.Number
           // Create an immutable manager object and update related fields
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
           await this.updateWorkplan(this.rowData)
             .then(workplan => {
               //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
-              vm.rowData.etag = Number(workplan.headers.etag)
+              vm.rowData.etag = Number(workplan.headers.etag.replace(/"/g, ''))
               vm.$refs['WorkplanGrid'].setRowData(vm.rowData.Id, vm.rowData)
-              vm.$refs['WorkplanGrid'].refresh()
+              //vm.$refs['WorkplanGrid'].refresh()
             })
             .then(() => {
               vm.locked = false
@@ -964,7 +981,14 @@ export default {
               })
               console.log('ERROR: ' + e)
             })
-
+          vm.currentStatus = ''
+          vm.submitDateParams.destroy()
+          vm.popStartParams.destroy()
+          vm.popEndParams.destroy()
+          vm.dateApprovedParams.destroy()
+          vm.activeParams.destroy()
+          vm.managerParams.destroy()
+          vm.statusParams.destroy()
           break
       }
     },
@@ -992,10 +1016,6 @@ export default {
     },
     dataBound: function() {
       this.$refs.WorkplanGrid.autoFitColumns()
-    },
-    EditManagerSelected: function() {
-      this.manager = document.getElementById('ddManagerEdit').ej2_instances[0].text
-      this.rowData.Manager = this.manager
     },
     NewManagerSelected: function() {
       this.manager = document.getElementById('ddManagerNew').ej2_instances[0].text
