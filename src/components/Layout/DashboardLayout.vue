@@ -39,7 +39,7 @@
               <sidebar-item v-if="!isSubcontractor && !isAFRL" :link="{ name: 'CACI Training', library: 'fas', icon: 'folder', path: '/training/CACI' }"></sidebar-item>
             </sidebar-item>
             <sidebar-item v-if="!isSubcontractor" :link="{ name: 'Financial', library: 'fas', icon: 'money-check-alt' }">
-              <sidebar-item :link="{ name: 'Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
+              <sidebar-item :link="{ name: 'F3I-2 Contract Dashboard', library: 'fas', icon: 'file-invoice', path: '/financial/home' }"></sidebar-item>
               <sidebar-item :link="{ name: 'Documents', library: 'fas', icon: 'book', path: '/financial/library' }"></sidebar-item>
               <sidebar-item v-if="isDeveloper" :link="{ name: 'Manning Report', library: 'fas', icon: 'users', path: '/financial/manning' }"></sidebar-item>
             </sidebar-item>
