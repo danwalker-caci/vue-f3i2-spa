@@ -227,6 +227,9 @@ export default {
         }
       }
     }
+    setInterval(function() {
+      vm.formatCells()
+    }, 500)
     console.log('User Info: ' + this.user[0].Company + ', ' + this.user[0].Email)
   },
   methods: {
@@ -244,8 +247,8 @@ export default {
           vm.noitems = true
         } else {
           vm.noitems = false
+          vm.formatCells()
         }
-        vm.formatCells()
       }, 25)
     },
     searchFiltering: e => {
@@ -260,8 +263,8 @@ export default {
         vm.noitems = true
       } else {
         vm.noitems = false
+        vm.formatCells()
       }
-      vm.formatCells()
     },
     onSubmit: event => {
       event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.

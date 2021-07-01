@@ -876,7 +876,7 @@ export default {
           // Create immutable objects and update related fields
           if (console) console.log('SAVING ACTION BEGIN')
           this.rowData = Object.assign({}, args.rowData)
-          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(this.rowData))
+          if (console) console.log('ROW TO BE UPDATED: ' + JSON.stringify(args.rowData))
           this.showIncrementAlert = false
           if (activeObj.value) {
             let newActive = Object.assign({}, { value: activeObj.value })
@@ -950,17 +950,6 @@ export default {
             this.showIncrementAlert = true
             this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
           }
-          /*if (Number.isFinite(args.rowData.Increment)) {
-            this.rowData.Increment = args.rowData.Increment
-          } else if (typeof args.rowData.Increment === 'string' || args.rowData.Increment instanceof String) {
-            this.showIncrementAlert = true
-            this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
-          } else {
-            this.rowData.Increment = this.originalRowData.Increment ? this.originalRowData.Increment : null
-          }*/
-          this.rowData.Title = args.rowData.Title
-          this.rowData.Comments = args.rowData.Comments
-          this.rowData.Number = args.rowData.Number
           // Create an immutable manager object and update related fields
           if (console) console.log('SAVING ACTION COMPLETE: ' + JSON.stringify(this.rowData))
           await this.updateWorkplan(this.rowData)
@@ -968,9 +957,12 @@ export default {
               //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
               vm.rowData.etag = Number(workplan.headers.etag.replace(/"/g, ''))
               vm.$refs['WorkplanGrid'].setRowData(vm.rowData.Id, vm.rowData)
-              //vm.$refs['WorkplanGrid'].refresh()
+              vm.$refs['WorkplanGrid'].refresh()
             })
             .then(() => {
+              // clear temporary information
+              vm.originalRowData = null
+              vm.rowData = null
               vm.locked = false
             })
             .catch(e => {
