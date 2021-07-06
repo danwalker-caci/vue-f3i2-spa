@@ -1668,7 +1668,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = vm.travelmodel.Subject
+        payload.title = '(F3I-2 Portal) Travel Request Denied for Admin Reasons'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -1735,7 +1735,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = 'Travel Request PreApproved'
+        payload.title = '(F3I-2 Portal) Travel Request PreApproved'
         payload.body = ''
         payload.body += '<p>Per the signed workplan, this travel is preapproved and requires no additional action.</p>'
         payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
@@ -1800,7 +1800,7 @@ export default {
           let payload = {}
           payload.id = vm.travelmodel.id
           payload.email = emailto
-          payload.title = vm.travelmodel.Subject
+          payload.title = '(F3I-2 Portal) Travel Approval Requested'
           payload.workplan = vm.travelmodel.WorkPlanNumber
           payload.company = vm.travelmodel.Company
           payload.travelers = vm.travelmodel.Travelers
@@ -1835,7 +1835,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = 'Please Correct Travel Request'
+        payload.title = '(F3I-2 Portal) Please Correct Travel Request'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -1916,7 +1916,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = 'Travel Request Approved'
+        payload.title = '(F3I-2 Portal) Travel Request Approved'
         payload.body = ''
         payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
         payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
@@ -1985,7 +1985,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = 'Travel Request Denied'
+        payload.title = '(F3I-2 Portal) Travel Request Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
@@ -2038,7 +2038,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = 'Travel Request Rejected By WPM'
+        payload.title = '(F3I-2 Portal) Travel Request Rejected By WPM'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2097,7 +2097,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = approveremails
-        payload.title = vm.travelmodel.Subject
+        payload.title = '(F3I-2 Portal) Travel Approval Requested'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
@@ -2150,7 +2150,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.InternalData.ManagerEmail]
-        payload.title = vm.travelmodel.Subject
+        payload.title = '(F3I-2 Portal) Travel Approval Requested'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2181,7 +2181,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.InternalData.ManagerEmail]
-        payload.title = vm.travelmodel.Subject
+        payload.title = '(F3I-2 Portal) Travel Authorized to Proceed'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2228,7 +2228,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = 'OCONUS Travel Authorization To Proceed Denied'
+        payload.title = '(F3I-2 Portal) OCONUS Travel Authorization To Proceed Denied'
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
