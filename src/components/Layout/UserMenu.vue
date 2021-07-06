@@ -130,7 +130,7 @@ export default {
             </div>
             <div v-else>
               <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
-                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+                <font-awesome-icon far icon="external-link-alt" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
             data: function() {
