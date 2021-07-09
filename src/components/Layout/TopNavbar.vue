@@ -119,7 +119,6 @@
 <script>
 import User from '@/models/User'
 import Personnel from '@/models/Personnel'
-import { isNullOrUndefined } from 'util'
 
 let vm = null
 
@@ -184,7 +183,7 @@ export default {
           name: this.camelize(contacts[i].FirstName) + ' ' + this.camelize(contacts[i].LastName),
           position: contacts[i].Position,
           email: 'mailto:' + contacts[i].Email,
-          phone: !isNullOrUndefined(contacts[i].Phone) ? contacts[i].Phone : 'Empty'
+          phone: contacts[i].Phone != null ? contacts[i].Phone : 'Empty'
         })
       }
       this.formattedContacts = c
