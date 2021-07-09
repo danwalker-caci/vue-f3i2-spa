@@ -1,0 +1,5 @@
+NODE_ENV=production
+BASE_URL=/sites/f3i2/test/SiteAssets/html/
+VUE_APP_TITLE=F3I2 [TEST]
+ENV_BASE=Test.aspx
+APP_BACKGROUND=transparent;

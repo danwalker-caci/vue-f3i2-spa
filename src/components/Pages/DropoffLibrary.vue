@@ -36,6 +36,15 @@
 import User from '@/models/User'
 import DynamicTable from '../Bootstrap/DynamicTable'
 
+/* var slash = '/'
+var tp1 = String(window.location.protocol)
+var tp2 = String(window.location.host) */
+
+let SPCI = null
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
+
 export default {
   components: { DynamicTable },
   name: 'droppoff-library',
@@ -104,7 +113,8 @@ export default {
       this.recipientOptions.push({ kind: 'Company', title: this.currentUser[0].Company, id: 'Company', component: 'PeoplePicker', user: this.currentUser }, { kind: 'Group', title: 'Workplan Managers', group: 'Workplan Managers', component: 'PeoplePicker', id: 'WorkplanManagers', user: this.currentUser })
     }
     let url =
-      "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('DropoffLibrary')/items?$select=*,Author/Title,Author/EMail,Author/Id,File/Name,File/ServerRelativeUrl,Recipients/Id,Recipients/Title,Recipients/EMail&$expand=Author,File,Recipients&$filter=(Recipients/Id eq " +
+      SPCI.webServerRelativeUrl +
+      "/_api/web/lists/getByTitle('DropoffLibrary')/items?$select=*,Author/Title,Author/EMail,Author/Id,File/Name,File/ServerRelativeUrl,Recipients/Id,Recipients/Title,Recipients/EMail&$expand=Author,File,Recipients&$filter=(Recipients/Id eq " +
       this.currentUser[0].id +
       ') or (Author/Id eq ' +
       this.currentUser[0].id +
