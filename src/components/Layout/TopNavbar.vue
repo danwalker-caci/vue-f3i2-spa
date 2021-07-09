@@ -48,16 +48,6 @@
             <template slot="button-content">
               <font-awesome-icon fas icon="cog" class="cog"></font-awesome-icon>
             </template>
-            <!-- <b-dropdown-item
-              v-if="isDeveloper"
-              href="#"
-              onclick="javascript:if (LaunchCreateHandler('PublishingPage')) { SP.SOD.executeFunc('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', function() { var dlgOptions = { url:'\u002fsites\u002ff3i2\u002f_layouts\u002f15\u002fCreatePublishingPageDialog.aspx', autoSize: true, autoSizeStartWidth: 550 };  SP.UI.ModalDialog.showModalDialog(dlgOptions); }); };"
-            >
-              <div class="row">
-                <font-awesome-icon far icon="file-alt" class="icon"></font-awesome-icon>
-                <span>Add a page</span>
-              </div>
-            </b-dropdown-item> -->
             <b-dropdown-item v-if="isDeveloper" href="#" @click="gitRdone('CreatePublishingPageDialog.aspx')">
               <div class="row">
                 <font-awesome-icon far icon="file-alt" class="icon"></font-awesome-icon>
@@ -121,10 +111,6 @@ import User from '@/models/User'
 import Personnel from '@/models/Personnel'
 
 let vm = null
-
-/* var slash = '/'
-var tp1 = String(window.location.protocol)
-var tp2 = String(window.location.host) */
 
 let SPCI = null
 if (window._spPageContextInfo) {
@@ -192,7 +178,6 @@ export default {
       this.Show = true
     },
     onModalHide: function() {
-      // Hide modal.
       this.Show = false
     },
     capitalizeFirstLetter(string) {
