@@ -1,8 +1,3 @@
-let SPCI = null
-
-if (window._spPageContextInfo) {
-  SPCI = window._spPageContextInfo
-}
 function loadscript(url, callback) {
   var script = document.createElement('script')
   script.type = 'text/javascript'
@@ -24,14 +19,15 @@ function loadscript(url, callback) {
   document.documentElement.insertBefore(script, document.documentElement.firstChild)
 }
 
+// below code is loaded from main production site as there is no way to track the url until after the page is attempted to go to.
 loadscript('/sites/f3i2/SiteAssets/html/static/js/axios.min.js', function() {
   console.log('PORTAL SECURITY LOADED')
 
-  /* let SPCI = null
+  let SPCI = null
 
   if (window._spPageContextInfo) {
     SPCI = window._spPageContextInfo
-  } */
+  }
 
   let test = new String(window.location)
 
