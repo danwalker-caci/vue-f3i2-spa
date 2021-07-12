@@ -1,3 +1,8 @@
+let SPCI = null
+
+if (window._spPageContextInfo) {
+  SPCI = window._spPageContextInfo
+}
 function loadscript(url, callback) {
   var script = document.createElement('script')
   script.type = 'text/javascript'
@@ -22,11 +27,11 @@ function loadscript(url, callback) {
 loadscript('/sites/f3i2/SiteAssets/html/static/js/axios.min.js', function() {
   console.log('PORTAL SECURITY LOADED')
 
-  let SPCI = null
+  /* let SPCI = null
 
   if (window._spPageContextInfo) {
     SPCI = window._spPageContextInfo
-  }
+  } */
 
   let test = new String(window.location)
 
@@ -35,8 +40,6 @@ loadscript('/sites/f3i2/SiteAssets/html/static/js/axios.min.js', function() {
     if (document.getElementById('ctl00_PlaceHolderMain_ctl04')) {
       document.getElementById('ctl00_PlaceHolderMain_ctl04').style.display = 'none'
     }
-    /* var trs = document.getElementsByTagName('tr')
-    console.log(trs.length) */
   }
 
   let valid = test.indexOf('Home.aspx') >= 1 || test.indexOf('Test.aspx') >= 1 || test.indexOf('SubcontractorDocuments') >= 1 || test.indexOf('Upload.aspx') >= 1 || test.indexOf('DevA.aspx') >= 1 || test.indexOf('DevB.aspx') >= 1 || test.indexOf('/Subcontractor%20Training/Forms/AllItems.aspx?isDlg=1') >= 1
@@ -94,7 +97,7 @@ loadscript('/sites/f3i2/SiteAssets/html/static/js/axios.min.js', function() {
             }
           }
           if (isSubcontractor === true && isDeveloper === false) {
-            window.location = window.location.protocol + '//' + window.location.host + '/sites/f3i2/Pages/Home.aspx'
+            window.location = baseUrl + '/Pages/Home.aspx'
           }
           if (document.getElementById('WPQ2_ListTitleViewSelectorMenu_Container_overflow')) {
             document.getElementById('WPQ2_ListTitleViewSelectorMenu_Container_overflow').style.display = 'none'
