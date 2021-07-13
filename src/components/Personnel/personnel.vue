@@ -78,10 +78,13 @@
                 <td><input class="e-input" type="text" v-model="rowData.Middle" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Middle }}</p></td>
                 <td><input class="e-input" type="text" v-model="rowData.Cadency" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Cadency }}</p></td>
                 <td><input class="e-input" type="text" v-model="rowData.Location" /><p v-if="showOldData" class="text-info">Original Value: {{ oldData.Location }}</p></td>
-                <td>
+                <td v-if="!isSubcontractor">
                   <ejs-dropdownlist v-model="rowData.Company" :dataSource="companies"></ejs-dropdownlist>
                   <p v-if="showOldData" class="text-info">Original Value: {{ oldData.Company }}</p>
                   <!-- <input class="e-input" type="text" v-model="rowData.Company" /> -->
+                </td>
+                <td v-else>
+                  <input class="e-input" type="text" v-model="rowData.Company" disabled="disabled"/>
                 </td>
               </tr>
               <tr class="bg-info text-white">
@@ -160,8 +163,11 @@
                 <td>
                   <input class="e-input" type="text" v-model="newData.Middle" />
                 </td>
-                <td>
+                <td v-if="!isSubcontractor">
                   <ejs-dropdownlist v-model="newData.Company" :dataSource="companies"></ejs-dropdownlist>
+                </td>
+                <td v-else>
+                  <input class="e-input" type="text" disabled="disabled" v-model="newData.Company" />
                 </td>
               </tr>
               <tr class="bg-light-blue text-white">
@@ -602,6 +608,7 @@ export default {
           if (vm.isSubcontractor && vm.company) {
             let payload = {}
             payload.company = vm.company
+            vm.newData.Company = vm.company
             Personnel.dispatch('getPersonnelByCompany', payload)
               .then(function() {
                 vm.$options.interval = setInterval(vm.waitForPeople, 1000)
