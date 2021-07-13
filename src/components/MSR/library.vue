@@ -23,7 +23,7 @@ import Workplan from '@/models/WorkPlan'
 /*const date = new Date()
 const currentMonth = date.toLocaleString('default', { month: 'short' }).toLocaleUpperCase()
 const currentYear = date.toLocaleString('default', { year: 'numeric' })*/
-const originalUrl = '/sites/f3i2/MSRLibrary/Forms/AllItems.aspx?isDlg=1'
+const originalUrl = process.env.VUE_APP_BASE_URL + '/MSRLibrary/Forms/AllItems.aspx?isDlg=1'
 let vm = null
 export default {
   name: 'msr-library',

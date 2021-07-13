@@ -272,7 +272,7 @@ export default {
       console.log('User Profile Results: ' + response)
     },
     async AddUsersToGroups() {
-      let url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Companies')/items?$select=*"
+      let url = baseurl + "/_api/web/lists/getbytitle('Companies')/items?$select=*"
       let response = await axios.get(url, {
         headers: {
           accept: 'application/json;odata=verbose'
@@ -282,14 +282,14 @@ export default {
       let j = response.data.d.results
       for (let i = 0; i < j.length; i++) {
         let company = j[i]['Title']
-        url = "https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups/getbyname('" + company + "')/id"
+        url = baseurl + "/_api/web/sitegroups/getbyname('" + company + "')/id"
         let response = await axios.get(url, {
           headers: {
             accept: 'application/json;odata=verbose'
           }
         })
         let groupid = response.data.d.Id
-        url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=(Company eq '" + company + "')"
+        url = baseurl + "/_api/web/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=(Company eq '" + company + "')"
         response = await axios.get(url, {
           headers: {
             accept: 'application/json;odata=verbose'
@@ -301,7 +301,7 @@ export default {
           let userTitle = String(k[l]['UserAccount']['Title'])
           if (userTitle != 'undefined') {
             // console.log('COMPANY: ' + company + ', User: ' + userId + ', ' + userTitle + ', ' + userTitle.length)
-            url = 'https://infoplus.caci.com/sites/f3i2/_api/Web/GetUserById(' + userId + ')'
+            url = baseurl + "/_api/Web/GetUserById('" + userId + "')"
             let response = await axios.get(url, {
               headers: {
                 accept: 'application/json;odata=verbose'
@@ -317,7 +317,7 @@ export default {
               headers: { Accept: 'application/json; odata=verbose' }
             })
             let digest = response.data.d.GetContextWebInformation.FormDigestValue
-            url = 'https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups(' + groupid + ')/users'
+            url = baseurl + "/_api/web/sitegroups('" + groupid + "')/users"
             let headers = {
               'Content-Type': 'application/json;odata=verbose',
               Accept: 'application/json;odata=verbose',
@@ -342,7 +342,7 @@ export default {
       }
     },
     async UpdatePermissions() {
-      let url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getbytitle('Workplans')/items?$select=*"
+      let url = baseurl + "/_api/web/lists/getbytitle('Workplans')/items?$select=*"
       let response = await axios.get(url, {
         headers: {
           accept: 'application/json;odata=verbose'
@@ -357,7 +357,7 @@ export default {
           let k = subs.split(', ')
           for (let l = 0; l < k.length; l++) {
             // get company group id
-            let url = "https://infoplus.caci.com/sites/f3i2/_api/web/sitegroups/getbyname('" + k[l] + "')/id"
+            let url = baseurl + "/_api/web/sitegroups/getbyname('" + k[l] + "')/id"
             let response = await axios.get(url, {
               headers: {
                 accept: 'application/json;odata=verbose'
@@ -371,7 +371,7 @@ export default {
               headers: { Accept: 'application/json; odata=verbose' }
             })
             let digest = response.data.d.GetContextWebInformation.FormDigestValue
-            url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('WorkPlans')/items("
+            url = baseurl + "/_api/web/lists/getByTitle('WorkPlans')/items("
             url += id
             url += ')/breakroleinheritance(copyRoleAssignments=true, clearSubscopes=true)'
             response = await axios.request({
@@ -384,7 +384,7 @@ export default {
               }
             })
             // console.log('ID: ' + groupid + ', SUB: ' + k[l] + ', RESPONSE: ' + response)
-            url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('WorkPlans')/items("
+            url = baseurl + "/_api/web/lists/getByTitle('WorkPlans')/items("
             url += id
             url += ')/roleassignments/addroleassignment(principalid=' + groupid + ',roleDefId=1073741826)'
             response = await axios.request({

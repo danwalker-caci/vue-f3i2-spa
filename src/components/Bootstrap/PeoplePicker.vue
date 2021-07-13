@@ -54,7 +54,7 @@
       <b-form-group :label="title">
         <b-input-group>
           <template #prepend>
-            <b-button variant="light-blue" @click="showPicker(id, kind)" :id="'btn_' + id">Add Recipients</b-button>
+            <b-button variant="light-blue" @click="showPicker(id)" :id="'btn_' + id">Add Recipients</b-button>
           </template>
           <b-form-checkbox-group stacked :name="'cbg_' + id" class="p-2" v-model="selected">
             <b-form-checkbox v-for="item in items" :key="item.id" @input.native="toggleUser(item, $event)" :value="item.value">{{ item.name }}</b-form-checkbox>
@@ -66,21 +66,10 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-import Vue from 'vue'
 import { EventBus } from '../../main'
 import axios from 'axios'
 
 let vm = null
-
-var slash = '/'
-var tp1 = String(window.location.protocol)
-var tp2 = String(window.location.host)
-
-let SPCI = null
-if (window._spPageContextInfo) {
-  SPCI = window._spPageContextInfo
-}
 
 export default {
   name: 'PeoplePicker',
@@ -109,14 +98,13 @@ export default {
     vm = this
   },
   methods: {
-    getItems: async function(ctx) {
+    getItems: async function() {
       console.log('KIND: ' + this.kind)
-      let that = this
       let url = null
       if (this.kind === 'Company') {
         vm.searchPlaceholder = 'Type to search by name.'
         let company = this.user[0].Company
-        url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company eq '"
+        url = process.env.VUE_APP_BASE_URL + "/_api/lists/getbytitle('Personnel')/items?$select=UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company eq '"
         url += company
         url += "' and UserAccount/Id gt 0"
         /* let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } }) */
@@ -138,7 +126,7 @@ export default {
       }
       if (this.kind === 'Group') {
         vm.searchPlaceholder = 'Type to search by name.'
-        url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/Web/SiteGroups/GetByName('" + this.group + "')/users"
+        url = process.env.VUE_APP_BASE_URL + "/_api/Web/SiteGroups/GetByName('" + this.group + "')/users"
         console.log('GROUP URL: ' + url)
         let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
         const response = await promise
@@ -163,7 +151,7 @@ export default {
           sortable: true
         })
         vm.searchPlaceholder = 'Type to search by name or company.'
-        url = tp1 + slash + slash + tp2 + "/sites/f3i2/_api/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company gt '' and UserAccount/Id gt 0"
+        url = process.env.VUE_APP_BASE_URL + "/_api/lists/getbytitle('Personnel')/items?$select=Company,UserAccount/EMail,UserAccount/Title,UserAccount/Id&$expand=UserAccount&$filter=Company gt '' and UserAccount/Id gt 0"
         // let promise = axios.get(url, { headers: { accept: 'application/json;odata=verbose' } })
         let promise = vm.getAllItems(url)
         const j = await promise
@@ -203,7 +191,7 @@ export default {
       }
       return getAllItems(iurl)
     },
-    showPicker: function(id, kind) {
+    showPicker: function(id) {
       let m = 'modal_' + id
       vm.$bvModal.show(m)
     },
@@ -257,7 +245,6 @@ export default {
         if (console) console.log('REMOVING USER: ' + item.id + ', SELECTED LENGTH: ' + this.selected.length)
         if (this.selected.length > 0) {
           // loop through the array and see if the user is in there
-          let index = 0
           for (let i = 0; i < this.selected.length; i++) {
             if (Number(this.selected[i]) === Number(item.id)) {
               this.items.splice(i, 1)

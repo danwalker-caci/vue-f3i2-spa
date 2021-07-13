@@ -5,7 +5,6 @@ module.exports = {
 
   assetsDir: 'static',
   publicPath: process.env.BASE_URL,
-  //publicPath: '/sites/f3i2/SiteAssets/dev/',
 
   configureWebpack: {
     optimization: {

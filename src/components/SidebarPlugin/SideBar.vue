@@ -2,7 +2,7 @@
   <div class="sidebar" :style="sidebarStyle" :data-color="backgroundColor" :data-image="backgroundImage" :data-active-color="activeColor">
     <div class="sidebar-wrapper" ref="sidebarScrollArea">
       <div class="logo">
-        <a class="logo-mini" href="/sites/f3i2/Pages/Home.aspx">
+        <a class="logo-mini" :href="href">
           <div class="logo-img">
             <img :src="logo" alt="logo" />
           </div>
@@ -72,8 +72,13 @@ export default {
     sidebarStyle() {
       return {
         // backgroundImage: `url(${this.backgroundImage})`
-        backgroundColor: azure
+        backgroundColor: 'azure'
       }
+    }
+  },
+  data: function() {
+    return {
+      href: process.env.VUE_APP_BASE_URL + '/Pages/Home.aspx'
     }
   },
   methods: {

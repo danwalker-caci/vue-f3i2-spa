@@ -3,7 +3,7 @@
   <div class="sidebar" :style="sidebarStyle" :data-color="backgroundColor" :data-image="backgroundImage" :data-active-color="activeColor">
     <div class="sidebar-wrapper">
       <div class="logo">
-        <a class="logo-mini" href="/sites/F3I2/Pages/Home.aspx">
+        <a class="logo-mini" :href="href">
           <div class="logo-img">
             <font-awesome-icon fas icon="fighter-jet" class="icon"></font-awesome-icon>
           </div>
@@ -74,7 +74,7 @@ export default {
     },
     backgroundImage: {
       type: String,
-      default: '/sites/F3I2/SiteAssets/html/static/img/background-1.JPG'
+      default: process.env.VUE_APP_BASE_URL + '/SiteAssets/html/static/img/background-1.JPG'
     },
     activeColor: {
       type: String,
@@ -86,7 +86,7 @@ export default {
     },
     logo: {
       type: String,
-      default: '/sites/F3I2/SiteAssets/html/static/img/vue-logo.png'
+      default: process.env.VUE_APP_BASE_URL + '/SiteAssets/html/static/img/vue-logo.png'
     },
     sidebarLinks: {
       type: Array,
@@ -99,7 +99,8 @@ export default {
   },
   data: function() {
     return {
-      legendHeightExpanded: false // TODO: Save this state to localStorage and read from there.
+      legendHeightExpanded: false,
+      href: process.env.VUE_APP_BASE_URL + '/Pages/Home.aspx'
     }
   },
   provide() {

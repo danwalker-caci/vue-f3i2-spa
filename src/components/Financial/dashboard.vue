@@ -14,7 +14,7 @@ export default {
   data: function() {
     return {
       iframe: {
-        src: '/sites/F3I2/Pages/FinancialDashboard.aspx?isDlg=1',
+        src: process.env.VUE_APP_BASE_URL + '/Pages/FinancialDashboard.aspx?isDlg=1',
         loaded: false
       }
     }

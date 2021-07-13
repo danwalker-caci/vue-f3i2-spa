@@ -19,9 +19,9 @@ export default {
         src: '',
         loaded: false
       },
-      afrlUrl: '/sites/f3i2/AFRL%20Training/Forms/AllItems.aspx?isDlg=1',
-      subUrl: '/sites/f3i2/Subcontractor%20Training/Forms/AllItems.aspx?isDlg=1',
-      caciUrl: '/sites/f3i2/CACI%20Training/Forms/AllItems.aspx?isDlg=1'
+      afrlUrl: process.env.VUE_APP_BASE_URL + '/AFRL%20Training/Forms/AllItems.aspx?isDlg=1',
+      subUrl: process.env.VUE_APP_BASE_URL + '/Subcontractor%20Training/Forms/AllItems.aspx?isDlg=1',
+      caciUrl: process.env.VUE_APP_BASE_URL + '/CACI%20Training/Forms/AllItems.aspx?isDlg=1'
     }
   },
   mounted: function() {
