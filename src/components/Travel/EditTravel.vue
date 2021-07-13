@@ -998,7 +998,7 @@ export default {
         this.pdata = this.personnel
       }
     },
-    waitForTrip: function() {
+    waitForTrip: async function() {
       // Waits for the travel item to load
       if (this.triploaded) {
         clearInterval(this.$options.interval)
@@ -1101,13 +1101,36 @@ export default {
         let turl = url
         turl += this.travelmodel.WorkPlanNumber
         turl += "')"
-        return axios
+        let response = await axios
           .get(turl, {
             headers: {
               accept: 'application/json;odata=verbose'
             }
           })
-          .then(function(response) {
+          .catch(function(error) {
+            console.log('Error Getting Index Numbers: ' + error)
+          })
+        let iN = response.data.d.results,
+          usedIndexNumbers = [],
+          unusedIndexNumbers = 0
+        console.log('TOTAL RECORDS: ' + iN.length)
+        iN.forEach(index => {
+          if (index.IndexNumber) {
+            usedIndexNumbers.push(index.IndexNumber)
+          }
+        })
+        // calculate what the available index numbers should be and assing it to the IndexNumbers array
+        if (usedIndexNumbers.length !== iN.length) {
+          unusedIndexNumbers = iN.length - usedIndexNumbers.length
+          let start = iN.length - unusedIndexNumbers
+          for (var n = start; n < iN.length; n++) {
+            vm.IndexNumbers.push({
+              text: vm.travelmodel.WorkPlanNumber + '-' + n,
+              value: vm.travelmodel.WorkPlanNumber + '-' + n
+            })
+          }
+        }
+        /*.then(function(response) {
             let results = response.data.d.results
             if (results.length > 0) {
               vm.TravelCount = results.length
@@ -1123,10 +1146,7 @@ export default {
             } else {
               // TODO: There are no travel items for this work plan so do we need to let the user know and auto select the automatic option
             }
-          })
-          .catch(function(error) {
-            console.log('Error Getting Index Numbers: ' + error)
-          })
+          })*/
       }
     },
     getRef(text, idx) {
@@ -1460,11 +1480,30 @@ export default {
         this.fieldsFirstTab = this.fieldsFirstTab.filter(e => e != 'OCONUSLocation')
       }
     },
-    AutoIndex() {
+    async AutoIndex() {
       // get count of unique index numbers based on workplan # and increment by 1
       // 3/9/2021 - removed the increment by one b/c it uses the number of Travel items related to the WP# of which the current item is one of them.
-      let c = vm.TravelCount
-      this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
+      // Loop through each Index number and check if it has been assigned. Assign the first one detected that has not been assigned.
+      //let c = vm.TravelCount
+      //let indexUrl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$filter(WorkPlanNumber eq '" + vm.travelmodel.WorkPlanNumber + "')&$orderby=Id desc"
+      let indexUrl = url
+      indexUrl += vm.travelmodel.WorkPlanNumber + "')"
+      let response = await axios.get(indexUrl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let indexNumbers = response.data.d.results,
+        usedIndexNumbers = []
+      indexNumbers.forEach(index => {
+        if (index.IndexNumber) {
+          usedIndexNumbers.push(index.IndexNumber)
+        }
+      })
+      if (usedIndexNumbers.length !== indexNumbers.length) {
+        this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + (usedIndexNumbers.length + 1)
+      }
+      //this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
     },
     SelectIndex() {
       // show side bar selector
@@ -1668,7 +1707,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = '(F3I-2 Portal) Travel Request Denied for Admin Reasons'
+        payload.title = '(F3I-2 Portal) Travel Request Denied for Admin Reasons ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -1735,7 +1774,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = '(F3I-2 Portal) Travel Request PreApproved'
+        payload.title = '(F3I-2 Portal) Travel Request PreApproved ' + vm.travelmodel.IndexNumber
         payload.body = ''
         payload.body += '<p>Per the signed workplan, this travel is preapproved and requires no additional action.</p>'
         payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
@@ -1800,7 +1839,7 @@ export default {
           let payload = {}
           payload.id = vm.travelmodel.id
           payload.email = emailto
-          payload.title = '(F3I-2 Portal) Travel Approval Requested'
+          payload.title = '(F3I-2 Portal) Travel Approval Requested' + vm.travelmodel.IndexNumber
           payload.workplan = vm.travelmodel.WorkPlanNumber
           payload.company = vm.travelmodel.Company
           payload.travelers = vm.travelmodel.Travelers
@@ -1835,7 +1874,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = '(F3I-2 Portal) Please Correct Travel Request'
+        payload.title = '(F3I-2 Portal) Please Correct Travel Request ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -1916,7 +1955,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = '(F3I-2 Portal) Travel Request Approved'
+        payload.title = '(F3I-2 Portal) Travel Request Approved ' + vm.travelmodel.IndexNumber
         payload.body = ''
         payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
         payload.body += '<p>IndexNumber: ' + vm.travelmodel.IndexNumber
@@ -1985,7 +2024,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = '(F3I-2 Portal) Travel Request Denied'
+        payload.title = '(F3I-2 Portal) Travel Request Denied ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
@@ -2038,7 +2077,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.CreatedByEmail]
-        payload.title = '(F3I-2 Portal) Travel Request Rejected By WPM'
+        payload.title = '(F3I-2 Portal) Travel Request Rejected By WPM ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2097,7 +2136,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = approveremails
-        payload.title = '(F3I-2 Portal) Travel Approval Requested'
+        payload.title = '(F3I-2 Portal) Travel Approval Requested ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
@@ -2150,7 +2189,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.InternalData.ManagerEmail]
-        payload.title = '(F3I-2 Portal) Travel Approval Requested'
+        payload.title = '(F3I-2 Portal) Travel Approval Requested ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2181,7 +2220,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = [vm.travelmodel.InternalData.ManagerEmail]
-        payload.title = '(F3I-2 Portal) Travel Authorized to Proceed'
+        payload.title = '(F3I-2 Portal) Travel Authorized to Proceed ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.company = vm.travelmodel.Company
         payload.travelers = vm.travelmodel.Travelers
@@ -2228,7 +2267,7 @@ export default {
         let payload = {}
         payload.id = vm.travelmodel.id
         payload.email = emailto
-        payload.title = '(F3I-2 Portal) OCONUS Travel Authorization To Proceed Denied'
+        payload.title = '(F3I-2 Portal) OCONUS Travel Authorization To Proceed Denied ' + vm.travelmodel.IndexNumber
         payload.workplan = vm.travelmodel.WorkPlanNumber
         payload.indexnumber = vm.travelmodel.IndexNumber
         payload.company = vm.travelmodel.Company
@@ -2338,7 +2377,7 @@ export default {
       let payload = {}
       payload.id = vm.travelmodel.id
       payload.email = emailto
-      payload.title = '(F3I-2 Portal) Travel Request'
+      payload.title = '(F3I-2 Portal) Travel Request ' + vm.travelmodel.IndexNumber
       payload.body = ''
       payload.body += '<p>' + message + '</p>'
       payload.body += '<p>WorkPlanNumber: ' + vm.travelmodel.WorkPlanNumber
