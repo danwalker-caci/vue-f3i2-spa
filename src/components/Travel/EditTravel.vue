@@ -1491,8 +1491,8 @@ export default {
       // calculate what the available index numbers should be and assing it to the IndexNumbers array
       if (usedIndexNumbers.length !== iN.length) {
         unusedIndexNumbers = iN.length - usedIndexNumbers.length
-        let start = iN.length - unusedIndexNumbers
-        for (var n = start; n < iN.length; n++) {
+        let start = iN.length - unusedIndexNumbers + 1
+        for (var n = start; n <= iN.length; n++) {
           vm.IndexSelectNumbers.push({
             text: vm.travelmodel.WorkPlanNumber + '-' + n,
             value: vm.travelmodel.WorkPlanNumber + '-' + n
