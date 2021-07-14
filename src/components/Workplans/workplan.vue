@@ -500,7 +500,7 @@ export default {
         { text: 'Retired', value: 'Retired' }
       ],
       toolbar: ['Search'],
-      toolbarPM: ['Add', 'Update', 'Cancel', 'Print', 'Search', 'ExcelExport'],
+      toolbarPM: ['Add', 'Update', 'Cancel', 'Undo', 'Print', 'Search', 'ExcelExport'],
       rowData: {},
       originalRowData: {},
       newData: {
@@ -803,6 +803,7 @@ export default {
       event.preventDefault() // prevent form submit! VERY IMPORTANT because search function adds input box which will perform a submit.
     },
     toolbarClick: function(args) {
+      console.log('TOOLBAR CLICK ITEM ID: ' + JSON.stringify(args.item.id))
       switch (args.item.id) {
         case 'WorkplanGrid_excelexport':
           this.$refs['WorkplanGrid'].excelExport()
@@ -810,6 +811,9 @@ export default {
 
         case 'WorkplanGrid_print':
           this.$refs['WorkplanGrid'].print()
+          break
+        case 'WorkplanGrid_Undo':
+          this.undoPreviousChanges()
           break
       }
     },
@@ -836,6 +840,33 @@ export default {
           instance.startEdit()
         }
       })
+    },
+    async undoPreviousChanges() {
+      this.rowData = this.originalRowData
+      await this.updateWorkplan(this.rowData)
+        .then(workplan => {
+          //if (console) console.log('UPDATED WORKPLAN: ' + workplan)
+          vm.rowData.etag = Number(workplan.headers.etag.replace(/"/g, ''))
+          vm.$refs['WorkplanGrid'].setRowData(vm.rowData.Id, vm.rowData)
+          //vm.$refs['WorkplanGrid'].refresh()
+        })
+        .then(() => {
+          // clear temporary information
+          //vm.originalRowData = null
+          vm.locked = false
+        })
+        .catch(e => {
+          const notification = {
+            type: 'danger',
+            title: 'Portal Error',
+            message: e,
+            push: true
+          }
+          this.$store.dispatch('notification/add', notification, {
+            root: true
+          })
+          console.log('ERROR: ' + e)
+        })
     },
     async actionBegin(args) {
       //if (console) console.log('ACTION BEGIN: ' + args.requestType)
@@ -961,7 +992,7 @@ export default {
             })
             .then(() => {
               // clear temporary information
-              vm.originalRowData = null
+              //vm.originalRowData = null
               vm.rowData = null
               vm.locked = false
             })
