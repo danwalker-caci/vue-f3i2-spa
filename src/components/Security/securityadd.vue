@@ -586,8 +586,21 @@ export default {
       if (this.files.length <= 0) {
         this.formError = true
       }
+      if (!this.formError) {
+        let personnelTask = await Todo.dispatch('getTodoById', this.securityForm.taskId)
+        console.log('PERSONNEL TASk: ' + JSON.stringify(personnelTask))
+        if (personnelTask.TaskType === 'PersonnelAdded') {
+          let taskPayload = {
+            etag: personnelTask.__metadata.etag,
+            uri: personnelTask.__metadata.uri,
+            id: personnelTask.Id
+          }
+          await Todo.dispatch('completeTodo', taskPayload)
+        }
+      }
       /* Checking to see if the form is just a regular submission compared to a SCI Transfer with multiple people */
       if (!this.formError && this.form.Type === 'SCI' && this.form.SCIType === 'Transfer' && this.sciTransferMP === 'Yes') {
+        // check if there is a new personnel task
         this.lockSubmit = true
         let payload = {},
           group = [],
