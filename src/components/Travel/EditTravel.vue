@@ -62,6 +62,11 @@
           <b-form-radio-group v-model="travelmodel.IndexNumber" :options="IndexNumbers" name="IndexRadios" stacked @change="IndexNumberChanged"></b-form-radio-group>
         </div>
       </b-sidebar>
+      <b-sidebar v-model="ShowIndexSelectPicker" id="IndexSelectPicker" ref="IndexSelectPicker" title="Select Travel Index #" bg-variant="dark" text-variant="light" right>
+        <div class="px-3 py-2">
+          <b-form-radio-group v-model="travelmodel.IndexNumber" :options="IndexSelectNumbers" name="IndexRadios" stacked @change="IndexNumberChanged"></b-form-radio-group>
+        </div>
+      </b-sidebar>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="bg-black text-white formheader">
@@ -142,7 +147,7 @@
                           <b-input-group>
                             <b-form-input disabled class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" :state="ValidateMe('IndexNumber')" ref="IndexNumber"></b-form-input>
                             <b-input-group-append v-if="travelmodel.WorkPlanNumber != ''">
-                              <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
+                              <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Assign</b-button>
                               <b-button v-b-tooltip.hover.v-dark title="select an existing index number" class="form-control-sm form-control-travel" variant="info" @click="SelectIndex">Select Existing</b-button>
                             </b-input-group-append>
                           </b-input-group>
@@ -813,6 +818,7 @@ export default {
       BadEndDate: null,
       pdata: [],
       IndexNumbers: [],
+      IndexSelectNumbers: [],
       UniqueIndexes: 0,
       TravelCount: 0,
       ShowIndexPicker: false,
@@ -998,7 +1004,7 @@ export default {
         this.pdata = this.personnel
       }
     },
-    waitForTrip: async function() {
+    waitForTrip: function() {
       // Waits for the travel item to load
       if (this.triploaded) {
         clearInterval(this.$options.interval)
@@ -1101,36 +1107,13 @@ export default {
         let turl = url
         turl += this.travelmodel.WorkPlanNumber
         turl += "')"
-        let response = await axios
+        return axios
           .get(turl, {
             headers: {
               accept: 'application/json;odata=verbose'
             }
           })
-          .catch(function(error) {
-            console.log('Error Getting Index Numbers: ' + error)
-          })
-        let iN = response.data.d.results,
-          usedIndexNumbers = [],
-          unusedIndexNumbers = 0
-        console.log('TOTAL RECORDS: ' + iN.length)
-        iN.forEach(index => {
-          if (index.IndexNumber) {
-            usedIndexNumbers.push(index.IndexNumber)
-          }
-        })
-        // calculate what the available index numbers should be and assing it to the IndexNumbers array
-        if (usedIndexNumbers.length !== iN.length) {
-          unusedIndexNumbers = iN.length - usedIndexNumbers.length
-          let start = iN.length - unusedIndexNumbers
-          for (var n = start; n < iN.length; n++) {
-            vm.IndexNumbers.push({
-              text: vm.travelmodel.WorkPlanNumber + '-' + n,
-              value: vm.travelmodel.WorkPlanNumber + '-' + n
-            })
-          }
-        }
-        /*.then(function(response) {
+          .then(function(response) {
             let results = response.data.d.results
             if (results.length > 0) {
               vm.TravelCount = results.length
@@ -1146,7 +1129,10 @@ export default {
             } else {
               // TODO: There are no travel items for this work plan so do we need to let the user know and auto select the automatic option
             }
-          })*/
+          })
+          .catch(function(error) {
+            console.log('Error Getting Index Numbers: ' + error)
+          })
       }
     },
     getRef(text, idx) {
@@ -1493,16 +1479,27 @@ export default {
           accept: 'application/json;odata=verbose'
         }
       })
-      let indexNumbers = response.data.d.results,
-        usedIndexNumbers = []
-      indexNumbers.forEach(index => {
+      let iN = response.data.d.results,
+        usedIndexNumbers = [],
+        unusedIndexNumbers = 0
+      console.log('TOTAL RECORDS: ' + iN.length)
+      iN.forEach(index => {
         if (index.IndexNumber) {
           usedIndexNumbers.push(index.IndexNumber)
         }
       })
-      if (usedIndexNumbers.length !== indexNumbers.length) {
-        this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + (usedIndexNumbers.length + 1)
+      // calculate what the available index numbers should be and assing it to the IndexNumbers array
+      if (usedIndexNumbers.length !== iN.length) {
+        unusedIndexNumbers = iN.length - usedIndexNumbers.length
+        let start = iN.length - unusedIndexNumbers
+        for (var n = start; n < iN.length; n++) {
+          vm.IndexSelectNumbers.push({
+            text: vm.travelmodel.WorkPlanNumber + '-' + n,
+            value: vm.travelmodel.WorkPlanNumber + '-' + n
+          })
+        }
       }
+      this.ShowIndexSelectPicker = true
       //this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
     },
     SelectIndex() {
@@ -1511,6 +1508,7 @@ export default {
     },
     IndexNumberChanged() {
       this.ShowIndexPicker = false
+      this.ShowIndexSelectPicker = false
     },
     onWorkplanSelected: function() {
       let s = String(this.travelmodel.WorkPlanNumber)
