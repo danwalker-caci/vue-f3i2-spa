@@ -1649,7 +1649,7 @@ export default {
           id: this.taskId
         }
         await Todo.dispatch('completeTodo', taskCompletePayload)
-        this.taskId = null
+        //this.taskId = null
       }
       if (this.DISSCheckChanged && this.CAC.dissCheckTask && this.CAC.dissCheckTask !== '') {
         await Todo.dispatch('getDigest')
