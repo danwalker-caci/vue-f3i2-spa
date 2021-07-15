@@ -62,6 +62,11 @@
           <b-form-radio-group v-model="travelmodel.IndexNumber" :options="IndexNumbers" name="IndexRadios" stacked @change="IndexNumberChanged"></b-form-radio-group>
         </div>
       </b-sidebar>
+      <b-sidebar v-model="ShowIndexSelectPicker" id="IndexSelectPicker" ref="IndexSelectPicker" title="Select Travel Index #" bg-variant="dark" text-variant="light" right>
+        <div class="px-3 py-2">
+          <b-form-radio-group v-model="travelmodel.IndexNumber" :options="IndexSelectNumbers" name="IndexRadios" stacked @change="IndexNumberChanged"></b-form-radio-group>
+        </div>
+      </b-sidebar>
       <b-col cols="12" class="m-0 p-0">
         <b-container fluid class="contentHeight m-0 p-0">
           <b-row no-gutters class="bg-black text-white formheader">
@@ -142,7 +147,7 @@
                           <b-input-group>
                             <b-form-input disabled class="form-control-sm form-control-travel" v-model="travelmodel.IndexNumber" :state="ValidateMe('IndexNumber')" ref="IndexNumber"></b-form-input>
                             <b-input-group-append v-if="travelmodel.WorkPlanNumber != ''">
-                              <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Auto</b-button>
+                              <b-button v-b-tooltip.hover.v-dark title="use next available index number" class="form-control-sm form-control-travel" variant="outline-success" @click="AutoIndex">Assign</b-button>
                               <b-button v-b-tooltip.hover.v-dark title="select an existing index number" class="form-control-sm form-control-travel" variant="info" @click="SelectIndex">Select Existing</b-button>
                             </b-input-group-append>
                           </b-input-group>
@@ -813,6 +818,7 @@ export default {
       BadEndDate: null,
       pdata: [],
       IndexNumbers: [],
+      IndexSelectNumbers: [],
       UniqueIndexes: 0,
       TravelCount: 0,
       ShowIndexPicker: false,
@@ -1460,11 +1466,41 @@ export default {
         this.fieldsFirstTab = this.fieldsFirstTab.filter(e => e != 'OCONUSLocation')
       }
     },
-    AutoIndex() {
+    async AutoIndex() {
       // get count of unique index numbers based on workplan # and increment by 1
       // 3/9/2021 - removed the increment by one b/c it uses the number of Travel items related to the WP# of which the current item is one of them.
-      let c = vm.TravelCount
-      this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
+      // Loop through each Index number and check if it has been assigned. Assign the first one detected that has not been assigned.
+      //let c = vm.TravelCount
+      //let indexUrl = SPCI.webServerRelativeUrl + "/_api/lists/getbytitle('Travel')/items?$filter(WorkPlanNumber eq '" + vm.travelmodel.WorkPlanNumber + "')&$orderby=Id desc"
+      let indexUrl = url
+      indexUrl += vm.travelmodel.WorkPlanNumber + "')"
+      let response = await axios.get(indexUrl, {
+        headers: {
+          accept: 'application/json;odata=verbose'
+        }
+      })
+      let iN = response.data.d.results,
+        usedIndexNumbers = [],
+        unusedIndexNumbers = 0
+      console.log('TOTAL RECORDS: ' + iN.length)
+      iN.forEach(index => {
+        if (index.IndexNumber) {
+          usedIndexNumbers.push(index.IndexNumber)
+        }
+      })
+      // calculate what the available index numbers should be and assing it to the IndexNumbers array
+      if (usedIndexNumbers.length !== iN.length) {
+        unusedIndexNumbers = iN.length - usedIndexNumbers.length
+        let start = iN.length - unusedIndexNumbers + 1
+        for (var n = start; n <= iN.length; n++) {
+          vm.IndexSelectNumbers.push({
+            text: vm.travelmodel.WorkPlanNumber + '-' + n,
+            value: vm.travelmodel.WorkPlanNumber + '-' + n
+          })
+        }
+      }
+      this.ShowIndexSelectPicker = true
+      //this.travelmodel.IndexNumber = this.travelmodel.WorkPlanNumber + '-' + c
     },
     SelectIndex() {
       // show side bar selector
@@ -1472,6 +1508,7 @@ export default {
     },
     IndexNumberChanged() {
       this.ShowIndexPicker = false
+      this.ShowIndexSelectPicker = false
     },
     onWorkplanSelected: function() {
       let s = String(this.travelmodel.WorkPlanNumber)
