@@ -112,7 +112,15 @@ export default {
         return {
           template: Vue.component('columnTemplate', {
             template: `
-            <div v-if="data.TaskType == 'FileExchangeDocument' || data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
+            <div v-if="data.TaskType === '' || data.TaskType === null || data.TaskType === 'PersonnelAdded' || data.TaskType === 'SCI Transfer Request' || data.TaskType === 'CAC Request' || data.TaskType === 'SCI Request' || data.TaskType == 'gov-reject' || data.TaskType == 'fso-reject' || data.TaskType == 'gov-complete' || data.TaskType == 'Personnel-Approved' || data.TaskType == 'Personnel-Rejected'">
+              <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
+                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+              </b-button>
+              <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
+                <font-awesome-icon far icon="external-link-alt" class="icon"></font-awesome-icon>
+              </b-button>
+            </div>
+            <div v-else-if="data.TaskType == 'FileExchangeDocument'">
               <b-button class="actionbutton" variant="success" @click="completeme(data)" title="Complete">
                 <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
               </b-button>
@@ -122,7 +130,7 @@ export default {
             </div>
             <div v-else>
               <b-button class="actionbutton" variant="info" @click="goto(data)" title="Review Details">
-                <font-awesome-icon far icon="check-circle" class="icon"></font-awesome-icon>
+                <font-awesome-icon far icon="external-link-alt" class="icon"></font-awesome-icon>
               </b-button>
             </div>`,
             data: function() {
