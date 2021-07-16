@@ -586,18 +586,21 @@ export default {
       if (this.files.length <= 0) {
         this.formError = true
       }
-      if (!this.formError) {
-        let personnelTask = await Todo.dispatch('getTodoById', this.securityForm.taskId)
-        console.log('PERSONNEL TASk: ' + JSON.stringify(personnelTask))
-        if (personnelTask.TaskType === 'PersonnelAdded') {
-          let taskPayload = {
-            etag: personnelTask.__metadata.etag,
-            uri: personnelTask.__metadata.uri,
-            id: personnelTask.Id
+      /**
+       * Retaining this portion of code should we change our minds on how to complete new personnel tasks
+       * if (!this.formError) {
+            let personnelTask = await Todo.dispatch('getTodoById', this.securityForm.taskId)
+            console.log('PERSONNEL TASk: ' + JSON.stringify(personnelTask))
+            if (personnelTask.TaskType === 'PersonnelAdded') {
+              let taskPayload = {
+                etag: personnelTask.__metadata.etag,
+                uri: personnelTask.__metadata.uri,
+                id: personnelTask.Id
+              }
+              await Todo.dispatch('completeTodo', taskPayload)
+            }
           }
-          await Todo.dispatch('completeTodo', taskPayload)
-        }
-      }
+      */
       /* Checking to see if the form is just a regular submission compared to a SCI Transfer with multiple people */
       if (!this.formError && this.form.Type === 'SCI' && this.form.SCIType === 'Transfer' && this.sciTransferMP === 'Yes') {
         // check if there is a new personnel task
@@ -772,7 +775,7 @@ export default {
         // Finally - Update the SCITransfer list with the task id and reset form
         transferPayload.etag = transferResults.data.d.__metadata.etag
         transferPayload.uri = transferResults.data.d.__metadata.uri
-        transferPayload.TaskId = taskResults.data.d.Id
+        transferPayload.TaskId = taskResults.data.d.Id // Task ID is for the SCI, CAC, or Accounts fields on the Security record
         await Security.dispatch('updateSecuritySCITransfer', transferPayload)
           .then(() => {
             if (vm.formType === 'account') {
@@ -1194,7 +1197,7 @@ export default {
         }
         payload.DISSCheck = this.securityForm.DISSCheck ? this.securityForm.DISSCheck : false
         payload.Active = true
-        payload.taskId = this.taskId
+        // payload.taskId = this.taskId
         payload.etag = this.securityForm.etag
         payload.uri = this.securityForm.uri
         await Security.dispatch('updateSecurityForm', payload)

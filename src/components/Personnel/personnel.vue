@@ -675,6 +675,7 @@ export default {
   methods: {
     addSecurity: async function(personnelId, modalType, data) {
       await Security.dispatch('getDigest')
+      await Todo.dispatch('getDigest')
       let payload = {
         PersonnelID: personnelId,
         FirstName: data.FirstName,
@@ -709,7 +710,7 @@ export default {
         IsMilestone: false,
         PercentComplete: 0,
         TaskType: 'PersonnelAdded',
-        TaskLink: '/security/edit/' + security.data.d.Id
+        TaskLink: '/security/edit/' + security.data.d.Id // only reason why we have to update the security list after this
       }
       let results = await Todo.dispatch('addTodo', taskPayload).catch(error => {
         const notification = {
@@ -728,7 +729,7 @@ export default {
         Id: security.data.d.Id,
         etag: security.data.d.__metadata.etag,
         uri: security.data.d.__metadata.uri,
-        taskId: results.data.d.Id
+        NewPersonnelTask: results.data.d.Id // setting the taskId to the new personnel task
       }
       await Security.dispatch('updateSecurityForm', securityPayload)
       let emailPayload = {

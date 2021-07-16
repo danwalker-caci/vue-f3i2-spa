@@ -59,6 +59,7 @@
                     <e-column field="JWICGovSentDate" headerText="JWIC Gov Sent Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="JWICGovCompleteDate" headerText="JWIC Gov Complete Date" :visible="false" textAlign="Left"></e-column>
                     <e-column field="taskId" headerText="Task Id" :visible="false" textAlign="Left"></e-column>
+                    <e-column field="NewPersonnelTask" headerText="New Personnel Task" :visible="false" textAlign="Left"></e-column>
                     <e-column field="SCITransferId" :visible="false"></e-column>
                     <e-column field="uri" :visible="false" textAlign="Left" width="40"></e-column>
                     <e-column field="etag" :visible="false" textAlign="Left" width="40"></e-column>
@@ -649,7 +650,6 @@ export default {
               IndocDateChange(data) {
                 data.SCIStatus = 'Indoc Assist Pending'
               },
-
               async dissCheckChange(data) {
                 if (data === 'Yes') {
                   vm2.DISSCheckChanged = true
@@ -1428,16 +1428,16 @@ export default {
                   })
                 }
                 if (console) console.log('Status Updated: ' + this.statusesUpdated + ' Task ID: ' + d.taskId)
-                if (this.statusesUpdated && d.taskId) {
+                if (this.statusesUpdated && d.NewPersonnelTask) {
                   await Todo.dispatch('getDigest')
-                  let task = await Todo.dispatch('getTodoById', d.taskId)
+                  let task = await Todo.dispatch('getTodoById', d.NewPersonnelTask)
                   let taskCompletePayload = {
                     etag: task.__metadata.etag,
                     uri: task.__metadata.uri,
-                    id: d.taskId
+                    id: d.NewPersonnelTask
                   }
                   await Todo.dispatch('completeTodo', taskCompletePayload)
-                  d.taskId = null
+                  // d.taskId = null
                 }
                 if (this.DISSCheckChanged && d.CAC.dissCheckTask && d.CAC.dissCheckTask !== '') {
                   await Todo.dispatch('getDigest')
@@ -1501,6 +1501,7 @@ export default {
                 payload.SCIFormSubmitted = d.SCIFormSubmitted ? d.SCIFormSubmitted : null
                 payload.SCIStatus = d.SCIStatus
                 payload.taskId = d.taskId
+                payload.NewPersonnelTask = d.NewPersonnelTask
                 await Security.dispatch('updateSecurityForm', payload)
                   .then(function(result) {
                     // grab a fresh etag for the record

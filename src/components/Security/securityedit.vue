@@ -753,6 +753,7 @@ export default {
       this.SCITransferId = result.SCITransferId
       this.isSCITransfer = false
       this.taskId = result.taskId
+      this.NewPersonnelTask = result.NewPersonnelTask
       await Security.dispatch('getDigest')
       this.loaded = true
     },
@@ -1506,6 +1507,7 @@ export default {
         SCIIndoc: securityFormInfo.SCIIndoc,
         SCITransferId: securityFormInfo.SCITransferId,
         taskId: securityFormInfo.taskId,
+        NewPersonnelTask: securityFormInfo.NewPersonnelTask,
         DISSCheck: securityFormInfo.DISSCheck,
         etag: securityFormInfo.etag,
         uri: securityFormInfo.uri
@@ -1640,9 +1642,9 @@ export default {
           // finally, clear d.files to zero and remove from file uploader
         })
       }
-      if (this.statusesUpdated && this.taskId) {
+      if ((this.statusesUpdated || (this.SCIStatus !== '' && this.SCIStatus !== null && this.CACStatus !== '' && this.CACStatus !== null)) && this.NewPersonnelTask) {
         await Todo.dispatch('getDigest')
-        let task = await Todo.dispatch('getTodoById', this.taskId)
+        let task = await Todo.dispatch('getTodoById', this.NewPersonnelTask)
         let taskCompletePayload = {
           etag: task.__metadata.etag,
           uri: task.__metadata.uri,

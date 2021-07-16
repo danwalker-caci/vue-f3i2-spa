@@ -231,7 +231,8 @@ export default {
       SCIFormSubmitted: payload.SCIFormSubmitted,
       SCIIndoc: payload.SCIIndoc,
       SCITransferId: payload.SCITransferId,
-      taskId: payload.taskId
+      taskId: payload.taskId,
+      NewPersonnelTask: payload.NewPersonnelTask
     }
     if (payload.DISSCheck !== undefined || payload.DISSCheck !== null) {
       itemprops.DISSCheck = payload.DISSCheck === 'Yes' ? true : false
