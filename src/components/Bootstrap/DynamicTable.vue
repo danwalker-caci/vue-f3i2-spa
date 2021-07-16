@@ -536,7 +536,7 @@ export default {
     },
     getUserPermissions: async function(item) {
       // go get the users permissions for the item
-      let url = tp1 + slash + slash + tp2 + slash + "sites/f3i2/_api/web/lists/getByTitle('" + vm.table.list + "')/items(" + item['id'] + ')/getusereffectivepermissions(@v)?@v=%27' + encodeURIComponent(vm.user[0].LoginName) + '%27'
+      let url = process.env.VUE_APP_BASE_URL + "/_api/web/lists/getByTitle('" + vm.table.list + "')/items(" + item['id'] + ')/getusereffectivepermissions(@v)?@v=%27' + encodeURIComponent(vm.user[0].LoginName) + '%27'
       let response = await axios.get(url, {
         headers: {
           accept: 'application/json;odata=verbose'

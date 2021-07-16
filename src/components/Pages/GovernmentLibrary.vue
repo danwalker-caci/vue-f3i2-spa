@@ -54,7 +54,7 @@ export default {
   },
   mounted: function() {
     this.currentUser = this.currentuser
-    let url = "https://infoplus.caci.com/sites/f3i2/_api/web/lists/getByTitle('GovernmentDocuments')/items?$select=*,Author/Title,File/Name,File/ServerRelativeUrl&$expand=Author,File&$filter=(FSObjType ne 1)"
+    let url = process.env.VUE_APP_BASE_URL + "/_api/web/lists/getByTitle('GovernmentDocuments')/items?$select=*,Author/Title,File/Name,File/ServerRelativeUrl&$expand=Author,File&$filter=(FSObjType ne 1)"
     this.query = url
     this.queryset = true
   }

@@ -475,7 +475,7 @@
                             <div v-show="showApprovalHelp" class="mb-1">
                               <b-row class="mb-1">
                                 <video width="75%" controls>
-                                  <source src="/sites/f3i2/TrainingVideos/Travel%20Approval.mp4" type="video/mp4" />
+                                  <source :src="tsource" type="video/mp4" />
                                   Your Browser does not support this video.
                                 </video>
                               </b-row>
@@ -807,6 +807,7 @@ export default {
   },
   data: function() {
     return {
+      tsource: process.env.VUE_APP_BASE_URL + '/TrainingVideos/Travel%20Approval.mp4',
       busyTitle: 'Getting Trip Data. Please Wait.',
       isDenied: false,
       actionselected: false,

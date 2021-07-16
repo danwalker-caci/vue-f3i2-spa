@@ -1,11 +1,13 @@
 <template>
-  <div id="app">
+  <div id="app" :style="{ backgroundImage: 'url(' + image + ')' }">
     <router-view name="dialog"></router-view>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+/* NOTE: Discovered during testing that according to this site: https://cli.vuejs.org/guide/mode-and-env.html#modes all vue node variables should
+be prefixed with VUE_APP_  It was discovered that it would not work otherwise. This supports the dynamic image background used for the app in this case.  */
 let vm = null
 import Company from '@/models/Company'
 import User from '@/models/User'
@@ -21,6 +23,11 @@ export default {
     },
     UserId() {
       return User.getters('CurrentUserId')
+    }
+  },
+  data: function() {
+    return {
+      image: process.env.VUE_APP_BACKGROUND_IMAGE
     }
   },
   mounted: async function() {
@@ -89,7 +96,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #000;
-  background-image: url('/sites/f3i2/SiteAssets/html/static/img/background-1.JPG');
   background-size: cover;
   background-position: center center;
   position: fixed;

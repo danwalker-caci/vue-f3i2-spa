@@ -26,7 +26,7 @@ import Workplan from '@/models/WorkPlan'
 /*const date = new Date()
 const currentMonth = date.toLocaleString('default', { month: 'short' }).toLocaleUpperCase()
 const currentYear = date.toLocaleString('default', { year: 'numeric' })*/
-const originalUrl = '/sites/f3i2/FinancialDocuments/Forms/AllItems.aspx?isDlg=1'
+const originalUrl = process.env.VUE_APP_BASE_URL + '/FinancialDocuments/Forms/AllItems.aspx?isDlg=1'
 let vm = null
 export default {
   name: 'financial-library',

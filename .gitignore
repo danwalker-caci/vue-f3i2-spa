@@ -105,5 +105,6 @@ dist
 .tern-port
 dummy.html
 dummy.html
-src/components/Travel/EditTravel.vue
+
 .vscode/tasks.json
+scripts/axios.min.js
