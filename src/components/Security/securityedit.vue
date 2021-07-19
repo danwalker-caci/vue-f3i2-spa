@@ -1664,14 +1664,13 @@ export default {
         })
       }
       if (tId) {
-        Todo.dispatch('getTodoById', tId).then(task => {
-          let payload = {
-            etag: task.__metadata.etag,
-            uri: task.__metadata.uri,
-            id: task.Id
-          }
-          Todo.dispatch('completeTodo', payload)
-        })
+        let task = await Todo.dispatch('getTodoById', tId)
+        let payload = {
+          etag: task.__metadata.etag,
+          uri: task.__metadata.uri,
+          id: tId
+        }
+        Todo.dispatch('completeTodo', payload)
       }
       let payload = {}
       if (this.NIPR) {

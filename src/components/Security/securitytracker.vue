@@ -649,7 +649,6 @@ export default {
               IndocDateChange(data) {
                 data.SCIStatus = 'Indoc Assist Pending'
               },
-
               async dissCheckChange(data) {
                 if (data === 'Yes') {
                   vm2.DISSCheckChanged = true
@@ -841,11 +840,10 @@ export default {
                   submitterId = [],
                   submitterEmail = [],
                   group = []
-                // get the current item data
+                // BEGIN SCI TRANSFER SECTION
                 if (type === 'SCI' && data.SCITransferId) {
                   let sciTransfer = await Security.dispatch('getSecuritySCITransfer', { Id: data.SCITransferId })
                   taskId = sciTransfer.TaskId
-                  console.log(JSON.stringify(sciTransfer))
                   sciTransfer.Form.GovCompleteDate = 'Completed On: ' + this.$moment().format('MM/DD/YYYY')
                   // First delete the Form from the SCI Transfer Form entry
                   for (var s = 0; s < sciTransfer.Form.forms.length; s++) {
@@ -932,6 +930,7 @@ export default {
                     push: true
                   }
                   vm.$store.dispatch('notification/add', notification, { root: true })
+                  // END SCI TRANSFER SECTION
                 } else {
                   switch (type) {
                     case 'NIPR':
@@ -1452,14 +1451,13 @@ export default {
                   })
                 }
                 if (tId) {
-                  Todo.dispatch('getTodoById', tId).then(task => {
-                    let payload = {
-                      etag: task.__metadata.etag,
-                      uri: task.__metadata.uri,
-                      id: task.Id
-                    }
-                    Todo.dispatch('completeTodo', payload)
-                  })
+                  let task = await Todo.dispatch('getTodoById', tId)
+                  let payload = {
+                    etag: task.__metadata.etag,
+                    uri: task.__metadata.uri,
+                    id: tId
+                  }
+                  Todo.dispatch('completeTodo', payload)
                 }
                 // Hackiness to make the data immutable...not nice!
                 let payload = JSON.parse(JSON.stringify(d))
