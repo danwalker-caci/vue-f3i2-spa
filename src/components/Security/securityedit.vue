@@ -900,7 +900,7 @@ export default {
           IsMilestone: false,
           PercentComplete: 0,
           TaskType: type + ' Request',
-          TaskLink: '/security/tracker'
+          TaskLink: '/security/edit/' + this.Id
         }
         let results = await Todo.dispatch('addTodo', payload).catch(error => {
           const notification = {
