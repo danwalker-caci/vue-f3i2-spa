@@ -65,7 +65,7 @@
     "gulp": "^4.0.2",
     "gulp-plumber": "^1.2.1",
     "gulp-sass": "^4.1.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "replace-in-file": "^6.1.0",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-bootstrap": "^1.0.0-alpha.1",
